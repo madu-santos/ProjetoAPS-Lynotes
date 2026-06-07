@@ -1,0 +1,22 @@
+services:
+  # Servidor do Banco de Dados PostgreSQL
+  db:
+    image: postgres:16
+    container_name: spotify_db_container
+    environment:
+      # Nome do banco de dados que será criado automaticamente
+      POSTGRES_DB: spotify_db
+      # Usuário administrador padrão
+      POSTGRES_USER: postgres
+      # Senha do administrador
+      POSTGRES_PASSWORD: postgres
+    ports:
+      # Mapeia a porta padrão 5432 do PostgreSQL no contêiner para a porta 5432 do seu Windows
+      - "5432:5432"
+    volumes:
+      # Cria um volume nomeado para persistir os dados no seu disco local
+      # (isso garante que os dados gravados não sumam quando o Docker for fechado)
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
