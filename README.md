@@ -1,41 +1,37 @@
-# 🚀 Lynotes — Painel de Controle (APS/POO)
+# 🚀 Lynotes — Painel Administrativo (APS/POO)
 
-Este repositório contém a base funcional ("Walking Skeleton") do **Lynotes**, nosso painel administrativo de músicas, artistas e álbuns. A aplicação está configurada com Java 21, **Javalin 6**, **Thymeleaf 3**, **Docker (PostgreSQL)** e **JUnit 5** para testes automatizados.
-
----
-
-## 📌 1. Pré-requisitos
-* Java JDK 21 (ou superior)
-* Docker Desktop
-* IntelliJ IDEA (ou qualquer IDE Java com suporte a Maven)
+Este repositório contém a entrega inicial do **Lynotes**, um painel administrativo web para gerenciamento e catalogação de músicas, artistas e álbuns. O foco desta etapa ("Walking Skeleton") foi estabelecer a arquitetura do projeto e mitigar os riscos de infraestrutura técnica.
 
 ---
 
-## 📥 2. Como Rodar o Projeto
-1. Clone o repositório oficial.
-2. Abra a pasta do projeto no IntelliJ como um projeto Maven.
-3. Inicie o banco de dados no Docker executando na raiz do projeto:
-   ```bash
-   docker compose up -d
-   ```
-4. Execute os testes automatizados para validar a compilação e a conexão de banco:
-   ```bash
-   mvn test
-   ```
+## 🛠️ 1. Tecnologias Utilizadas
+* **Linguagem:** Java 21
+* **Framework Web:** Javalin 6 (com servidor Jetty embutido)
+* **Motor de Renderização (Front-end):** Thymeleaf 3 + Bootstrap 5
+* **Banco de Dados Relacional:** PostgreSQL 16
+* **Ambiente de Execução Local:** Docker & Docker Compose
 
 ---
 
-## 📐 3. Estrutura e Arquitetura do Projeto
-Adotamos uma organização **por conceito/domínio** (Package-by-Concept) para garantir modularidade e baixo acoplamento. O pacote `login` serve como o modelo do projeto:
-* `models/`: Entidades conceituais.
-* `repositories/`: Interface de persistência + Implementação JDBC (SQL puro).
-* `services/`: Lógica e validações rigorosas de negócio.
+## 📐 2. Estrutura Arquitetural
+Adotamos uma abordagem baseada em baixo acoplamento e alta coesão, organizando o código **por conceito/domínio** (Package-by-Concept). O módulo de `login`/`usuário` serve como modelo de referência arquitetural:
 
-Os testes estão divididos em **Testes de Integração** (banco real no Docker) e **Testes Unitários** (lógica de negócios simulada em memória para velocidade).
+* **Model (`models/`):** Entidades puras do domínio com encapsulamento de estado (Ex: `Usuario`).
+* **Repository (`repositories/`):** 
+  * `UsuarioRepository` (Interface): Abstração que atua como barreira de isolamento (Inversão de Dependência - DIP do SOLID).
+  * `UsuarioDbRepository` (Classe): Implementação física que executa queries SQL puras no PostgreSQL via **JDBC puro** (sem o uso de ORMs complexos para garantir controle total sobre as conexões e consultas).
+* **Service (`services/`):** Concentra as regras de negócio e validações rígidas de campos (como integridade de e-mails, unicidade e tamanho mínimo de senhas).
 
 ---
 
-## ⚙️ 4. Fluxo de Trabalho do Git (Obrigatório)
-1. **Não trabalhe direto na `main`!**
-2. Crie uma branch para a sua funcionalidade (ex: `feature-artistas`, `feature-musicas`).
-3. Ao terminar de codificar e garantir que todos os testes passam (`mvn test`), envie a branch para o repositório e abra um **Pull Request (PR)** para revisão do grupo antes de realizar o merge.
+## 🧪 3. Qualidade e Testes Automatizados
+O projeto conta com testes automatizados desenvolvidos com **JUnit 5**:
+
+1. **Testes Unitários de Serviço (`UsuarioServiceTest`):** Validam as regras de negócio de maneira isolada e ultrarrápida usando um repositório simulado em memória (*Fake Repository*), sem dependência do banco real.
+2. **Testes de Integração de Banco (`UsuarioDbRepositoryTest`):** Testam a gravação e integridade de dados no PostgreSQL do Docker. Utilizam a cláusula `assumeTrue` para verificar se o banco local está ativo. Caso o Docker esteja desligado, o JUnit ignora o teste silenciosamente, impedindo que o build do projeto quebre.
+3. **Testes de Integração de Rotas (`AppTest`):** Testam as requisições HTTP e o retorno dos endpoints expostos.
+
+---
+
+## ⚙️ 4. Fluxo de Trabalho (Git)
+O desenvolvimento colaborativo é orientado por **Issues** e organizado em branches de funcionalidades (ex: `feature-artistas`), integrando alterações na branch principal (`main`) exclusivamente através de **Pull Requests** com revisão de código.
