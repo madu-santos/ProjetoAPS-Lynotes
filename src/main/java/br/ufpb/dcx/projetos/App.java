@@ -1,43 +1,89 @@
 package br.ufpb.dcx.projetos;
 
+import br.ufpb.dcx.projetos.artista.ArtistaModule;
+import br.ufpb.dcx.projetos.infra.database.ConnectionFactory;
+import br.ufpb.dcx.projetos.infra.database.DriverManagerConnectionFactory;
+import br.ufpb.dcx.projetos.login.controllers.LoginController;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-public class App {
+import java.util.Objects;
+
+public final class App {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+    private static final int PORTA = 8080;
+
+    private App() {
+    }
 
     public static void main(String[] args) {
-        // Inicializa o Javalin e configura a renderização e arquivos estáticos
-        Javalin app = criarApp();
-
-        // Inicia o servidor na porta 8080
-        int porta = 8080;
-        app.start(porta);
-        System.out.println("Servidor iniciado com sucesso em http://localhost:" + porta);
+        criarApp().start(PORTA);
+        LOGGER.info("Servidor iniciado. porta={}", PORTA);
     }
 
-    /**
-     * Cria e configura a instância do Javalin.
-     * Separamos essa lógica em um método próprio para facilitar a execução de testes automatizados
-     * (o JUnit pode criar a app na memória sem precisar iniciar o servidor em uma porta física).
-     */
     public static Javalin criarApp() {
-        return Javalin.create(config -> {
-            // Configura a pasta de arquivos estáticos (CSS, JS, imagens) localizada em src/main/resources/public
-            config.staticFiles.add("/public");
-
-            // Configura o Thymeleaf com prefixo /templates/ e sufixo .html
-            config.fileRenderer(new JavalinThymeleaf(thymeleafEngine()));
-        })
-        // Mapeia a rota inicial (raiz) para renderizar a página index (Thymeleaf resolve para templates/index.html)
-        .get("/", ctx -> ctx.render("index"));
+        Javalin app = criarJavalin();
+        registrarRotasPublicas(app);
+        registrarAutenticacao(app);
+        ArtistaModule.registrar(app, criarConnectionFactory());
+        registrarLogHttp(app);
+        return app;
     }
 
-    /**
-     * Configura o motor de templates Thymeleaf com prefixo, sufixo e codificação padrão.
-     */
-    private static TemplateEngine thymeleafEngine() {
+    private static Javalin criarJavalin() {
+        return Javalin.create(config -> {
+            config.staticFiles.add("/public");
+            config.fileRenderer(new JavalinThymeleaf(criarTemplateEngine()));
+        });
+    }
+
+    private static void registrarRotasPublicas(Javalin app) {
+        app.get("/", ctx -> ctx.render("index"));
+    }
+
+    private static void registrarAutenticacao(Javalin app) {
+        LoginController loginController = new LoginController();
+        loginController.registrarRotas(app);
+        app.beforeMatched(ctx -> {
+            if (rotaProtegida(ctx.path()) && !LoginController.estaAutenticado(ctx)) {
+                ctx.redirect("/login");
+                ctx.skipRemainingHandlers();
+            }
+        });
+    }
+
+    private static boolean rotaProtegida(String path) {
+        return path.startsWith("/artistas");
+    }
+
+    private static void registrarLogHttp(Javalin app) {
+        app.after(ctx -> LOGGER.info(
+                "Requisição HTTP concluída. metodo={} path={} status={}",
+                ctx.method(),
+                ctx.path(),
+                ctx.statusCode()
+        ));
+    }
+
+    private static ConnectionFactory criarConnectionFactory() {
+        return new DriverManagerConnectionFactory(
+                variavelAmbiente("DB_URL", "jdbc:postgresql://localhost:5432/spotify_db"),
+                variavelAmbiente("DB_USER", "postgres"),
+                variavelAmbiente("DB_PASSWORD", "postgres")
+        );
+    }
+
+    private static String variavelAmbiente(String nome, String valorPadrao) {
+        String valor = System.getenv(nome);
+        return Objects.isNull(valor) || valor.isBlank() ? valorPadrao : valor;
+    }
+
+    private static TemplateEngine criarTemplateEngine() {
         ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
         resolver.setPrefix("/templates/");
         resolver.setSuffix(".html");
