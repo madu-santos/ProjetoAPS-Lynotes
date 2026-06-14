@@ -4,6 +4,7 @@ import br.ufpb.dcx.projetos.login.models.Usuario;
 import br.ufpb.dcx.projetos.login.repositories.UsuarioRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -23,17 +24,17 @@ public class UsuarioService {
      * Valida as regras de negócio e cadastra um novo usuário no sistema.
      */
     public void cadastrarUsuario(Usuario usuario) {
-        if (usuario == null) {
+        if (Objects.isNull(usuario)) {
             throw new IllegalArgumentException("Usuário não pode ser nulo.");
         }
 
         // 1. Validação do Nome
-        if (usuario.getNome() == null || usuario.getNome().trim().isEmpty()) {
+        if (Objects.isNull(usuario.getNome()) || usuario.getNome().trim().isEmpty()) {
             throw new IllegalArgumentException("Nome é obrigatório e não pode ser vazio.");
         }
 
         // 2. Validação do E-mail (Presença e Formato Básico)
-        if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
+        if (Objects.isNull(usuario.getEmail()) || usuario.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("E-mail é obrigatório.");
         }
         if (!usuario.getEmail().contains("@") || !usuario.getEmail().contains(".")) {
@@ -47,7 +48,7 @@ public class UsuarioService {
         }
 
         // 4. Validação do tamanho da senha (mínimo de 6 caracteres)
-        if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
+        if (Objects.isNull(usuario.getSenha()) || usuario.getSenha().trim().isEmpty()) {
             throw new IllegalArgumentException("Senha é obrigatória.");
         }
         if (usuario.getSenha().length() < 6) {
@@ -62,14 +63,14 @@ public class UsuarioService {
     }
 
     public Optional<Usuario> buscarPorId(String id) {
-        if (id == null || id.trim().isEmpty()) {
+        if (Objects.isNull(id) || id.trim().isEmpty()) {
             return Optional.empty();
         }
         return repository.buscarPorId(id);
     }
 
     public Optional<Usuario> buscarPorEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
+        if (Objects.isNull(email) || email.trim().isEmpty()) {
             return Optional.empty();
         }
         return repository.buscarPorEmail(email.trim());
@@ -80,7 +81,7 @@ public class UsuarioService {
     }
 
     public void remover(String id) {
-        if (id == null || id.trim().isEmpty()) {
+        if (Objects.isNull(id) || id.trim().isEmpty()) {
             throw new IllegalArgumentException("ID inválido para remoção.");
         }
         repository.remover(id);

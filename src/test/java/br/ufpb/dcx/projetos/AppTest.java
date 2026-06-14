@@ -24,7 +24,27 @@ public class AppTest {
 
             // Valida se o HTML retornado contém a marcação e texto esperados
             String htmlContent = resposta.body().string();
-            assertTrue(htmlContent.contains("Spotify Backoffice"));
+            assertTrue(htmlContent.contains("Lynotes"));
+        });
+    }
+
+    @Test
+    public void testTelaLoginRetornaSucesso() {
+        JavalinTest.test(App.criarApp(), (server, client) -> {
+            var resposta = client.get("/login");
+
+            assertEquals(200, resposta.code());
+            assertTrue(resposta.body().string().contains("Entrar no Lynotes"));
+        });
+    }
+
+    @Test
+    public void testArtistasExigeLogin() {
+        JavalinTest.test(App.criarApp(), (server, client) -> {
+            var resposta = client.get("/artistas");
+
+            assertEquals(200, resposta.code());
+            assertTrue(resposta.body().string().contains("Entrar no Lynotes"));
         });
     }
 }
