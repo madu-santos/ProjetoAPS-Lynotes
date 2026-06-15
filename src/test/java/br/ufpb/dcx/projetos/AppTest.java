@@ -47,4 +47,14 @@ public class AppTest {
             assertTrue(resposta.body().string().contains("Entrar no Lynotes"));
         });
     }
+
+    @Test
+    public void testUsuariosExigeLogin() {
+        JavalinTest.test(App.criarApp(), (server, client) -> {
+            var resposta = client.get("/usuarios");
+
+            assertEquals(200, resposta.code());
+            assertTrue(resposta.body().string().contains("Entrar no Lynotes"));
+        });
+    }
 }

@@ -12,8 +12,8 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand bg-dark navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="/artistas">Lynotes</a>
-            <ul class="navbar-nav me-auto">
+            <a class="navbar-brand" th:href="${usuarioLogado != null ? '/artistas' : '/'}">Lynotes</a>
+            <ul class="navbar-nav me-auto" th:if="${usuarioLogado != null}">
                 <li class="nav-item">
                     <a class="nav-link" href="/artistas">Artistas</a>
                 </li>
@@ -27,9 +27,9 @@
     <main class="container py-5">
         <div class="row justify-content-center">
             <div class="col-lg-7">
-                <div class="mb-4">
-                    <a class="text-decoration-none" href="/usuarios">&larr; Voltar para usuários</a>
-                    <h1 class="mt-2 text-purple" th:text="${edicao ? 'Editar usuário' : 'Novo usuário'}"></h1>
+                <div class="mb-4" th:with="backUrl=${usuarioLogado != null ? '/usuarios' : '/'}">
+                    <a class="text-decoration-none" th:href="${backUrl}" th:text="${usuarioLogado != null ? '← Voltar para usuários' : '← Voltar para a tela inicial'}"></a>
+                    <h1 class="mt-2 text-purple" th:text="${edicao ? 'Editar usuário' : 'Criar Conta'}"></h1>
                 </div>
 
                 <div class="card shadow-sm">
@@ -75,7 +75,7 @@
                                 <button class="btn btn-primary" type="submit"
                                         th:text="${edicao ? 'Salvar alterações' : 'Cadastrar usuário'}">
                                 </button>
-                                <a class="btn btn-outline-secondary" href="/usuarios">Cancelar</a>
+                                <a class="btn btn-outline-secondary" th:href="${usuarioLogado != null ? '/usuarios' : '/'}">Cancelar</a>
                             </div>
                         </form>
                     </div>

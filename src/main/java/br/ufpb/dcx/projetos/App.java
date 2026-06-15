@@ -29,22 +29,22 @@ public final class App {
     public static Javalin criarApp() {
         Javalin app = criarJavalin();
         registrarRotasPublicas(app);
-        registrarAutenticacao(app);
-        registrarUsuarios(app);
-        ArtistaModule.registrar(app, criarConnectionFactory());
-        registrarLogHttp(app);
-        return app;
-    }
 
-    private static void registrarUsuarios(Javalin app) {
         String dbUrl = variavelAmbiente("DB_URL", "jdbc:postgresql://localhost:5432/spotify_db");
         String dbUser = variavelAmbiente("DB_USER", "postgres");
         String dbPass = variavelAmbiente("DB_PASSWORD", "postgres");
 
         var repo = new br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository(dbUrl, dbUser, dbPass);
-        var service = new br.ufpb.dcx.projetos.login.services.UsuarioService(repo);
+        var service = new br.ufpb.dcx.projetos.login.services.UsuarioService(repo, new br.ufpb.dcx.projetos.login.services.BCryptHashingStrategy());
+
+        registrarAutenticacao(app, service);
+
         var controller = new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service);
         controller.registrarRotas(app);
+
+        ArtistaModule.registrar(app, criarConnectionFactory());
+        registrarLogHttp(app);
+        return app;
     }
 
     private static Javalin criarJavalin() {
@@ -58,18 +58,25 @@ public final class App {
         app.get("/", ctx -> ctx.render("index"));
     }
 
-    private static void registrarAutenticacao(Javalin app) {
-        LoginController loginController = new LoginController();
+    private static void registrarAutenticacao(Javalin app, br.ufpb.dcx.projetos.login.services.UsuarioService service) {
+        LoginController loginController = new LoginController(service);
         loginController.registrarRotas(app);
         app.beforeMatched(ctx -> {
-            if (rotaProtegida(ctx.path()) && !LoginController.estaAutenticado(ctx)) {
+            if (rotaProtegida(ctx.path(), ctx.method().name()) && !LoginController.estaAutenticado(ctx)) {
                 ctx.redirect("/login");
                 ctx.skipRemainingHandlers();
             }
         });
     }
 
-    private static boolean rotaProtegida(String path) {
+    private static boolean rotaProtegida(String path, String method) {
+        // Permite o acesso público para criação de novos usuários (GET e POST)
+        if (path.equals("/usuarios/novo") && method.equalsIgnoreCase("GET")) {
+            return false;
+        }
+        if (path.equals("/usuarios") && method.equalsIgnoreCase("POST")) {
+            return false;
+        }
         return path.startsWith("/artistas") || path.startsWith("/usuarios");
     }
 

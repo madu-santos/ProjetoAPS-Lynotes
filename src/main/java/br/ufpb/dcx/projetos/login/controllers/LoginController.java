@@ -10,8 +10,11 @@ public class LoginController {
 
     public static final String ATRIBUTO_USUARIO_SESSAO = "usuarioLogado";
 
-    private static final String USUARIO_TESTE = "admin";
-    private static final String SENHA_TESTE = "123456";
+    private final br.ufpb.dcx.projetos.login.services.UsuarioService service;
+
+    public LoginController(br.ufpb.dcx.projetos.login.services.UsuarioService service) {
+        this.service = service;
+    }
 
     public void registrarRotas(Javalin app) {
         app.get("/login", this::exibirLogin);
@@ -33,23 +36,25 @@ public class LoginController {
     }
 
     private void autenticar(Context ctx) {
-        String usuario = ctx.formParam("usuario");
+        String email = ctx.formParam("usuario"); // Mapeia o campo do input de e-mail/usuário
         String senha = ctx.formParam("senha");
 
-        if (USUARIO_TESTE.equals(usuario) && SENHA_TESTE.equals(senha)) {
-            ctx.sessionAttribute(ATRIBUTO_USUARIO_SESSAO, usuario);
+        if (service.verificarCredenciais(email, senha)) {
+            // Busca o nome real do usuário para exibir na barra de navegação
+            String nomeUsuario = service.buscarPorEmail(email).map(u -> u.getNome()).orElse(email);
+            ctx.sessionAttribute(ATRIBUTO_USUARIO_SESSAO, nomeUsuario);
             ctx.redirect("/artistas");
             return;
         }
 
         ctx.status(401).render("login", Map.of(
                 "erro", "Usuário ou senha inválidos.",
-                "usuarioInformado", Objects.toString(usuario, "")
+                "usuarioInformado", Objects.toString(email, "")
         ));
     }
 
     private void sair(Context ctx) {
         ctx.req().getSession().invalidate();
-        ctx.redirect("/login");
+        ctx.redirect("/");
     }
 }

@@ -2,6 +2,7 @@ package br.ufpb.dcx.projetos.login.controllers;
 
 import br.ufpb.dcx.projetos.login.models.Usuario;
 import br.ufpb.dcx.projetos.login.services.UsuarioService;
+import br.ufpb.dcx.projetos.login.services.PlaintextHashingStrategy;
 import br.ufpb.dcx.projetos.login.repositories.UsuarioRepository;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
@@ -27,7 +28,7 @@ class UsuarioControllerTest {
     @BeforeEach
     void setup() {
         repo = new FakeUsuarioRepository();
-        service = new UsuarioService(repo);
+        service = new UsuarioService(repo, new PlaintextHashingStrategy());
     }
 
     @Test
@@ -55,7 +56,7 @@ class UsuarioControllerTest {
     }
 
     @Test
-    void deveRedirecionarAposCadastroComSucesso() {
+    void deveRedirecionarParaLoginAposCadastroPorConvidado() {
         JavalinTest.test(criarApp(), (server, client) -> {
             OkHttpClient http = new OkHttpClient.Builder()
                     .followRedirects(false)
@@ -72,7 +73,7 @@ class UsuarioControllerTest {
 
             try (var resposta = http.newCall(request).execute()) {
                 assertEquals(302, resposta.code()); // Javalin default redirect status code is 302
-                assertEquals("/usuarios", resposta.header("Location"));
+                assertEquals("/login", resposta.header("Location"));
             }
         });
     }

@@ -39,6 +39,7 @@ public final class UsuarioController {
 
     private void exibirCadastro(Context ctx) {
         Map<String, Object> modelo = new HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("edicao", false);
         modelo.put("acao", "/usuarios");
         modelo.put("nome", "");
@@ -55,9 +56,14 @@ public final class UsuarioController {
 
         try {
             service.cadastrarUsuario(usuario);
-            ctx.redirect("/usuarios");
+            if (ctx.sessionAttribute("usuarioLogado") != null) {
+                ctx.redirect("/usuarios");
+            } else {
+                ctx.redirect("/login");
+            }
         } catch (IllegalArgumentException e) {
             Map<String, Object> modelo = new HashMap<>();
+            modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
             modelo.put("edicao", false);
             modelo.put("acao", "/usuarios");
             modelo.put("nome", nome);
@@ -78,6 +84,7 @@ public final class UsuarioController {
 
         Usuario usuario = usuarioOpt.get();
         Map<String, Object> modelo = new HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("edicao", true);
         modelo.put("acao", "/usuarios/" + id);
         modelo.put("nome", usuario.getNome());
@@ -107,6 +114,7 @@ public final class UsuarioController {
             ctx.redirect("/usuarios");
         } catch (IllegalArgumentException e) {
             Map<String, Object> modelo = new HashMap<>();
+            modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
             modelo.put("edicao", true);
             modelo.put("acao", "/usuarios/" + id);
             modelo.put("nome", nome);
