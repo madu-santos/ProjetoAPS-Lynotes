@@ -30,9 +30,21 @@ public final class App {
         Javalin app = criarJavalin();
         registrarRotasPublicas(app);
         registrarAutenticacao(app);
+        registrarUsuarios(app);
         ArtistaModule.registrar(app, criarConnectionFactory());
         registrarLogHttp(app);
         return app;
+    }
+
+    private static void registrarUsuarios(Javalin app) {
+        String dbUrl = variavelAmbiente("DB_URL", "jdbc:postgresql://localhost:5432/spotify_db");
+        String dbUser = variavelAmbiente("DB_USER", "postgres");
+        String dbPass = variavelAmbiente("DB_PASSWORD", "postgres");
+
+        var repo = new br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository(dbUrl, dbUser, dbPass);
+        var service = new br.ufpb.dcx.projetos.login.services.UsuarioService(repo);
+        var controller = new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service);
+        controller.registrarRotas(app);
     }
 
     private static Javalin criarJavalin() {
@@ -58,7 +70,7 @@ public final class App {
     }
 
     private static boolean rotaProtegida(String path) {
-        return path.startsWith("/artistas");
+        return path.startsWith("/artistas") || path.startsWith("/usuarios");
     }
 
     private static void registrarLogHttp(Javalin app) {

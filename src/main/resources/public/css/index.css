@@ -1,4 +1,53 @@
-/* Estilização básica inicial para o Spotify Backoffice */
+/* Estilização global do Lynotes (Tema Roxo) */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Sobrescreve a cor primária do Bootstrap (de Azul para Roxo) */
+:root {
+    --bs-primary: #6f42c1;
+    --bs-primary-rgb: 111, 66, 193;
+}
+
+/* Botões primários */
+.btn-primary {
+    background-color: #6f42c1 !important;
+    border-color: #6f42c1 !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: #59339d !important;
+    border-color: #59339d !important;
+    color: #ffffff !important;
+}
+
+/* Botões outline primários */
+.btn-outline-primary {
+    color: #6f42c1 !important;
+    border-color: #6f42c1 !important;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active {
+    background-color: #6f42c1 !important;
+    border-color: #6f42c1 !important;
+    color: #ffffff !important;
+}
+
+/* Links */
+a {
+    color: #6f42c1;
+}
+a:hover {
+    color: #59339d;
+}
+
+/* Classes utilitárias personalizadas de roxo */
+.text-purple {
+    color: #6f42c1 !important;
+}
+
+.bg-purple {
+    background-color: #6f42c1 !important;
+    color: white !important;
 }

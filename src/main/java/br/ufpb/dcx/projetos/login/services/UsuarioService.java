@@ -43,7 +43,7 @@ public class UsuarioService {
 
         // 3. Validação de E-mail Duplicado (Regra de Negócio Crucial)
         Optional<Usuario> existente = repository.buscarPorEmail(usuario.getEmail().trim());
-        if (existente.isPresent()) {
+        if (existente.isPresent() && !existente.get().getId().equals(usuario.getId())) {
             throw new IllegalArgumentException("Já existe um usuário cadastrado com este e-mail.");
         }
 
