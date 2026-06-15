@@ -22,17 +22,53 @@ public final class App {
     }
 
     public static void main(String[] args) {
-        criarApp().start(PORTA);
-        LOGGER.info("Servidor iniciado. porta={}", PORTA);
+        carregarEnv();
+        int porta = obterPorta();
+        criarApp().start(porta);
+        LOGGER.info("Servidor iniciado. porta={}", porta);
     }
 
     public static Javalin criarApp() {
+        carregarEnv();
         Javalin app = criarJavalin();
         registrarRotasPublicas(app);
         registrarAutenticacao(app);
         ArtistaModule.registrar(app, criarConnectionFactory());
         registrarLogHttp(app);
         return app;
+    }
+
+    private static void carregarEnv() {
+        try {
+            java.io.File envFile = new java.io.File(".env");
+            if (envFile.exists()) {
+                java.nio.file.Files.lines(envFile.toPath())
+                        .map(String::trim)
+                        .filter(line -> !line.isEmpty() && !line.startsWith("#"))
+                        .forEach(line -> {
+                            int eqIdx = line.indexOf('=');
+                            if (eqIdx > 0) {
+                                String key = line.substring(0, eqIdx).trim();
+                                String val = line.substring(eqIdx + 1).trim();
+                                System.setProperty(key, val);
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            // Ignorar falhas de leitura
+        }
+    }
+
+    private static int obterPorta() {
+        String p = variavelAmbiente("PORT", null);
+        if (p != null) {
+            try {
+                return Integer.parseInt(p);
+            } catch (NumberFormatException e) {
+                // usar padrão
+            }
+        }
+        return PORTA;
     }
 
     private static Javalin criarJavalin() {
@@ -44,6 +80,7 @@ public final class App {
 
     private static void registrarRotasPublicas(Javalin app) {
         app.get("/", ctx -> ctx.render("index"));
+        app.get("/ping", ctx -> ctx.result("pong"));
     }
 
     private static void registrarAutenticacao(Javalin app) {
@@ -79,7 +116,10 @@ public final class App {
     }
 
     private static String variavelAmbiente(String nome, String valorPadrao) {
-        String valor = System.getenv(nome);
+        String valor = System.getProperty(nome);
+        if (valor == null) {
+            valor = System.getenv(nome);
+        }
         return Objects.isNull(valor) || valor.isBlank() ? valorPadrao : valor;
     }
 
