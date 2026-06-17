@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Lista de Álbuns</title>
+</head>
+<body>
+    <section>
+        <h1 class="mb-4">Lista de Álbuns</h1>
+
+        <a th:href="@{/albums/new}" class="btn btn-primary mb-3">Novo Álbum</a>
+        <a th:href="@{/musicas}" class="btn btn-secondary mb-3 ms-2">Ver Músicas</a>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Artista</th>
+                    <th>Ano de Lançamento</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="album : ${albums}">
+                    <td th:text="${album.id}"></td>
+                    <td th:text="${album.titulo}"></td>
+                    <td th:text="${album.artista}"></td>
+                    <td th:text="${album.anoLancamento}"></td>
+                    <td>
+                        <a th:href="@{/albums/edit/{id}(id=${album.id})}" class="btn btn-info btn-sm">Editar</a>
+                        <form th:action="@{/albums/delete/{id}(id=${album.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este álbum?');">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>

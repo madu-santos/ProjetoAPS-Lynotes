@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Erro</title>
+</head>
+<body>
+    <section>
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Erro!</h4>
+            <p th:text="${errorMessage}">Ocorreu um erro inesperado.</p>
+            <hr>
+            <p class="mb-0">Código do Erro: <span th:text="${statusCode}">500</span></p>
+        </div>
+        <a href="/" class="btn btn-primary">Voltar para a Página Inicial</a>
+    </section>
+</body>
+</html>

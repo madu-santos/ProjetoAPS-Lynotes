@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${musica.id == null ? 'Nova Música' : 'Editar Música'}"></title>
+</head>
+<body>
+    <section>
+        <h1 class="mb-4" th:text="${musica.id == null ? 'Nova Música' : 'Editar Música'}"></h1>
+
+        <form th:action="${musica.id == null ? '/musicas' : '/musicas/edit/' + musica.id}" th:object="${musica}" method="post">
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Título:</label>
+                <input type="text" class="form-control" id="titulo" th:field="*{titulo}"
+                       th:classappend="${#fields.hasErrors('titulo') ? 'is-invalid' : ''}">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"></div>
+            </div>
+            <div class="mb-3">
+                <label for="genero" class="form-label">Gênero:</label>
+                <input type="text" class="form-control" id="genero" th:field="*{genero}"
+                       th:classappend="${#fields.hasErrors('genero') ? 'is-invalid' : ''}">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('genero')}" th:errors="*{genero}"></div>
+            </div>
+            <div class="mb-3">
+                <label for="duracaoSegundos" class="form-label">Duração (segundos):</label>
+                <input type="number" class="form-control" id="duracaoSegundos" th:field="*{duracaoSegundos}"
+                       th:classappend="${#fields.hasErrors('duracaoSegundos') ? 'is-invalid' : ''}">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('duracaoSegundos')}" th:errors="*{duracaoSegundos}"></div>
+            </div>
+            <div class="mb-3">
+                <label for="album" class="form-label">Álbum:</label>
+                <select class="form-select" id="album" th:field="*{album.id}"
+                        th:classappend="${#fields.hasErrors('album.id') ? 'is-invalid' : ''}">
+                    <option value="">-- Selecione um Álbum --</option>
+                    <option th:each="album : ${albums}"
+                            th:value="${album.id}"
+                            th:text="${album.titulo}"
+                            th:selected="${musica.album != null and musica.album.id == album.id}">
+                    </option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('album.id')}" th:errors="*{album.id}"></div>
+            </div>
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <a href="/musicas" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </section>
+</body>
+</html>
