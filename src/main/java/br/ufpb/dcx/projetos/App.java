@@ -46,6 +46,7 @@ public final class App {
         controller.registrarRotas(app);
 
         ArtistaModule.registrar(app, criarConnectionFactory());
+        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, criarConnectionFactory());
         registrarLogHttp(app);
         return app;
     }
@@ -114,7 +115,7 @@ public final class App {
         if (path.equals("/usuarios") && method.equalsIgnoreCase("POST")) {
             return false;
         }
-        return path.startsWith("/artistas") || path.startsWith("/usuarios");
+        return path.startsWith("/artistas") || path.startsWith("/usuarios") || path.startsWith("/albums") || path.startsWith("/musicas");
     }
 
     private static void registrarLogHttp(Javalin app) {
