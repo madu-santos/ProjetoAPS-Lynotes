@@ -15,9 +15,11 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final PasswordHashingStrategy hashingStrategy;
 
-    public UsuarioService(UsuarioRepository repository) {
+    public UsuarioService(UsuarioRepository repository, PasswordHashingStrategy hashingStrategy) {
         this.repository = repository;
+        this.hashingStrategy = hashingStrategy;
     }
 
     /**
@@ -43,7 +45,7 @@ public class UsuarioService {
 
         // 3. Validação de E-mail Duplicado (Regra de Negócio Crucial)
         Optional<Usuario> existente = repository.buscarPorEmail(usuario.getEmail().trim());
-        if (existente.isPresent()) {
+        if (existente.isPresent() && !existente.get().getId().equals(usuario.getId())) {
             throw new IllegalArgumentException("Já existe um usuário cadastrado com este e-mail.");
         }
 
@@ -58,8 +60,28 @@ public class UsuarioService {
         // Limpa espaços em branco extras do e-mail antes de salvar
         usuario.setEmail(usuario.getEmail().trim());
 
+        // Criptografa a senha usando a estratégia ativa
+        String senhaHashed = hashingStrategy.hash(usuario.getSenha());
+        usuario.setSenha(senhaHashed);
+
         // Se todas as regras passarem, solicita a gravação ao repositório
         repository.salvar(usuario);
+    }
+
+    /**
+     * Valida as credenciais de e-mail e senha de um usuário no sistema.
+     * Utiliza a estratégia ativa para descriptografar/verificar o hash.
+     */
+    public boolean verificarCredenciais(String email, String senha) {
+        if (email == null || senha == null || email.trim().isEmpty() || senha.trim().isEmpty()) {
+            return false;
+        }
+        Optional<Usuario> usuarioOpt = repository.buscarPorEmail(email.trim());
+        if (usuarioOpt.isEmpty()) {
+            return false;
+        }
+        Usuario usuario = usuarioOpt.get();
+        return hashingStrategy.verificar(senha, usuario.getSenha());
     }
 
     public Optional<Usuario> buscarPorId(String id) {

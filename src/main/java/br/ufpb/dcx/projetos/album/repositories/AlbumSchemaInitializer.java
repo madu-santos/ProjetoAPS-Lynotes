@@ -1,0 +1,64 @@
+package br.ufpb.dcx.projetos.album.repositories;
+
+import br.ufpb.dcx.projetos.infra.database.ConnectionFactory;
+import br.ufpb.dcx.projetos.infra.database.DatabaseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public final class AlbumSchemaInitializer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AlbumSchemaInitializer.class);
+
+    private static final String SCHEMA = """
+            CREATE TABLE IF NOT EXISTS album (
+                id VARCHAR(36) PRIMARY KEY,
+                titulo VARCHAR(255) NOT NULL,
+                artista VARCHAR(255) NOT NULL,
+                ano_lancamento INT NOT NULL
+            );
+            
+            CREATE TABLE IF NOT EXISTS musica (
+                id VARCHAR(36) PRIMARY KEY,
+                titulo VARCHAR(255) NOT NULL,
+                genero VARCHAR(255),
+                duracao_segundos INT,
+                album_id VARCHAR(36),
+                CONSTRAINT fk_album FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE SET NULL
+            );
+            
+            ALTER TABLE musica ALTER COLUMN genero DROP NOT NULL;
+            ALTER TABLE musica ALTER COLUMN duracao_segundos DROP NOT NULL;
+            
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS artista VARCHAR(255);
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS resenha TEXT;
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS nota INT;
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS spotify_url VARCHAR(255);
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS usuario_id VARCHAR(36);
+            
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_constraint WHERE conname = 'fk_usuario'
+                ) THEN
+                    ALTER TABLE musica ADD CONSTRAINT fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE;
+                END IF;
+            END $$;
+            """;
+
+    private AlbumSchemaInitializer() {
+    }
+
+    public static void inicializar(ConnectionFactory connectionFactory) {
+        try (Connection connection = connectionFactory.abrir();
+             Statement statement = connection.createStatement()) {
+            statement.execute(SCHEMA);
+            LOGGER.info("Esquemas de álbum e música inicializados com sucesso.");
+        } catch (SQLException e) {
+            throw new DatabaseException("Falha ao inicializar o esquema de álbum e música.", e);
+        }
+    }
+}

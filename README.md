@@ -44,11 +44,11 @@ Acesse a aplicação em:
 http://localhost:8080
 ```
 
-Credenciais provisórias para testes:
-
+Credenciais do administrador padrão (geradas automaticamente pelo auto-seed caso o banco esteja vazio):
+ 
 ```text
-Usuário: admin
-Senha: 123456
+Usuário / E-mail: admin@email.com
+Senha: admin123
 ```
 
 ### Comandos úteis
@@ -115,6 +115,21 @@ Os dados são mantidos no volume nomeado `postgres_data`. Por isso, reconstruir 
 - Disponibilização da aplicação na porta `8080` e do banco na porta `5432`.
 - Inclusão do `.dockerignore` para reduzir o contexto enviado ao build.
 - Criação de um login provisório para permitir os testes das rotas protegidas.
+
+### Funcionalidades de Usuários (Fase 4)
+ 
+- Implementação do CRUD completo de usuários para gerenciar os administradores do painel.
+- Cadastro de novos usuários informando nome completo, e-mail e senha.
+- Edição de informações e senhas de usuários existentes.
+- Listagem e exclusão de usuários direto pelo painel restrito.
+ 
+### Segurança e Autenticação (Fase 5)
+ 
+- **Criptografia de Senhas com BCrypt:** As senhas dos usuários são criptografadas em um hash seguro e impossível de reverter usando o algoritmo BCrypt.
+- **Padrão Strategy (Estratégia):** Padrão flexível para troca de algoritmos de hashing. Usamos `BCrypt` em produção e `Plaintext` (texto limpo) nos testes, mantendo a suíte de testes super rápida.
+- **Proteção e Guarda de Rotas:** Bloqueio de acessos não autenticados às abas restritas de `/artistas` e `/usuarios`, redirecionando-os para a tela de login.
+- **Cadastro Público Adaptativo:** O cadastro de usuários (`/usuarios/novo`) foi liberado publicamente. O layout da tela se adapta (esconde navegação administrativa e direciona cancelamentos para o início público `/`) caso o visitante não esteja autenticado.
+- **Auto-Seed de Administrador:** Se o banco de dados iniciar vazio, o sistema insere automaticamente o usuário `admin@email.com` / `admin123` criptografada em BCrypt.
 
 ### Funcionalidades de artistas
 

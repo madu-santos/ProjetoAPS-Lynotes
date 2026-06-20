@@ -22,7 +22,7 @@ public class UsuarioServiceTest {
     @BeforeEach
     public void setup() {
         repo = new FakeUsuarioRepository();
-        service = new UsuarioService(repo);
+        service = new UsuarioService(repo, new PlaintextHashingStrategy());
     }
 
     @Test

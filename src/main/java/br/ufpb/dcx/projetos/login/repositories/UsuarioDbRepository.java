@@ -42,8 +42,24 @@ public class UsuarioDbRepository implements UsuarioRepository {
         try (Connection conn = obterConexao();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
+
+            // Seed automático se a tabela estiver vazia
+            String countSql = "SELECT COUNT(*) FROM usuario;";
+            try (ResultSet rs = stmt.executeQuery(countSql)) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    String insertSql = "INSERT INTO usuario (id, nome, email, senha) VALUES (?, ?, ?, ?);";
+                    try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                        ps.setString(1, "c4b4d693-e18e-4f51-b844-3d9692482be2");
+                        ps.setString(2, "Administrador");
+                        ps.setString(3, "admin@email.com");
+                        ps.setString(4, "$2a$10$uNMxjjZPaBHQm.LCdShe7ujv3tAyy8Fn9px0u6XEUyfFW1/LjWPSa"); // admin123
+                        ps.executeUpdate();
+                        System.out.println("Usuário administrador padrão criado automaticamente: admin@email.com / admin123");
+                    }
+                }
+            }
         } catch (SQLException e) {
-            System.err.println("Erro ao inicializar a tabela no banco de dados: " + e.getMessage());
+            System.err.println("Erro ao inicializar/seedar a tabela no banco de dados: " + e.getMessage());
         }
     }
 

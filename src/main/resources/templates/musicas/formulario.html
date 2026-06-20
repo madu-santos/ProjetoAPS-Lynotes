@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${form.edicao ? 'Editar música - Lynotes' : 'Catalogar música - Lynotes'}">
+        Música - Lynotes
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand bg-dark navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-purple" href="/">Lynotes</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">Meu Catálogo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/artistas">Artistas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/albums">Álbuns</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/usuarios">Usuários</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="mb-4">
+                    <a class="text-decoration-none" href="/">&larr; Voltar para o catálogo</a>
+                    <h1 class="mt-2 fw-bold" th:text="${form.edicao ? 'Editar música' : 'Catalogar música'}"></h1>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
+
+                        <form method="post" th:action="${form.acao}">
+                            <div class="mb-3">
+                                <label class="form-label" for="titulo">Nome da música</label>
+                                <input class="form-control"
+                                       id="titulo"
+                                       name="titulo"
+                                       maxlength="150"
+                                       th:value="${form.titulo}"
+                                       required
+                                       autofocus
+                                       placeholder="Ex: Chove Chuva">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="artista">Artista</label>
+                                <input class="form-control"
+                                       id="artista"
+                                       name="artista"
+                                       maxlength="150"
+                                       th:value="${form.artista}"
+                                       required
+                                       placeholder="Ex: Jorge Ben">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="spotifyUrl">URL do Spotify (Opcional)</label>
+                                <input class="form-control"
+                                       id="spotifyUrl"
+                                       name="spotifyUrl"
+                                       type="url"
+                                       th:value="${form.spotifyUrl}"
+                                       placeholder="https://open.spotify.com/track/...">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label d-block">Nota (Avaliação)</label>
+                                <div class="rating-input">
+                                    <input type="radio" id="star5" name="nota" value="5" th:checked="${form.nota == '5'}" />
+                                    <label for="star5" title="5 estrelas">★</label>
+                                    <input type="radio" id="star4" name="nota" value="4" th:checked="${form.nota == '4'}" />
+                                    <label for="star4" title="4 estrelas">★</label>
+                                    <input type="radio" id="star3" name="nota" value="3" th:checked="${form.nota == '3'}" />
+                                    <label for="star3" title="3 estrelas">★</label>
+                                    <input type="radio" id="star2" name="nota" value="2" th:checked="${form.nota == '2'}" />
+                                    <label for="star2" title="2 estrelas">★</label>
+                                    <input type="radio" id="star1" name="nota" value="1" th:checked="${form.nota == '1'}" />
+                                    <label for="star1" title="1 estrela">★</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label" for="resenha">Resenha / Avaliação</label>
+                                <textarea class="form-control"
+                                          id="resenha"
+                                          name="resenha"
+                                          rows="6"
+                                          th:text="${form.resenha}"
+                                          placeholder="O que você achou dessa música?"></textarea>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" type="submit"
+                                        th:text="${form.edicao ? 'Salvar alterações' : 'Catalogar música'}">
+                                </button>
+                                <a class="btn btn-outline-secondary" href="/">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

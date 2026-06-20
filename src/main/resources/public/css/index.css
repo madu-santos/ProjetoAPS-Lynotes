@@ -1,4 +1,197 @@
-/* Estilização básica inicial para o Spotify Backoffice */
+/* Estilização global do Lynotes (Spotify Dark Mode + Roxo Vibrante) */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+
+/* Sobrescreve cores primárias do Bootstrap */
+:root {
+    --bs-primary: #BB86FC;
+    --bs-primary-rgb: 187, 134, 252;
+    --bs-body-bg: #000000;
+    --bs-body-color: #ffffff;
+}
+
+/* Cartões (Cards) escuros */
+.card {
+    background-color: #121212 !important;
+    border: 1px solid #282828 !important;
+    color: #ffffff !important;
+}
+
+.card-header {
+    background-color: #181818 !important;
+    border-bottom: 1px solid #282828 !important;
+}
+
+/* Input Fields escuros */
+.form-control, .form-select {
+    background-color: #181818 !important;
+    border: 1px solid #282828 !important;
+    color: #ffffff !important;
+}
+.form-control:focus, .form-select:focus {
+    background-color: #202020 !important;
+    border-color: #BB86FC !important;
+    box-shadow: 0 0 0 0.25rem rgba(187, 134, 252, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* Títulos */
+h1, h2, h3, h4, h5, h6 {
+    color: #ffffff !important;
+}
+
+/* Badges */
+.bg-purple {
+    background-color: #BB86FC !important;
+    color: #000000 !important;
+}
+
+/* Botões primários (Roxo vibrante com contraste escuro) */
+.btn-primary {
+    background-color: #BB86FC !important;
+    border-color: #BB86FC !important;
+    color: #000000 !important;
+    font-weight: 600;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: #9965db !important;
+    border-color: #9965db !important;
+    color: #000000 !important;
+}
+
+/* Botões outline primários */
+.btn-outline-primary {
+    color: #BB86FC !important;
+    border-color: #BB86FC !important;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active {
+    background-color: #BB86FC !important;
+    border-color: #BB86FC !important;
+    color: #000000 !important;
+}
+
+.btn-secondary, .btn-outline-secondary {
+    background-color: #181818 !important;
+    border-color: #282828 !important;
+    color: #ffffff !important;
+}
+
+.btn-secondary:hover, .btn-outline-secondary:hover {
+    background-color: #282828 !important;
+    color: #ffffff !important;
+}
+
+/* Links */
+a, .text-purple {
+    color: #BB86FC !important;
+    text-decoration: none;
+}
+a:hover {
+    color: #9965db !important;
+    text-decoration: underline;
+}
+
+.text-muted, .text-secondary {
+    color: #b3b3b3 !important;
+}
+
+/* Navbar */
+.navbar-dark {
+    background-color: #000000 !important;
+    border-bottom: 1px solid #181818;
+}
+
+.navbar-dark .navbar-brand {
+    color: #BB86FC !important;
+    font-weight: bold;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: #ffffff !important;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: #BB86FC !important;
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    color: #BB86FC !important;
+    font-weight: bold;
+}
+
+/* Tabelas escuras */
+.table {
+    color: #ffffff !important;
+    --bs-table-bg: #121212 !important;
+    --bs-table-hover-bg: #181818 !important;
+    --bs-table-border-color: #282828 !important;
+}
+
+.table-light, thead.table-light {
+    --bs-table-bg: #181818 !important;
+    color: #ffffff !important;
+}
+
+thead th {
+    color: #BB86FC !important;
+}
+
+/* Alertas escuros */
+.alert, .alert-secondary, .alert-warning, .alert-danger {
+    background-color: #121212 !important;
+    border: 1px solid #BB86FC !important;
+    color: #ffffff !important;
+}
+
+/* Letterboxd Grid Layout */
+.music-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.music-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.music-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+    border-color: #BB86FC !important;
+}
+
+/* Star Rating System (Purple Stars) */
+.stars-display {
+    color: #BB86FC !important;
+    font-size: 1.1rem;
+}
+
+.rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.rating-input input {
+    display: none;
+}
+
+.rating-input label {
+    font-size: 2rem;
+    color: #444;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input:checked ~ label {
+    color: #BB86FC !important;
 }

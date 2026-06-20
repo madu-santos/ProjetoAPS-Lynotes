@@ -32,8 +32,18 @@ public final class App {
         carregarEnv();
         Javalin app = criarJavalin();
         registrarRotasPublicas(app);
-        registrarAutenticacao(app);
+
+        String dbUrl = variavelAmbiente("DB_URL", "jdbc:postgresql://localhost:5432/spotify_db");
+        String dbUser = variavelAmbiente("DB_USER", "postgres");
+        String dbPass = variavelAmbiente("DB_PASSWORD", "postgres");
+
+        var repo = new br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository(dbUrl, dbUser, dbPass);
+        var service = new br.ufpb.dcx.projetos.login.services.UsuarioService(repo, new br.ufpb.dcx.projetos.login.services.BCryptHashingStrategy());
+
+        registrarAutenticacao(app, service);
+
         ArtistaModule.registrar(app, criarConnectionFactory());
+        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, criarConnectionFactory(), service);
         registrarLogHttp(app);
         return app;
     }
@@ -79,23 +89,29 @@ public final class App {
     }
 
     private static void registrarRotasPublicas(Javalin app) {
-        app.get("/", ctx -> ctx.render("index"));
         app.get("/ping", ctx -> ctx.result("pong"));
     }
 
-    private static void registrarAutenticacao(Javalin app) {
-        LoginController loginController = new LoginController();
+    private static void registrarAutenticacao(Javalin app, br.ufpb.dcx.projetos.login.services.UsuarioService service) {
+        LoginController loginController = new LoginController(service);
         loginController.registrarRotas(app);
         app.beforeMatched(ctx -> {
-            if (rotaProtegida(ctx.path()) && !LoginController.estaAutenticado(ctx)) {
+            if (rotaProtegida(ctx.path(), ctx.method().name()) && !LoginController.estaAutenticado(ctx)) {
                 ctx.redirect("/login");
                 ctx.skipRemainingHandlers();
             }
         });
     }
 
-    private static boolean rotaProtegida(String path) {
-        return path.startsWith("/artistas");
+    private static boolean rotaProtegida(String path, String method) {
+        // Permite o acesso público para criação de novos usuários (GET e POST)
+        if (path.equals("/usuarios/novo") && method.equalsIgnoreCase("GET")) {
+            return false;
+        }
+        if (path.equals("/usuarios") && method.equalsIgnoreCase("POST")) {
+            return false;
+        }
+        return path.startsWith("/artistas") || path.startsWith("/usuarios") || path.startsWith("/albums") || path.startsWith("/musicas");
     }
 
     private static void registrarLogHttp(Javalin app) {
