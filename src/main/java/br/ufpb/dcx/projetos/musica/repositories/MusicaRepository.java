@@ -17,5 +17,7 @@ public interface MusicaRepository {
 
     List<Musica> buscarPorAlbumId(String albumId);
 
+    List<Musica> buscarPorUsuarioId(String usuarioId);
+
     boolean remover(String id);
 }

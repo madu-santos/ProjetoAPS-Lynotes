@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${edicao ? 'Editar usuário - Lynotes' : 'Novo usuário - Lynotes'}">
+    <title th:text="${edicao ? 'Editar usuário - Lynotes' : 'Criar Conta - Lynotes'}">
         Usuário - Lynotes
     </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/index.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand bg-dark navbar-dark">
+<body th:classappend="${usuarioLogado == null} ? 'd-flex align-items-center justify-content-center' : ''" th:style="${usuarioLogado == null} ? 'min-height: 100vh;' : ''">
+    
+    <!-- Navbar (Apenas se logado) -->
+    <nav class="navbar navbar-expand bg-dark navbar-dark w-100 position-absolute top-0" th:if="${usuarioLogado != null}">
         <div class="container">
-            <a class="navbar-brand" th:href="${usuarioLogado != null ? '/artistas' : '/'}">Lynotes</a>
-            <ul class="navbar-nav me-auto" th:if="${usuarioLogado != null}">
+            <a class="navbar-brand fw-bold text-purple" href="/">Lynotes</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Meu Catálogo</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/artistas">Artistas</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/albums">Álbuns</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/musicas">Músicas</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="/usuarios">Usuários</a>
@@ -30,12 +32,53 @@
         </div>
     </nav>
 
-    <main class="container py-5">
+    <!-- Main Container para usuários NÃO logados (Centralizado) -->
+    <div class="container" th:if="${usuarioLogado == null}">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card shadow-sm p-4">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h1 class="h3 fw-bold text-purple mb-1">Criar Conta</h1>
+                            <p class="text-muted small">Crie seu perfil no Lynotes para catalogar músicas</p>
+                        </div>
+
+                        <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
+
+                        <form method="post" action="/usuarios">
+                            <div class="mb-3">
+                                <label class="form-label" for="nome">Nome completo</label>
+                                <input class="form-control" id="nome" name="nome" th:value="${nome}" required autofocus placeholder="Seu nome">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="email">E-mail</label>
+                                <input class="form-control" id="email" name="email" type="email" th:value="${email}" required placeholder="nome@email.com">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label" for="senha">Senha</label>
+                                <input class="form-control" id="senha" name="senha" type="password" required placeholder="Mínimo de 6 caracteres">
+                            </div>
+
+                            <button class="btn btn-primary w-100 btn-lg mb-3" type="submit">Cadastrar</button>
+                        </form>
+                        <div class="text-center">
+                            <a href="/" class="text-purple small">← Voltar para a tela inicial</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container para usuários logados (Administração) -->
+    <main class="container py-5 mt-5" th:if="${usuarioLogado != null}">
         <div class="row justify-content-center">
             <div class="col-lg-7">
-                <div class="mb-4" th:with="backUrl=${usuarioLogado != null ? '/usuarios' : '/'}">
-                    <a class="text-decoration-none" th:href="${backUrl}" th:text="${usuarioLogado != null ? '← Voltar para usuários' : '← Voltar para a tela inicial'}"></a>
-                    <h1 class="mt-2 text-purple" th:text="${edicao ? 'Editar usuário' : 'Criar Conta'}"></h1>
+                <div class="mb-4">
+                    <a class="text-decoration-none" href="/usuarios">&larr; Voltar para usuários</a>
+                    <h1 class="mt-2 fw-bold" th:text="${edicao ? 'Editar usuário' : 'Novo usuário'}"></h1>
                 </div>
 
                 <div class="card shadow-sm">
@@ -44,9 +87,9 @@
 
                         <form method="post" th:action="${acao}">
                             <div class="mb-3">
-                                <label class="form-label" for="nome">Nome completo</label>
+                                <label class="form-label" for="nome_admin">Nome completo</label>
                                 <input class="form-control"
-                                       id="nome"
+                                       id="nome_admin"
                                        name="nome"
                                        maxlength="100"
                                        th:value="${nome}"
@@ -55,9 +98,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label" for="email">E-mail</label>
+                                <label class="form-label" for="email_admin">E-mail</label>
                                 <input class="form-control"
-                                       id="email"
+                                       id="email_admin"
                                        name="email"
                                        type="email"
                                        maxlength="100"
@@ -66,9 +109,9 @@
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label" for="senha">Senha</label>
+                                <label class="form-label" for="senha_admin">Senha</label>
                                 <input class="form-control"
-                                       id="senha"
+                                       id="senha_admin"
                                        name="senha"
                                        type="password"
                                        th:required="${not edicao}">
@@ -81,7 +124,7 @@
                                 <button class="btn btn-primary" type="submit"
                                         th:text="${edicao ? 'Salvar alterações' : 'Cadastrar usuário'}">
                                 </button>
-                                <a class="btn btn-outline-secondary" th:href="${usuarioLogado != null ? '/usuarios' : '/'}">Cancelar</a>
+                                <a class="btn btn-outline-secondary" href="/usuarios">Cancelar</a>
                             </div>
                         </form>
                     </div>

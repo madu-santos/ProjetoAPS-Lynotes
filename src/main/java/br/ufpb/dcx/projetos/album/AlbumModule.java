@@ -17,7 +17,7 @@ public final class AlbumModule {
     private AlbumModule() {
     }
 
-    public static void registrar(Javalin app, ConnectionFactory connectionFactory) {
+    public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService) {
         AlbumSchemaInitializer.inicializar(connectionFactory);
         
         AlbumRepository albumRepository = new AlbumDbRepository(connectionFactory);
@@ -28,5 +28,6 @@ public final class AlbumModule {
         
         new AlbumController(albumService).registrarRotas(app);
         new MusicaController(musicaService, albumService).registrarRotas(app);
+        new br.ufpb.dcx.projetos.login.controllers.UsuarioController(usuarioService, musicaService).registrarRotas(app);
     }
 }

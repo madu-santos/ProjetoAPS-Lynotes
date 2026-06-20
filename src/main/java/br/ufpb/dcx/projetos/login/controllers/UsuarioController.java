@@ -2,6 +2,8 @@ package br.ufpb.dcx.projetos.login.controllers;
 
 import br.ufpb.dcx.projetos.login.models.Usuario;
 import br.ufpb.dcx.projetos.login.services.UsuarioService;
+import br.ufpb.dcx.projetos.musica.models.Musica;
+import br.ufpb.dcx.projetos.musica.services.MusicaService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -14,15 +16,18 @@ import java.util.Optional;
 public final class UsuarioController {
 
     private final UsuarioService service;
+    private final MusicaService musicaService;
 
-    public UsuarioController(UsuarioService service) {
+    public UsuarioController(UsuarioService service, MusicaService musicaService) {
         this.service = service;
+        this.musicaService = musicaService;
     }
 
     public void registrarRotas(Javalin app) {
         app.get("/usuarios", this::listar);
         app.get("/usuarios/novo", this::exibirCadastro);
         app.post("/usuarios", this::cadastrar);
+        app.get("/usuarios/{id}", this::exibirPerfilPublico);
         app.get("/usuarios/{id}/editar", this::exibirEdicao);
         app.post("/usuarios/{id}", this::atualizar);
         app.post("/usuarios/{id}/excluir", this::excluir);
@@ -71,6 +76,26 @@ public final class UsuarioController {
             modelo.put("erro", e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("usuarios/formulario", modelo);
         }
+    }
+
+    private void exibirPerfilPublico(Context ctx) {
+        String id = ctx.pathParam("id");
+        Optional<Usuario> usuarioOpt = service.buscarPorId(id);
+
+        if (usuarioOpt.isEmpty()) {
+            ctx.status(HttpStatus.NOT_FOUND).result("Usuário não encontrado");
+            return;
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        List<Musica> musicas = musicaService.findByUsuarioId(id);
+
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("perfilNome", usuario.getNome());
+        modelo.put("musicas", musicas);
+        modelo.put("semMusicas", musicas.isEmpty());
+        ctx.render("perfil", modelo);
     }
 
     private void exibirEdicao(Context ctx) {

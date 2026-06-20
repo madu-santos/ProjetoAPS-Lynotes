@@ -36,14 +36,14 @@ public class LoginController {
     }
 
     private void autenticar(Context ctx) {
-        String email = ctx.formParam("usuario"); // Mapeia o campo do input de e-mail/usuário
+        String email = ctx.formParam("usuario");
         String senha = ctx.formParam("senha");
 
         if (service.verificarCredenciais(email, senha)) {
-            // Busca o nome real do usuário para exibir na barra de navegação
-            String nomeUsuario = service.buscarPorEmail(email).map(u -> u.getNome()).orElse(email);
-            ctx.sessionAttribute(ATRIBUTO_USUARIO_SESSAO, nomeUsuario);
-            ctx.redirect("/artistas");
+            br.ufpb.dcx.projetos.login.models.Usuario usuario = service.buscarPorEmail(email).orElseThrow();
+            ctx.sessionAttribute(ATRIBUTO_USUARIO_SESSAO, usuario.getNome());
+            ctx.sessionAttribute("usuarioLogadoId", usuario.getId());
+            ctx.redirect("/");
             return;
         }
 

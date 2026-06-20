@@ -19,7 +19,7 @@ public class MusicaService {
     }
 
     public Musica save(Musica musica) {
-        validar(musica.getTitulo(), musica.getGenero(), musica.getDuracaoSegundos());
+        validar(musica.getTitulo(), musica.getArtista(), musica.getNota());
 
         // Garantir que o álbum associado existe no banco
         if (musica.getAlbumId() != null && !musica.getAlbumId().isBlank()) {
@@ -39,6 +39,10 @@ public class MusicaService {
         return musicaRepository.listarTodas();
     }
 
+    public List<Musica> findByUsuarioId(String usuarioId) {
+        return musicaRepository.buscarPorUsuarioId(usuarioId);
+    }
+
     public Optional<Musica> findById(String id) {
         return musicaRepository.buscarPorId(id);
     }
@@ -47,7 +51,7 @@ public class MusicaService {
         Musica musica = musicaRepository.buscarPorId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Música não encontrada com id: " + id));
 
-        validar(musicaDetails.getTitulo(), musicaDetails.getGenero(), musicaDetails.getDuracaoSegundos());
+        validar(musicaDetails.getTitulo(), musicaDetails.getArtista(), musicaDetails.getNota());
 
         // Garantir que o álbum associado existe no banco se fornecido
         if (musicaDetails.getAlbumId() != null && !musicaDetails.getAlbumId().isBlank()) {
@@ -55,7 +59,18 @@ public class MusicaService {
                     .orElseThrow(() -> new ResourceNotFoundException("Álbum não encontrado com id: " + musicaDetails.getAlbumId()));
         }
 
-        Musica musicaAtualizada = new Musica(musica.getId(), musicaDetails.getTitulo(), musicaDetails.getGenero(), musicaDetails.getDuracaoSegundos(), musicaDetails.getAlbumId());
+        Musica musicaAtualizada = new Musica(
+                musica.getId(),
+                musicaDetails.getTitulo(),
+                musicaDetails.getArtista(),
+                musicaDetails.getGenero(),
+                musicaDetails.getDuracaoSegundos(),
+                musicaDetails.getResenha(),
+                musicaDetails.getNota(),
+                musicaDetails.getSpotifyUrl(),
+                musicaDetails.getAlbumId(),
+                musicaDetails.getUsuarioId()
+        );
         musicaRepository.atualizar(musicaAtualizada);
         return musicaAtualizada;
     }
@@ -67,15 +82,15 @@ public class MusicaService {
         musicaRepository.remover(id);
     }
 
-    private void validar(String titulo, String genero, int duracaoSegundos) {
+    private void validar(String titulo, String artista, Integer nota) {
         if (titulo == null || titulo.trim().isEmpty()) {
             throw new IllegalArgumentException("O título da música é obrigatório");
         }
-        if (genero == null || genero.trim().isEmpty()) {
-            throw new IllegalArgumentException("O gênero da música é obrigatório");
+        if (artista == null || artista.trim().isEmpty()) {
+            throw new IllegalArgumentException("O artista é obrigatório");
         }
-        if (duracaoSegundos < 1) {
-            throw new IllegalArgumentException("A duração da música deve ser de pelo menos 1 segundo");
+        if (nota != null && (nota < 1 || nota > 5)) {
+            throw new IllegalArgumentException("A nota deve ser entre 1 e 5 estrelas");
         }
     }
 }

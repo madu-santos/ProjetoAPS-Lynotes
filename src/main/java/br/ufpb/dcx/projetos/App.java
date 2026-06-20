@@ -42,11 +42,8 @@ public final class App {
 
         registrarAutenticacao(app, service);
 
-        var controller = new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service);
-        controller.registrarRotas(app);
-
         ArtistaModule.registrar(app, criarConnectionFactory());
-        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, criarConnectionFactory());
+        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, criarConnectionFactory(), service);
         registrarLogHttp(app);
         return app;
     }
@@ -92,7 +89,6 @@ public final class App {
     }
 
     private static void registrarRotasPublicas(Javalin app) {
-        app.get("/", ctx -> ctx.render("index"));
         app.get("/ping", ctx -> ctx.result("pong"));
     }
 

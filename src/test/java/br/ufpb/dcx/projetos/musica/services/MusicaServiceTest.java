@@ -27,13 +27,15 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaComSucessoSemAlbum() {
-        Musica musica = Musica.novo("Mas Que Nada", "Samba", 180, null);
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "user-1");
         service.save(musica);
 
         Optional<Musica> cadastrada = service.findById(musica.getId());
         assertTrue(cadastrada.isPresent());
         assertEquals("Mas Que Nada", cadastrada.get().getTitulo());
+        assertEquals("Jorge Ben", cadastrada.get().getArtista());
         assertNull(cadastrada.get().getAlbumId());
+        assertEquals(5, cadastrada.get().getNota());
     }
 
     @Test
@@ -41,7 +43,7 @@ public class MusicaServiceTest {
         Album album = Album.novo("Samba Esquema Novo", "Jorge Ben", 1963);
         albumRepo.criar(album);
 
-        Musica musica = Musica.novo("Mas Que Nada", "Samba", 180, album.getId());
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, album.getId(), "user-1");
         service.save(musica);
 
         Optional<Musica> cadastrada = service.findById(musica.getId());
@@ -52,7 +54,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaTituloVazio() {
-        Musica musica = Musica.novo("", "Samba", 180, null);
+        Musica musica = Musica.novo("", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "user-1");
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.save(musica);
         });
@@ -60,26 +62,26 @@ public class MusicaServiceTest {
     }
 
     @Test
-    public void testSaveMusicaGeneroVazio() {
-        Musica musica = Musica.novo("Mas Que Nada", "   ", 180, null);
+    public void testSaveMusicaArtistaVazio() {
+        Musica musica = Musica.novo("Mas Que Nada", "   ", "Samba", 180, "Boa música", 5, null, null, "user-1");
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.save(musica);
         });
-        assertEquals("O gênero da música é obrigatório", exception.getMessage());
+        assertEquals("O artista é obrigatório", exception.getMessage());
     }
 
     @Test
-    public void testSaveMusicaDuracaoInvalida() {
-        Musica musica = Musica.novo("Mas Que Nada", "Samba", 0, null);
+    public void testSaveMusicaNotaInvalida() {
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 6, null, null, "user-1");
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.save(musica);
         });
-        assertEquals("A duração da música deve ser de pelo menos 1 segundo", exception.getMessage());
+        assertEquals("A nota deve ser entre 1 e 5 estrelas", exception.getMessage());
     }
 
     @Test
     public void testSaveMusicaAlbumInexistente() {
-        Musica musica = Musica.novo("Mas Que Nada", "Samba", 180, "album-fake-id");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, "album-fake-id", "user-1");
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.save(musica);
         });
@@ -88,10 +90,10 @@ public class MusicaServiceTest {
 
     @Test
     public void testUpdateMusicaComSucesso() {
-        Musica musica = Musica.novo("Mas Que Nada", "Samba", 180, null);
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "user-1");
         service.save(musica);
 
-        Musica atualizacao = new Musica(musica.getId(), "Chove Chuva", "Bossa Nova", 200, null);
+        Musica atualizacao = new Musica(musica.getId(), "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4, null, null, "user-1");
         service.update(musica.getId(), atualizacao);
 
         Optional<Musica> alterada = service.findById(musica.getId());
@@ -99,11 +101,12 @@ public class MusicaServiceTest {
         assertEquals("Chove Chuva", alterada.get().getTitulo());
         assertEquals("Bossa Nova", alterada.get().getGenero());
         assertEquals(200, alterada.get().getDuracaoSegundos());
+        assertEquals(4, alterada.get().getNota());
     }
 
     @Test
     public void testUpdateMusicaNaoEncontrada() {
-        Musica atualizacao = new Musica("id-invalido", "Chove Chuva", "Bossa Nova", 200, null);
+        Musica atualizacao = new Musica("id-invalido", "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4, null, null, "user-1");
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.update("id-invalido", atualizacao);
         });
@@ -112,7 +115,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testDeleteMusicaComSucesso() {
-        Musica musica = Musica.novo("Mas Que Nada", "Samba", 180, null);
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "user-1");
         service.save(musica);
 
         service.deleteById(musica.getId());
@@ -159,6 +162,17 @@ public class MusicaServiceTest {
             List<Musica> lista = new ArrayList<>();
             for (Musica m : musicas.values()) {
                 if (Objects.equals(m.getAlbumId(), albumId)) {
+                    lista.add(m);
+                }
+            }
+            return lista;
+        }
+
+        @Override
+        public List<Musica> buscarPorUsuarioId(String usuarioId) {
+            List<Musica> lista = new ArrayList<>();
+            for (Musica m : musicas.values()) {
+                if (Objects.equals(m.getUsuarioId(), usuarioId)) {
                     lista.add(m);
                 }
             }

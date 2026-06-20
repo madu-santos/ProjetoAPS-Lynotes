@@ -36,7 +36,7 @@ class UsuarioControllerTest {
         JavalinTest.test(criarApp(), (server, client) -> {
             try (var resposta = client.get("/usuarios/novo")) {
                 assertEquals(200, resposta.code());
-                assertTrue(resposta.body().string().contains("Novo usuário"));
+                assertTrue(resposta.body().string().contains("Criar Conta"));
             }
         });
     }
@@ -123,10 +123,40 @@ class UsuarioControllerTest {
         });
     }
 
+    @Test
+    void deveExibirPerfilPublicoDoUsuario() {
+        Usuario usuario = new Usuario("Maria", "maria@email.com", "senha123");
+        repo.salvar(usuario);
+
+        br.ufpb.dcx.projetos.musica.repositories.MusicaRepository mockMusicaRepo = new br.ufpb.dcx.projetos.musica.repositories.MusicaRepository() {
+            @Override public void criar(br.ufpb.dcx.projetos.musica.models.Musica m) {}
+            @Override public boolean atualizar(br.ufpb.dcx.projetos.musica.models.Musica m) { return false; }
+            @Override public Optional<br.ufpb.dcx.projetos.musica.models.Musica> buscarPorId(String id) { return Optional.empty(); }
+            @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> listarTodas() { return List.of(); }
+            @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> buscarPorAlbumId(String albumId) { return List.of(); }
+            @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> buscarPorUsuarioId(String usuarioId) { return List.of(); }
+            @Override public boolean remover(String id) { return false; }
+        };
+        br.ufpb.dcx.projetos.musica.services.MusicaService musicaService = new br.ufpb.dcx.projetos.musica.services.MusicaService(mockMusicaRepo, null);
+
+        Javalin app = Javalin.create(config ->
+                config.fileRenderer(new JavalinThymeleaf(templateEngine())));
+        new UsuarioController(service, musicaService).registrarRotas(app);
+
+        JavalinTest.test(app, (server, client) -> {
+            try (var resposta = client.get("/usuarios/" + usuario.getId())) {
+                assertEquals(200, resposta.code());
+                String html = resposta.body().string();
+                assertTrue(html.contains("Catálogo de Maria"));
+                assertTrue(html.contains("Este catálogo está vazio"));
+            }
+        });
+    }
+
     private Javalin criarApp() {
         Javalin app = Javalin.create(config ->
                 config.fileRenderer(new JavalinThymeleaf(templateEngine())));
-        new UsuarioController(service).registrarRotas(app);
+        new UsuarioController(service, new br.ufpb.dcx.projetos.musica.services.MusicaService(null, null)).registrarRotas(app);
         return app;
     }
 

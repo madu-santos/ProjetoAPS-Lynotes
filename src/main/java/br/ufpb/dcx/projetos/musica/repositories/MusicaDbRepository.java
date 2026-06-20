@@ -20,7 +20,7 @@ public final class MusicaDbRepository implements MusicaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MusicaDbRepository.class);
 
-    private static final String COLUNAS = "id, titulo, genero, duracao_segundos, album_id";
+    private static final String COLUNAS = "id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, album_id, usuario_id";
 
     private final ConnectionFactory connectionFactory;
 
@@ -31,42 +31,89 @@ public final class MusicaDbRepository implements MusicaRepository {
     @Override
     public void criar(Musica musica) {
         String sql = """
-                INSERT INTO musica (id, titulo, genero, duracao_segundos, album_id)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO musica (id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, album_id, usuario_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> {
             statement.setString(1, musica.getId());
             statement.setString(2, musica.getTitulo());
-            statement.setString(3, musica.getGenero());
-            statement.setInt(4, musica.getDuracaoSegundos());
-            if (musica.getAlbumId() != null && !musica.getAlbumId().isBlank()) {
-                statement.setString(5, musica.getAlbumId());
+            statement.setString(3, musica.getArtista());
+            statement.setString(4, musica.getGenero());
+            
+            if (musica.getDuracaoSegundos() != null) {
+                statement.setInt(5, musica.getDuracaoSegundos());
             } else {
-                statement.setNull(5, Types.VARCHAR);
+                statement.setNull(5, Types.INTEGER);
+            }
+            
+            statement.setString(6, musica.getResenha());
+            
+            if (musica.getNota() != null) {
+                statement.setInt(7, musica.getNota());
+            } else {
+                statement.setNull(7, Types.INTEGER);
+            }
+            
+            statement.setString(8, musica.getSpotifyUrl());
+            
+            if (musica.getAlbumId() != null && !musica.getAlbumId().isBlank()) {
+                statement.setString(9, musica.getAlbumId());
+            } else {
+                statement.setNull(9, Types.VARCHAR);
+            }
+            
+            if (musica.getUsuarioId() != null && !musica.getUsuarioId().isBlank()) {
+                statement.setString(10, musica.getUsuarioId());
+            } else {
+                statement.setNull(10, Types.VARCHAR);
             }
         });
-        LOGGER.debug("Música persistida. id={}", musica.getId());
+        LOGGER.debug("Música persistida no catálogo. id={}", musica.getId());
     }
 
     @Override
     public boolean atualizar(Musica musica) {
         String sql = """
                 UPDATE musica
-                SET titulo = ?, genero = ?, duracao_segundos = ?, album_id = ?
+                SET titulo = ?, artista = ?, genero = ?, duracao_segundos = ?, resenha = ?, nota = ?, spotify_url = ?, album_id = ?, usuario_id = ?
                 WHERE id = ?
                 """;
 
         int alterados = executarAtualizacao(sql, statement -> {
             statement.setString(1, musica.getTitulo());
-            statement.setString(2, musica.getGenero());
-            statement.setInt(3, musica.getDuracaoSegundos());
-            if (musica.getAlbumId() != null && !musica.getAlbumId().isBlank()) {
-                statement.setString(4, musica.getAlbumId());
+            statement.setString(2, musica.getArtista());
+            statement.setString(3, musica.getGenero());
+            
+            if (musica.getDuracaoSegundos() != null) {
+                statement.setInt(4, musica.getDuracaoSegundos());
             } else {
-                statement.setNull(4, Types.VARCHAR);
+                statement.setNull(4, Types.INTEGER);
             }
-            statement.setString(5, musica.getId());
+            
+            statement.setString(5, musica.getResenha());
+            
+            if (musica.getNota() != null) {
+                statement.setInt(6, musica.getNota());
+            } else {
+                statement.setNull(6, Types.INTEGER);
+            }
+            
+            statement.setString(7, musica.getSpotifyUrl());
+            
+            if (musica.getAlbumId() != null && !musica.getAlbumId().isBlank()) {
+                statement.setString(8, musica.getAlbumId());
+            } else {
+                statement.setNull(8, Types.VARCHAR);
+            }
+            
+            if (musica.getUsuarioId() != null && !musica.getUsuarioId().isBlank()) {
+                statement.setString(9, musica.getUsuarioId());
+            } else {
+                statement.setNull(9, Types.VARCHAR);
+            }
+            
+            statement.setString(10, musica.getId());
         });
         return alterados == 1;
     }
@@ -115,6 +162,21 @@ public final class MusicaDbRepository implements MusicaRepository {
     }
 
     @Override
+    public List<Musica> buscarPorUsuarioId(String usuarioId) {
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE usuario_id = ? ORDER BY titulo, id";
+
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, usuarioId);
+            try (ResultSet result = statement.executeQuery()) {
+                return mapearLista(result);
+            }
+        } catch (SQLException e) {
+            throw erroPersistencia("buscar músicas por ID do usuário", e);
+        }
+    }
+
+    @Override
     public boolean remover(String id) {
         String sql = "DELETE FROM musica WHERE id = ?";
         return executarAtualizacao(sql, statement -> statement.setString(1, id)) == 1;
@@ -142,9 +204,14 @@ public final class MusicaDbRepository implements MusicaRepository {
         return new Musica(
                 result.getString("id"),
                 result.getString("titulo"),
+                result.getString("artista"),
                 result.getString("genero"),
-                result.getInt("duracao_segundos"),
-                result.getString("album_id")
+                result.getObject("duracao_segundos", Integer.class),
+                result.getString("resenha"),
+                result.getObject("nota", Integer.class),
+                result.getString("spotify_url"),
+                result.getString("album_id"),
+                result.getString("usuario_id")
         );
     }
 

@@ -11,8 +11,12 @@ public final class MusicaFormView {
 
     private final String id;
     private final String titulo;
+    private final String artista;
     private final String genero;
     private final String duracaoSegundos;
+    private final String resenha;
+    private final String nota;
+    private final String spotifyUrl;
     private final String albumId;
     private final boolean edicao;
     private final String acao;
@@ -21,8 +25,12 @@ public final class MusicaFormView {
     private MusicaFormView(
             String id,
             String titulo,
+            String artista,
             String genero,
             String duracaoSegundos,
+            String resenha,
+            String nota,
+            String spotifyUrl,
             String albumId,
             boolean edicao,
             String acao,
@@ -30,8 +38,12 @@ public final class MusicaFormView {
     ) {
         this.id = id;
         this.titulo = titulo;
+        this.artista = artista;
         this.genero = genero;
         this.duracaoSegundos = duracaoSegundos;
+        this.resenha = resenha;
+        this.nota = nota;
+        this.spotifyUrl = spotifyUrl;
         this.albumId = albumId;
         this.edicao = edicao;
         this.acao = acao;
@@ -42,8 +54,12 @@ public final class MusicaFormView {
         return new MusicaFormView(
                 null,
                 valor(form.titulo()),
-                valor(form.genero()),
+                valor(form.artista()),
+                null, // genero
                 valor(form.duracaoSegundos()),
+                valor(form.resenha()),
+                valor(form.nota()),
+                valor(form.spotifyUrl()),
                 valor(form.albumId()),
                 false,
                 "/musicas",
@@ -55,8 +71,12 @@ public final class MusicaFormView {
         return new MusicaFormView(
                 musica.getId(),
                 musica.getTitulo(),
+                musica.getArtista(),
                 musica.getGenero(),
-                String.valueOf(musica.getDuracaoSegundos()),
+                musica.getDuracaoSegundos() != null ? String.valueOf(musica.getDuracaoSegundos()) : "",
+                musica.getResenha(),
+                musica.getNota() != null ? String.valueOf(musica.getNota()) : "",
+                musica.getSpotifyUrl(),
                 musica.getAlbumId(),
                 true,
                 "/musicas/" + musica.getId(),
@@ -68,8 +88,12 @@ public final class MusicaFormView {
         return new MusicaFormView(
                 id,
                 valor(form.titulo()),
-                valor(form.genero()),
+                valor(form.artista()),
+                null, // genero
                 valor(form.duracaoSegundos()),
+                valor(form.resenha()),
+                valor(form.nota()),
+                valor(form.spotifyUrl()),
                 valor(form.albumId()),
                 true,
                 "/musicas/" + id,
@@ -89,12 +113,28 @@ public final class MusicaFormView {
         return titulo;
     }
 
+    public String getArtista() {
+        return artista;
+    }
+
     public String getGenero() {
         return genero;
     }
 
     public String getDuracaoSegundos() {
         return duracaoSegundos;
+    }
+
+    public String getResenha() {
+        return resenha;
+    }
+
+    public String getNota() {
+        return nota;
+    }
+
+    public String getSpotifyUrl() {
+        return spotifyUrl;
     }
 
     public String getAlbumId() {

@@ -24,11 +24,29 @@ public final class AlbumSchemaInitializer {
             CREATE TABLE IF NOT EXISTS musica (
                 id VARCHAR(36) PRIMARY KEY,
                 titulo VARCHAR(255) NOT NULL,
-                genero VARCHAR(255) NOT NULL,
-                duracao_segundos INT NOT NULL,
+                genero VARCHAR(255),
+                duracao_segundos INT,
                 album_id VARCHAR(36),
                 CONSTRAINT fk_album FOREIGN KEY (album_id) REFERENCES album(id) ON DELETE SET NULL
             );
+            
+            ALTER TABLE musica ALTER COLUMN genero DROP NOT NULL;
+            ALTER TABLE musica ALTER COLUMN duracao_segundos DROP NOT NULL;
+            
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS artista VARCHAR(255);
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS resenha TEXT;
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS nota INT;
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS spotify_url VARCHAR(255);
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS usuario_id VARCHAR(36);
+            
+            DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_constraint WHERE conname = 'fk_usuario'
+                ) THEN
+                    ALTER TABLE musica ADD CONSTRAINT fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE;
+                END IF;
+            END $$;
             """;
 
     private AlbumSchemaInitializer() {

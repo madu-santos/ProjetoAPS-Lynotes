@@ -2,14 +2,25 @@ package br.ufpb.dcx.projetos.musica.dto;
 
 import java.util.Objects;
 
-public record MusicaForm(String titulo, String genero, String duracaoSegundos, String albumId) {
+public record MusicaForm(
+        String titulo,
+        String artista,
+        String duracaoSegundos,
+        String albumId,
+        String nota,
+        String resenha,
+        String spotifyUrl
+) {
 
     public MusicaForm normalizado() {
         return new MusicaForm(
                 normalizarObrigatorio(titulo),
-                normalizarObrigatorio(genero),
-                normalizarObrigatorio(duracaoSegundos),
-                normalizarOpcional(albumId)
+                normalizarObrigatorio(artista),
+                normalizarOpcional(duracaoSegundos),
+                normalizarOpcional(albumId),
+                normalizarOpcional(nota),
+                normalizarOpcional(resenha),
+                normalizarOpcional(spotifyUrl)
         );
     }
 

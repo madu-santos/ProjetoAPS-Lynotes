@@ -61,7 +61,7 @@ class LoginControllerTest {
 
             try (var resposta = http.newCall(request).execute()) {
                 assertEquals(302, resposta.code());
-                assertEquals("/artistas", resposta.header("Location"));
+                assertEquals("/", resposta.header("Location"));
             }
         });
     }

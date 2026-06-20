@@ -20,10 +20,10 @@ import java.util.Objects;
 public final class MusicaController {
 
     public static final String ROTA_LISTAGEM = "/musicas";
-    public static final String ROTA_NOVO = "/musicas/new"; // Matches the original route defined in list.html
-    public static final String ROTA_EDICAO = "/musicas/edit/{id}"; // Matches list.html format
+    public static final String ROTA_NOVO = "/musicas/new";
+    public static final String ROTA_EDICAO = "/musicas/edit/{id}";
     public static final String ROTA_ATUALIZACAO = "/musicas/edit/{id}";
-    public static final String ROTA_EXCLUSAO = "/musicas/delete/{id}"; // Matches list.html format
+    public static final String ROTA_EXCLUSAO = "/musicas/delete/{id}";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MusicaController.class);
 
@@ -36,6 +36,7 @@ public final class MusicaController {
     }
 
     public void registrarRotas(Javalin app) {
+        app.get("/", this::exibirHomeOuLanding);
         app.get(ROTA_LISTAGEM, this::listar);
         app.get(ROTA_NOVO, this::exibirCadastro);
         app.post(ROTA_LISTAGEM, this::cadastrar);
@@ -44,32 +45,30 @@ public final class MusicaController {
         app.post(ROTA_EXCLUSAO, this::excluir);
     }
 
-    private void listar(Context ctx) {
-        List<Musica> musicas = service.findAll();
-        List<MusicaExibicao> musicasExibicao = musicas.stream()
-                .map(m -> {
-                    String albumTitulo = "N/A";
-                    if (m.getAlbumId() != null && !m.getAlbumId().isBlank()) {
-                        albumTitulo = albumService.findById(m.getAlbumId())
-                                .map(Album::getTitulo)
-                                .orElse("N/A");
-                    }
-                    return new MusicaExibicao(m.getId(), m.getTitulo(), m.getGenero(), m.getDuracaoSegundos(), albumTitulo);
-                })
-                .toList();
+    private void exibirHomeOuLanding(Context ctx) {
+        String usuarioLogado = ctx.sessionAttribute("usuarioLogado");
+        if (usuarioLogado != null) {
+            String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+            List<Musica> musicas = service.findByUsuarioId(usuarioId);
+            Map<String, Object> modelo = new HashMap<>();
+            modelo.put("usuarioLogado", usuarioLogado);
+            modelo.put("musicas", musicas);
+            modelo.put("semMusicas", musicas.isEmpty());
+            ctx.render("home", modelo);
+        } else {
+            ctx.render("index", Map.of());
+        }
+    }
 
-        Map<String, Object> modelo = new HashMap<>();
-        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
-        modelo.put("musicas", musicasExibicao);
-        modelo.put("semMusicas", musicasExibicao.isEmpty());
-        ctx.render("musicas/lista", modelo);
+    private void listar(Context ctx) {
+        ctx.redirect("/");
     }
 
     private void exibirCadastro(Context ctx) {
         List<Album> albums = albumService.findAll();
         renderizarFormulario(
                 ctx,
-                MusicaFormView.cadastro(new MusicaForm("", "", "", ""), albums),
+                MusicaFormView.cadastro(new MusicaForm("", "", null, null, null, null, null), albums),
                 null
         );
     }
@@ -77,8 +76,26 @@ public final class MusicaController {
     private void cadastrar(Context ctx) {
         MusicaForm form = extrairFormulario(ctx);
         try {
-            int duracao = parseDuracao(form.duracaoSegundos());
-            Musica musica = Musica.novo(form.titulo(), form.genero(), duracao, form.albumId());
+            String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+            if (usuarioId == null) {
+                ctx.status(HttpStatus.UNAUTHORIZED).redirect("/login");
+                return;
+            }
+            Integer notaVal = null;
+            if (form.nota() != null && !form.nota().isBlank()) {
+                notaVal = Integer.parseInt(form.nota());
+            }
+            Musica musica = Musica.novo(
+                    form.titulo(),
+                    form.artista(),
+                    null, // genero
+                    null, // duracaoSegundos
+                    form.resenha(),
+                    notaVal,
+                    form.spotifyUrl(),
+                    null, // albumId
+                    usuarioId
+            );
             service.save(musica);
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
@@ -93,6 +110,13 @@ public final class MusicaController {
         String id = ctx.pathParam("id");
         Musica musica = service.findById(id)
                 .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Música não encontrada"));
+        
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        if (usuarioId == null || !usuarioId.equals(musica.getUsuarioId())) {
+            ctx.status(HttpStatus.FORBIDDEN).result("Você não tem permissão para editar esta música.");
+            return;
+        }
+
         List<Album> albums = albumService.findAll();
         renderizarFormulario(ctx, MusicaFormView.edicao(musica, albums), null);
     }
@@ -101,8 +125,36 @@ public final class MusicaController {
         String id = ctx.pathParam("id");
         MusicaForm form = extrairFormulario(ctx);
         try {
-            int duracao = parseDuracao(form.duracaoSegundos());
-            Musica musicaDetails = new Musica(id, form.titulo(), form.genero(), duracao, form.albumId());
+            String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+            if (usuarioId == null) {
+                ctx.status(HttpStatus.UNAUTHORIZED).redirect("/login");
+                return;
+            }
+            Musica musicaExistente = service.findById(id)
+                    .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Música não encontrada"));
+            
+            if (!usuarioId.equals(musicaExistente.getUsuarioId())) {
+                ctx.status(HttpStatus.FORBIDDEN).result("Você não tem permissão para atualizar esta música.");
+                return;
+            }
+
+            Integer notaVal = null;
+            if (form.nota() != null && !form.nota().isBlank()) {
+                notaVal = Integer.parseInt(form.nota());
+            }
+
+            Musica musicaDetails = new Musica(
+                    id,
+                    form.titulo(),
+                    form.artista(),
+                    musicaExistente.getGenero(),
+                    musicaExistente.getDuracaoSegundos(),
+                    form.resenha(),
+                    notaVal,
+                    form.spotifyUrl(),
+                    musicaExistente.getAlbumId(),
+                    usuarioId
+            );
             service.update(id, musicaDetails);
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
@@ -115,28 +167,33 @@ public final class MusicaController {
 
     private void excluir(Context ctx) {
         String id = ctx.pathParam("id");
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        if (usuarioId == null) {
+            ctx.status(HttpStatus.UNAUTHORIZED).redirect("/login");
+            return;
+        }
+        Musica musicaExistente = service.findById(id)
+                .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Música não encontrada"));
+        
+        if (!usuarioId.equals(musicaExistente.getUsuarioId())) {
+            ctx.status(HttpStatus.FORBIDDEN).result("Você não tem permissão para excluir esta música.");
+            return;
+        }
+
         service.deleteById(id);
         redirecionarParaListagem(ctx);
-    }
-
-    private int parseDuracao(String duracaoStr) {
-        if (duracaoStr == null || duracaoStr.trim().isEmpty()) {
-            throw new IllegalArgumentException("A duração da música é obrigatória");
-        }
-        try {
-            return Integer.parseInt(duracaoStr.trim());
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("A duração da música deve ser um número inteiro válido");
-        }
     }
 
     private MusicaForm extrairFormulario(Context ctx) {
         return new MusicaForm(
                 ctx.formParam("titulo"),
-                ctx.formParam("genero"),
-                ctx.formParam("duracaoSegundos"),
-                ctx.formParam("albumId")
-        );
+                ctx.formParam("artista"),
+                null,
+                null,
+                ctx.formParam("nota"),
+                ctx.formParam("resenha"),
+                ctx.formParam("spotifyUrl")
+        ).normalizado();
     }
 
     private void renderizarFormulario(Context ctx, MusicaFormView view, String erro) {
@@ -150,14 +207,6 @@ public final class MusicaController {
     }
 
     private void redirecionarParaListagem(Context ctx) {
-        ctx.status(HttpStatus.SEE_OTHER).header("Location", ROTA_LISTAGEM);
+        ctx.status(HttpStatus.SEE_OTHER).header("Location", "/");
     }
-
-    public static record MusicaExibicao(
-            String id,
-            String titulo,
-            String genero,
-            int duracaoSegundos,
-            String albumTitulo
-    ) {}
 }
