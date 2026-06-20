@@ -89,7 +89,11 @@ public final class App {
     }
 
     private static void registrarRotasPublicas(Javalin app) {
-        app.get("/ping", ctx -> ctx.json(java.util.Map.of("status", "ok")));
+        app.get("/ping", ctx -> ctx.json(java.util.Map.of(
+                "status", "ok",
+                "service", "eq09",
+                "timestamp", java.time.Instant.now().toString()
+        )));
     }
 
     private static void registrarAutenticacao(Javalin app, br.ufpb.dcx.projetos.login.services.UsuarioService service) {
