@@ -1,0 +1,82 @@
+package br.ufpb.dcx.projetos.playlist.services;
+
+import br.ufpb.dcx.projetos.exceptions.ResourceNotFoundException;
+import br.ufpb.dcx.projetos.playlist.models.Playlist;
+import br.ufpb.dcx.projetos.playlist.models.PlaylistItem;
+import br.ufpb.dcx.projetos.playlist.models.PlaylistWithItems;
+import br.ufpb.dcx.projetos.playlist.repositories.PlaylistRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public final class PlaylistService {
+
+    private final PlaylistRepository playlistRepository;
+
+    public PlaylistService(PlaylistRepository playlistRepository) {
+        this.playlistRepository = playlistRepository;
+    }
+
+    public Playlist createPlaylist(String nome, String usuarioId) {
+        validarNome(nome);
+        Playlist playlist = Playlist.novo(nome, usuarioId);
+        playlistRepository.create(playlist);
+        return playlist;
+    }
+
+    public List<Playlist> findByUsuarioId(String usuarioId) {
+        return playlistRepository.findByUsuarioId(usuarioId);
+    }
+
+    public PlaylistWithItems findPlaylistWithItems(String playlistId, String usuarioId) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .filter(p -> p.getUsuarioId().equals(usuarioId))
+                .orElseThrow(() -> new ResourceNotFoundException("Playlist não encontrada."));
+        return new PlaylistWithItems(playlist, playlistRepository.findItemsByPlaylistId(playlistId));
+    }
+
+    public PlaylistItem addItem(String playlistId, String url, String videoId, String usuarioId) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .filter(p -> p.getUsuarioId().equals(usuarioId))
+                .orElseThrow(() -> new ResourceNotFoundException("Playlist não encontrada."));
+
+        validarUrl(url);
+        int ordem = playlistRepository.countItemsByPlaylistId(playlistId) + 1;
+        PlaylistItem item = PlaylistItem.novo(playlistId, url, videoId, ordem);
+        playlistRepository.createItem(item);
+        return item;
+    }
+
+    public void removeItem(String playlistId, String itemId, String usuarioId) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .filter(p -> p.getUsuarioId().equals(usuarioId))
+                .orElseThrow(() -> new ResourceNotFoundException("Playlist não encontrada."));
+
+        PlaylistItem item = playlistRepository.findItemById(itemId)
+                .filter(i -> i.getPlaylistId().equals(playlistId))
+                .orElseThrow(() -> new ResourceNotFoundException("Item de playlist não encontrado."));
+
+        if (!playlistRepository.deleteItem(itemId)) {
+            throw new ResourceNotFoundException("Falha ao remover item da playlist.");
+        }
+    }
+
+    public Optional<Playlist> findById(String playlistId) {
+        return playlistRepository.findById(playlistId);
+    }
+
+    private void validarNome(String nome) {
+        if (nome == null || nome.isBlank()) {
+            throw new IllegalArgumentException("O nome da playlist é obrigatório.");
+        }
+    }
+
+    private void validarUrl(String url) {
+        if (url == null || url.isBlank()) {
+            throw new IllegalArgumentException("A URL do YouTube é obrigatória.");
+        }
+        if (!url.matches("^(https?://)?(www\\.)?(youtube\\.com|youtu\\.be)/.+$")) {
+            throw new IllegalArgumentException("A URL precisa ser um link do YouTube válido.");
+        }
+    }
+}

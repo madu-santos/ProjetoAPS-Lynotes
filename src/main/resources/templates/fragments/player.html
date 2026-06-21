@@ -1,0 +1,23 @@
+<div id="mini-player" th:fragment="player">
+    <div class="player-header mb-3">
+        <div>
+            <h3 class="mb-1">Mini player</h3>
+            <div class="text-secondary small">YouTube áudio</div>
+        </div>
+    </div>
+    <div class="ratio ratio-16x9 mb-3">
+        <iframe id="youtube-player" class="player-iframe" src="https://www.youtube.com/embed/?enablejsapi=1&rel=0&modestbranding=1" title="YouTube player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div class="player-current-title mb-3" id="player-current-title">Nenhum item carregado</div>
+    <div class="player-controls mb-3">
+        <button class="btn btn-outline-primary btn-sm" type="button" onclick="playerPrev()">Anterior</button>
+        <button class="btn btn-outline-primary btn-sm" type="button" onclick="playerPlayPause()">Play/Pause</button>
+        <button class="btn btn-outline-primary btn-sm" type="button" onclick="playerNext()">Próximo</button>
+    </div>
+    <div class="mb-3">
+        <select id="player-playlist-select" class="form-select" onchange="playerSelectPlaylist()">
+            <option value="">Selecione uma playlist</option>
+        </select>
+    </div>
+    <button class="btn btn-primary w-100" type="button" onclick="playerLoadFromSelectedPlaylist()">Carregar playlist</button>
+</div>
