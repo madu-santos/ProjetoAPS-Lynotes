@@ -2,6 +2,14 @@
 
 Este repositório contém a entrega inicial do **Lynotes**, um painel administrativo web para gerenciamento e catalogação de músicas, artistas e álbuns. O foco desta etapa ("Walking Skeleton") foi estabelecer a arquitetura do projeto e mitigar os riscos de infraestrutura técnica.
 
+---
+
+### 🎥 Vídeo de Apresentação do Projeto
+Assista à nossa apresentação no YouTube com a demonstração prática das funcionalidades, detalhes da arquitetura e decisões técnicas do projeto:
+👉 **[Acesse o Vídeo de Apresentação no YouTube](https://youtu.be/hnuIOO55QWY)**
+
+---
+
 ## Tecnologias
 
 - Java 21
