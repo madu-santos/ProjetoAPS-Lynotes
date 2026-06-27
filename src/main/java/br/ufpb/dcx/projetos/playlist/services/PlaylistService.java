@@ -75,6 +75,15 @@ public final class PlaylistService {
                 .orElseThrow(() -> new ResourceNotFoundException("Playlist não encontrada."));
 
         validarUrl(url);
+
+        // Prevent duplicate items in the same playlist
+        Optional<PlaylistItem> existingItem = playlistRepository.findItemsByPlaylistId(playlistId).stream()
+                .filter(item -> item.getVideoId().equals(videoId))
+                .findFirst();
+        if (existingItem.isPresent()) {
+            return existingItem.get();
+        }
+
         int ordem = playlistRepository.countItemsByPlaylistId(playlistId) + 1;
         PlaylistItem item = PlaylistItem.novo(playlistId, url, videoId, ordem);
         playlistRepository.createItem(item);

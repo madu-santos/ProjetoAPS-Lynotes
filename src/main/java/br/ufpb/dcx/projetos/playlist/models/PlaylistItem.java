@@ -53,6 +53,7 @@ public final class PlaylistItem {
         return ordem;
     }
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public Instant getCriadoEm() {
         return criadoEm;
     }

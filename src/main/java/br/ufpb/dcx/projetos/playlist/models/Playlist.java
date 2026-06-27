@@ -44,7 +44,17 @@ public final class Playlist {
         return oculta;
     }
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public Instant getCriadoEm() {
         return criadoEm;
+    }
+
+    public String getCriadoEmFormatado() {
+        if (criadoEm == null) {
+            return "";
+        }
+        return java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+                .withZone(java.time.ZoneId.systemDefault())
+                .format(criadoEm);
     }
 }

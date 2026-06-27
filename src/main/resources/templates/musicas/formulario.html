@@ -87,7 +87,7 @@
                                        placeholder="https://www.youtube.com/watch?v=...">
                             </div>
 
-                            <div class="mb-3" th:if="${!form.edicao}">
+                            <div class="mb-3">
                                 <label class="form-label" for="playlistId">Salvar em playlist existente</label>
                                 <select class="form-select" id="playlistId" name="playlistId">
                                     <option value="" th:text="'Nenhuma playlist selecionada'"></option>
@@ -99,7 +99,7 @@
                                 </select>
                             </div>
 
-                            <div class="mb-3" th:if="${!form.edicao}">
+                            <div class="mb-3">
                                 <label class="form-label" for="novaPlaylistNome">Criar nova playlist</label>
                                 <input class="form-control"
                                        id="novaPlaylistNome"

@@ -45,7 +45,7 @@ public final class PlaylistController {
 
         try {
             service.createPlaylist(nome, usuarioId);
-            ctx.status(HttpStatus.SEE_OTHER).header("Location", "/playlists");
+            ctx.redirect("/playlists", HttpStatus.SEE_OTHER);
         } catch (IllegalArgumentException e) {
             Map<String, Object> modelo = new HashMap<>();
             modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
@@ -75,7 +75,7 @@ public final class PlaylistController {
         try {
             String videoId = service.extractVideoId(url);
             service.addItem(playlistId, url, videoId, usuarioId);
-            ctx.status(HttpStatus.SEE_OTHER).header("Location", "/playlists/" + playlistId);
+            ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
         } catch (IllegalArgumentException e) {
             Map<String, Object> modelo = new HashMap<>();
             PlaylistWithItems playlist = service.findPlaylistWithItems(playlistId, usuarioId);
@@ -93,7 +93,7 @@ public final class PlaylistController {
         String itemId = ctx.pathParam("itemId");
 
         service.removeItem(playlistId, itemId, usuarioId);
-        ctx.status(HttpStatus.SEE_OTHER).header("Location", "/playlists/" + playlistId);
+        ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
     }
 
     private void listarJson(Context ctx) {

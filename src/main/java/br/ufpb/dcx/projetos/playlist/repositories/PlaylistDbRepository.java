@@ -39,7 +39,7 @@ public final class PlaylistDbRepository implements PlaylistRepository {
             statement.setString(2, playlist.getNome());
             statement.setString(3, playlist.getUsuarioId());
             statement.setBoolean(4, playlist.isOculta());
-            statement.setObject(5, playlist.getCriadoEm());
+            statement.setTimestamp(5, java.sql.Timestamp.from(playlist.getCriadoEm()));
         });
 
         LOGGER.debug("Playlist persistida. id={} nome={}", playlist.getId(), playlist.getNome());
@@ -108,7 +108,7 @@ public final class PlaylistDbRepository implements PlaylistRepository {
             statement.setString(4, item.getVideoId());
             statement.setString(5, item.getTitulo());
             statement.setInt(6, item.getOrdem());
-            statement.setObject(7, item.getCriadoEm());
+            statement.setTimestamp(7, java.sql.Timestamp.from(item.getCriadoEm()));
         });
 
         LOGGER.debug("Item adicionado à playlist. itemId={} playlistId={} url={}", item.getId(), item.getPlaylistId(), item.getUrl());
@@ -155,16 +155,18 @@ public final class PlaylistDbRepository implements PlaylistRepository {
     }
 
     private Playlist mapPlaylist(ResultSet result) throws SQLException {
+        java.sql.Timestamp criadoEmTimestamp = result.getTimestamp("criado_em");
         return new Playlist(
                 result.getString("id"),
                 result.getString("nome"),
                 result.getString("usuario_id"),
                 result.getBoolean("oculta"),
-                result.getObject("criado_em", java.time.Instant.class)
+                criadoEmTimestamp != null ? criadoEmTimestamp.toInstant() : null
         );
     }
 
     private PlaylistItem mapItem(ResultSet result) throws SQLException {
+        java.sql.Timestamp criadoEmTimestamp = result.getTimestamp("criado_em");
         return new PlaylistItem(
                 result.getString("id"),
                 result.getString("playlist_id"),
@@ -172,7 +174,7 @@ public final class PlaylistDbRepository implements PlaylistRepository {
                 result.getString("video_id"),
                 result.getString("titulo"),
                 result.getInt("ordem"),
-                result.getObject("criado_em", java.time.Instant.class)
+                criadoEmTimestamp != null ? criadoEmTimestamp.toInstant() : null
         );
     }
 

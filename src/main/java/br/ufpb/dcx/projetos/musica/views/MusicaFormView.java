@@ -119,7 +119,7 @@ public final class MusicaFormView {
                 null,
                 null,
                 true,
-                "/musicas/" + musica.getId(),
+                "/musicas/edit/" + musica.getId(),
                 albums,
                 playlists
         );
@@ -140,7 +140,7 @@ public final class MusicaFormView {
                 valor(form.playlistId()),
                 valor(form.novaPlaylistNome()),
                 true,
-                "/musicas/" + id,
+                "/musicas/edit/" + id,
                 albums,
                 playlists
         );

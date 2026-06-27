@@ -68,7 +68,11 @@
                                 <div class="text-muted small" th:text="${item.url}"></div>
                             </div>
                             <div class="btn-group" role="group" aria-label="Ações de playlist">
-                                <button class="btn btn-outline-primary btn-sm" type="button" th:onclick="${'playerLoad(\'' + item.videoId + '\')'}">Tocar</button>
+                                <button class="btn btn-outline-primary btn-sm" type="button"
+                                        th:data-video-id="${item.videoId}"
+                                        th:data-titulo="${item.titulo}"
+                                        th:data-playlist-id="${playlist.id}"
+                                        onclick="playerLoad(this.getAttribute('data-video-id'), this.getAttribute('data-titulo'), this.getAttribute('data-playlist-id'))">Tocar</button>
                                 <form method="post" th:action="${'/playlists/' + playlist.id + '/items/' + item.id + '/remover'}" class="d-inline">
                                     <button class="btn btn-outline-danger btn-sm" type="submit">Remover</button>
                                 </form>

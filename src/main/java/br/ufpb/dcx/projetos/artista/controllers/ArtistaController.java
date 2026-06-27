@@ -138,8 +138,7 @@ public final class ArtistaController {
     }
 
     private void redirecionarParaListagem(Context ctx) {
-        ctx.status(HttpStatus.SEE_OTHER)
-                .header("Location", ROTA_LISTAGEM);
+        ctx.redirect(ROTA_LISTAGEM, HttpStatus.SEE_OTHER);
     }
 
     @FunctionalInterface

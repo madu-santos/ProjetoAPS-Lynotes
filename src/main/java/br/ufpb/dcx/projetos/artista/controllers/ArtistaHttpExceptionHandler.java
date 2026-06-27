@@ -36,6 +36,7 @@ public final class ArtistaHttpExceptionHandler {
                     ? "Não foi possível concluir a operação com artistas."
                     : "Não foi possível concluir a operação solicitada.";
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType("text/plain; charset=UTF-8")
                     .result(mensagem);
         });
     }
