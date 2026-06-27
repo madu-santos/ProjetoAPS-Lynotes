@@ -30,15 +30,16 @@ public final class PlaylistDbRepository implements PlaylistRepository {
     @Override
     public void create(Playlist playlist) {
         String sql = """
-                INSERT INTO playlist (id, nome, usuario_id, criado_em)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO playlist (id, nome, usuario_id, oculta, criado_em)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> {
             statement.setString(1, playlist.getId());
             statement.setString(2, playlist.getNome());
             statement.setString(3, playlist.getUsuarioId());
-            statement.setObject(4, playlist.getCriadoEm());
+            statement.setBoolean(4, playlist.isOculta());
+            statement.setObject(5, playlist.getCriadoEm());
         });
 
         LOGGER.debug("Playlist persistida. id={} nome={}", playlist.getId(), playlist.getNome());
@@ -46,7 +47,7 @@ public final class PlaylistDbRepository implements PlaylistRepository {
 
     @Override
     public Optional<Playlist> findById(String id) {
-        String sql = "SELECT id, nome, usuario_id, criado_em FROM playlist WHERE id = ?";
+        String sql = "SELECT id, nome, usuario_id, oculta, criado_em FROM playlist WHERE id = ?";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -61,7 +62,7 @@ public final class PlaylistDbRepository implements PlaylistRepository {
 
     @Override
     public List<Playlist> findByUsuarioId(String usuarioId) {
-        String sql = "SELECT id, nome, usuario_id, criado_em FROM playlist WHERE usuario_id = ? ORDER BY criado_em DESC";
+        String sql = "SELECT id, nome, usuario_id, oculta, criado_em FROM playlist WHERE usuario_id = ? ORDER BY criado_em DESC";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -158,6 +159,7 @@ public final class PlaylistDbRepository implements PlaylistRepository {
                 result.getString("id"),
                 result.getString("nome"),
                 result.getString("usuario_id"),
+                result.getBoolean("oculta"),
                 result.getObject("criado_em", java.time.Instant.class)
         );
     }

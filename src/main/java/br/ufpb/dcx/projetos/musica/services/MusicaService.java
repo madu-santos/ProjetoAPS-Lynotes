@@ -68,6 +68,7 @@ public class MusicaService {
                 musicaDetails.getResenha(),
                 musicaDetails.getNota(),
                 musicaDetails.getSpotifyUrl(),
+                musicaDetails.getYoutubeUrl(),
                 musicaDetails.getAlbumId(),
                 musicaDetails.getUsuarioId()
         );

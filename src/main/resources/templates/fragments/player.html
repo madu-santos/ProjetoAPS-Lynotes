@@ -1,23 +1,43 @@
 <div id="mini-player" th:fragment="player">
-    <div class="player-header mb-3">
+    <div class="player-header mb-2">
         <div>
             <h3 class="mb-1">Mini player</h3>
             <div class="text-secondary small">YouTube áudio</div>
         </div>
     </div>
-    <div class="ratio ratio-16x9 mb-3">
+    <div class="player-frame-holder">
         <iframe id="youtube-player" class="player-iframe" src="https://www.youtube.com/embed/?enablejsapi=1&rel=0&modestbranding=1" title="YouTube player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
-    <div class="player-current-title mb-3" id="player-current-title">Nenhum item carregado</div>
+    <div class="player-current-title mb-2" id="player-current-title">Nenhum item carregado</div>
     <div class="player-controls mb-3">
         <button class="btn btn-outline-primary btn-sm" type="button" onclick="playerPrev()">Anterior</button>
         <button class="btn btn-outline-primary btn-sm" type="button" onclick="playerPlayPause()">Play/Pause</button>
         <button class="btn btn-outline-primary btn-sm" type="button" onclick="playerNext()">Próximo</button>
     </div>
-    <div class="mb-3">
+
+    <div class="mb-2">
+        <label class="form-label small mb-1" for="player-youtube-url">Link do YouTube</label>
+        <input id="player-youtube-url" class="form-control form-control-sm" type="url" placeholder="https://www.youtube.com/watch?v=...">
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label small mb-1" for="player-playlist-select">Playlist</label>
         <select id="player-playlist-select" class="form-select" onchange="playerSelectPlaylist()">
             <option value="">Selecione uma playlist</option>
         </select>
     </div>
-    <button class="btn btn-primary w-100" type="button" onclick="playerLoadFromSelectedPlaylist()">Carregar playlist</button>
+
+    <div class="mb-3">
+        <label class="form-label small mb-1" for="player-new-playlist-name">Nova playlist</label>
+        <input id="player-new-playlist-name" class="form-control form-control-sm" type="text" maxlength="255" placeholder="Nome da nova playlist">
+    </div>
+
+    <div class="player-actions mb-3">
+        <button class="btn btn-outline-primary btn-sm" type="button" onclick="playerPlayUrlNow()">Tocar link</button>
+        <button class="btn btn-primary btn-sm" type="button" onclick="playerSaveUrl()">Salvar</button>
+    </div>
+
+    <button class="btn btn-outline-light btn-sm w-100 mb-3" type="button" onclick="playerLoadFromSelectedPlaylist()">Carregar playlist</button>
+    <div class="player-message" id="player-message"></div>
+    <div class="player-track-list" id="player-track-list"></div>
 </div>

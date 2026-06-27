@@ -32,8 +32,11 @@ public final class ArtistaHttpExceptionHandler {
         app.exception(DatabaseException.class, (erro, ctx) -> {
             LOGGER.error("Falha de persistência no domínio de artistas. path={}",
                     ctx.path(), erro);
+            String mensagem = ctx.path().startsWith("/artistas")
+                    ? "Não foi possível concluir a operação com artistas."
+                    : "Não foi possível concluir a operação solicitada.";
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .result("Não foi possível concluir a operação com artistas.");
+                    .result(mensagem);
         });
     }
 }

@@ -6,6 +6,7 @@ import br.ufpb.dcx.projetos.musica.dto.MusicaForm;
 import br.ufpb.dcx.projetos.musica.models.Musica;
 import br.ufpb.dcx.projetos.musica.services.MusicaService;
 import br.ufpb.dcx.projetos.musica.views.MusicaFormView;
+import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -29,10 +30,12 @@ public final class MusicaController {
 
     private final MusicaService service;
     private final AlbumService albumService;
+    private final PlaylistService playlistService;
 
-    public MusicaController(MusicaService service, AlbumService albumService) {
+    public MusicaController(MusicaService service, AlbumService albumService, PlaylistService playlistService) {
         this.service = service;
         this.albumService = albumService;
+        this.playlistService = playlistService;
     }
 
     public void registrarRotas(Javalin app) {
@@ -65,10 +68,12 @@ public final class MusicaController {
     }
 
     private void exibirCadastro(Context ctx) {
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         List<Album> albums = albumService.findAll();
+        List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
         renderizarFormulario(
                 ctx,
-                MusicaFormView.cadastro(new MusicaForm("", "", null, null, null, null, null), albums),
+                MusicaFormView.cadastro(new MusicaForm("", "", null, null, null, null, null, null, null, null), albums, playlists),
                 null
         );
     }
@@ -81,10 +86,16 @@ public final class MusicaController {
                 ctx.status(HttpStatus.UNAUTHORIZED).redirect("/login");
                 return;
             }
+
             Integer notaVal = null;
             if (form.nota() != null && !form.nota().isBlank()) {
                 notaVal = Integer.parseInt(form.nota());
             }
+
+            if (form.youtubeUrl() != null && !form.youtubeUrl().isBlank()) {
+                playlistService.extractVideoId(form.youtubeUrl());
+            }
+
             Musica musica = Musica.novo(
                     form.titulo(),
                     form.artista(),
@@ -93,16 +104,30 @@ public final class MusicaController {
                     form.resenha(),
                     notaVal,
                     form.spotifyUrl(),
+                    form.youtubeUrl(),
                     null, // albumId
                     usuarioId
             );
             service.save(musica);
+
+            if (form.youtubeUrl() != null && !form.youtubeUrl().isBlank()) {
+                String videoId = playlistService.extractVideoId(form.youtubeUrl());
+                if (form.novaPlaylistNome() != null && !form.novaPlaylistNome().isBlank()) {
+                    String playlistId = playlistService.createPlaylist(form.novaPlaylistNome(), usuarioId).getId();
+                    playlistService.addItem(playlistId, form.youtubeUrl(), videoId, usuarioId);
+                } else if (form.playlistId() != null && !form.playlistId().isBlank()) {
+                    playlistService.addItem(form.playlistId(), form.youtubeUrl(), videoId, usuarioId);
+                }
+                playlistService.addItem(playlistService.findOrCreateHiddenPlaylist(usuarioId).getId(), form.youtubeUrl(), videoId, usuarioId);
+            }
+
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Formulário de cadastro de música inválido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             List<Album> albums = albumService.findAll();
-            renderizarFormulario(ctx, MusicaFormView.cadastro(form, albums), e.getMessage());
+            List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
+            renderizarFormulario(ctx, MusicaFormView.cadastro(form, albums, playlists), e.getMessage());
         }
     }
 
@@ -118,7 +143,8 @@ public final class MusicaController {
         }
 
         List<Album> albums = albumService.findAll();
-        renderizarFormulario(ctx, MusicaFormView.edicao(musica, albums), null);
+        List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
+        renderizarFormulario(ctx, MusicaFormView.edicao(musica, albums, playlists), null);
     }
 
     private void atualizar(Context ctx) {
@@ -152,6 +178,7 @@ public final class MusicaController {
                     form.resenha(),
                     notaVal,
                     form.spotifyUrl(),
+                    form.youtubeUrl(),
                     musicaExistente.getAlbumId(),
                     usuarioId
             );
@@ -161,7 +188,8 @@ public final class MusicaController {
             LOGGER.warn("Formulário de edição de música inválido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             List<Album> albums = albumService.findAll();
-            renderizarFormulario(ctx, MusicaFormView.edicao(id, form, albums), e.getMessage());
+            List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
+            renderizarFormulario(ctx, MusicaFormView.edicao(id, form, albums, playlists), e.getMessage());
         }
     }
 
@@ -192,7 +220,10 @@ public final class MusicaController {
                 null,
                 ctx.formParam("nota"),
                 ctx.formParam("resenha"),
-                ctx.formParam("spotifyUrl")
+                ctx.formParam("spotifyUrl"),
+                ctx.formParam("youtubeUrl"),
+                ctx.formParam("playlistId"),
+                ctx.formParam("novaPlaylistNome")
         ).normalizado();
     }
 

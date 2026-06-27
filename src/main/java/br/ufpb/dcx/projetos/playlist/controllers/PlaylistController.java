@@ -26,7 +26,9 @@ public final class PlaylistController {
         app.post("/playlists/{id}/items", this::adicionarItem);
         app.post("/playlists/{id}/items/{itemId}/remover", this::removerItem);
         app.get("/api/playlists", this::listarJson);
+        app.post("/api/playlists", this::criarPlaylistJson);
         app.get("/api/playlists/{id}", this::obterPlaylistJson);
+        app.post("/api/playlists/{id}/items", this::adicionarItemJson);
     }
 
     private void listar(Context ctx) {
@@ -71,7 +73,7 @@ public final class PlaylistController {
         String url = ctx.formParam("url");
 
         try {
-            String videoId = extrairVideoId(url);
+            String videoId = service.extractVideoId(url);
             service.addItem(playlistId, url, videoId, usuarioId);
             ctx.status(HttpStatus.SEE_OTHER).header("Location", "/playlists/" + playlistId);
         } catch (IllegalArgumentException e) {
@@ -99,6 +101,18 @@ public final class PlaylistController {
         ctx.json(service.findByUsuarioId(usuarioId));
     }
 
+    private void criarPlaylistJson(Context ctx) {
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        PlaylistRequest request = ctx.bodyAsClass(PlaylistRequest.class);
+
+        try {
+            Playlist playlist = service.createPlaylist(request.nome, usuarioId);
+            ctx.status(HttpStatus.CREATED).json(playlist);
+        } catch (IllegalArgumentException e) {
+            responderErroJson(ctx, e.getMessage());
+        }
+    }
+
     private void obterPlaylistJson(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
@@ -109,21 +123,35 @@ public final class PlaylistController {
         ctx.json(payload);
     }
 
-    private String extrairVideoId(String url) {
-        if (url == null) {
-            throw new IllegalArgumentException("A URL do YouTube é obrigatória.");
+    private void adicionarItemJson(Context ctx) {
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        String playlistId = ctx.pathParam("id");
+        PlaylistItemRequest request = ctx.bodyAsClass(PlaylistItemRequest.class);
+
+        try {
+            String videoId = service.extractVideoId(request.url);
+            PlaylistItem item = service.addItem(playlistId, request.url, videoId, usuarioId);
+            ctx.status(HttpStatus.CREATED).json(item);
+        } catch (IllegalArgumentException e) {
+            responderErroJson(ctx, e.getMessage());
         }
-        String query = url.trim();
-        if (query.contains("youtube.com/watch?v=")) {
-            int begin = query.indexOf("v=") + 2;
-            int end = query.indexOf('&', begin);
-            return end > 0 ? query.substring(begin, end) : query.substring(begin);
+    }
+
+    private void responderErroJson(Context ctx, String mensagem) {
+        ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).json(Map.of("erro", mensagem));
+    }
+
+    public static final class PlaylistRequest {
+        public String nome;
+
+        public PlaylistRequest() {
         }
-        if (query.contains("youtu.be/")) {
-            int begin = query.indexOf("youtu.be/") + 9;
-            int end = query.indexOf('?', begin);
-            return end > 0 ? query.substring(begin, end) : query.substring(begin);
+    }
+
+    public static final class PlaylistItemRequest {
+        public String url;
+
+        public PlaylistItemRequest() {
         }
-        throw new IllegalArgumentException("A URL precisa ser um link do YouTube válido.");
     }
 }

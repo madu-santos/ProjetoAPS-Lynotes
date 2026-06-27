@@ -37,15 +37,19 @@ public final class AlbumSchemaInitializer {
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS resenha TEXT;
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS nota INT;
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS spotify_url VARCHAR(255);
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS youtube_url VARCHAR(255);
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS usuario_id VARCHAR(36);
 
             CREATE TABLE IF NOT EXISTS playlist (
                 id VARCHAR(36) PRIMARY KEY,
                 nome VARCHAR(255) NOT NULL,
                 usuario_id VARCHAR(36) NOT NULL,
+                oculta BOOLEAN NOT NULL DEFAULT FALSE,
                 criado_em TIMESTAMP WITH TIME ZONE NOT NULL,
                 CONSTRAINT fk_playlist_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
             );
+
+            ALTER TABLE playlist ADD COLUMN IF NOT EXISTS oculta BOOLEAN NOT NULL DEFAULT FALSE;
 
             CREATE TABLE IF NOT EXISTS playlist_item (
                 id VARCHAR(36) PRIMARY KEY,

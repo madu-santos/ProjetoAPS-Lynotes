@@ -18,6 +18,7 @@ public final class PlaylistService {
     }
 
     public Playlist createPlaylist(String nome, String usuarioId) {
+        validarUsuarioId(usuarioId);
         validarNome(nome);
         Playlist playlist = Playlist.novo(nome, usuarioId);
         playlistRepository.create(playlist);
@@ -25,7 +26,40 @@ public final class PlaylistService {
     }
 
     public List<Playlist> findByUsuarioId(String usuarioId) {
-        return playlistRepository.findByUsuarioId(usuarioId);
+        validarUsuarioId(usuarioId);
+        return playlistRepository.findByUsuarioId(usuarioId).stream()
+                .filter(playlist -> !playlist.isOculta())
+                .toList();
+    }
+
+    public Playlist findOrCreateHiddenPlaylist(String usuarioId) {
+        validarUsuarioId(usuarioId);
+        return playlistRepository.findByUsuarioId(usuarioId).stream()
+                .filter(playlist -> playlist.isOculta() || "Músicas do seu catálogo".equalsIgnoreCase(playlist.getNome()))
+                .findFirst()
+                .orElseGet(() -> {
+                    Playlist playlist = Playlist.novo("Músicas do seu catálogo", usuarioId, true);
+                    playlistRepository.create(playlist);
+                    return playlist;
+                });
+    }
+
+    public String extractVideoId(String url) {
+        if (url == null) {
+            throw new IllegalArgumentException("A URL do YouTube é obrigatória.");
+        }
+        String query = url.trim();
+        if (query.contains("youtube.com/watch?v=")) {
+            int begin = query.indexOf("v=") + 2;
+            int end = query.indexOf('&', begin);
+            return end > 0 ? query.substring(begin, end) : query.substring(begin);
+        }
+        if (query.contains("youtu.be/")) {
+            int begin = query.indexOf("youtu.be/") + 9;
+            int end = query.indexOf('?', begin);
+            return end > 0 ? query.substring(begin, end) : query.substring(begin);
+        }
+        throw new IllegalArgumentException("A URL precisa ser um link do YouTube válido.");
     }
 
     public PlaylistWithItems findPlaylistWithItems(String playlistId, String usuarioId) {
@@ -68,6 +102,12 @@ public final class PlaylistService {
     private void validarNome(String nome) {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("O nome da playlist é obrigatório.");
+        }
+    }
+
+    private void validarUsuarioId(String usuarioId) {
+        if (usuarioId == null || usuarioId.isBlank()) {
+            throw new IllegalArgumentException("Usuário não autenticado.");
         }
     }
 

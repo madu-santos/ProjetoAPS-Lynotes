@@ -9,17 +9,23 @@ public final class Playlist {
     private final String id;
     private final String nome;
     private final String usuarioId;
+    private final boolean oculta;
     private final Instant criadoEm;
 
-    public Playlist(String id, String nome, String usuarioId, Instant criadoEm) {
+    public Playlist(String id, String nome, String usuarioId, boolean oculta, Instant criadoEm) {
         this.id = Objects.requireNonNull(id);
         this.nome = Objects.requireNonNull(nome);
         this.usuarioId = Objects.requireNonNull(usuarioId);
+        this.oculta = oculta;
         this.criadoEm = Objects.requireNonNull(criadoEm);
     }
 
     public static Playlist novo(String nome, String usuarioId) {
-        return new Playlist(UUID.randomUUID().toString(), nome, usuarioId, Instant.now());
+        return new Playlist(UUID.randomUUID().toString(), nome, usuarioId, false, Instant.now());
+    }
+
+    public static Playlist novo(String nome, String usuarioId, boolean oculta) {
+        return new Playlist(UUID.randomUUID().toString(), nome, usuarioId, oculta, Instant.now());
     }
 
     public String getId() {
@@ -32,6 +38,10 @@ public final class Playlist {
 
     public String getUsuarioId() {
         return usuarioId;
+    }
+
+    public boolean isOculta() {
+        return oculta;
     }
 
     public Instant getCriadoEm() {
