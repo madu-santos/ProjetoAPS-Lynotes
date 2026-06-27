@@ -56,7 +56,7 @@
     position: relative;
 }
 
-#mini-player .player-iframe {
+#mini-player .player-frame-holder iframe {
     border: 0;
     height: 1px;
     opacity: 0;
