@@ -37,8 +37,31 @@ public final class AlbumSchemaInitializer {
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS resenha TEXT;
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS nota INT;
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS spotify_url VARCHAR(255);
+            ALTER TABLE musica ADD COLUMN IF NOT EXISTS youtube_url VARCHAR(255);
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS usuario_id VARCHAR(36);
-            
+
+            CREATE TABLE IF NOT EXISTS playlist (
+                id VARCHAR(36) PRIMARY KEY,
+                nome VARCHAR(255) NOT NULL,
+                usuario_id VARCHAR(36) NOT NULL,
+                oculta BOOLEAN NOT NULL DEFAULT FALSE,
+                criado_em TIMESTAMP WITH TIME ZONE NOT NULL,
+                CONSTRAINT fk_playlist_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+            );
+
+            ALTER TABLE playlist ADD COLUMN IF NOT EXISTS oculta BOOLEAN NOT NULL DEFAULT FALSE;
+
+            CREATE TABLE IF NOT EXISTS playlist_item (
+                id VARCHAR(36) PRIMARY KEY,
+                playlist_id VARCHAR(36) NOT NULL,
+                url VARCHAR(500) NOT NULL,
+                video_id VARCHAR(50) NOT NULL,
+                titulo VARCHAR(500) NOT NULL,
+                ordem INT NOT NULL,
+                criado_em TIMESTAMP WITH TIME ZONE NOT NULL,
+                CONSTRAINT fk_playlist_item_playlist FOREIGN KEY (playlist_id) REFERENCES playlist(id) ON DELETE CASCADE
+            );
+
             DO $$
             BEGIN
                 IF NOT EXISTS (

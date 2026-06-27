@@ -20,7 +20,7 @@ public final class MusicaDbRepository implements MusicaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MusicaDbRepository.class);
 
-    private static final String COLUNAS = "id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, album_id, usuario_id";
+    private static final String COLUNAS = "id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id";
 
     private final ConnectionFactory connectionFactory;
 
@@ -31,8 +31,8 @@ public final class MusicaDbRepository implements MusicaRepository {
     @Override
     public void criar(Musica musica) {
         String sql = """
-                INSERT INTO musica (id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, album_id, usuario_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO musica (id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> {
@@ -56,17 +56,18 @@ public final class MusicaDbRepository implements MusicaRepository {
             }
             
             statement.setString(8, musica.getSpotifyUrl());
+            statement.setString(9, musica.getYoutubeUrl());
             
             if (musica.getAlbumId() != null && !musica.getAlbumId().isBlank()) {
-                statement.setString(9, musica.getAlbumId());
+                statement.setString(10, musica.getAlbumId());
             } else {
-                statement.setNull(9, Types.VARCHAR);
+                statement.setNull(10, Types.VARCHAR);
             }
             
             if (musica.getUsuarioId() != null && !musica.getUsuarioId().isBlank()) {
-                statement.setString(10, musica.getUsuarioId());
+                statement.setString(11, musica.getUsuarioId());
             } else {
-                statement.setNull(10, Types.VARCHAR);
+                statement.setNull(11, Types.VARCHAR);
             }
         });
         LOGGER.debug("Música persistida no catálogo. id={}", musica.getId());
@@ -76,7 +77,7 @@ public final class MusicaDbRepository implements MusicaRepository {
     public boolean atualizar(Musica musica) {
         String sql = """
                 UPDATE musica
-                SET titulo = ?, artista = ?, genero = ?, duracao_segundos = ?, resenha = ?, nota = ?, spotify_url = ?, album_id = ?, usuario_id = ?
+                SET titulo = ?, artista = ?, genero = ?, duracao_segundos = ?, resenha = ?, nota = ?, spotify_url = ?, youtube_url = ?, album_id = ?, usuario_id = ?
                 WHERE id = ?
                 """;
 
@@ -100,20 +101,21 @@ public final class MusicaDbRepository implements MusicaRepository {
             }
             
             statement.setString(7, musica.getSpotifyUrl());
+            statement.setString(8, musica.getYoutubeUrl());
             
             if (musica.getAlbumId() != null && !musica.getAlbumId().isBlank()) {
-                statement.setString(8, musica.getAlbumId());
-            } else {
-                statement.setNull(8, Types.VARCHAR);
-            }
-            
-            if (musica.getUsuarioId() != null && !musica.getUsuarioId().isBlank()) {
-                statement.setString(9, musica.getUsuarioId());
+                statement.setString(9, musica.getAlbumId());
             } else {
                 statement.setNull(9, Types.VARCHAR);
             }
             
-            statement.setString(10, musica.getId());
+            if (musica.getUsuarioId() != null && !musica.getUsuarioId().isBlank()) {
+                statement.setString(10, musica.getUsuarioId());
+            } else {
+                statement.setNull(10, Types.VARCHAR);
+            }
+            
+            statement.setString(11, musica.getId());
         });
         return alterados == 1;
     }
@@ -210,6 +212,7 @@ public final class MusicaDbRepository implements MusicaRepository {
                 result.getString("resenha"),
                 result.getObject("nota", Integer.class),
                 result.getString("spotify_url"),
+                result.getString("youtube_url"),
                 result.getString("album_id"),
                 result.getString("usuario_id")
         );

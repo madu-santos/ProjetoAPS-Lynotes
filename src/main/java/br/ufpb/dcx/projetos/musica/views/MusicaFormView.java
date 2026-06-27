@@ -17,10 +17,14 @@ public final class MusicaFormView {
     private final String resenha;
     private final String nota;
     private final String spotifyUrl;
+    private final String youtubeUrl;
     private final String albumId;
+    private final String playlistId;
+    private final String novaPlaylistNome;
     private final boolean edicao;
     private final String acao;
     private final List<Album> albums;
+    private final List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists;
 
     private MusicaFormView(
             String id,
@@ -31,10 +35,14 @@ public final class MusicaFormView {
             String resenha,
             String nota,
             String spotifyUrl,
+            String youtubeUrl,
             String albumId,
+            String playlistId,
+            String novaPlaylistNome,
             boolean edicao,
             String acao,
-            List<Album> albums
+            List<Album> albums,
+            List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists
     ) {
         this.id = id;
         this.titulo = titulo;
@@ -44,10 +52,14 @@ public final class MusicaFormView {
         this.resenha = resenha;
         this.nota = nota;
         this.spotifyUrl = spotifyUrl;
+        this.youtubeUrl = youtubeUrl;
         this.albumId = albumId;
+        this.playlistId = playlistId;
+        this.novaPlaylistNome = novaPlaylistNome;
         this.edicao = edicao;
         this.acao = acao;
         this.albums = albums;
+        this.playlists = playlists;
     }
 
     public static MusicaFormView cadastro(MusicaForm form, List<Album> albums) {
@@ -60,14 +72,39 @@ public final class MusicaFormView {
                 valor(form.resenha()),
                 valor(form.nota()),
                 valor(form.spotifyUrl()),
+                valor(form.youtubeUrl()),
                 valor(form.albumId()),
+                valor(form.playlistId()),
+                valor(form.novaPlaylistNome()),
                 false,
                 "/musicas",
-                albums
+                albums,
+                java.util.Collections.emptyList()
         );
     }
 
-    public static MusicaFormView edicao(Musica musica, List<Album> albums) {
+    public static MusicaFormView cadastro(MusicaForm form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
+        return new MusicaFormView(
+                null,
+                valor(form.titulo()),
+                valor(form.artista()),
+                null, // genero
+                valor(form.duracaoSegundos()),
+                valor(form.resenha()),
+                valor(form.nota()),
+                valor(form.spotifyUrl()),
+                valor(form.youtubeUrl()),
+                valor(form.albumId()),
+                valor(form.playlistId()),
+                valor(form.novaPlaylistNome()),
+                false,
+                "/musicas",
+                albums,
+                playlists
+        );
+    }
+
+    public static MusicaFormView edicao(Musica musica, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
         return new MusicaFormView(
                 musica.getId(),
                 musica.getTitulo(),
@@ -77,14 +114,18 @@ public final class MusicaFormView {
                 musica.getResenha(),
                 musica.getNota() != null ? String.valueOf(musica.getNota()) : "",
                 musica.getSpotifyUrl(),
+                musica.getYoutubeUrl(),
                 musica.getAlbumId(),
+                null,
+                null,
                 true,
-                "/musicas/" + musica.getId(),
-                albums
+                "/musicas/edit/" + musica.getId(),
+                albums,
+                playlists
         );
     }
 
-    public static MusicaFormView edicao(String id, MusicaForm form, List<Album> albums) {
+    public static MusicaFormView edicao(String id, MusicaForm form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
         return new MusicaFormView(
                 id,
                 valor(form.titulo()),
@@ -94,15 +135,35 @@ public final class MusicaFormView {
                 valor(form.resenha()),
                 valor(form.nota()),
                 valor(form.spotifyUrl()),
+                valor(form.youtubeUrl()),
                 valor(form.albumId()),
+                valor(form.playlistId()),
+                valor(form.novaPlaylistNome()),
                 true,
-                "/musicas/" + id,
-                albums
+                "/musicas/edit/" + id,
+                albums,
+                playlists
         );
     }
 
     private static String valor(String valor) {
         return Objects.toString(valor, "");
+    }
+
+    public String getYoutubeUrl() {
+        return youtubeUrl;
+    }
+
+    public String getPlaylistId() {
+        return playlistId;
+    }
+
+    public String getNovaPlaylistNome() {
+        return novaPlaylistNome;
+    }
+
+    public List<br.ufpb.dcx.projetos.playlist.models.Playlist> getPlaylists() {
+        return playlists;
     }
 
     public String getId() {

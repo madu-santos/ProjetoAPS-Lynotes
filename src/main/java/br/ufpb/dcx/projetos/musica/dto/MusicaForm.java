@@ -9,7 +9,10 @@ public record MusicaForm(
         String albumId,
         String nota,
         String resenha,
-        String spotifyUrl
+        String spotifyUrl,
+        String youtubeUrl,
+        String playlistId,
+        String novaPlaylistNome
 ) {
 
     public MusicaForm normalizado() {
@@ -20,7 +23,10 @@ public record MusicaForm(
                 normalizarOpcional(albumId),
                 normalizarOpcional(nota),
                 normalizarOpcional(resenha),
-                normalizarOpcional(spotifyUrl)
+                normalizarOpcional(spotifyUrl),
+                normalizarOpcional(youtubeUrl),
+                normalizarOpcional(playlistId),
+                normalizarOpcional(novaPlaylistNome)
         );
     }
 
