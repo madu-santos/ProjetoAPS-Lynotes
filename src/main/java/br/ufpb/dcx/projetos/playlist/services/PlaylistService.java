@@ -6,6 +6,11 @@ import br.ufpb.dcx.projetos.playlist.models.PlaylistItem;
 import br.ufpb.dcx.projetos.playlist.models.PlaylistWithItems;
 import br.ufpb.dcx.projetos.playlist.repositories.PlaylistRepository;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,7 +90,10 @@ public final class PlaylistService {
         }
 
         int ordem = playlistRepository.countItemsByPlaylistId(playlistId) + 1;
-        PlaylistItem item = PlaylistItem.novo(playlistId, url, videoId, ordem);
+        String titulo = fetchYouTubeTitle(url, videoId);
+        PlaylistItem item = new PlaylistItem(
+                java.util.UUID.randomUUID().toString(),
+                playlistId, url, videoId, titulo, ordem, java.time.Instant.now());
         playlistRepository.createItem(item);
         return item;
     }
@@ -106,6 +114,35 @@ public final class PlaylistService {
 
     public Optional<Playlist> findById(String playlistId) {
         return playlistRepository.findById(playlistId);
+    }
+
+    private String fetchYouTubeTitle(String url, String videoId) {
+        try {
+            String oEmbedUrl = "https://www.youtube.com/oembed?url="
+                    + java.net.URLEncoder.encode(url, java.nio.charset.StandardCharsets.UTF_8)
+                    + "&format=json";
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(java.time.Duration.ofSeconds(5))
+                    .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(oEmbedUrl))
+                    .timeout(java.time.Duration.ofSeconds(5))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                String body = response.body();
+                // Extrai "title" do JSON sem dependência extra
+                int start = body.indexOf('"', body.indexOf("\"title\":") + 8) + 1;
+                int end   = body.indexOf('"', start);
+                if (start > 0 && end > start) {
+                    return body.substring(start, end);
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            // fallback silencioso
+        }
+        return "YouTube - " + videoId;
     }
 
     private void validarNome(String nome) {
