@@ -50,6 +50,13 @@ function playerTogglePanel() {
     if (!container) return;
     playerState.collapsed = !playerState.collapsed;
     container.classList.toggle('collapsed', playerState.collapsed);
+
+    // Recarrega playlists ao abrir o painel (pega qualquer nova playlist criada)
+    if (!playerState.collapsed) {
+        const currentSelected = playerState.currentPlaylistId;
+        playerLoadPlaylists(currentSelected).catch(() => {});
+    }
+
     playerSaveState();
 }
 
@@ -506,3 +513,4 @@ async function initPlayerModule() {
 
 window.addEventListener('beforeunload', playerSaveState);
 window.addEventListener('DOMContentLoaded', initPlayerModule);
+

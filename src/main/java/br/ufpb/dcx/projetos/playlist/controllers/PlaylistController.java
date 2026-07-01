@@ -98,6 +98,10 @@ public final class PlaylistController {
 
     private void listarJson(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        if (usuarioId == null || usuarioId.isBlank()) {
+            ctx.json(java.util.List.of());
+            return;
+        }
         ctx.json(service.findByUsuarioId(usuarioId));
     }
 
