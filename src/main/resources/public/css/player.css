@@ -6,13 +6,13 @@
     /* o container inteiro desliza para a direita */
     transform: translateY(-50%) translateX(0);
     display: flex;
-    align-items: stretch;
+    align-items: center;
     z-index: 1050;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* quando collapsed, empurra tudo para fora — só a aba (20 px) fica visível */
+/* quando collapsed, empurra tudo para fora — só a aba (18 px) fica visível */
 #mini-player.collapsed {
-    transform: translateY(-50%) translateX(calc(100% - 20px));
+    transform: translateY(-50%) translateX(calc(100% - 18px));
 }
 
 /* === Toggle Tab (aba lateral) === */
@@ -23,14 +23,17 @@
     border-radius: 6px 0 0 6px;
     color: #a78bfa;
     cursor: pointer;
-    padding: 8px 5px;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: auto;
+    margin-bottom: auto;
     box-shadow: -3px 0 8px rgba(0,0,0,0.4);
     transition: background 0.2s, color 0.2s;
     flex-shrink: 0;
-    width: 20px;
+    width: 18px;
+    height: 48px;
 }
 .player-toggle-tab:hover {
     background: #2d2d4e;
