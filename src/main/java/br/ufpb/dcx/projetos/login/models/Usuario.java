@@ -12,13 +12,15 @@ public class Usuario {
     private String nome;
     private String email;
     private String senha; // Guardará o hash seguro da senha gerado pelo BCrypt
+    private String tipo; // ADMIN ou COMUM
 
     // Construtor completo usado para instanciar objetos vindo do Banco de Dados
-    public Usuario(String id, String nome, String email, String senha) {
+    public Usuario(String id, String nome, String email, String senha, String tipo) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.tipo = tipo;
     }
 
     // Construtor auxiliar sem o ID, gerando o UUID automaticamente (usado no cadastro de novos usuários)
@@ -27,6 +29,7 @@ public class Usuario {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.tipo = "COMUM";
     }
 
     // Getters e Setters
@@ -60,5 +63,13 @@ public class Usuario {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }

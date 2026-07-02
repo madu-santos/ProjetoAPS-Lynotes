@@ -11,6 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import io.javalin.openapi.OpenApi;
+import io.javalin.openapi.plugin.OpenApiPlugin;
+import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
+import org.flywaydb.core.Flyway;
+
 import java.util.Objects;
 
 public final class App {
@@ -32,9 +37,35 @@ public final class App {
         carregarEnv();
         Javalin app = criarJavalin();
         registrarRotasPublicas(app);
-        registrarAutenticacao(app);
+
+        String dbUrl = variavelAmbiente("DB_URL", "jdbc:postgresql://localhost:5432/spotify_db");
+        String dbUser = variavelAmbiente("DB_USER", "postgres");
+        String dbPass = variavelAmbiente("DB_PASSWORD", "postgres");
+
+        // Executar Flyway Migrations
+        try {
+            LOGGER.info("Iniciando migrations com Flyway...");
+            Flyway.configure()
+                    .dataSource(dbUrl, dbUser, dbPass)
+                    .baselineOnMigrate(true)
+                    .load()
+                    .migrate();
+        } catch (Exception e) {
+            LOGGER.warn("Erro ao executar Flyway Migrations (provavelmente banco offline): {}", e.getMessage());
+        }
+
+        var repo = new br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository(dbUrl, dbUser, dbPass);
+        var service = new br.ufpb.dcx.projetos.login.services.UsuarioService(repo, new br.ufpb.dcx.projetos.login.services.BCryptHashingStrategy());
+
+        registrarAutenticacao(app, service);
+
+        // Remover ou ignorar as inicializações antigas
+        // ArtistaSchemaInitializer.inicializar(criarConnectionFactory());
         ArtistaModule.registrar(app, criarConnectionFactory());
+        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, criarConnectionFactory(), service);
+        br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, criarConnectionFactory());
         registrarLogHttp(app);
+        registrarTratamentoDeErrosGlobais(app);
         return app;
     }
 
@@ -75,27 +106,68 @@ public final class App {
         return Javalin.create(config -> {
             config.staticFiles.add("/public");
             config.fileRenderer(new JavalinThymeleaf(criarTemplateEngine()));
+            config.registerPlugin(new OpenApiPlugin(openapi -> {
+                openapi.withDefinitionConfiguration((version, definition) -> {
+                    definition.withInfo(info -> {
+                        info.title("Lynotes API");
+                        info.version("1.0.0");
+                    });
+                });
+            }));
+            config.registerPlugin(new SwaggerPlugin(swagger -> {
+                swagger.setUiPath("/swagger");
+            }));
         });
     }
 
+    @OpenApi(
+        summary = "Verificar Saúde da API",
+        path = "/ping",
+        methods = io.javalin.openapi.HttpMethod.GET,
+        tags = {"Sistema"}
+    )
     private static void registrarRotasPublicas(Javalin app) {
-        app.get("/", ctx -> ctx.render("index"));
-        app.get("/ping", ctx -> ctx.result("pong"));
+        app.get("/ping", ctx -> ctx.json(java.util.Map.of(
+                "status", "ok",
+                "service", "eq09",
+                "timestamp", java.time.Instant.now().toString()
+        )));
     }
 
-    private static void registrarAutenticacao(Javalin app) {
-        LoginController loginController = new LoginController();
+    private static void registrarAutenticacao(Javalin app, br.ufpb.dcx.projetos.login.services.UsuarioService service) {
+        LoginController loginController = new LoginController(service);
         loginController.registrarRotas(app);
         app.beforeMatched(ctx -> {
-            if (rotaProtegida(ctx.path()) && !LoginController.estaAutenticado(ctx)) {
+            if (rotaProtegida(ctx.path(), ctx.method().name()) && !LoginController.estaAutenticado(ctx)) {
                 ctx.redirect("/login");
+                ctx.skipRemainingHandlers();
+            }
+            if (rotaAdmin(ctx.path()) && !isAdmin(ctx)) {
+                ctx.status(403).result("Acesso negado. Esta rota é restrita a administradores.");
                 ctx.skipRemainingHandlers();
             }
         });
     }
 
-    private static boolean rotaProtegida(String path) {
-        return path.startsWith("/artistas");
+    private static boolean rotaAdmin(String path) {
+        return path.startsWith("/admin");
+    }
+
+    private static boolean isAdmin(io.javalin.http.Context ctx) {
+        if (!LoginController.estaAutenticado(ctx)) return false;
+        String tipo = ctx.sessionAttribute("usuarioLogadoTipo");
+        return "ADMIN".equals(tipo);
+    }
+
+    private static boolean rotaProtegida(String path, String method) {
+        // Permite o acesso público para criação de novos usuários (GET e POST)
+        if (path.equals("/usuarios/novo") && method.equalsIgnoreCase("GET")) {
+            return false;
+        }
+        if (path.equals("/usuarios") && method.equalsIgnoreCase("POST")) {
+            return false;
+        }
+        return path.startsWith("/artistas") || path.startsWith("/usuarios") || path.startsWith("/albums") || path.startsWith("/musicas") || path.startsWith("/playlists") || path.startsWith("/api/playlists");
     }
 
     private static void registrarLogHttp(Javalin app) {
@@ -105,6 +177,22 @@ public final class App {
                 ctx.path(),
                 ctx.statusCode()
         ));
+    }
+
+    private static void registrarTratamentoDeErrosGlobais(Javalin app) {
+        app.error(404, ctx -> {
+            ctx.render("erros/404");
+        });
+
+        app.error(500, ctx -> {
+            ctx.render("erros/500");
+        });
+
+        app.exception(Exception.class, (e, ctx) -> {
+            LOGGER.error("Erro interno não tratado pego pelo manipulador global", e);
+            ctx.status(500);
+            ctx.render("erros/500");
+        });
     }
 
     private static ConnectionFactory criarConnectionFactory() {

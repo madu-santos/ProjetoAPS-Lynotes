@@ -5,11 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artistas - Lynotes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+    <link href="/css/player.css" rel="stylesheet">
+<script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body class="bg-light">
-    <nav class="navbar bg-dark navbar-dark">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+<div id="app-content">
+
+<nav class="navbar navbar-expand bg-dark navbar-dark">
         <div class="container">
-            <span class="navbar-brand">Lynotes</span>
+            <a class="navbar-brand fw-bold text-purple" href="/">Lynotes</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Meu Catálogo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/artistas">Artistas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/albums">Álbuns</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/playlists">Playlists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/usuarios">Usuários</a>
+                </li>
+            </ul>
             <form method="post" action="/logout">
                 <span class="text-white me-3" th:text="'Olá, ' + ${usuarioLogado}"></span>
                 <button class="btn btn-outline-light btn-sm" type="submit">Sair</button>
@@ -67,7 +89,12 @@
                     </thead>
                     <tbody>
                         <tr th:each="artista : ${listaArtistas}">
-                            <td class="fw-semibold" th:text="${artista.nome}"></td>
+                            <td class="fw-semibold">
+                                <span th:text="${artista.nome}"></span>
+                                <span class="badge bg-success" th:if="${artista.statusVerificacao.name() == 'APROVADO'}">Verificado</span>
+                                <span class="badge bg-warning text-dark" th:if="${artista.statusVerificacao.name() == 'PENDENTE'}">Pendente</span>
+                                <span class="badge bg-danger" th:if="${artista.statusVerificacao.name() == 'REJEITADO'}">Rejeitado</span>
+                            </td>
                             <td th:text="${artista.generoMusical != null
                                 ? artista.generoMusical
                                 : 'Não informado'}"></td>
@@ -100,5 +127,9 @@
             </div>
         </div>
     </main>
+
+</div>
+<div th:insert="fragments/player :: player"></div>
+    <script src="/js/player.js" defer></script>
 </body>
 </html>

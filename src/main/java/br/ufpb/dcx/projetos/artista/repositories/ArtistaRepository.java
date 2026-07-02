@@ -11,11 +11,15 @@ public interface ArtistaRepository {
 
     boolean atualizar(Artista artista);
 
-    Optional<Artista> buscarPorId(String id);
+    Optional<Artista> buscarPorId(String id, String usuarioId);
 
-    List<Artista> listarTodos();
+    List<Artista> listarTodos(String usuarioId);
 
-    List<Artista> buscar(String termo);
+    List<Artista> buscar(String termo, String usuarioId);
 
-    boolean remover(String id);
+    List<Artista> listarPendentes();
+
+    boolean atualizarStatusVerificacao(String id, br.ufpb.dcx.projetos.artista.models.StatusVerificacao status);
+
+    boolean remover(String id, String usuarioId);
 }

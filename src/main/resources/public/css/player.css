@@ -1,0 +1,324 @@
+/* === Mini Player Container === */
+#mini-player {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    /* o container inteiro desliza para a direita */
+    transform: translateY(-50%) translateX(0);
+    display: flex;
+    align-items: center;
+    z-index: 1050;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* quando collapsed, empurra tudo para fora — só a aba (18 px) fica visível */
+#mini-player.collapsed {
+    transform: translateY(-50%) translateX(calc(100% - 18px));
+}
+
+/* === Toggle Tab (aba lateral) === */
+.player-toggle-tab {
+    background: #1a1a2e;
+    border: 1px solid #3a3a5c;
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    color: #a78bfa;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    margin-bottom: auto;
+    box-shadow: -3px 0 8px rgba(0,0,0,0.4);
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+    width: 18px;
+    height: 48px;
+}
+.player-toggle-tab:hover {
+    background: #2d2d4e;
+    color: #c4b5fd;
+}
+.player-toggle-icon {
+    font-size: 0.75rem;
+    display: block;
+    writing-mode: initial;
+    transition: transform 0.35s ease;
+}
+/* seta aponta para esquerda (fechar) quando aberto; direita quando recolhido */
+#mini-player.collapsed .player-toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* === Player Panel === */
+.player-panel {
+    width: 320px;
+    max-width: calc(100vw - 50px);
+    background: linear-gradient(160deg, #1a1a2e 0%, #12122a 100%);
+    border: 1px solid #3a3a5c;
+    border-right: none;
+    border-radius: 12px 0 0 12px;
+    padding: 1.1rem 1rem 0.8rem;
+    box-shadow: -8px 0 32px rgba(0,0,0,0.5);
+    color: #f8f9fa;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+/* === Header === */
+#mini-player .player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#mini-player h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+/* === Vinyl Disc === */
+.player-vinyl-container {
+    display: flex;
+    justify-content: center;
+    margin: 0.6rem 0 0.8rem;
+}
+.player-vinyl {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%,
+        #111 0%,
+        #111 18%,
+        #2a2a2a 19%,
+        #1a1a1a 28%,
+        #333 29%,
+        #1c1c1c 38%,
+        #3a3a3a 39%,
+        #1e1e1e 52%,
+        #444 53%,
+        #222 68%,
+        #4a4a4a 69%,
+        #1a1a1a 80%,
+        #555 81%,
+        #111 100%
+    );
+    box-shadow:
+        0 0 0 2px #444,
+        0 0 0 3px #111,
+        0 4px 20px rgba(0,0,0,0.7);
+    position: relative;
+    transition: filter 0.3s;
+    animation-play-state: paused;
+}
+.player-vinyl.spinning {
+    animation: vinylSpin 2.5s linear infinite;
+}
+.player-vinyl-label {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background: radial-gradient(circle, #a78bfa 0%, #7c3aed 60%, #4c1d95 100%);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px rgba(167, 139, 250, 0.5);
+}
+.player-vinyl-label::after {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    background: #1a1a2e;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+@keyframes vinylSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* === Track Title === */
+.player-current-title {
+    font-size: 0.82rem;
+    color: #a78bfa;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 1.2rem;
+}
+
+/* === Progress Bar === */
+.player-progress-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.player-time {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    min-width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.player-progress-bar {
+    flex: 1;
+    height: 4px;
+    background: #374151;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: height 0.15s;
+}
+.player-progress-bar:hover {
+    height: 6px;
+}
+.player-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #a78bfa, #7c3aed);
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.5s linear;
+    pointer-events: none;
+}
+.player-progress-thumb {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(167,139,250,0.8);
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+}
+.player-progress-bar:hover .player-progress-thumb {
+    opacity: 1;
+}
+
+/* === Controls === */
+#mini-player .player-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+}
+#mini-player .player-controls .btn {
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: transform 0.1s, background 0.2s;
+}
+#mini-player .player-play-btn {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.1rem !important;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    border: none;
+}
+#mini-player .player-play-btn:hover {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+}
+#mini-player .player-controls .btn:active {
+    transform: scale(0.92);
+}
+
+/* === Hidden iframe holder === */
+#mini-player .player-frame-holder {
+    height: 1px;
+    overflow: hidden;
+    position: relative;
+}
+#mini-player .player-frame-holder iframe {
+    border: 0;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 1px;
+}
+
+/* === Playlist Select === */
+#mini-player .form-select {
+    background-color: #1e1e3a;
+    border: 1px solid #3a3a5c;
+    color: #e2e8f0;
+    font-size: 0.8rem;
+}
+#mini-player .form-select:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3);
+}
+
+/* === Message === */
+#mini-player .player-message {
+    color: #f8d7da;
+    font-size: 0.76rem;
+    min-height: 1rem;
+    text-align: center;
+    margin-bottom: 0.3rem;
+}
+
+/* === Track List === */
+#mini-player .player-track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    max-height: 120px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a5c transparent;
+}
+#mini-player .player-track-button {
+    align-items: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid #2d2d4e;
+    border-radius: 6px;
+    color: #94a3b8;
+    display: flex;
+    font-size: 0.76rem;
+    padding: 0.3rem 0.5rem;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+#mini-player .player-track-button:hover {
+    background: rgba(124, 58, 237, 0.15);
+    border-color: #7c3aed;
+    color: #e2e8f0;
+}
+#mini-player .player-track-button.active {
+    background: rgba(124, 58, 237, 0.25);
+    border-color: #a78bfa;
+    color: #fff;
+}
+
+/* === Mobile === */
+@media (max-width: 720px) {
+    #mini-player {
+        top: auto;
+        bottom: 1rem;
+        transform: none;
+    }
+    .player-panel {
+        width: calc(100vw - 50px);
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}

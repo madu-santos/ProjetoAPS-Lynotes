@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface ArtistaUseCase {
 
-    List<Artista> listar(String busca);
+    List<Artista> listar(String busca, String usuarioId);
 
-    Artista obter(String id);
+    Artista obter(String id, String usuarioId);
 
-    Artista cadastrar(ArtistaForm formulario);
+    Artista cadastrar(ArtistaForm formulario, String usuarioId);
 
-    Artista atualizar(String id, ArtistaForm formulario);
+    Artista atualizar(String id, ArtistaForm formulario, String usuarioId);
 
-    void remover(String id);
+    void remover(String id, String usuarioId);
 }

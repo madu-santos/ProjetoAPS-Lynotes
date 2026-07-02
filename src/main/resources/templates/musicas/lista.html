@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Músicas - Lynotes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+    <link href="/css/player.css" rel="stylesheet">
+<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+</head>
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="bg-light">
+<div id="app-content">
+
+    <nav class="navbar navbar-expand bg-dark navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Lynotes</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/artistas">Artistas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/albums">Álbuns</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/musicas">Músicas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/playlists">Playlists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/usuarios">Usuários</a>
+                </li>
+            </ul>
+            <form method="post" action="/logout">
+                <span class="text-white me-3" th:text="'Olá, ' + ${usuarioLogado}"></span>
+                <button class="btn btn-outline-light btn-sm" type="submit">Sair</button>
+            </form>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1>Músicas</h1>
+                <p class="text-secondary mb-0">Cadastre e gerencie as músicas do catálogo.</p>
+            </div>
+            <a class="btn btn-primary" href="/musicas/new">Nova música</a>
+        </div>
+
+        <div class="alert alert-secondary" th:if="${semMusicas}">
+            Nenhuma música cadastrada.
+        </div>
+
+        <div class="card shadow-sm" th:unless="${semMusicas}">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Título</th>
+                            <th>Gênero</th>
+                            <th>Duração (segundos)</th>
+                            <th>Álbum</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="musica : ${musicas}">
+                            <td class="fw-semibold" th:text="${musica.titulo}"></td>
+                            <td th:text="${musica.genero}"></td>
+                            <td th:text="${musica.duracaoSegundos + ' s'}"></td>
+                            <td th:text="${musica.albumTitulo}"></td>
+                            <td class="text-end text-nowrap">
+                                <a class="btn btn-outline-primary btn-sm"
+                                   th:href="${'/musicas/edit/' + musica.id}">
+                                    Editar
+                                </a>
+                                <form class="d-inline"
+                                      method="post"
+                                      th:action="${'/musicas/delete/' + musica.id}">
+                                    <button class="btn btn-outline-danger btn-sm"
+                                            type="submit"
+                                            onclick="return confirm('Excluir esta música?')">
+                                        Excluir
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+</div>
+<div th:insert="fragments/player :: player"></div>
+    <script src="/js/player.js" defer></script>
+</body>
+</html>

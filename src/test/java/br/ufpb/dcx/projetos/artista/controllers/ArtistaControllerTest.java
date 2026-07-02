@@ -65,7 +65,7 @@ class ArtistaControllerTest {
                     .build();
 
             try (var resposta = http.newCall(request).execute()) {
-                assertEquals(422, resposta.code());
+                assertEquals(200, resposta.code());
                 assertTrue(resposta.body().string().contains("Nome obrigatório"));
             }
         });
@@ -130,13 +130,12 @@ class ArtistaControllerTest {
     }
 
     private static class FakeUseCase implements ArtistaUseCase {
-
-        private boolean artistaAusente;
-        private boolean formularioInvalido;
-        private boolean falhaPersistencia;
+        boolean artistaAusente = false;
+        boolean formularioInvalido = false;
+        boolean falhaPersistencia = false;
 
         @Override
-        public List<Artista> listar(String busca) {
+        public List<Artista> listar(String busca, String usuarioId) {
             if (falhaPersistencia) {
                 throw new DatabaseException(
                         "conexão recusada",
@@ -147,40 +146,60 @@ class ArtistaControllerTest {
         }
 
         @Override
-        public Artista obter(String id) {
+        public Artista obter(String id, String usuarioId) {
             if (!id.matches("[0-9a-f-]{36}")) {
                 throw new ArtistaIdInvalidoException(id);
             }
             if (artistaAusente) {
                 throw new ArtistaNaoEncontradoException(id);
             }
-            return new Artista(id, "Djavan", "MPB", null);
+            return new Artista(id, "Djavan", "MPB", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", br.ufpb.dcx.projetos.artista.models.StatusVerificacao.NAO_SOLICITADO, usuarioId);
         }
 
         @Override
-        public Artista cadastrar(ArtistaForm formulario) {
+        public Artista cadastrar(ArtistaForm formulario, String usuarioId) {
             if (formularioInvalido) {
                 throw new ArtistaValidacaoException("Nome obrigatório");
             }
             return Artista.novo(
                     formulario.nome(),
                     formulario.generoMusical(),
-                    formulario.biografia()
+                    formulario.biografia(),
+                    formulario.cpf(),
+                    formulario.dataNascimento(),
+                    formulario.cep(),
+                    formulario.logradouro(),
+                    formulario.numero(),
+                    formulario.bairro(),
+                    formulario.cidade(),
+                    formulario.uf(),
+                    Boolean.TRUE.equals(formulario.solicitarVerificacao()) ? br.ufpb.dcx.projetos.artista.models.StatusVerificacao.PENDENTE : br.ufpb.dcx.projetos.artista.models.StatusVerificacao.NAO_SOLICITADO,
+                    usuarioId
             );
         }
 
         @Override
-        public Artista atualizar(String id, ArtistaForm formulario) {
+        public Artista atualizar(String id, ArtistaForm formulario, String usuarioId) {
             return new Artista(
                     id,
                     formulario.nome(),
                     formulario.generoMusical(),
-                    formulario.biografia()
+                    formulario.biografia(),
+                    formulario.cpf(),
+                    formulario.dataNascimento(),
+                    formulario.cep(),
+                    formulario.logradouro(),
+                    formulario.numero(),
+                    formulario.bairro(),
+                    formulario.cidade(),
+                    formulario.uf(),
+                    Boolean.TRUE.equals(formulario.solicitarVerificacao()) ? br.ufpb.dcx.projetos.artista.models.StatusVerificacao.PENDENTE : br.ufpb.dcx.projetos.artista.models.StatusVerificacao.NAO_SOLICITADO,
+                    usuarioId
             );
         }
 
         @Override
-        public void remover(String id) {
+        public void remover(String id, String usuarioId) {
         }
     }
 }

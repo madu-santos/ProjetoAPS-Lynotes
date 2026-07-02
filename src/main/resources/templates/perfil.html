@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Catálogo de ' + ${perfilNome} + ' - Lynotes'">Catálogo - Lynotes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+    <link href="/css/player.css" rel="stylesheet">
+<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+</head>
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+<div id="app-content">
+
+<nav class="navbar navbar-expand bg-dark navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-purple" href="/">Lynotes</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Meu Catálogo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/artistas">Artistas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/albums">Álbuns</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/playlists">Playlists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/usuarios">Usuários</a>
+                </li>
+            </ul>
+            <form method="post" action="/logout">
+                <span class="text-white me-3" th:text="'Olá, ' + ${usuarioLogado}"></span>
+                <button class="btn btn-outline-light btn-sm" type="submit">Sair</button>
+            </form>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <div class="mb-5">
+            <a class="text-decoration-none" href="/usuarios">&larr; Voltar para usuários</a>
+            <h1 class="fw-bold mt-2" th:text="'Catálogo de ' + ${perfilNome}"></h1>
+            <p class="text-muted mb-0">Confira as músicas catalogadas e as avaliações deste usuário.</p>
+        </div>
+
+        <!-- Estado Vazio -->
+        <div class="text-center py-5 card shadow-sm p-5" th:if="${semMusicas}">
+            <div class="mb-4">
+                <span class="fs-1 text-purple">🎵</span>
+            </div>
+            <h3 class="fw-bold mb-2">Este catálogo está vazio</h3>
+            <p class="text-muted">Este usuário ainda não adicionou músicas à sua coleção.</p>
+        </div>
+
+        <!-- Grade de Músicas (Apenas Leitura) -->
+        <div class="music-grid" th:unless="${semMusicas}">
+            <div class="card music-card shadow-sm h-100" th:each="musica : ${musicas}">
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-2">
+                        <h5 class="card-title fw-bold mb-1" th:text="${musica.titulo}"></h5>
+                        <h6 class="text-muted mb-0" th:text="${musica.artista}"></h6>
+                    </div>
+                    
+                    <div class="stars-display mb-3" th:if="${musica.nota != null}">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= musica.nota ? '★' : '☆'}"></span>
+                    </div>
+                    
+                    <p class="card-text text-secondary small flex-grow-1" th:text="${musica.resenha}"></p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary" th:if="${musica.spotifyUrl != null && !musica.spotifyUrl.isEmpty()}">
+                        <a th:href="${musica.spotifyUrl}" 
+                           target="_blank" 
+                           class="btn btn-sm btn-outline-success">
+                            Spotify ↗
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+<div th:insert="fragments/player :: player"></div>
+    <script src="/js/player.js" defer></script>
+</body>
+</html>

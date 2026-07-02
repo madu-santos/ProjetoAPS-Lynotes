@@ -39,32 +39,51 @@ class ArtistaDbRepositoryTest {
         Artista artista = Artista.novo(
                 "Artista Teste " + sufixo,
                 "MPB",
-                "Biografia inicial"
+                "Biografia inicial",
+                "12345678909",
+                java.time.LocalDate.of(1995, 7, 3),
+                "58000-000",
+                "Rua Exemplo",
+                "123",
+                "Bairro",
+                "Cidade",
+                "PB",
+                br.ufpb.dcx.projetos.artista.models.StatusVerificacao.NAO_SOLICITADO,
+                "usuario-id-1"
         );
 
         try {
             repository.criar(artista);
-            Artista salvo = repository.buscarPorId(artista.getId()).orElseThrow();
+            Artista salvo = repository.buscarPorId(artista.getId(), "usuario-id-1").orElseThrow();
             assertEquals("MPB", salvo.getGeneroMusical());
 
             Artista atualizado = salvo.comDados(
                     salvo.getNome(),
                     "Rock",
-                    "Biografia atualizada"
+                    "Biografia atualizada",
+                    "12345678909",
+                    java.time.LocalDate.of(1995, 7, 3),
+                    "58000-000",
+                    "Rua Exemplo",
+                    "123",
+                    "Bairro",
+                    "Cidade",
+                    "PB",
+                    br.ufpb.dcx.projetos.artista.models.StatusVerificacao.PENDENTE
             );
             assertTrue(repository.atualizar(atualizado));
             assertEquals(
                     "Rock",
-                    repository.buscarPorId(artista.getId()).orElseThrow().getGeneroMusical()
+                    repository.buscarPorId(artista.getId(), "usuario-id-1").orElseThrow().getGeneroMusical()
             );
-            assertTrue(repository.buscar(sufixo).stream()
+            assertTrue(repository.buscar(sufixo, "usuario-id-1").stream()
                     .anyMatch(item -> item.getId().equals(artista.getId())));
         } finally {
-            repository.remover(artista.getId());
+            repository.remover(artista.getId(), "usuario-id-1");
         }
 
-        assertTrue(repository.buscarPorId(artista.getId()).isEmpty());
-        assertFalse(repository.remover(artista.getId()));
+        assertTrue(repository.buscarPorId(artista.getId(), "usuario-id-1").isEmpty());
+        assertFalse(repository.remover(artista.getId(), "usuario-id-1"));
     }
 
     private static boolean bancoDisponivel() {
