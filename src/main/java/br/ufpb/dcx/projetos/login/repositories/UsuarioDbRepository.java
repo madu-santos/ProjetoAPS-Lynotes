@@ -157,15 +157,4 @@ public class UsuarioDbRepository implements UsuarioRepository {
         return lista;
     }
 
-    @Override
-    public void remover(String id) {
-        String sql = "DELETE FROM usuario WHERE id = ?;";
-        try (Connection conn = obterConexao();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao remover usuário: " + e.getMessage(), e);
-        }
-    }
 }

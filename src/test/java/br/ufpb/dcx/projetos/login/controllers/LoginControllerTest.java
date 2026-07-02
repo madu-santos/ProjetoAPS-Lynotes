@@ -151,8 +151,5 @@ class LoginControllerTest {
         }
 
         @Override
-        public void remover(String id) {
-            usuarios.remove(id);
-        }
     }
 }

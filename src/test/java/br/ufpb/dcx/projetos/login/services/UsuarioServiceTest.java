@@ -103,9 +103,5 @@ public class UsuarioServiceTest {
             return new ArrayList<>(usuarios.values());
         }
 
-        @Override
-        public void remover(String id) {
-            usuarios.remove(id);
-        }
     }
 }

@@ -102,28 +102,6 @@ class UsuarioControllerTest {
     }
 
     @Test
-    void deveExcluirUsuarioRedirecionar() {
-        Usuario usuario = new Usuario("Teste", "teste@email.com", "senha123");
-        repo.salvar(usuario);
-
-        JavalinTest.test(criarApp(), (server, client) -> {
-            OkHttpClient http = new OkHttpClient.Builder()
-                    .followRedirects(false)
-                    .build();
-            FormBody body = new FormBody.Builder().build();
-            Request request = new Request.Builder()
-                    .url("http://localhost:" + server.port() + "/usuarios/" + usuario.getId() + "/excluir")
-                    .post(body)
-                    .build();
-
-            try (var resposta = http.newCall(request).execute()) {
-                assertEquals(302, resposta.code());
-                assertEquals("/usuarios", resposta.header("Location"));
-            }
-        });
-    }
-
-    @Test
     void deveExibirPerfilPublicoDoUsuario() {
         Usuario usuario = new Usuario("Maria", "maria@email.com", "senha123");
         repo.salvar(usuario);
@@ -135,7 +113,6 @@ class UsuarioControllerTest {
             @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> listarTodas() { return List.of(); }
             @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> buscarPorAlbumId(String albumId) { return List.of(); }
             @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> buscarPorUsuarioId(String usuarioId) { return List.of(); }
-            @Override public boolean remover(String id) { return false; }
         };
         br.ufpb.dcx.projetos.musica.services.MusicaService musicaService = new br.ufpb.dcx.projetos.musica.services.MusicaService(mockMusicaRepo, null);
 
@@ -197,8 +174,5 @@ class UsuarioControllerTest {
         }
 
         @Override
-        public void remover(String id) {
-            usuarios.remove(id);
-        }
     }
 }

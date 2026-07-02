@@ -73,15 +73,6 @@
                                    th:href="${'/usuarios/' + usuario.id + '/editar'}">
                                     Editar
                                 </a>
-                                <form class="d-inline"
-                                      method="post"
-                                      th:action="${'/usuarios/' + usuario.id + '/excluir'}">
-                                    <button class="btn btn-outline-danger btn-sm"
-                                            type="submit"
-                                            onclick="return confirm('Excluir este usuário?')">
-                                        Excluir
-                                    </button>
-                                </form>
                             </td>
                         </tr>
                     </tbody>

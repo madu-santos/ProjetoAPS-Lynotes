@@ -30,7 +30,6 @@ public final class UsuarioController {
         app.get("/usuarios/{id}", this::exibirPerfilPublico);
         app.get("/usuarios/{id}/editar", this::exibirEdicao);
         app.post("/usuarios/{id}", this::atualizar);
-        app.post("/usuarios/{id}/excluir", this::excluir);
     }
 
     private void listar(Context ctx) {
@@ -149,9 +148,4 @@ public final class UsuarioController {
         }
     }
 
-    private void excluir(Context ctx) {
-        String id = ctx.pathParam("id");
-        service.remover(id);
-        ctx.redirect("/usuarios");
-    }
 }

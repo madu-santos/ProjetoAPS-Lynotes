@@ -59,11 +59,5 @@ public class UsuarioDbRepositoryTest {
         assertEquals("Maria Teste", buscado.getNome());
         assertEquals("hash_bcrypt_seguro", buscado.getSenha());
 
-        // 5. Limpa a sujeira do banco de dados (exclui o registro temporário de teste)
-        repo.remover(usuario.getId());
-
-        // 6. Garante que foi removido
-        Optional<Usuario> removido = repo.buscarPorId(usuario.getId());
-        assertTrue(removido.isEmpty(), "O usuário de teste deveria ter sido removido do banco.");
     }
 }

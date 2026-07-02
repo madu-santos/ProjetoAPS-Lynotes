@@ -102,10 +102,4 @@ public class UsuarioService {
         return repository.listarTodos();
     }
 
-    public void remover(String id) {
-        if (Objects.isNull(id) || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("ID inválido para remoção.");
-        }
-        repository.remover(id);
-    }
 }
