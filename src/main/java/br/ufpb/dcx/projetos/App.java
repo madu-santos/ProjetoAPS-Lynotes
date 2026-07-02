@@ -11,6 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import io.javalin.openapi.OpenApi;
+import io.javalin.openapi.plugin.OpenApiPlugin;
+import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
+import org.flywaydb.core.Flyway;
+
 import java.util.Objects;
 
 public final class App {
@@ -37,11 +42,25 @@ public final class App {
         String dbUser = variavelAmbiente("DB_USER", "postgres");
         String dbPass = variavelAmbiente("DB_PASSWORD", "postgres");
 
+        // Executar Flyway Migrations
+        try {
+            LOGGER.info("Iniciando migrations com Flyway...");
+            Flyway.configure()
+                    .dataSource(dbUrl, dbUser, dbPass)
+                    .baselineOnMigrate(true)
+                    .load()
+                    .migrate();
+        } catch (Exception e) {
+            LOGGER.warn("Erro ao executar Flyway Migrations (provavelmente banco offline): {}", e.getMessage());
+        }
+
         var repo = new br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository(dbUrl, dbUser, dbPass);
         var service = new br.ufpb.dcx.projetos.login.services.UsuarioService(repo, new br.ufpb.dcx.projetos.login.services.BCryptHashingStrategy());
 
         registrarAutenticacao(app, service);
 
+        // Remover ou ignorar as inicializações antigas
+        // ArtistaSchemaInitializer.inicializar(criarConnectionFactory());
         ArtistaModule.registrar(app, criarConnectionFactory());
         br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, criarConnectionFactory(), service);
         br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, criarConnectionFactory());
@@ -87,9 +106,26 @@ public final class App {
         return Javalin.create(config -> {
             config.staticFiles.add("/public");
             config.fileRenderer(new JavalinThymeleaf(criarTemplateEngine()));
+            config.registerPlugin(new OpenApiPlugin(openapi -> {
+                openapi.withDefinitionConfiguration((version, definition) -> {
+                    definition.withInfo(info -> {
+                        info.title("Lynotes API");
+                        info.version("1.0.0");
+                    });
+                });
+            }));
+            config.registerPlugin(new SwaggerPlugin(swagger -> {
+                swagger.setUiPath("/swagger");
+            }));
         });
     }
 
+    @OpenApi(
+        summary = "Verificar Saúde da API",
+        path = "/ping",
+        methods = io.javalin.openapi.HttpMethod.GET,
+        tags = {"Sistema"}
+    )
     private static void registrarRotasPublicas(Javalin app) {
         app.get("/ping", ctx -> ctx.json(java.util.Map.of(
                 "status", "ok",
