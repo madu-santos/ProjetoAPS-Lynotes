@@ -23,7 +23,7 @@ public class UsuarioDbRepository implements UsuarioRepository {
         this.url = url;
         this.usuarioDb = usuarioDb;
         this.senhaDb = senhaDb;
-        inicializarTabela(); // Garante que a tabela está criada ao instanciar o repositório
+        // inicializarTabela(); // Movido para Flyway
     }
 
     // Método privado para abrir conexão com o banco de dados

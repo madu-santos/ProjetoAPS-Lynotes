@@ -18,7 +18,7 @@ public final class ArtistaModule {
     }
 
     public static void registrar(Javalin app, ConnectionFactory connectionFactory) {
-        ArtistaSchemaInitializer.inicializar(connectionFactory);
+        // ArtistaSchemaInitializer.inicializar(connectionFactory);
         ArtistaRepository repository = new ArtistaDbRepository(connectionFactory);
         ArtistaUseCase useCase = new ArtistaService(repository, new ArtistaValidator());
 

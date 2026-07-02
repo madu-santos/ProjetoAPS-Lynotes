@@ -21,7 +21,7 @@ public final class AlbumModule {
     }
 
     public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService) {
-        AlbumSchemaInitializer.inicializar(connectionFactory);
+        // AlbumSchemaInitializer.inicializar(connectionFactory);
         
         AlbumRepository albumRepository = new AlbumDbRepository(connectionFactory);
         MusicaRepository musicaRepository = new MusicaDbRepository(connectionFactory);
