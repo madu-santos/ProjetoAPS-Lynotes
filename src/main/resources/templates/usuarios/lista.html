@@ -69,19 +69,21 @@
                             </td>
                             <td th:text="${usuario.email}"></td>
                             <td class="text-end text-nowrap">
-                                <a class="btn btn-outline-primary btn-sm"
-                                   th:href="${'/usuarios/' + usuario.id + '/editar'}">
-                                    Editar
-                                </a>
-                                <form class="d-inline"
-                                      method="post"
-                                      th:action="${'/usuarios/' + usuario.id + '/excluir'}">
-                                    <button class="btn btn-outline-danger btn-sm"
-                                            type="submit"
-                                            onclick="return confirm('Excluir este usuário?')">
-                                        Excluir
-                                    </button>
-                                </form>
+                                <div th:if="${usuarioLogadoTipo == 'ADMIN' or usuarioLogadoId == usuario.id}">
+                                    <a class="btn btn-outline-primary btn-sm"
+                                       th:href="${'/usuarios/' + usuario.id + '/editar'}">
+                                        Editar
+                                    </a>
+                                    <form class="d-inline"
+                                          method="post"
+                                          th:action="${'/usuarios/' + usuario.id + '/excluir'}">
+                                        <button class="btn btn-outline-danger btn-sm"
+                                                type="submit"
+                                                onclick="return confirm('Excluir este usuário?')">
+                                            Excluir
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

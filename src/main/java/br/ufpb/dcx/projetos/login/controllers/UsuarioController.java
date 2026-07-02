@@ -37,6 +37,8 @@ public final class UsuarioController {
         List<Usuario> usuarios = service.listarTodos();
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("usuarioLogadoId", ctx.sessionAttribute("usuarioLogadoId"));
+        modelo.put("usuarioLogadoTipo", ctx.sessionAttribute("usuarioLogadoTipo"));
         modelo.put("listaUsuarios", usuarios);
         modelo.put("semUsuarios", usuarios.isEmpty());
         ctx.render("usuarios/lista", modelo);
@@ -99,7 +101,15 @@ public final class UsuarioController {
     }
 
     private void exibirEdicao(Context ctx) {
+        String idLogado = ctx.sessionAttribute("usuarioLogadoId");
+        String tipoLogado = ctx.sessionAttribute("usuarioLogadoTipo");
         String id = ctx.pathParam("id");
+
+        if (idLogado == null || (!idLogado.equals(id) && !"ADMIN".equals(tipoLogado))) {
+            ctx.status(HttpStatus.FORBIDDEN).result("Acesso negado: Apenas o próprio usuário ou um administrador pode editar esta conta.");
+            return;
+        }
+
         Optional<Usuario> usuarioOpt = service.buscarPorId(id);
 
         if (usuarioOpt.isEmpty()) {
@@ -118,7 +128,15 @@ public final class UsuarioController {
     }
 
     private void atualizar(Context ctx) {
+        String idLogado = ctx.sessionAttribute("usuarioLogadoId");
+        String tipoLogado = ctx.sessionAttribute("usuarioLogadoTipo");
         String id = ctx.pathParam("id");
+
+        if (idLogado == null || (!idLogado.equals(id) && !"ADMIN".equals(tipoLogado))) {
+            ctx.status(HttpStatus.FORBIDDEN).result("Acesso negado: Apenas o próprio usuário ou um administrador pode atualizar esta conta.");
+            return;
+        }
+
         String nome = ctx.formParam("nome");
         String email = ctx.formParam("email");
         String senha = ctx.formParam("senha");
@@ -150,8 +168,22 @@ public final class UsuarioController {
     }
 
     private void excluir(Context ctx) {
+        String idLogado = ctx.sessionAttribute("usuarioLogadoId");
+        String tipoLogado = ctx.sessionAttribute("usuarioLogadoTipo");
         String id = ctx.pathParam("id");
+
+        if (idLogado == null || (!idLogado.equals(id) && !"ADMIN".equals(tipoLogado))) {
+            ctx.status(HttpStatus.FORBIDDEN).result("Acesso negado: Apenas o próprio usuário ou um administrador pode apagar esta conta.");
+            return;
+        }
+
         service.remover(id);
-        ctx.redirect("/usuarios");
+        
+        if (idLogado.equals(id)) {
+            ctx.req().getSession().invalidate();
+            ctx.redirect("/login");
+        } else {
+            ctx.redirect("/usuarios");
+        }
     }
 }
