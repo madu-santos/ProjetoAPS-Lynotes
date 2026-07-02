@@ -89,7 +89,12 @@
                     </thead>
                     <tbody>
                         <tr th:each="artista : ${listaArtistas}">
-                            <td class="fw-semibold" th:text="${artista.nome}"></td>
+                            <td class="fw-semibold">
+                                <span th:text="${artista.nome}"></span>
+                                <span class="badge bg-success" th:if="${artista.statusVerificacao.name() == 'APROVADO'}">Verificado</span>
+                                <span class="badge bg-warning text-dark" th:if="${artista.statusVerificacao.name() == 'PENDENTE'}">Pendente</span>
+                                <span class="badge bg-danger" th:if="${artista.statusVerificacao.name() == 'REJEITADO'}">Rejeitado</span>
+                            </td>
                             <td th:text="${artista.generoMusical != null
                                 ? artista.generoMusical
                                 : 'Não informado'}"></td>

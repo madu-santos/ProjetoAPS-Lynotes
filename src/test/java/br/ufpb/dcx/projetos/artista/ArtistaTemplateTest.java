@@ -22,7 +22,7 @@ class ArtistaTemplateTest {
         contexto.setVariable("busca", "");
         contexto.setVariable("buscaAtiva", false);
         contexto.setVariable("listaArtistas",
-                List.of(Artista.novo("Djavan", "MPB", "Cantor e compositor brasileiro")));
+                List.of(Artista.novo("Djavan", "MPB", "Cantor e compositor brasileiro", "12345678909", java.time.LocalDate.of(1995, 7, 3), "58000-000", "Rua Exemplo", "123", "Bairro", "Cidade", "PB", br.ufpb.dcx.projetos.artista.models.StatusVerificacao.NAO_SOLICITADO, "usuario-id-1")));
 
         String html = engine.process("artistas/lista", contexto);
 
@@ -39,7 +39,17 @@ class ArtistaTemplateTest {
                 "artista-123",
                 "Djavan",
                 "MPB",
-                "Cantor e compositor brasileiro"
+                "Cantor e compositor brasileiro",
+                "12345678909",
+                java.time.LocalDate.of(1995, 7, 3),
+                "58000-000",
+                "Rua Exemplo",
+                "123",
+                "Bairro",
+                "Cidade",
+                "PB",
+                br.ufpb.dcx.projetos.artista.models.StatusVerificacao.NAO_SOLICITADO,
+                "usuario-id-1"
         );
         contexto.setVariable("form", ArtistaFormView.edicao(artista));
 

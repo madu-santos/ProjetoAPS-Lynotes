@@ -27,7 +27,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaComSucessoSemAlbum() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
         service.save(musica);
 
         Optional<Musica> cadastrada = service.findById(musica.getId());
@@ -40,10 +40,10 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaComSucessoComAlbum() {
-        Album album = Album.novo("Samba Esquema Novo", "Jorge Ben", 1963);
+        Album album = Album.novo("Samba Esquema Novo", "Jorge Ben", 1963, "user-1");
         albumRepo.criar(album);
 
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, album.getId(), "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, album.getId(), "user-1");
         service.save(musica);
 
         Optional<Musica> cadastrada = service.findById(musica.getId());
@@ -54,7 +54,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaTituloVazio() {
-        Musica musica = Musica.novo("", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "user-1");
+        Musica musica = Musica.novo("", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.save(musica);
         });
@@ -63,7 +63,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaArtistaVazio() {
-        Musica musica = Musica.novo("Mas Que Nada", "   ", "Samba", 180, "Boa música", 5, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "   ", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.save(musica);
         });
@@ -72,7 +72,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaNotaInvalida() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 6, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 6, null, null, null, "user-1");
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.save(musica);
         });
@@ -81,7 +81,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaAlbumInexistente() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, "album-fake-id", "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "album-fake-id", "user-1");
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.save(musica);
         });
@@ -90,10 +90,10 @@ public class MusicaServiceTest {
 
     @Test
     public void testUpdateMusicaComSucesso() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
         service.save(musica);
 
-        Musica atualizacao = new Musica(musica.getId(), "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4, null, null, "user-1");
+        Musica atualizacao = new Musica(musica.getId(), "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4, null, null, null, "user-1");
         service.update(musica.getId(), atualizacao);
 
         Optional<Musica> alterada = service.findById(musica.getId());
@@ -106,7 +106,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testUpdateMusicaNaoEncontrada() {
-        Musica atualizacao = new Musica("id-invalido", "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4, null, null, "user-1");
+        Musica atualizacao = new Musica("id-invalido", "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4, null, null, null, "user-1");
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.update("id-invalido", atualizacao);
         });
@@ -115,7 +115,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testDeleteMusicaComSucesso() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
         service.save(musica);
 
         service.deleteById(musica.getId());
@@ -203,18 +203,33 @@ public class MusicaServiceTest {
         }
 
         @Override
-        public Optional<Album> buscarPorId(String id) {
-            return Optional.ofNullable(albums.get(id));
+        public Optional<Album> buscarPorId(String id, String usuarioId) {
+            Album album = albums.get(id);
+            if (album != null && Objects.equals(album.getUsuarioId(), usuarioId)) {
+                return Optional.of(album);
+            }
+            return Optional.empty();
         }
 
         @Override
-        public List<Album> listarTodos() {
-            return new ArrayList<>(albums.values());
+        public List<Album> listarTodos(String usuarioId) {
+            List<Album> lista = new ArrayList<>();
+            for (Album a : albums.values()) {
+                if (Objects.equals(a.getUsuarioId(), usuarioId)) {
+                    lista.add(a);
+                }
+            }
+            return lista;
         }
 
         @Override
-        public boolean remover(String id) {
-            return albums.remove(id) != null;
+        public boolean remover(String id, String usuarioId) {
+            Album album = albums.get(id);
+            if (album != null && Objects.equals(album.getUsuarioId(), usuarioId)) {
+                albums.remove(id);
+                return true;
+            }
+            return false;
         }
     }
 }

@@ -43,34 +43,39 @@ public final class ArtistaController {
 
     private void listar(Context ctx) {
         String busca = parametro(ctx, "busca");
-        List<Artista> artistas = useCase.listar(busca);
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        List<Artista> artistas = useCase.listar(busca, usuarioId);
         ctx.render("artistas/lista", modeloListagem(ctx, artistas, busca));
     }
 
     private void exibirCadastro(Context ctx) {
         renderizarFormulario(
                 ctx,
-                ArtistaFormView.cadastro(new ArtistaForm("", "", "")),
+                ArtistaFormView.cadastro(new ArtistaForm("", "", "", "", null, "", "", "", "", "", "", false)),
                 null
         );
     }
 
     private void cadastrar(Context ctx) {
-        processarFormulario(ctx, null, useCase::cadastrar);
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        processarFormulario(ctx, null, form -> useCase.cadastrar(form, usuarioId));
     }
 
     private void exibirEdicao(Context ctx) {
-        Artista artista = useCase.obter(ctx.pathParam("id"));
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        Artista artista = useCase.obter(ctx.pathParam("id"), usuarioId);
         renderizarFormulario(ctx, ArtistaFormView.edicao(artista), null);
     }
 
     private void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
-        processarFormulario(ctx, id, form -> useCase.atualizar(id, form));
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        processarFormulario(ctx, id, form -> useCase.atualizar(id, form, usuarioId));
     }
 
     private void excluir(Context ctx) {
-        useCase.remover(ctx.pathParam("id"));
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        useCase.remover(ctx.pathParam("id"), usuarioId);
         redirecionarParaListagem(ctx);
     }
 
@@ -86,7 +91,7 @@ public final class ArtistaController {
         } catch (ArtistaValidacaoException erro) {
             LOGGER.warn("Formulário de artista inválido. path={} mensagem={}",
                     ctx.path(), erro.getMessage());
-            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
+            ctx.status(HttpStatus.OK);
             renderizarFormulario(ctx, viewFormulario(id, form), erro.getMessage());
         }
     }
@@ -106,10 +111,32 @@ public final class ArtistaController {
     }
 
     private ArtistaForm extrairFormulario(Context ctx) {
+        String dataStr = ctx.formParam("dataNascimento");
+        java.time.LocalDate data = null;
+        try {
+            if (dataStr != null && !dataStr.isBlank()) {
+                data = java.time.LocalDate.parse(dataStr);
+            }
+        } catch (java.time.format.DateTimeParseException e) {
+            // let the validator handle null or we can throw custom exception
+        }
+        
+        String solicitarVerificacaoStr = ctx.formParam("solicitarVerificacao");
+        boolean solicitarVerificacao = "on".equalsIgnoreCase(solicitarVerificacaoStr) || "true".equalsIgnoreCase(solicitarVerificacaoStr);
+        
         return new ArtistaForm(
                 ctx.formParam("nome"),
                 ctx.formParam("generoMusical"),
-                ctx.formParam("biografia")
+                ctx.formParam("biografia"),
+                ctx.formParam("cpf"),
+                data,
+                ctx.formParam("cep"),
+                ctx.formParam("logradouro"),
+                ctx.formParam("numero"),
+                ctx.formParam("bairro"),
+                ctx.formParam("cidade"),
+                ctx.formParam("uf"),
+                solicitarVerificacao
         );
     }
 

@@ -105,7 +105,21 @@ public final class App {
                 ctx.redirect("/login");
                 ctx.skipRemainingHandlers();
             }
+            if (rotaAdmin(ctx.path()) && !isAdmin(ctx)) {
+                ctx.status(403).result("Acesso negado. Esta rota é restrita a administradores.");
+                ctx.skipRemainingHandlers();
+            }
         });
+    }
+
+    private static boolean rotaAdmin(String path) {
+        return path.startsWith("/admin");
+    }
+
+    private static boolean isAdmin(io.javalin.http.Context ctx) {
+        if (!LoginController.estaAutenticado(ctx)) return false;
+        String tipo = ctx.sessionAttribute("usuarioLogadoTipo");
+        return "ADMIN".equals(tipo);
     }
 
     private static boolean rotaProtegida(String path, String method) {

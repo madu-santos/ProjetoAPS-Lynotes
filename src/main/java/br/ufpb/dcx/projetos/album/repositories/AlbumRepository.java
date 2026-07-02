@@ -11,9 +11,9 @@ public interface AlbumRepository {
 
     boolean atualizar(Album album);
 
-    Optional<Album> buscarPorId(String id);
+    Optional<Album> buscarPorId(String id, String usuarioId);
 
-    List<Album> listarTodos();
+    List<Album> listarTodos(String usuarioId);
 
-    boolean remover(String id);
+    boolean remover(String id, String usuarioId);
 }

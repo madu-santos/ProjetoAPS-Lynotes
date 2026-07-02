@@ -15,9 +15,9 @@ public class AlbumService {
         this.albumRepository = albumRepository;
     }
 
-    public Album save(Album album) {
+    public Album save(Album album, String usuarioId) {
         validar(album.getTitulo(), album.getArtista(), album.getAnoLancamento());
-        if (albumRepository.buscarPorId(album.getId()).isPresent()) {
+        if (albumRepository.buscarPorId(album.getId(), usuarioId).isPresent()) {
             albumRepository.atualizar(album);
         } else {
             albumRepository.criar(album);
@@ -25,30 +25,30 @@ public class AlbumService {
         return album;
     }
 
-    public List<Album> findAll() {
-        return albumRepository.listarTodos();
+    public List<Album> findAll(String usuarioId) {
+        return albumRepository.listarTodos(usuarioId);
     }
 
-    public Optional<Album> findById(String id) {
-        return albumRepository.buscarPorId(id);
+    public Optional<Album> findById(String id, String usuarioId) {
+        return albumRepository.buscarPorId(id, usuarioId);
     }
 
-    public Album update(String id, Album albumDetails) {
-        Album album = albumRepository.buscarPorId(id)
+    public Album update(String id, Album albumDetails, String usuarioId) {
+        Album album = albumRepository.buscarPorId(id, usuarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Album não encontrado com id: " + id));
 
         validar(albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento());
 
-        Album albumAtualizado = new Album(album.getId(), albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento());
+        Album albumAtualizado = new Album(album.getId(), albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento(), usuarioId);
         albumRepository.atualizar(albumAtualizado);
         return albumAtualizado;
     }
 
-    public void deleteById(String id) {
-        if (albumRepository.buscarPorId(id).isEmpty()) {
+    public void deleteById(String id, String usuarioId) {
+        if (albumRepository.buscarPorId(id, usuarioId).isEmpty()) {
             throw new ResourceNotFoundException("Album não encontrado com id: " + id);
         }
-        albumRepository.remover(id);
+        albumRepository.remover(id, usuarioId);
     }
 
     private void validar(String titulo, String artista, int anoLancamento) {

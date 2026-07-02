@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public final class ArtistaDbRepository implements ArtistaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtistaDbRepository.class);
 
-    private static final String COLUNAS = "id, nome, genero_musical, biografia";
+    private static final String COLUNAS = "id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, usuario_id";
 
     private final ConnectionFactory connectionFactory;
 
@@ -30,11 +31,11 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     @Override
     public void criar(Artista artista) {
         String sql = """
-                INSERT INTO artista (id, nome, genero_musical, biografia)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO artista (id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, usuario_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        executarAtualizacao(sql, statement -> preencherArtista(statement, artista));
+        executarAtualizacao(sql, statement -> preencherArtista(statement, artista, true));
         LOGGER.debug("Artista persistido. id={}", artista.getId());
     }
 
@@ -42,26 +43,26 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     public boolean atualizar(Artista artista) {
         String sql = """
                 UPDATE artista
-                SET nome = ?, genero_musical = ?, biografia = ?
-                WHERE id = ?
+                SET nome = ?, genero_musical = ?, biografia = ?, cpf = ?, data_nascimento = ?, cep = ?, logradouro = ?, numero = ?, bairro = ?, cidade = ?, uf = ?, status_verificacao = ?
+                WHERE id = ? AND usuario_id = ?
                 """;
 
         int alterados = executarAtualizacao(sql, statement -> {
-            statement.setString(1, artista.getNome());
-            statement.setString(2, artista.getGeneroMusical());
-            statement.setString(3, artista.getBiografia());
-            statement.setString(4, artista.getId());
+            preencherArtista(statement, artista, false);
+            statement.setString(13, artista.getId());
+            statement.setString(14, artista.getUsuarioId());
         });
         return alterados == 1;
     }
 
     @Override
-    public Optional<Artista> buscarPorId(String id) {
-        String sql = "SELECT " + COLUNAS + " FROM artista WHERE id = ?";
+    public Optional<Artista> buscarPorId(String id, String usuarioId) {
+        String sql = "SELECT " + COLUNAS + " FROM artista WHERE id = ? AND usuario_id = ?";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, id);
+            statement.setString(2, usuarioId);
             try (ResultSet result = statement.executeQuery()) {
                 return result.next() ? Optional.of(mapear(result)) : Optional.empty();
             }
@@ -71,26 +72,29 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     }
 
     @Override
-    public List<Artista> listarTodos() {
-        String sql = "SELECT " + COLUNAS + " FROM artista ORDER BY nome, id";
+    public List<Artista> listarTodos(String usuarioId) {
+        String sql = "SELECT " + COLUNAS + " FROM artista WHERE usuario_id = ? ORDER BY nome, id";
 
         try (Connection connection = connectionFactory.abrir();
-             Statement statement = connection.createStatement();
-             ResultSet result = statement.executeQuery(sql)) {
-            return mapearLista(result);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, usuarioId);
+            try (ResultSet result = statement.executeQuery()) {
+                return mapearLista(result);
+            }
         } catch (SQLException e) {
             throw erroPersistencia("listar artistas", e);
         }
     }
 
     @Override
-    public List<Artista> buscar(String termo) {
+    public List<Artista> buscar(String termo, String usuarioId) {
         String sql = """
                 SELECT %s
                 FROM artista
-                WHERE nome ILIKE ?
+                WHERE (nome ILIKE ?
                    OR genero_musical ILIKE ?
-                   OR biografia ILIKE ?
+                   OR biografia ILIKE ?)
+                   AND usuario_id = ?
                 ORDER BY nome, id
                 """.formatted(COLUNAS);
         String padrao = "%" + termo + "%";
@@ -98,6 +102,7 @@ public final class ArtistaDbRepository implements ArtistaRepository {
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             preencherBusca(statement, padrao);
+            statement.setString(4, usuarioId);
             try (ResultSet result = statement.executeQuery()) {
                 return mapearLista(result);
             }
@@ -107,9 +112,34 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     }
 
     @Override
-    public boolean remover(String id) {
-        String sql = "DELETE FROM artista WHERE id = ?";
-        return executarAtualizacao(sql, statement -> statement.setString(1, id)) == 1;
+    public List<Artista> listarPendentes() {
+        String sql = "SELECT " + COLUNAS + " FROM artista WHERE status_verificacao = 'PENDENTE' ORDER BY nome, id";
+
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet result = statement.executeQuery()) {
+            return mapearLista(result);
+        } catch (SQLException e) {
+            throw erroPersistencia("listar artistas pendentes", e);
+        }
+    }
+
+    @Override
+    public boolean atualizarStatusVerificacao(String id, br.ufpb.dcx.projetos.artista.models.StatusVerificacao status) {
+        String sql = "UPDATE artista SET status_verificacao = ? WHERE id = ?";
+        return executarAtualizacao(sql, statement -> {
+            statement.setString(1, status.name());
+            statement.setString(2, id);
+        }) == 1;
+    }
+
+    @Override
+    public boolean remover(String id, String usuarioId) {
+        String sql = "DELETE FROM artista WHERE id = ? AND usuario_id = ?";
+        return executarAtualizacao(sql, statement -> {
+            statement.setString(1, id);
+            statement.setString(2, usuarioId);
+        }) == 1;
     }
 
     private int executarAtualizacao(String sql, StatementBinder binder) {
@@ -122,11 +152,36 @@ public final class ArtistaDbRepository implements ArtistaRepository {
         }
     }
 
-    private void preencherArtista(PreparedStatement statement, Artista artista) throws SQLException {
-        statement.setString(1, artista.getId());
-        statement.setString(2, artista.getNome());
-        statement.setString(3, artista.getGeneroMusical());
-        statement.setString(4, artista.getBiografia());
+    private void preencherArtista(PreparedStatement statement, Artista artista, boolean isInsert) throws SQLException {
+        if (isInsert) {
+            statement.setString(1, artista.getId());
+            statement.setString(2, artista.getNome());
+            statement.setString(3, artista.getGeneroMusical());
+            statement.setString(4, artista.getBiografia());
+            statement.setString(5, artista.getCpf());
+            statement.setObject(6, artista.getDataNascimento());
+            statement.setString(7, artista.getCep());
+            statement.setString(8, artista.getLogradouro());
+            statement.setString(9, artista.getNumero());
+            statement.setString(10, artista.getBairro());
+            statement.setString(11, artista.getCidade());
+            statement.setString(12, artista.getUf());
+            statement.setString(13, artista.getStatusVerificacao().name());
+            statement.setString(14, artista.getUsuarioId());
+        } else {
+            statement.setString(1, artista.getNome());
+            statement.setString(2, artista.getGeneroMusical());
+            statement.setString(3, artista.getBiografia());
+            statement.setString(4, artista.getCpf());
+            statement.setObject(5, artista.getDataNascimento());
+            statement.setString(6, artista.getCep());
+            statement.setString(7, artista.getLogradouro());
+            statement.setString(8, artista.getNumero());
+            statement.setString(9, artista.getBairro());
+            statement.setString(10, artista.getCidade());
+            statement.setString(11, artista.getUf());
+            statement.setString(12, artista.getStatusVerificacao().name());
+        }
     }
 
     private void preencherBusca(PreparedStatement statement, String padrao) throws SQLException {
@@ -144,11 +199,24 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     }
 
     private Artista mapear(ResultSet result) throws SQLException {
+        java.sql.Date sqlDate = result.getDate("data_nascimento");
+        LocalDate data = sqlDate != null ? sqlDate.toLocalDate() : null;
+
         return new Artista(
                 result.getString("id"),
                 result.getString("nome"),
                 result.getString("genero_musical"),
-                result.getString("biografia")
+                result.getString("biografia"),
+                result.getString("cpf"),
+                data,
+                result.getString("cep"),
+                result.getString("logradouro"),
+                result.getString("numero"),
+                result.getString("bairro"),
+                result.getString("cidade"),
+                result.getString("uf"),
+                br.ufpb.dcx.projetos.artista.models.StatusVerificacao.valueOf(result.getString("status_verificacao")),
+                result.getString("usuario_id")
         );
     }
 

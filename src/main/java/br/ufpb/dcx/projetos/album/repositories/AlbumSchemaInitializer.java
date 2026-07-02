@@ -18,7 +18,8 @@ public final class AlbumSchemaInitializer {
                 id VARCHAR(36) PRIMARY KEY,
                 titulo VARCHAR(255) NOT NULL,
                 artista VARCHAR(255) NOT NULL,
-                ano_lancamento INT NOT NULL
+                ano_lancamento INT NOT NULL,
+                usuario_id VARCHAR(36)
             );
             
             CREATE TABLE IF NOT EXISTS musica (
@@ -32,6 +33,8 @@ public final class AlbumSchemaInitializer {
             
             ALTER TABLE musica ALTER COLUMN genero DROP NOT NULL;
             ALTER TABLE musica ALTER COLUMN duracao_segundos DROP NOT NULL;
+            
+            ALTER TABLE album ADD COLUMN IF NOT EXISTS usuario_id VARCHAR(36);
             
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS artista VARCHAR(255);
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS resenha TEXT;

@@ -43,6 +43,7 @@ public class LoginController {
             br.ufpb.dcx.projetos.login.models.Usuario usuario = service.buscarPorEmail(email).orElseThrow();
             ctx.sessionAttribute(ATRIBUTO_USUARIO_SESSAO, usuario.getNome());
             ctx.sessionAttribute("usuarioLogadoId", usuario.getId());
+            ctx.sessionAttribute("usuarioLogadoTipo", usuario.getTipo());
             ctx.redirect("/");
             return;
         }

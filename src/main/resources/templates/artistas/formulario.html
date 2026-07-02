@@ -79,6 +79,121 @@
                                           th:text="${form.biografia}"></textarea>
                             </div>
 
+                            <hr class="my-4">
+                            
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       role="switch" 
+                                       id="solicitarVerificacao" 
+                                       name="solicitarVerificacao" 
+                                       th:checked="${form.solicitarVerificacao}">
+                                <label class="form-check-label fw-bold" for="solicitarVerificacao">Solicitar selo de artista verificado</label>
+                            </div>
+
+                            <div id="dadosVerificacao" style="display: none;">
+                                <h5 class="mb-3 text-primary">Dados de Verificação (Exigidos para selo)</h5>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="cpf">CPF (Apenas números)</label>
+                                        <input class="form-control"
+                                               id="cpf"
+                                               name="cpf"
+                                               maxlength="14"
+                                               placeholder="00011122233"
+                                               th:value="${form.cpf}">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label" for="dataNascimento">Data de Nascimento / Fundação</label>
+                                        <input class="form-control"
+                                               type="date"
+                                               id="dataNascimento"
+                                               name="dataNascimento"
+                                               th:value="${form.dataNascimento}">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label" for="cep">CEP</label>
+                                        <input class="form-control" id="cep" name="cep" maxlength="10" th:value="${form.cep}" placeholder="00000-000">
+                                    </div>
+                                    <div class="col-md-8 mb-3">
+                                        <label class="form-label" for="logradouro">Logradouro</label>
+                                        <input class="form-control" id="logradouro" name="logradouro" maxlength="200" th:value="${form.logradouro}" placeholder="Rua, Avenida...">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label" for="numero">Número</label>
+                                        <input class="form-control" id="numero" name="numero" maxlength="20" th:value="${form.numero}">
+                                    </div>
+                                    <div class="col-md-9 mb-3">
+                                        <label class="form-label" for="bairro">Bairro</label>
+                                        <input class="form-control" id="bairro" name="bairro" maxlength="100" th:value="${form.bairro}">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-9 mb-3">
+                                        <label class="form-label" for="cidade">Cidade</label>
+                                        <input class="form-control" id="cidade" name="cidade" maxlength="100" th:value="${form.cidade}">
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label class="form-label" for="uf">UF</label>
+                                        <input class="form-control" id="uf" name="uf" maxlength="2" th:value="${form.uf}" placeholder="SP">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                                (function() {
+                                    const checkbox = document.getElementById('solicitarVerificacao');
+                                    const container = document.getElementById('dadosVerificacao');
+                                    
+                                    if (!checkbox || !container) return;
+                                    
+                                    const inputs = container.querySelectorAll('input, textarea');
+                                    
+                                    function toggleCampos() {
+                                        if (checkbox.checked) {
+                                            container.style.display = 'block';
+                                            inputs.forEach(el => el.setAttribute('required', 'required'));
+                                        } else {
+                                            container.style.display = 'none';
+                                            inputs.forEach(el => el.removeAttribute('required'));
+                                        }
+                                    }
+                                    
+                                    function apenasNumeros(e) {
+                                        if (/\D/.test(e.target.value)) {
+                                            e.target.value = e.target.value.replace(/\D/g, '');
+                                            e.target.setCustomValidity("Somente números são aceitos.");
+                                            e.target.reportValidity();
+                                            setTimeout(() => {
+                                                e.target.setCustomValidity("");
+                                                e.target.reportValidity();
+                                            }, 2000);
+                                        } else {
+                                            e.target.setCustomValidity("");
+                                        }
+                                    }
+                                    
+                                    const cpfInput = document.getElementById('cpf');
+                                    const cepInput = document.getElementById('cep');
+                                    if (cpfInput) cpfInput.addEventListener('input', apenasNumeros);
+                                    if (cepInput) cepInput.addEventListener('input', apenasNumeros);
+                                    
+                                    checkbox.addEventListener('change', toggleCampos);
+                                    
+                                    // Chamar no carregamento da página para inicializar corretamente o estado de edição
+                                    toggleCampos();
+                                })();
+                            </script>
+
                             <div class="d-flex gap-2">
                                 <button class="btn btn-primary" type="submit"
                                         th:text="${form.edicao ? 'Salvar alterações' : 'Cadastrar artista'}">

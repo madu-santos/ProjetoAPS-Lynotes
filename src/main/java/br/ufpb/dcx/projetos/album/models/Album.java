@@ -9,16 +9,18 @@ public final class Album {
     private final String titulo;
     private final String artista;
     private final int anoLancamento;
+    private final String usuarioId;
 
-    public Album(String id, String titulo, String artista, int anoLancamento) {
+    public Album(String id, String titulo, String artista, int anoLancamento, String usuarioId) {
         this.id = Objects.requireNonNull(id);
         this.titulo = titulo;
         this.artista = artista;
         this.anoLancamento = anoLancamento;
+        this.usuarioId = usuarioId;
     }
 
-    public static Album novo(String titulo, String artista, int anoLancamento) {
-        return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento);
+    public static Album novo(String titulo, String artista, int anoLancamento, String usuarioId) {
+        return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, usuarioId);
     }
 
     public String getId() {
@@ -35,6 +37,10 @@ public final class Album {
 
     public int getAnoLancamento() {
         return anoLancamento;
+    }
+
+    public String getUsuarioId() {
+        return usuarioId;
     }
 
     @Override
@@ -57,6 +63,7 @@ public final class Album {
                ", titulo='" + titulo + '\'' +
                ", artista='" + artista + '\'' +
                ", anoLancamento=" + anoLancamento +
+               ", usuarioId='" + usuarioId + '\'' +
                '}';
     }
 }

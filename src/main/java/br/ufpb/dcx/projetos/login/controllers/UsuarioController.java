@@ -74,7 +74,7 @@ public final class UsuarioController {
             modelo.put("nome", nome);
             modelo.put("email", email);
             modelo.put("erro", e.getMessage());
-            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("usuarios/formulario", modelo);
+            ctx.status(HttpStatus.OK).render("usuarios/formulario", modelo);
         }
     }
 
@@ -132,7 +132,7 @@ public final class UsuarioController {
         Usuario usuarioAntigo = usuarioOpt.get();
         String senhaFinal = (senha == null || senha.trim().isEmpty()) ? usuarioAntigo.getSenha() : senha;
 
-        Usuario usuarioAtualizado = new Usuario(id, nome, email, senhaFinal);
+        Usuario usuarioAtualizado = new Usuario(id, nome, email, senhaFinal, usuarioAntigo.getTipo());
 
         try {
             service.cadastrarUsuario(usuarioAtualizado);
@@ -145,7 +145,7 @@ public final class UsuarioController {
             modelo.put("nome", nome);
             modelo.put("email", email);
             modelo.put("erro", e.getMessage());
-            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("usuarios/formulario", modelo);
+            ctx.status(HttpStatus.OK).render("usuarios/formulario", modelo);
         }
     }
 

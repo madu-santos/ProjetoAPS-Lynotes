@@ -41,7 +41,8 @@ public final class AlbumController {
     }
 
     private void listar(Context ctx) {
-        List<Album> albums = service.findAll();
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        List<Album> albums = service.findAll(usuarioId);
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("albums", albums);
@@ -61,8 +62,9 @@ public final class AlbumController {
         AlbumForm form = extrairFormulario(ctx);
         try {
             int ano = parseAno(form.anoLancamento());
-            Album album = Album.novo(form.titulo(), form.artista(), ano);
-            service.save(album);
+            String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+            Album album = Album.novo(form.titulo(), form.artista(), ano, usuarioId);
+            service.save(album, usuarioId);
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Formulário de cadastro de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
@@ -73,7 +75,8 @@ public final class AlbumController {
 
     private void exibirEdicao(Context ctx) {
         String id = ctx.pathParam("id");
-        Album album = service.findById(id)
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        Album album = service.findById(id, usuarioId)
                 .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Álbum não encontrado"));
         renderizarFormulario(ctx, AlbumFormView.edicao(album), null);
     }
@@ -83,8 +86,9 @@ public final class AlbumController {
         AlbumForm form = extrairFormulario(ctx);
         try {
             int ano = parseAno(form.anoLancamento());
-            Album albumDetails = new Album(id, form.titulo(), form.artista(), ano);
-            service.update(id, albumDetails);
+            String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+            Album albumDetails = new Album(id, form.titulo(), form.artista(), ano, usuarioId);
+            service.update(id, albumDetails, usuarioId);
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Formulário de edição de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
@@ -95,7 +99,8 @@ public final class AlbumController {
 
     private void excluir(Context ctx) {
         String id = ctx.pathParam("id");
-        service.deleteById(id);
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        service.deleteById(id, usuarioId);
         redirecionarParaListagem(ctx);
     }
 

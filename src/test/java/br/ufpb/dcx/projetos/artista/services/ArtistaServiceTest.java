@@ -33,19 +33,20 @@ class ArtistaServiceTest {
     @Test
     void deveCadastrarArtistaNormalizado() {
         Artista artista = service.cadastrar(
-                new ArtistaForm("  Liniker  ", " MPB ", " Cantora brasileira ")
+                new ArtistaForm("  Liniker  ", " MPB ", " Cantora brasileira ", "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true),
+                "usuario-id-1"
         );
 
         assertEquals("Liniker", artista.getNome());
         assertEquals("MPB", artista.getGeneroMusical());
-        assertEquals(1, service.listar("").size());
+        assertEquals(1, service.listar("", "usuario-id-1").size());
     }
 
     @Test
     void deveRetornarErroDeValidacaoParaNomeVazio() {
         ArtistaValidacaoException erro = assertThrows(
                 ArtistaValidacaoException.class,
-                () -> service.cadastrar(new ArtistaForm(" ", "Rock", null))
+                () -> service.cadastrar(new ArtistaForm(" ", "Rock", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true), "usuario-id-1")
         );
 
         assertEquals("Nome do artista é obrigatório.", erro.getMessage());
@@ -53,21 +54,23 @@ class ArtistaServiceTest {
 
     @Test
     void devePermitirArtistasComMesmoNome() {
-        service.cadastrar(new ArtistaForm("Djavan", "MPB", null));
-        service.cadastrar(new ArtistaForm("Djavan", "Jazz", "Outro artista"));
+        service.cadastrar(new ArtistaForm("Djavan", "MPB", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
+        service.cadastrar(new ArtistaForm("Djavan", "Jazz", "Outro artista", "11122233344", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
 
-        assertEquals(2, service.listar("").size());
+        assertEquals(2, service.listar("", "usuario-id-1").size());
     }
 
     @Test
     void deveAtualizarArtista() {
         Artista artista = service.cadastrar(
-                new ArtistaForm("BaianaSystem", "Rock", null)
+                new ArtistaForm("BaianaSystem", "Rock", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true),
+                "usuario-id-1"
         );
 
         Artista atualizado = service.atualizar(
                 artista.getId(),
-                new ArtistaForm("BaianaSystem", "Afro-rock", "Grupo musical brasileiro")
+                new ArtistaForm("BaianaSystem", "Afro-rock", "Grupo musical brasileiro", "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true),
+                "usuario-id-1"
         );
 
         assertEquals("Afro-rock", atualizado.getGeneroMusical());
@@ -80,36 +83,36 @@ class ArtistaServiceTest {
 
         assertThrows(
                 ArtistaNaoEncontradoException.class,
-                () -> service.atualizar(id, new ArtistaForm("Nome", null, null))
+                () -> service.atualizar(id, new ArtistaForm("Nome", null, null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true), "usuario-id-1")
         );
     }
 
     @Test
     void deveRetornarIdInvalido() {
-        assertThrows(ArtistaIdInvalidoException.class, () -> service.obter("abc"));
+        assertThrows(ArtistaIdInvalidoException.class, () -> service.obter("abc", "usuario-id-1"));
     }
 
     @Test
     void deveExcluirArtista() {
-        Artista artista = service.cadastrar(new ArtistaForm("Elis Regina", "MPB", null));
+        Artista artista = service.cadastrar(new ArtistaForm("Elis Regina", "MPB", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true), "usuario-id-1");
 
-        service.remover(artista.getId());
+        service.remover(artista.getId(), "usuario-id-1");
 
         assertThrows(
                 ArtistaNaoEncontradoException.class,
-                () -> service.obter(artista.getId())
+                () -> service.obter(artista.getId(), "usuario-id-1")
         );
     }
 
     @Test
     void deveBuscarPorNomeGeneroOuBiografia() {
-        service.cadastrar(new ArtistaForm("Djavan", "MPB", "Cantor alagoano"));
-        service.cadastrar(new ArtistaForm("Nina Simone", "Jazz", "Cantora americana"));
+        service.cadastrar(new ArtistaForm("Djavan", "MPB", "Cantor alagoano", "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
+        service.cadastrar(new ArtistaForm("Nina Simone", "Jazz", "Cantora americana", "11122233344", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
 
-        assertEquals(1, service.listar("djavan").size());
-        assertEquals(1, service.listar("jazz").size());
-        assertEquals(1, service.listar("alagoano").size());
-        assertEquals(2, service.listar(" ").size());
+        assertEquals(1, service.listar("djavan", "usuario-id-1").size());
+        assertEquals(1, service.listar("jazz", "usuario-id-1").size());
+        assertEquals(1, service.listar("alagoano", "usuario-id-1").size());
+        assertEquals(2, service.listar(" ", "usuario-id-1").size());
     }
 
     private static class FakeArtistaRepository implements ArtistaRepository {
@@ -131,19 +134,24 @@ class ArtistaServiceTest {
         }
 
         @Override
-        public Optional<Artista> buscarPorId(String id) {
-            return Optional.ofNullable(artistas.get(id));
+        public Optional<Artista> buscarPorId(String id, String usuarioId) {
+            Artista a = artistas.get(id);
+            if (a != null && a.getUsuarioId().equals(usuarioId)) {
+                return Optional.of(a);
+            }
+            return Optional.empty();
         }
 
         @Override
-        public List<Artista> listarTodos() {
-            return new ArrayList<>(artistas.values());
+        public List<Artista> listarTodos(String usuarioId) {
+            return artistas.values().stream().filter(a -> a.getUsuarioId().equals(usuarioId)).toList();
         }
 
         @Override
-        public List<Artista> buscar(String termo) {
+        public List<Artista> buscar(String termo, String usuarioId) {
             String busca = termo.toLowerCase();
             return artistas.values().stream()
+                    .filter(a -> a.getUsuarioId().equals(usuarioId))
                     .filter(artista -> contem(artista.getNome(), busca)
                             || contem(artista.getGeneroMusical(), busca)
                             || contem(artista.getBiografia(), busca))
@@ -151,8 +159,34 @@ class ArtistaServiceTest {
         }
 
         @Override
-        public boolean remover(String id) {
-            return artistas.remove(id) != null;
+        public boolean remover(String id, String usuarioId) {
+            Artista a = artistas.get(id);
+            if (a != null && a.getUsuarioId().equals(usuarioId)) {
+                return artistas.remove(id) != null;
+            }
+            return false;
+        }
+
+        @Override
+        public List<Artista> listarPendentes() {
+            return artistas.values().stream()
+                    .filter(a -> a.getStatusVerificacao() == br.ufpb.dcx.projetos.artista.models.StatusVerificacao.PENDENTE)
+                    .toList();
+        }
+
+        @Override
+        public boolean atualizarStatusVerificacao(String id, br.ufpb.dcx.projetos.artista.models.StatusVerificacao status) {
+            Artista a = artistas.get(id);
+            if (a != null) {
+                Artista atualizado = new Artista(
+                        a.getId(), a.getNome(), a.getGeneroMusical(), a.getBiografia(), a.getCpf(), a.getDataNascimento(),
+                        a.getCep(), a.getLogradouro(), a.getNumero(), a.getBairro(), a.getCidade(), a.getUf(),
+                        status, a.getUsuarioId()
+                );
+                artistas.put(id, atualizado);
+                return true;
+            }
+            return false;
         }
 
         private boolean contem(String valor, String busca) {

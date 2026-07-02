@@ -23,7 +23,7 @@ public class MusicaService {
 
         // Garantir que o álbum associado existe no banco
         if (musica.getAlbumId() != null && !musica.getAlbumId().isBlank()) {
-            albumRepository.buscarPorId(musica.getAlbumId())
+            albumRepository.buscarPorId(musica.getAlbumId(), musica.getUsuarioId())
                     .orElseThrow(() -> new ResourceNotFoundException("Álbum não encontrado com id: " + musica.getAlbumId()));
         }
 
@@ -55,7 +55,7 @@ public class MusicaService {
 
         // Garantir que o álbum associado existe no banco se fornecido
         if (musicaDetails.getAlbumId() != null && !musicaDetails.getAlbumId().isBlank()) {
-            albumRepository.buscarPorId(musicaDetails.getAlbumId())
+            albumRepository.buscarPorId(musicaDetails.getAlbumId(), musicaDetails.getUsuarioId())
                     .orElseThrow(() -> new ResourceNotFoundException("Álbum não encontrado com id: " + musicaDetails.getAlbumId()));
         }
 
