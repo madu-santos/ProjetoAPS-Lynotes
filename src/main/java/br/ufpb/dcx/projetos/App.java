@@ -46,6 +46,7 @@ public final class App {
         br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, criarConnectionFactory(), service);
         br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, criarConnectionFactory());
         registrarLogHttp(app);
+        registrarTratamentoDeErrosGlobais(app);
         return app;
     }
 
@@ -140,6 +141,22 @@ public final class App {
                 ctx.path(),
                 ctx.statusCode()
         ));
+    }
+
+    private static void registrarTratamentoDeErrosGlobais(Javalin app) {
+        app.error(404, ctx -> {
+            ctx.render("erros/404");
+        });
+
+        app.error(500, ctx -> {
+            ctx.render("erros/500");
+        });
+
+        app.exception(Exception.class, (e, ctx) -> {
+            LOGGER.error("Erro interno não tratado pego pelo manipulador global", e);
+            ctx.status(500);
+            ctx.render("erros/500");
+        });
     }
 
     private static ConnectionFactory criarConnectionFactory() {
