@@ -11,8 +11,8 @@
     <link href="/css/player.css" rel="stylesheet">
 <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" th:classappend="${usuarioLogado == null} ? 'd-flex align-items-center justify-content-center' : ''" th:style="${usuarioLogado == null} ? 'min-height: 100vh;' : ''">
-<div id="app-content">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" th:classappend="${usuarioLogado == null} ? 'd-flex flex-column align-items-center justify-content-center' : ''" th:style="${usuarioLogado == null} ? 'min-height: 100vh;' : ''">
+<div id="app-content" class="w-100">
 
     
     <!-- Navbar (Apenas se logado) -->
@@ -40,7 +40,7 @@
     </nav>
 
     <!-- Main Container para usuários NÃO logados (Centralizado) -->
-    <div class="container" th:if="${usuarioLogado == null}">
+    <div class="container w-100" th:if="${usuarioLogado == null}">
         <div class="row justify-content-center">
             <div class="col-md-5">
                 <div class="card shadow-sm p-4">
