@@ -102,7 +102,7 @@ class UsuarioControllerTest {
     }
 
     @Test
-    void deveExcluirUsuarioRedirecionar() {
+    void deveBloquearExclusaoNaoAutenticada() {
         Usuario usuario = new Usuario("Teste", "teste@email.com", "senha123");
         repo.salvar(usuario);
 
@@ -117,8 +117,7 @@ class UsuarioControllerTest {
                     .build();
 
             try (var resposta = http.newCall(request).execute()) {
-                assertEquals(302, resposta.code());
-                assertEquals("/usuarios", resposta.header("Location"));
+                assertEquals(403, resposta.code());
             }
         });
     }

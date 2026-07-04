@@ -106,7 +106,8 @@ public final class UsuarioController {
         String id = ctx.pathParam("id");
 
         if (idLogado == null || (!idLogado.equals(id) && !"ADMIN".equals(tipoLogado))) {
-            ctx.status(HttpStatus.FORBIDDEN).result("Acesso negado: Apenas o próprio usuário ou um administrador pode editar esta conta.");
+            ctx.status(HttpStatus.FORBIDDEN)
+                    .result("Acesso negado: Apenas o próprio usuário ou um administrador pode editar esta conta.");
             return;
         }
 
@@ -133,7 +134,8 @@ public final class UsuarioController {
         String id = ctx.pathParam("id");
 
         if (idLogado == null || (!idLogado.equals(id) && !"ADMIN".equals(tipoLogado))) {
-            ctx.status(HttpStatus.FORBIDDEN).result("Acesso negado: Apenas o próprio usuário ou um administrador pode atualizar esta conta.");
+            ctx.status(HttpStatus.FORBIDDEN)
+                    .result("Acesso negado: Apenas o próprio usuário ou um administrador pode atualizar esta conta.");
             return;
         }
 
@@ -173,12 +175,13 @@ public final class UsuarioController {
         String id = ctx.pathParam("id");
 
         if (idLogado == null || (!idLogado.equals(id) && !"ADMIN".equals(tipoLogado))) {
-            ctx.status(HttpStatus.FORBIDDEN).result("Acesso negado: Apenas o próprio usuário ou um administrador pode apagar esta conta.");
+            ctx.status(HttpStatus.FORBIDDEN)
+                    .result("Acesso negado: Apenas o próprio usuário ou um administrador pode apagar esta conta.");
             return;
         }
 
         service.remover(id);
-        
+
         if (idLogado.equals(id)) {
             ctx.req().getSession().invalidate();
             ctx.redirect("/login");
