@@ -2,7 +2,6 @@ package br.ufpb.dcx.projetos.artista;
 
 import br.ufpb.dcx.projetos.artista.controllers.AdminController;
 import br.ufpb.dcx.projetos.artista.controllers.ArtistaController;
-import br.ufpb.dcx.projetos.artista.controllers.ArtistaHttpExceptionHandler;
 import br.ufpb.dcx.projetos.artista.repositories.ArtistaDbRepository;
 import br.ufpb.dcx.projetos.artista.repositories.ArtistaRepository;
 import br.ufpb.dcx.projetos.artista.services.ArtistaService;
@@ -21,7 +20,6 @@ public final class ArtistaModule {
         ArtistaRepository repository = new ArtistaDbRepository(connectionFactory);
         ArtistaUseCase useCase = new ArtistaService(repository, new ArtistaValidator());
 
-        ArtistaHttpExceptionHandler.registrar(app);
         ArtistaController controller = new ArtistaController(useCase);
         AdminController adminController = new AdminController((ArtistaService) useCase);
 

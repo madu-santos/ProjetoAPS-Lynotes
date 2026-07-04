@@ -38,6 +38,16 @@ public final class MusicaController {
         this.playlistService = playlistService;
     }
 
+    @io.javalin.openapi.OpenApi(
+            summary = "Página inicial ou landing page",
+            operationId = "home",
+            path = "/",
+            methods = io.javalin.openapi.HttpMethod.GET,
+            tags = {"Músicas"},
+            responses = {
+                    @io.javalin.openapi.OpenApiResponse(status = "200", description = "Página renderizada com sucesso")
+            }
+    )
     public void exibirHomeOuLanding(Context ctx) {
         String usuarioLogado = ctx.sessionAttribute("usuarioLogado");
         if (usuarioLogado != null) {
@@ -68,9 +78,21 @@ public final class MusicaController {
                 null);
     }
 
+    @io.javalin.openapi.OpenApi(
+            summary = "Catalogar nova música",
+            operationId = "cadastrarMusica",
+            path = "/musicas",
+            methods = io.javalin.openapi.HttpMethod.POST,
+            tags = {"Músicas"},
+            responses = {
+                    @io.javalin.openapi.OpenApiResponse(status = "303", description = "Redireciona para a home"),
+                    @io.javalin.openapi.OpenApiResponse(status = "422", description = "Dados inválidos")
+            }
+    )
     public void cadastrar(Context ctx) {
         MusicaDTO dto = extrairFormulario(ctx);
         try {
+            dto.validar();
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             if (usuarioId == null) {
                 ctx.redirect("/login");
@@ -158,6 +180,7 @@ public final class MusicaController {
         String id = ctx.pathParam("id");
         MusicaDTO dto = extrairFormulario(ctx);
         try {
+            dto.validar();
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             if (usuarioId == null) {
                 ctx.redirect("/login");

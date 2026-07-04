@@ -30,6 +30,25 @@ public record MusicaDTO(
         );
     }
 
+    public void validar() {
+        if (titulo == null || titulo.trim().isEmpty()) {
+            throw new IllegalArgumentException("O título da música é obrigatório");
+        }
+        if (artista == null || artista.trim().isEmpty()) {
+            throw new IllegalArgumentException("O artista é obrigatório");
+        }
+        if (nota != null && !nota.isBlank()) {
+            try {
+                int notaVal = Integer.parseInt(nota);
+                if (notaVal < 1 || notaVal > 5) {
+                    throw new IllegalArgumentException("A nota deve ser entre 1 e 5 estrelas");
+                }
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("A nota deve ser um número inteiro válido");
+            }
+        }
+    }
+
     private String normalizarObrigatorio(String valor) {
         return Objects.isNull(valor) ? null : valor.trim();
     }

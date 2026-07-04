@@ -5,6 +5,9 @@ import br.ufpb.dcx.projetos.artista.exceptions.ArtistaValidacaoException;
 import br.ufpb.dcx.projetos.artista.models.Artista;
 import br.ufpb.dcx.projetos.artista.services.ArtistaUseCase;
 import br.ufpb.dcx.projetos.artista.views.ArtistaDTOView;
+import io.javalin.openapi.OpenApi;
+import io.javalin.openapi.OpenApiParam;
+import io.javalin.openapi.OpenApiResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import org.slf4j.Logger;
@@ -31,6 +34,19 @@ public final class ArtistaController {
         this.useCase = useCase;
     }
 
+    @OpenApi(
+            summary = "Listar artistas",
+            operationId = "listarArtistas",
+            path = "/artistas",
+            methods = io.javalin.openapi.HttpMethod.GET,
+            tags = {"Artistas"},
+            queryParams = {
+                    @OpenApiParam(name = "busca", description = "Termo de busca para filtrar artistas")
+            },
+            responses = {
+                    @OpenApiResponse(status = "200", description = "Lista de artistas retornada com sucesso")
+            }
+    )
     public void listar(Context ctx) {
         String busca = parametro(ctx, "busca");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
@@ -46,6 +62,17 @@ public final class ArtistaController {
         );
     }
 
+    @OpenApi(
+            summary = "Cadastrar novo artista",
+            operationId = "cadastrarArtista",
+            path = "/artistas",
+            methods = io.javalin.openapi.HttpMethod.POST,
+            tags = {"Artistas"},
+            responses = {
+                    @OpenApiResponse(status = "303", description = "Redireciona para a listagem após o cadastro"),
+                    @OpenApiResponse(status = "422", description = "Dados do formulário inválidos")
+            }
+    )
     public void cadastrar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         processarFormulario(ctx, null, dto -> useCase.cadastrar(dto, usuarioId));

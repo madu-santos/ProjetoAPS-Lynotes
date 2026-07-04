@@ -12,6 +12,23 @@ public record AlbumDTO(String titulo, String artista, String anoLancamento) {
         );
     }
 
+    public void validar() {
+        if (titulo == null || titulo.trim().isEmpty()) {
+            throw new IllegalArgumentException("O título é obrigatório");
+        }
+        if (artista == null || artista.trim().isEmpty()) {
+            throw new IllegalArgumentException("O artista é obrigatório");
+        }
+        try {
+            int ano = Integer.parseInt(anoLancamento.trim());
+            if (ano < 1900 || ano > 2100) {
+                throw new IllegalArgumentException("O ano de lançamento deve estar entre 1900 e 2100");
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("O ano de lançamento deve ser um número inteiro válido");
+        }
+    }
+
     private String normalizarObrigatorio(String valor) {
         return Objects.isNull(valor) ? null : valor.trim();
     }

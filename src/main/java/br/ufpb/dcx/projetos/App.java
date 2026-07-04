@@ -6,6 +6,7 @@ import br.ufpb.dcx.projetos.infra.database.DriverManagerConnectionFactory;
 import br.ufpb.dcx.projetos.login.controllers.LoginController;
 import br.ufpb.dcx.projetos.login.models.Role;
 import br.ufpb.dcx.projetos.musica.MusicaModule;
+import br.ufpb.dcx.projetos.exceptions.GlobalHttpExceptionHandler;
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.ForbiddenResponse;
@@ -100,7 +101,8 @@ public final class App {
         new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service, musicaService).registrarRotas(app);
 
         registrarLogHttp(app);
-        registrarTratamentoDeErrosGlobais(app);
+        GlobalHttpExceptionHandler.registrar(app);
+        registrarTratamentoDeErrosStatus(app);
         return app;
     }
 
@@ -183,18 +185,12 @@ public final class App {
         ));
     }
 
-    private static void registrarTratamentoDeErrosGlobais(Javalin app) {
+    private static void registrarTratamentoDeErrosStatus(Javalin app) {
         app.error(404, ctx -> {
             ctx.render("erros/404");
         });
 
         app.error(500, ctx -> {
-            ctx.render("erros/500");
-        });
-
-        app.exception(Exception.class, (e, ctx) -> {
-            LOGGER.error("Erro interno não tratado pego pelo manipulador global", e);
-            ctx.status(500);
             ctx.render("erros/500");
         });
     }

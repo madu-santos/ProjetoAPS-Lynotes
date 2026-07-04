@@ -30,6 +30,16 @@ public final class AlbumController {
         this.service = service;
     }
 
+    @io.javalin.openapi.OpenApi(
+            summary = "Listar álbuns",
+            operationId = "listarAlbums",
+            path = "/albums",
+            methods = io.javalin.openapi.HttpMethod.GET,
+            tags = {"Álbuns"},
+            responses = {
+                    @io.javalin.openapi.OpenApiResponse(status = "200", description = "Lista de álbuns retornada com sucesso")
+            }
+    )
     public void listar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         List<Album> albums = service.findAll(usuarioId);
@@ -48,10 +58,22 @@ public final class AlbumController {
         );
     }
 
+    @io.javalin.openapi.OpenApi(
+            summary = "Cadastrar novo álbum",
+            operationId = "cadastrarAlbum",
+            path = "/albums",
+            methods = io.javalin.openapi.HttpMethod.POST,
+            tags = {"Álbuns"},
+            responses = {
+                    @io.javalin.openapi.OpenApiResponse(status = "303", description = "Redireciona para a listagem"),
+                    @io.javalin.openapi.OpenApiResponse(status = "422", description = "Dados inválidos")
+            }
+    )
     public void cadastrar(Context ctx) {
         AlbumDTO dto = extrairFormulario(ctx);
         try {
-            int ano = parseAno(dto.anoLancamento());
+            dto.validar();
+            int ano = Integer.parseInt(dto.anoLancamento().trim());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             Album album = Album.novo(dto.titulo(), dto.artista(), ano, usuarioId);
             service.save(album, usuarioId);
@@ -71,11 +93,27 @@ public final class AlbumController {
         renderizarFormulario(ctx, AlbumDTOView.edicao(album), null);
     }
 
+    @io.javalin.openapi.OpenApi(
+            summary = "Atualizar álbum",
+            operationId = "atualizarAlbum",
+            path = "/albums/{id}",
+            methods = io.javalin.openapi.HttpMethod.POST,
+            tags = {"Álbuns"},
+            pathParams = {
+                    @io.javalin.openapi.OpenApiParam(name = "id", description = "ID do álbum")
+            },
+            responses = {
+                    @io.javalin.openapi.OpenApiResponse(status = "303", description = "Redireciona para a listagem"),
+                    @io.javalin.openapi.OpenApiResponse(status = "404", description = "Álbum não encontrado"),
+                    @io.javalin.openapi.OpenApiResponse(status = "422", description = "Dados inválidos")
+            }
+    )
     public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
         AlbumDTO dto = extrairFormulario(ctx);
         try {
-            int ano = parseAno(dto.anoLancamento());
+            dto.validar();
+            int ano = Integer.parseInt(dto.anoLancamento().trim());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             Album albumDetails = new Album(id, dto.titulo(), dto.artista(), ano, usuarioId);
             service.update(id, albumDetails, usuarioId);
@@ -92,17 +130,6 @@ public final class AlbumController {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         service.deleteById(id, usuarioId);
         redirecionarParaListagem(ctx);
-    }
-
-    private int parseAno(String anoStr) {
-        if (anoStr == null || anoStr.trim().isEmpty()) {
-            throw new IllegalArgumentException("O ano de lançamento é obrigatório");
-        }
-        try {
-            return Integer.parseInt(anoStr.trim());
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("O ano de lançamento deve ser um número inteiro válido");
-        }
     }
 
     private AlbumDTO extrairFormulario(Context ctx) {
