@@ -3,10 +3,10 @@ package br.ufpb.dcx.projetos.artista.dto;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public record ArtistaForm(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, Boolean solicitarVerificacao) {
+public record ArtistaDTO(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, Boolean solicitarVerificacao) {
 
-    public ArtistaForm normalizado() {
-        return new ArtistaForm(
+    public ArtistaDTO normalizado() {
+        return new ArtistaDTO(
                 normalizarObrigatorio(nome),
                 normalizarOpcional(generoMusical),
                 normalizarOpcional(biografia),

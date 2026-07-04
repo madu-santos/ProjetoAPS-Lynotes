@@ -1,6 +1,6 @@
 package br.ufpb.dcx.projetos.artista.controllers;
 
-import br.ufpb.dcx.projetos.artista.dto.ArtistaForm;
+import br.ufpb.dcx.projetos.artista.dto.ArtistaDTO;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaIdInvalidoException;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaNaoEncontradoException;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaValidacaoException;
@@ -157,7 +157,7 @@ class ArtistaControllerTest {
         }
 
         @Override
-        public Artista cadastrar(ArtistaForm formulario, String usuarioId) {
+        public Artista cadastrar(ArtistaDTO formulario, String usuarioId) {
             if (formularioInvalido) {
                 throw new ArtistaValidacaoException("Nome obrigatório");
             }
@@ -179,7 +179,7 @@ class ArtistaControllerTest {
         }
 
         @Override
-        public Artista atualizar(String id, ArtistaForm formulario, String usuarioId) {
+        public Artista atualizar(String id, ArtistaDTO formulario, String usuarioId) {
             return new Artista(
                     id,
                     formulario.nome(),

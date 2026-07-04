@@ -1,6 +1,6 @@
 package br.ufpb.dcx.projetos.artista.services;
 
-import br.ufpb.dcx.projetos.artista.dto.ArtistaForm;
+import br.ufpb.dcx.projetos.artista.dto.ArtistaDTO;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaIdInvalidoException;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaNaoEncontradoException;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaValidacaoException;
@@ -33,7 +33,7 @@ class ArtistaServiceTest {
     @Test
     void deveCadastrarArtistaNormalizado() {
         Artista artista = service.cadastrar(
-                new ArtistaForm("  Liniker  ", " MPB ", " Cantora brasileira ", "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true),
+                new ArtistaDTO("  Liniker  ", " MPB ", " Cantora brasileira ", "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true),
                 "usuario-id-1"
         );
 
@@ -46,7 +46,7 @@ class ArtistaServiceTest {
     void deveRetornarErroDeValidacaoParaNomeVazio() {
         ArtistaValidacaoException erro = assertThrows(
                 ArtistaValidacaoException.class,
-                () -> service.cadastrar(new ArtistaForm(" ", "Rock", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true), "usuario-id-1")
+                () -> service.cadastrar(new ArtistaDTO(" ", "Rock", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true), "usuario-id-1")
         );
 
         assertEquals("Nome do artista é obrigatório.", erro.getMessage());
@@ -54,8 +54,8 @@ class ArtistaServiceTest {
 
     @Test
     void devePermitirArtistasComMesmoNome() {
-        service.cadastrar(new ArtistaForm("Djavan", "MPB", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
-        service.cadastrar(new ArtistaForm("Djavan", "Jazz", "Outro artista", "11122233344", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
+        service.cadastrar(new ArtistaDTO("Djavan", "MPB", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
+        service.cadastrar(new ArtistaDTO("Djavan", "Jazz", "Outro artista", "11122233344", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
 
         assertEquals(2, service.listar("", "usuario-id-1").size());
     }
@@ -63,13 +63,13 @@ class ArtistaServiceTest {
     @Test
     void deveAtualizarArtista() {
         Artista artista = service.cadastrar(
-                new ArtistaForm("BaianaSystem", "Rock", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true),
+                new ArtistaDTO("BaianaSystem", "Rock", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true),
                 "usuario-id-1"
         );
 
         Artista atualizado = service.atualizar(
                 artista.getId(),
-                new ArtistaForm("BaianaSystem", "Afro-rock", "Grupo musical brasileiro", "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true),
+                new ArtistaDTO("BaianaSystem", "Afro-rock", "Grupo musical brasileiro", "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true),
                 "usuario-id-1"
         );
 
@@ -83,7 +83,7 @@ class ArtistaServiceTest {
 
         assertThrows(
                 ArtistaNaoEncontradoException.class,
-                () -> service.atualizar(id, new ArtistaForm("Nome", null, null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true), "usuario-id-1")
+                () -> service.atualizar(id, new ArtistaDTO("Nome", null, null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true), "usuario-id-1")
         );
     }
 
@@ -94,7 +94,7 @@ class ArtistaServiceTest {
 
     @Test
     void deveExcluirArtista() {
-        Artista artista = service.cadastrar(new ArtistaForm("Elis Regina", "MPB", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true), "usuario-id-1");
+        Artista artista = service.cadastrar(new ArtistaDTO("Elis Regina", "MPB", null, "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", true), "usuario-id-1");
 
         service.remover(artista.getId(), "usuario-id-1");
 
@@ -106,8 +106,8 @@ class ArtistaServiceTest {
 
     @Test
     void deveBuscarPorNomeGeneroOuBiografia() {
-        service.cadastrar(new ArtistaForm("Djavan", "MPB", "Cantor alagoano", "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
-        service.cadastrar(new ArtistaForm("Nina Simone", "Jazz", "Cantora americana", "11122233344", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
+        service.cadastrar(new ArtistaDTO("Djavan", "MPB", "Cantor alagoano", "12345678909", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
+        service.cadastrar(new ArtistaDTO("Nina Simone", "Jazz", "Cantora americana", "11122233344", java.time.LocalDate.of(1995, 7, 3), "12345-678", "Rua Exemplo", "123", "Bairro", "Cidade", "SP", false), "usuario-id-1");
 
         assertEquals(1, service.listar("djavan", "usuario-id-1").size());
         assertEquals(1, service.listar("jazz", "usuario-id-1").size());

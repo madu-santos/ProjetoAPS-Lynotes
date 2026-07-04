@@ -1,6 +1,6 @@
 package br.ufpb.dcx.projetos.artista.services;
 
-import br.ufpb.dcx.projetos.artista.dto.ArtistaForm;
+import br.ufpb.dcx.projetos.artista.dto.ArtistaDTO;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaIdInvalidoException;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaValidacaoException;
 
@@ -14,12 +14,12 @@ public final class ArtistaValidator {
     private static final int TAMANHO_MAXIMO_NOME = 150;
     private static final int TAMANHO_MAXIMO_GENERO = 100;
 
-    public ArtistaForm validar(ArtistaForm formulario) {
+    public ArtistaDTO validar(ArtistaDTO formulario) {
         if (Objects.isNull(formulario)) {
             throw new ArtistaValidacaoException("Dados do artista são obrigatórios.");
         }
 
-        ArtistaForm normalizado = formulario.normalizado();
+        ArtistaDTO normalizado = formulario.normalizado();
         validarNome(normalizado.nome());
         validarGenero(normalizado.generoMusical());
         

@@ -1,6 +1,6 @@
 package br.ufpb.dcx.projetos.artista.views;
 
-import br.ufpb.dcx.projetos.artista.dto.ArtistaForm;
+import br.ufpb.dcx.projetos.artista.dto.ArtistaDTO;
 import br.ufpb.dcx.projetos.artista.models.Artista;
 
 import java.time.LocalDate;
@@ -55,7 +55,7 @@ public final class ArtistaFormView {
         this.acao = acao;
     }
 
-    public static ArtistaFormView cadastro(ArtistaForm form) {
+    public static ArtistaFormView cadastro(ArtistaDTO form) {
         return new ArtistaFormView(
                 valor(form.nome()),
                 valor(form.generoMusical()),
@@ -93,7 +93,7 @@ public final class ArtistaFormView {
         );
     }
 
-    public static ArtistaFormView edicao(String id, ArtistaForm form) {
+    public static ArtistaFormView edicao(String id, ArtistaDTO form) {
         return new ArtistaFormView(
                 valor(form.nome()),
                 valor(form.generoMusical()),

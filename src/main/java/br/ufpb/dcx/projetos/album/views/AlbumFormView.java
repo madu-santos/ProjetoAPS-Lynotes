@@ -1,6 +1,6 @@
 package br.ufpb.dcx.projetos.album.views;
 
-import br.ufpb.dcx.projetos.album.dto.AlbumForm;
+import br.ufpb.dcx.projetos.album.dto.AlbumDTO;
 import br.ufpb.dcx.projetos.album.models.Album;
 
 import java.util.Objects;
@@ -30,7 +30,7 @@ public final class AlbumFormView {
         this.acao = acao;
     }
 
-    public static AlbumFormView cadastro(AlbumForm form) {
+    public static AlbumFormView cadastro(AlbumDTO form) {
         return new AlbumFormView(
                 null,
                 valor(form.titulo()),
@@ -52,7 +52,7 @@ public final class AlbumFormView {
         );
     }
 
-    public static AlbumFormView edicao(String id, AlbumForm form) {
+    public static AlbumFormView edicao(String id, AlbumDTO form) {
         return new AlbumFormView(
                 id,
                 valor(form.titulo()),

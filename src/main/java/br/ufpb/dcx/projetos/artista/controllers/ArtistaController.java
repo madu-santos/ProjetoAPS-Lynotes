@@ -1,6 +1,6 @@
 package br.ufpb.dcx.projetos.artista.controllers;
 
-import br.ufpb.dcx.projetos.artista.dto.ArtistaForm;
+import br.ufpb.dcx.projetos.artista.dto.ArtistaDTO;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaValidacaoException;
 import br.ufpb.dcx.projetos.artista.models.Artista;
 import br.ufpb.dcx.projetos.artista.services.ArtistaUseCase;
@@ -43,7 +43,7 @@ public final class ArtistaController {
     public void exibirCadastro(Context ctx) {
         renderizarFormulario(
                 ctx,
-                ArtistaFormView.cadastro(new ArtistaForm("", "", "", "", null, "", "", "", "", "", "", false)),
+                ArtistaFormView.cadastro(new ArtistaDTO("", "", "", "", null, "", "", "", "", "", "", false)),
                 null
         );
     }
@@ -76,7 +76,7 @@ public final class ArtistaController {
             String id,
             FormOperation operacao
     ) {
-        ArtistaForm form = extrairFormulario(ctx);
+        ArtistaDTO form = extrairFormulario(ctx);
         try {
             operacao.executar(form);
             redirecionarParaListagem(ctx);
@@ -102,7 +102,7 @@ public final class ArtistaController {
         );
     }
 
-    private ArtistaForm extrairFormulario(Context ctx) {
+    private ArtistaDTO extrairFormulario(Context ctx) {
         String dataStr = ctx.formParam("dataNascimento");
         java.time.LocalDate data = null;
         try {
@@ -116,7 +116,7 @@ public final class ArtistaController {
         String solicitarVerificacaoStr = ctx.formParam("solicitarVerificacao");
         boolean solicitarVerificacao = "on".equalsIgnoreCase(solicitarVerificacaoStr) || "true".equalsIgnoreCase(solicitarVerificacaoStr);
         
-        return new ArtistaForm(
+        return new ArtistaDTO(
                 ctx.formParam("nome"),
                 ctx.formParam("generoMusical"),
                 ctx.formParam("biografia"),
@@ -132,7 +132,7 @@ public final class ArtistaController {
         );
     }
 
-    private ArtistaFormView viewFormulario(String id, ArtistaForm form) {
+    private ArtistaFormView viewFormulario(String id, ArtistaDTO form) {
         return Objects.isNull(id)
                 ? ArtistaFormView.cadastro(form)
                 : ArtistaFormView.edicao(id, form);
@@ -162,6 +162,6 @@ public final class ArtistaController {
 
     @FunctionalInterface
     private interface FormOperation {
-        void executar(ArtistaForm form);
+        void executar(ArtistaDTO form);
     }
 }

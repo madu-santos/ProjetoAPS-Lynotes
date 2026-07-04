@@ -3,7 +3,7 @@ package br.ufpb.dcx.projetos.musica.controllers;
 import br.ufpb.dcx.projetos.album.models.Album;
 import br.ufpb.dcx.projetos.album.services.AlbumService;
 import br.ufpb.dcx.projetos.infra.database.DatabaseException;
-import br.ufpb.dcx.projetos.musica.dto.MusicaForm;
+import br.ufpb.dcx.projetos.musica.dto.MusicaDTO;
 import br.ufpb.dcx.projetos.musica.models.Musica;
 import br.ufpb.dcx.projetos.musica.services.MusicaService;
 import br.ufpb.dcx.projetos.musica.views.MusicaFormView;
@@ -65,13 +65,13 @@ public final class MusicaController {
         List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
         renderizarFormulario(
                 ctx,
-                MusicaFormView.cadastro(new MusicaForm("", "", null, null, null, null, null, null, null, null), albums,
+                MusicaFormView.cadastro(new MusicaDTO("", "", null, null, null, null, null, null, null, null), albums,
                         playlists),
                 null);
     }
 
     public void cadastrar(Context ctx) {
-        MusicaForm form = extrairFormulario(ctx);
+        MusicaDTO form = extrairFormulario(ctx);
         try {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             if (usuarioId == null) {
@@ -158,7 +158,7 @@ public final class MusicaController {
 
     public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
-        MusicaForm form = extrairFormulario(ctx);
+        MusicaDTO form = extrairFormulario(ctx);
         try {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             if (usuarioId == null) {
@@ -250,8 +250,8 @@ public final class MusicaController {
         redirecionarParaListagem(ctx);
     }
 
-    private MusicaForm extrairFormulario(Context ctx) {
-        return new MusicaForm(
+    private MusicaDTO extrairFormulario(Context ctx) {
+        return new MusicaDTO(
                 ctx.formParam("titulo"),
                 ctx.formParam("artista"),
                 null,

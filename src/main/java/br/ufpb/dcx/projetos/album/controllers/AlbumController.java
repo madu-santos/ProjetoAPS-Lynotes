@@ -1,6 +1,6 @@
 package br.ufpb.dcx.projetos.album.controllers;
 
-import br.ufpb.dcx.projetos.album.dto.AlbumForm;
+import br.ufpb.dcx.projetos.album.dto.AlbumDTO;
 import br.ufpb.dcx.projetos.album.models.Album;
 import br.ufpb.dcx.projetos.album.services.AlbumService;
 import br.ufpb.dcx.projetos.album.views.AlbumFormView;
@@ -45,13 +45,13 @@ public final class AlbumController {
     public void exibirCadastro(Context ctx) {
         renderizarFormulario(
                 ctx,
-                AlbumFormView.cadastro(new AlbumForm("", "", "")),
+                AlbumFormView.cadastro(new AlbumDTO("", "", "")),
                 null
         );
     }
 
     public void cadastrar(Context ctx) {
-        AlbumForm form = extrairFormulario(ctx);
+        AlbumDTO form = extrairFormulario(ctx);
         try {
             int ano = parseAno(form.anoLancamento());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
@@ -75,7 +75,7 @@ public final class AlbumController {
 
     public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
-        AlbumForm form = extrairFormulario(ctx);
+        AlbumDTO form = extrairFormulario(ctx);
         try {
             int ano = parseAno(form.anoLancamento());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
@@ -107,8 +107,8 @@ public final class AlbumController {
         }
     }
 
-    private AlbumForm extrairFormulario(Context ctx) {
-        return new AlbumForm(
+    private AlbumDTO extrairFormulario(Context ctx) {
+        return new AlbumDTO(
                 ctx.formParam("titulo"),
                 ctx.formParam("artista"),
                 ctx.formParam("anoLancamento")

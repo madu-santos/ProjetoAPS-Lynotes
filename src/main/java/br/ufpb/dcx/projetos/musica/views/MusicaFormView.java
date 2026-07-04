@@ -1,7 +1,7 @@
 package br.ufpb.dcx.projetos.musica.views;
 
 import br.ufpb.dcx.projetos.album.models.Album;
-import br.ufpb.dcx.projetos.musica.dto.MusicaForm;
+import br.ufpb.dcx.projetos.musica.dto.MusicaDTO;
 import br.ufpb.dcx.projetos.musica.models.Musica;
 
 import java.util.List;
@@ -62,7 +62,7 @@ public final class MusicaFormView {
         this.playlists = playlists;
     }
 
-    public static MusicaFormView cadastro(MusicaForm form, List<Album> albums) {
+    public static MusicaFormView cadastro(MusicaDTO form, List<Album> albums) {
         return new MusicaFormView(
                 null,
                 valor(form.titulo()),
@@ -83,7 +83,7 @@ public final class MusicaFormView {
         );
     }
 
-    public static MusicaFormView cadastro(MusicaForm form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
+    public static MusicaFormView cadastro(MusicaDTO form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
         return new MusicaFormView(
                 null,
                 valor(form.titulo()),
@@ -125,7 +125,7 @@ public final class MusicaFormView {
         );
     }
 
-    public static MusicaFormView edicao(String id, MusicaForm form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
+    public static MusicaFormView edicao(String id, MusicaDTO form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
         return new MusicaFormView(
                 id,
                 valor(form.titulo()),

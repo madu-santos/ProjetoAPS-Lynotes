@@ -1,6 +1,6 @@
 package br.ufpb.dcx.projetos.artista.services;
 
-import br.ufpb.dcx.projetos.artista.dto.ArtistaForm;
+import br.ufpb.dcx.projetos.artista.dto.ArtistaDTO;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaNaoEncontradoException;
 import br.ufpb.dcx.projetos.artista.models.Artista;
 import br.ufpb.dcx.projetos.artista.models.StatusVerificacao;
@@ -37,8 +37,8 @@ public final class ArtistaService implements ArtistaUseCase {
     }
 
     @Override
-    public Artista cadastrar(ArtistaForm formulario, String usuarioId) {
-        ArtistaForm dados = validator.validar(formulario);
+    public Artista cadastrar(ArtistaDTO formulario, String usuarioId) {
+        ArtistaDTO dados = validator.validar(formulario);
         StatusVerificacao status = Boolean.TRUE.equals(dados.solicitarVerificacao()) ? StatusVerificacao.PENDENTE : StatusVerificacao.NAO_SOLICITADO;
 
         Artista artista = Artista.novo(
@@ -62,9 +62,9 @@ public final class ArtistaService implements ArtistaUseCase {
     }
 
     @Override
-    public Artista atualizar(String id, ArtistaForm formulario, String usuarioId) {
+    public Artista atualizar(String id, ArtistaDTO formulario, String usuarioId) {
         String idValidado = validator.validarId(id);
-        ArtistaForm dados = validator.validar(formulario);
+        ArtistaDTO dados = validator.validar(formulario);
         // Mantenha o status original por enquanto (a aprovação será feita pelo admin)
         Artista artistaOriginal = obter(id, usuarioId);
         StatusVerificacao status = artistaOriginal.getStatusVerificacao();

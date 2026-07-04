@@ -2,7 +2,7 @@ package br.ufpb.dcx.projetos.musica.dto;
 
 import java.util.Objects;
 
-public record MusicaForm(
+public record MusicaDTO(
         String titulo,
         String artista,
         String duracaoSegundos,
@@ -15,8 +15,8 @@ public record MusicaForm(
         String novaPlaylistNome
 ) {
 
-    public MusicaForm normalizado() {
-        return new MusicaForm(
+    public MusicaDTO normalizado() {
+        return new MusicaDTO(
                 normalizarObrigatorio(titulo),
                 normalizarObrigatorio(artista),
                 normalizarOpcional(duracaoSegundos),
