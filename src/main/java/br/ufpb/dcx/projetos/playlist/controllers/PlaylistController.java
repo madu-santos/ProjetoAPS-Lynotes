@@ -4,8 +4,6 @@ import br.ufpb.dcx.projetos.playlist.models.Playlist;
 import br.ufpb.dcx.projetos.playlist.models.PlaylistItem;
 import br.ufpb.dcx.projetos.playlist.models.PlaylistWithItems;
 import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
-import br.ufpb.dcx.projetos.login.models.Role;
-import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 

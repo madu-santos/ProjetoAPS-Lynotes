@@ -5,8 +5,6 @@ import br.ufpb.dcx.projetos.artista.exceptions.ArtistaValidacaoException;
 import br.ufpb.dcx.projetos.artista.models.Artista;
 import br.ufpb.dcx.projetos.artista.services.ArtistaUseCase;
 import br.ufpb.dcx.projetos.artista.views.ArtistaDTOView;
-import br.ufpb.dcx.projetos.login.models.Role;
-import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import org.slf4j.Logger;

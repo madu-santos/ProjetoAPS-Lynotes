@@ -2,8 +2,6 @@ package br.ufpb.dcx.projetos.artista.controllers;
 
 import br.ufpb.dcx.projetos.artista.models.Artista;
 import br.ufpb.dcx.projetos.artista.services.ArtistaService;
-import br.ufpb.dcx.projetos.login.models.Role;
-import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.util.List;

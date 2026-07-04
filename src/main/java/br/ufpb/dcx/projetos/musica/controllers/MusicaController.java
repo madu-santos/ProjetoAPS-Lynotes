@@ -8,8 +8,6 @@ import br.ufpb.dcx.projetos.musica.models.Musica;
 import br.ufpb.dcx.projetos.musica.services.MusicaService;
 import br.ufpb.dcx.projetos.musica.views.MusicaDTOView;
 import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
-import br.ufpb.dcx.projetos.login.models.Role;
-import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import org.slf4j.Logger;

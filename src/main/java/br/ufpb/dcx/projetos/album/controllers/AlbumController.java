@@ -4,8 +4,6 @@ import br.ufpb.dcx.projetos.album.dto.AlbumDTO;
 import br.ufpb.dcx.projetos.album.models.Album;
 import br.ufpb.dcx.projetos.album.services.AlbumService;
 import br.ufpb.dcx.projetos.album.views.AlbumDTOView;
-import br.ufpb.dcx.projetos.login.models.Role;
-import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import org.slf4j.Logger;
