@@ -10,4 +10,22 @@ public record UsuarioDTO(String nome, String email, String senha) {
                 Objects.toString(senha, "")
         );
     }
+
+    public void validar() {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome é obrigatório.");
+        }
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("E-mail é obrigatório.");
+        }
+        if (!email.contains("@") || !email.contains(".")) {
+            throw new IllegalArgumentException("Formato de e-mail inválido.");
+        }
+        if (senha == null || senha.trim().isEmpty()) {
+            throw new IllegalArgumentException("Senha é obrigatória.");
+        }
+        if (senha.length() < 6) {
+            throw new IllegalArgumentException("A senha deve conter no mínimo 6 caracteres.");
+        }
+    }
 }

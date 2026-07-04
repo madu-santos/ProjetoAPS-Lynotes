@@ -63,9 +63,9 @@ public final class UsuarioController {
                 ctx.formParam("senha")
         ).normalizado();
 
-        Usuario usuario = new Usuario(dto.nome(), dto.email(), dto.senha());
-
         try {
+            dto.validar();
+            Usuario usuario = new Usuario(dto.nome(), dto.email(), dto.senha());
             service.cadastrarUsuario(usuario);
             if (ctx.sessionAttribute("usuarioLogado") != null) {
                 ctx.redirect("/usuarios");
@@ -149,18 +149,33 @@ public final class UsuarioController {
                 ctx.formParam("senha")
         ).normalizado();
 
-        Optional<Usuario> usuarioOpt = service.buscarPorId(id);
-        if (usuarioOpt.isEmpty()) {
-            ctx.status(HttpStatus.NOT_FOUND).result("Usuário não encontrado");
-            return;
-        }
-
-        Usuario usuarioAntigo = usuarioOpt.get();
-        String senhaFinal = (dto.senha() == null || dto.senha().trim().isEmpty()) ? usuarioAntigo.getSenha() : dto.senha();
-
-        Usuario usuarioAtualizado = new Usuario(id, dto.nome(), dto.email(), senhaFinal, usuarioAntigo.getTipo());
-
         try {
+            // Na atualização, a senha pode ser vazia se não quiser alterar
+            if (dto.senha() != null && !dto.senha().isEmpty()) {
+                if (dto.senha().length() < 6) {
+                    throw new IllegalArgumentException("A senha deve conter no mínimo 6 caracteres.");
+                }
+            }
+            
+            // Validações básicas (exceto senha se estiver vazia)
+            if (dto.nome() == null || dto.nome().trim().isEmpty()) {
+                throw new IllegalArgumentException("Nome é obrigatório.");
+            }
+            if (dto.email() == null || dto.email().trim().isEmpty()) {
+                throw new IllegalArgumentException("E-mail é obrigatório.");
+            }
+
+            Optional<Usuario> usuarioOpt = service.buscarPorId(id);
+            if (usuarioOpt.isEmpty()) {
+                ctx.status(HttpStatus.NOT_FOUND).result("Usuário não encontrado");
+                return;
+            }
+
+            Usuario usuarioAntigo = usuarioOpt.get();
+            String senhaFinal = (dto.senha() == null || dto.senha().trim().isEmpty()) ? usuarioAntigo.getSenha() : dto.senha();
+
+            Usuario usuarioAtualizado = new Usuario(id, dto.nome(), dto.email(), senhaFinal, usuarioAntigo.getTipo());
+
             service.cadastrarUsuario(usuarioAtualizado);
             ctx.redirect("/usuarios");
         } catch (IllegalArgumentException e) {
