@@ -71,7 +71,7 @@ public final class MusicaController {
     }
 
     public void cadastrar(Context ctx) {
-        MusicaDTO form = extrairFormulario(ctx);
+        MusicaDTO dto = extrairFormulario(ctx);
         try {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             if (usuarioId == null) {
@@ -80,54 +80,54 @@ public final class MusicaController {
             }
 
             Integer notaVal = null;
-            if (form.nota() != null && !form.nota().isBlank()) {
-                notaVal = Integer.parseInt(form.nota());
+            if (dto.nota() != null && !dto.nota().isBlank()) {
+                notaVal = Integer.parseInt(dto.nota());
             }
 
-            if (form.youtubeUrl() != null && !form.youtubeUrl().isBlank()) {
-                playlistService.extractVideoId(form.youtubeUrl());
+            if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
+                playlistService.extractVideoId(dto.youtubeUrl());
             }
 
             Musica musica = Musica.novo(
-                    form.titulo(),
-                    form.artista(),
+                    dto.titulo(),
+                    dto.artista(),
                     null, // genero
                     null, // duracaoSegundos
-                    form.resenha(),
+                    dto.resenha(),
                     notaVal,
-                    form.spotifyUrl(),
-                    form.youtubeUrl(),
+                    dto.spotifyUrl(),
+                    dto.youtubeUrl(),
                     null, // albumId
                     usuarioId);
             service.save(musica);
 
-            if (form.youtubeUrl() != null && !form.youtubeUrl().isBlank()) {
-                String videoId = playlistService.extractVideoId(form.youtubeUrl());
-                if (form.novaPlaylistNome() != null && !form.novaPlaylistNome().isBlank()) {
-                    String playlistId = playlistService.createPlaylist(form.novaPlaylistNome(), usuarioId).getId();
-                    playlistService.addItem(playlistId, form.youtubeUrl(), videoId, usuarioId);
-                } else if (form.playlistId() != null && !form.playlistId().isBlank()) {
-                    playlistService.addItem(form.playlistId(), form.youtubeUrl(), videoId, usuarioId);
+            if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
+                String videoId = playlistService.extractVideoId(dto.youtubeUrl());
+                if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
+                    String playlistId = playlistService.createPlaylist(dto.novaPlaylistNome(), usuarioId).getId();
+                    playlistService.addItem(playlistId, dto.youtubeUrl(), videoId, usuarioId);
+                } else if (dto.playlistId() != null && !dto.playlistId().isBlank()) {
+                    playlistService.addItem(dto.playlistId(), dto.youtubeUrl(), videoId, usuarioId);
                 }
                 playlistService.addItem(playlistService.findOrCreateHiddenPlaylist(usuarioId).getId(),
-                        form.youtubeUrl(), videoId, usuarioId);
+                        dto.youtubeUrl(), videoId, usuarioId);
             }
 
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("Formulário de cadastro de música inválido. path={} mensagem={}", ctx.path(), e.getMessage());
+            LOGGER.warn("DTO de cadastro de música inválido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaDTOView.cadastro(form, albums, playlists), e.getMessage());
+            renderizarFormulario(ctx, MusicaDTOView.cadastro(dto, albums, playlists), e.getMessage());
         } catch (DatabaseException e) {
             LOGGER.error("Erro de banco de dados ao cadastrar música. path={}", ctx.path(), e);
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaDTOView.cadastro(form, albums, playlists),
+            renderizarFormulario(ctx, MusicaDTOView.cadastro(dto, albums, playlists),
                     "Erro ao salvar a música. Tente novamente.");
         } catch (Exception e) {
             LOGGER.error("Erro inesperado ao cadastrar música. path={}", ctx.path(), e);
@@ -135,7 +135,7 @@ public final class MusicaController {
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaDTOView.cadastro(form, albums, playlists),
+            renderizarFormulario(ctx, MusicaDTOView.cadastro(dto, albums, playlists),
                     "Ocorreu um erro inesperado. Tente novamente.");
         }
     }
@@ -158,7 +158,7 @@ public final class MusicaController {
 
     public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
-        MusicaDTO form = extrairFormulario(ctx);
+        MusicaDTO dto = extrairFormulario(ctx);
         try {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             if (usuarioId == null) {
@@ -174,51 +174,51 @@ public final class MusicaController {
             }
 
             Integer notaVal = null;
-            if (form.nota() != null && !form.nota().isBlank()) {
-                notaVal = Integer.parseInt(form.nota());
+            if (dto.nota() != null && !dto.nota().isBlank()) {
+                notaVal = Integer.parseInt(dto.nota());
             }
 
             Musica musicaDetails = new Musica(
                     id,
-                    form.titulo(),
-                    form.artista(),
+                    dto.titulo(),
+                    dto.artista(),
                     musicaExistente.getGenero(),
                     musicaExistente.getDuracaoSegundos(),
-                    form.resenha(),
+                    dto.resenha(),
                     notaVal,
-                    form.spotifyUrl(),
-                    form.youtubeUrl(),
+                    dto.spotifyUrl(),
+                    dto.youtubeUrl(),
                     musicaExistente.getAlbumId(),
                     usuarioId);
             service.update(id, musicaDetails);
 
-            if (form.youtubeUrl() != null && !form.youtubeUrl().isBlank()) {
-                String videoId = playlistService.extractVideoId(form.youtubeUrl());
-                if (form.novaPlaylistNome() != null && !form.novaPlaylistNome().isBlank()) {
-                    String playlistId = playlistService.createPlaylist(form.novaPlaylistNome(), usuarioId).getId();
-                    playlistService.addItem(playlistId, form.youtubeUrl(), videoId, usuarioId);
-                } else if (form.playlistId() != null && !form.playlistId().isBlank()) {
-                    playlistService.addItem(form.playlistId(), form.youtubeUrl(), videoId, usuarioId);
+            if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
+                String videoId = playlistService.extractVideoId(dto.youtubeUrl());
+                if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
+                    String playlistId = playlistService.createPlaylist(dto.novaPlaylistNome(), usuarioId).getId();
+                    playlistService.addItem(playlistId, dto.youtubeUrl(), videoId, usuarioId);
+                } else if (dto.playlistId() != null && !dto.playlistId().isBlank()) {
+                    playlistService.addItem(dto.playlistId(), dto.youtubeUrl(), videoId, usuarioId);
                 }
                 playlistService.addItem(playlistService.findOrCreateHiddenPlaylist(usuarioId).getId(),
-                        form.youtubeUrl(), videoId, usuarioId);
+                        dto.youtubeUrl(), videoId, usuarioId);
             }
 
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("Formulário de edição de música inválido. path={} mensagem={}", ctx.path(), e.getMessage());
+            LOGGER.warn("DTO de edição de música inválido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaDTOView.edicao(id, form, albums, playlists), e.getMessage());
+            renderizarFormulario(ctx, MusicaDTOView.edicao(id, dto, albums, playlists), e.getMessage());
         } catch (DatabaseException e) {
             LOGGER.error("Erro de banco de dados ao atualizar música. path={}", ctx.path(), e);
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaDTOView.edicao(id, form, albums, playlists),
+            renderizarFormulario(ctx, MusicaDTOView.edicao(id, dto, albums, playlists),
                     "Erro ao salvar as alterações. Tente novamente.");
         } catch (Exception e) {
             LOGGER.error("Erro inesperado ao atualizar música. path={}", ctx.path(), e);
@@ -226,7 +226,7 @@ public final class MusicaController {
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaDTOView.edicao(id, form, albums, playlists),
+            renderizarFormulario(ctx, MusicaDTOView.edicao(id, dto, albums, playlists),
                     "Ocorreu um erro inesperado. Tente novamente.");
         }
     }

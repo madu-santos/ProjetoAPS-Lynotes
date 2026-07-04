@@ -51,17 +51,17 @@ public final class AlbumController {
     }
 
     public void cadastrar(Context ctx) {
-        AlbumDTO form = extrairFormulario(ctx);
+        AlbumDTO dto = extrairFormulario(ctx);
         try {
-            int ano = parseAno(form.anoLancamento());
+            int ano = parseAno(dto.anoLancamento());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-            Album album = Album.novo(form.titulo(), form.artista(), ano, usuarioId);
+            Album album = Album.novo(dto.titulo(), dto.artista(), ano, usuarioId);
             service.save(album, usuarioId);
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("Formulário de cadastro de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
+            LOGGER.warn("DTO de cadastro de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
-            renderizarFormulario(ctx, AlbumDTOView.cadastro(form), e.getMessage());
+            renderizarFormulario(ctx, AlbumDTOView.cadastro(dto), e.getMessage());
         }
     }
 
@@ -75,17 +75,17 @@ public final class AlbumController {
 
     public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
-        AlbumDTO form = extrairFormulario(ctx);
+        AlbumDTO dto = extrairFormulario(ctx);
         try {
-            int ano = parseAno(form.anoLancamento());
+            int ano = parseAno(dto.anoLancamento());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-            Album albumDetails = new Album(id, form.titulo(), form.artista(), ano, usuarioId);
+            Album albumDetails = new Album(id, dto.titulo(), dto.artista(), ano, usuarioId);
             service.update(id, albumDetails, usuarioId);
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("Formulário de edição de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
+            LOGGER.warn("DTO de edição de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
-            renderizarFormulario(ctx, AlbumDTOView.edicao(id, form), e.getMessage());
+            renderizarFormulario(ctx, AlbumDTOView.edicao(id, dto), e.getMessage());
         }
     }
 

@@ -50,7 +50,7 @@ public final class ArtistaController {
 
     public void cadastrar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-        processarFormulario(ctx, null, form -> useCase.cadastrar(form, usuarioId));
+        processarFormulario(ctx, null, dto -> useCase.cadastrar(dto, usuarioId));
     }
 
     public void exibirEdicao(Context ctx) {
@@ -62,7 +62,7 @@ public final class ArtistaController {
     public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-        processarFormulario(ctx, id, form -> useCase.atualizar(id, form, usuarioId));
+        processarFormulario(ctx, id, dto -> useCase.atualizar(id, dto, usuarioId));
     }
 
     public void excluir(Context ctx) {
@@ -76,15 +76,15 @@ public final class ArtistaController {
             String id,
             FormOperation operacao
     ) {
-        ArtistaDTO form = extrairFormulario(ctx);
+        ArtistaDTO dto = extrairFormulario(ctx);
         try {
-            operacao.executar(form);
+            operacao.executar(dto);
             redirecionarParaListagem(ctx);
         } catch (ArtistaValidacaoException erro) {
-            LOGGER.warn("Formulário de artista inválido. path={} mensagem={}",
+            LOGGER.warn("DTO de artista inválido. path={} mensagem={}",
                     ctx.path(), erro.getMessage());
             ctx.status(HttpStatus.OK);
-            renderizarFormulario(ctx, viewFormulario(id, form), erro.getMessage());
+            renderizarFormulario(ctx, viewFormulario(id, dto), erro.getMessage());
         }
     }
 
@@ -132,10 +132,10 @@ public final class ArtistaController {
         );
     }
 
-    private ArtistaDTOView viewFormulario(String id, ArtistaDTO form) {
+    private ArtistaDTOView viewFormulario(String id, ArtistaDTO dto) {
         return Objects.isNull(id)
-                ? ArtistaDTOView.cadastro(form)
-                : ArtistaDTOView.edicao(id, form);
+                ? ArtistaDTOView.cadastro(dto)
+                : ArtistaDTOView.edicao(id, dto);
     }
 
     private void renderizarFormulario(
@@ -162,6 +162,6 @@ public final class ArtistaController {
 
     @FunctionalInterface
     private interface FormOperation {
-        void executar(ArtistaDTO form);
+        void executar(ArtistaDTO dto);
     }
 }

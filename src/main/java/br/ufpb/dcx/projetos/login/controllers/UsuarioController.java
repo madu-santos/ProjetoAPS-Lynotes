@@ -1,5 +1,6 @@
 package br.ufpb.dcx.projetos.login.controllers;
 
+import br.ufpb.dcx.projetos.login.dto.UsuarioDTO;
 import br.ufpb.dcx.projetos.login.models.Usuario;
 import br.ufpb.dcx.projetos.login.services.UsuarioService;
 import br.ufpb.dcx.projetos.musica.models.Musica;
@@ -56,11 +57,13 @@ public final class UsuarioController {
     }
 
     private void cadastrar(Context ctx) {
-        String nome = ctx.formParam("nome");
-        String email = ctx.formParam("email");
-        String senha = ctx.formParam("senha");
+        UsuarioDTO dto = new UsuarioDTO(
+                ctx.formParam("nome"),
+                ctx.formParam("email"),
+                ctx.formParam("senha")
+        ).normalizado();
 
-        Usuario usuario = new Usuario(nome, email, senha);
+        Usuario usuario = new Usuario(dto.nome(), dto.email(), dto.senha());
 
         try {
             service.cadastrarUsuario(usuario);
@@ -74,8 +77,8 @@ public final class UsuarioController {
             modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
             modelo.put("edicao", false);
             modelo.put("acao", "/usuarios");
-            modelo.put("nome", nome);
-            modelo.put("email", email);
+            modelo.put("nome", dto.nome());
+            modelo.put("email", dto.email());
             modelo.put("erro", e.getMessage());
             ctx.status(HttpStatus.OK).render("usuarios/formulario", modelo);
         }
@@ -140,9 +143,11 @@ public final class UsuarioController {
             return;
         }
 
-        String nome = ctx.formParam("nome");
-        String email = ctx.formParam("email");
-        String senha = ctx.formParam("senha");
+        UsuarioDTO dto = new UsuarioDTO(
+                ctx.formParam("nome"),
+                ctx.formParam("email"),
+                ctx.formParam("senha")
+        ).normalizado();
 
         Optional<Usuario> usuarioOpt = service.buscarPorId(id);
         if (usuarioOpt.isEmpty()) {
@@ -151,9 +156,9 @@ public final class UsuarioController {
         }
 
         Usuario usuarioAntigo = usuarioOpt.get();
-        String senhaFinal = (senha == null || senha.trim().isEmpty()) ? usuarioAntigo.getSenha() : senha;
+        String senhaFinal = (dto.senha() == null || dto.senha().trim().isEmpty()) ? usuarioAntigo.getSenha() : dto.senha();
 
-        Usuario usuarioAtualizado = new Usuario(id, nome, email, senhaFinal, usuarioAntigo.getTipo());
+        Usuario usuarioAtualizado = new Usuario(id, dto.nome(), dto.email(), senhaFinal, usuarioAntigo.getTipo());
 
         try {
             service.cadastrarUsuario(usuarioAtualizado);
@@ -163,8 +168,8 @@ public final class UsuarioController {
             modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
             modelo.put("edicao", true);
             modelo.put("acao", "/usuarios/" + id);
-            modelo.put("nome", nome);
-            modelo.put("email", email);
+            modelo.put("nome", dto.nome());
+            modelo.put("email", dto.email());
             modelo.put("erro", e.getMessage());
             ctx.status(HttpStatus.OK).render("usuarios/formulario", modelo);
         }
