@@ -113,8 +113,14 @@ class ArtistaControllerTest {
     private Javalin criarApp(ArtistaUseCase useCase) {
         Javalin app = Javalin.create(config ->
                 config.fileRenderer(new JavalinThymeleaf(templateEngine())));
-        ArtistaHttpExceptionHandler.registrar(app);
-        new ArtistaController(useCase).registrarRotas(app);
+        br.ufpb.dcx.projetos.exceptions.GlobalHttpExceptionHandler.registrar(app);
+        ArtistaController controller = new ArtistaController(useCase);
+        app.get("/artistas", controller::listar);
+        app.get("/artistas/novo", controller::exibirCadastro);
+        app.post("/artistas", controller::cadastrar);
+        app.get("/artistas/{id}/editar", controller::exibirEdicao);
+        app.post("/artistas/{id}", controller::atualizar);
+        app.post("/artistas/{id}/excluir", controller::excluir);
         return app;
     }
 
