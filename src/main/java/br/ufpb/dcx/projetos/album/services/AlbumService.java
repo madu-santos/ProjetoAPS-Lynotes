@@ -39,7 +39,7 @@ public class AlbumService {
 
         validar(albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento());
 
-        Album albumAtualizado = new Album(album.getId(), albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento(), usuarioId);
+        Album albumAtualizado = new Album(album.getId(), albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento(), albumDetails.getNota(), usuarioId);
         albumRepository.atualizar(albumAtualizado);
         return albumAtualizado;
     }

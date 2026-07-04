@@ -56,8 +56,7 @@ public final class App {
             }
 
             if (!LoginController.estaAutenticado(ctx)) {
-                ctx.redirect("/login");
-                return;
+                throw new io.javalin.http.RedirectResponse(io.javalin.http.HttpStatus.FOUND, "/login");
             }
 
             if (routeRoles.contains(Role.ADMIN)) {
@@ -101,7 +100,10 @@ public final class App {
         var musicaRepo = new br.ufpb.dcx.projetos.musica.repositories.MusicaDbRepository(connectionFactory);
         var albumRepo = new br.ufpb.dcx.projetos.album.repositories.AlbumDbRepository(connectionFactory);
         var musicaService = new br.ufpb.dcx.projetos.musica.services.MusicaService(musicaRepo, albumRepo);
-        new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service, musicaService).registrarRotas(app);
+        var artistaRepo = new br.ufpb.dcx.projetos.artista.repositories.ArtistaDbRepository(connectionFactory);
+        var artistaService = new br.ufpb.dcx.projetos.artista.services.ArtistaService(artistaRepo, new br.ufpb.dcx.projetos.artista.services.ArtistaValidator());
+        var albumService = new br.ufpb.dcx.projetos.album.services.AlbumService(albumRepo);
+        new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service, musicaService, artistaService, albumService).registrarRotas(app);
 
         registrarLogHttp(app);
         GlobalHttpExceptionHandler.registrar(app);

@@ -8,6 +8,8 @@ import br.ufpb.dcx.projetos.musica.models.Musica;
 import br.ufpb.dcx.projetos.musica.services.MusicaService;
 import br.ufpb.dcx.projetos.musica.views.MusicaDTOView;
 import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
+import br.ufpb.dcx.projetos.artista.models.Artista;
+import br.ufpb.dcx.projetos.artista.services.ArtistaService;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import org.slf4j.Logger;
@@ -31,11 +33,13 @@ public final class MusicaController {
     private final MusicaService service;
     private final AlbumService albumService;
     private final PlaylistService playlistService;
+    private final ArtistaService artistaService;
 
-    public MusicaController(MusicaService service, AlbumService albumService, PlaylistService playlistService) {
+    public MusicaController(MusicaService service, AlbumService albumService, PlaylistService playlistService, ArtistaService artistaService) {
         this.service = service;
         this.albumService = albumService;
         this.playlistService = playlistService;
+        this.artistaService = artistaService;
     }
 
     @io.javalin.openapi.OpenApi(
@@ -53,10 +57,17 @@ public final class MusicaController {
         if (usuarioLogado != null) {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             List<Musica> musicas = service.findByUsuarioId(usuarioId);
+            List<Artista> artistas = artistaService.listar(null, usuarioId);
+            List<Album> albums = albumService.findAll(usuarioId);
+
             Map<String, Object> modelo = new HashMap<>();
             modelo.put("usuarioLogado", usuarioLogado);
             modelo.put("musicas", musicas);
             modelo.put("semMusicas", musicas.isEmpty());
+            modelo.put("artistas", artistas);
+            modelo.put("semArtistas", artistas.isEmpty());
+            modelo.put("albums", albums);
+            modelo.put("semAlbums", albums.isEmpty());
             ctx.render("home", modelo);
         } else {
             ctx.render("index", Map.of());
@@ -64,7 +75,14 @@ public final class MusicaController {
     }
 
     public void listar(Context ctx) {
-        ctx.redirect("/");
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        List<Musica> musicas = service.findByUsuarioId(usuarioId);
+
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("musicas", musicas);
+        modelo.put("semMusicas", musicas.isEmpty());
+        ctx.render("musicas/lista", modelo);
     }
 
     public void exibirCadastro(Context ctx) {

@@ -19,9 +19,10 @@ public final class Artista {
     private final String cidade;
     private final String uf;
     private final StatusVerificacao statusVerificacao;
+    private final Integer nota;
     private final String usuarioId;
 
-    public Artista(String id, String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, String usuarioId) {
+    public Artista(String id, String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, Integer nota, String usuarioId) {
         this.id = Objects.requireNonNull(id);
         this.nome = nome;
         this.generoMusical = generoMusical;
@@ -35,15 +36,28 @@ public final class Artista {
         this.cidade = cidade;
         this.uf = uf;
         this.statusVerificacao = statusVerificacao;
+        this.nota = nota;
         this.usuarioId = usuarioId;
     }
 
+    public Artista(String id, String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, String usuarioId) {
+        this(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, null, usuarioId);
+    }
+
     public static Artista novo(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, String usuarioId) {
-        return new Artista(UUID.randomUUID().toString(), nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, usuarioId);
+        return new Artista(UUID.randomUUID().toString(), nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, null, usuarioId);
+    }
+
+    public static Artista novo(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, Integer nota, String usuarioId) {
+        return new Artista(UUID.randomUUID().toString(), nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId);
     }
 
     public Artista comDados(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao) {
-        return new Artista(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, usuarioId);
+        return new Artista(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId);
+    }
+
+    public Artista comDados(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, Integer nota) {
+        return new Artista(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId);
     }
 
     public String getId() {
@@ -96,6 +110,10 @@ public final class Artista {
 
     public StatusVerificacao getStatusVerificacao() {
         return statusVerificacao;
+    }
+
+    public Integer getNota() {
+        return nota;
     }
 
     public String getUsuarioId() {

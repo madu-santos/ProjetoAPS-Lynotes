@@ -12,6 +12,8 @@ import io.javalin.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.List;
+import br.ufpb.dcx.projetos.artista.services.ArtistaService;
+import br.ufpb.dcx.projetos.album.services.AlbumService;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,10 +21,14 @@ public final class UsuarioController {
 
     private final UsuarioService service;
     private final MusicaService musicaService;
+    private final ArtistaService artistaService;
+    private final AlbumService albumService;
 
-    public UsuarioController(UsuarioService service, MusicaService musicaService) {
+    public UsuarioController(UsuarioService service, MusicaService musicaService, ArtistaService artistaService, AlbumService albumService) {
         this.service = service;
         this.musicaService = musicaService;
+        this.artistaService = artistaService;
+        this.albumService = albumService;
     }
 
     public void registrarRotas(Javalin app) {
@@ -98,12 +104,22 @@ public final class UsuarioController {
 
         Usuario usuario = usuarioOpt.get();
         List<Musica> musicas = musicaService.findByUsuarioId(id);
+        List<br.ufpb.dcx.projetos.artista.models.Artista> artistas = artistaService.listar("", id);
+        List<br.ufpb.dcx.projetos.album.models.Album> albums = albumService.findAll(id);
 
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("perfilNome", usuario.getNome());
+        
         modelo.put("musicas", musicas);
         modelo.put("semMusicas", musicas.isEmpty());
+        
+        modelo.put("artistas", artistas);
+        modelo.put("semArtistas", artistas.isEmpty());
+        
+        modelo.put("albums", albums);
+        modelo.put("semAlbums", albums.isEmpty());
+        
         ctx.render("perfil", modelo);
     }
 
@@ -112,9 +128,9 @@ public final class UsuarioController {
         String tipoLogado = ctx.sessionAttribute("usuarioLogadoTipo");
         String id = ctx.pathParam("id");
 
-        if (idLogado == null || (!idLogado.equals(id) && !"ADMIN".equals(tipoLogado))) {
+        if (idLogado == null || !idLogado.equals(id)) {
             ctx.status(HttpStatus.FORBIDDEN)
-                    .result("Acesso negado: Apenas o próprio usuário ou um administrador pode editar esta conta.");
+                    .result("Acesso negado: Apenas o próprio usuário pode editar esta conta.");
             return;
         }
 
@@ -141,9 +157,9 @@ public final class UsuarioController {
         String tipoLogado = ctx.sessionAttribute("usuarioLogadoTipo");
         String id = ctx.pathParam("id");
 
-        if (idLogado == null || (!idLogado.equals(id) && !"ADMIN".equals(tipoLogado))) {
+        if (idLogado == null || !idLogado.equals(id)) {
             ctx.status(HttpStatus.FORBIDDEN)
-                    .result("Acesso negado: Apenas o próprio usuário ou um administrador pode atualizar esta conta.");
+                    .result("Acesso negado: Apenas o próprio usuário pode atualizar esta conta.");
             return;
         }
 
@@ -185,22 +201,17 @@ public final class UsuarioController {
 
     private void excluir(Context ctx) {
         String idLogado = ctx.sessionAttribute("usuarioLogadoId");
-        String tipoLogado = ctx.sessionAttribute("usuarioLogadoTipo");
         String id = ctx.pathParam("id");
 
-        if (idLogado == null || (!idLogado.equals(id) && !"ADMIN".equals(tipoLogado))) {
+        if (idLogado == null || !idLogado.equals(id)) {
             ctx.status(HttpStatus.FORBIDDEN)
-                    .result("Acesso negado: Apenas o próprio usuário ou um administrador pode apagar esta conta.");
+                    .result("Acesso negado: Apenas o próprio usuário pode apagar esta conta.");
             return;
         }
 
         service.remover(id);
 
-        if (idLogado.equals(id)) {
-            ctx.req().getSession().invalidate();
-            ctx.redirect("/login");
-        } else {
-            ctx.redirect("/usuarios");
-        }
+        ctx.req().getSession().invalidate();
+        ctx.redirect("/login");
     }
 }

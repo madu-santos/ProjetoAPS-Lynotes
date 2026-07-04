@@ -19,7 +19,7 @@ public final class AlbumDbRepository implements AlbumRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AlbumDbRepository.class);
 
-    private static final String COLUNAS = "id, titulo, artista, ano_lancamento, usuario_id";
+    private static final String COLUNAS = "id, titulo, artista, ano_lancamento, nota, usuario_id";
 
     private final ConnectionFactory connectionFactory;
 
@@ -30,8 +30,8 @@ public final class AlbumDbRepository implements AlbumRepository {
     @Override
     public void criar(Album album) {
         String sql = """
-                INSERT INTO album (id, titulo, artista, ano_lancamento, usuario_id)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO album (id, titulo, artista, ano_lancamento, nota, usuario_id)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> {
@@ -39,7 +39,12 @@ public final class AlbumDbRepository implements AlbumRepository {
             statement.setString(2, album.getTitulo());
             statement.setString(3, album.getArtista());
             statement.setInt(4, album.getAnoLancamento());
-            statement.setString(5, album.getUsuarioId());
+            if (album.getNota() != null) {
+                statement.setInt(5, album.getNota());
+            } else {
+                statement.setNull(5, java.sql.Types.INTEGER);
+            }
+            statement.setString(6, album.getUsuarioId());
         });
         LOGGER.debug("Álbum persistido. id={}", album.getId());
     }
@@ -48,7 +53,7 @@ public final class AlbumDbRepository implements AlbumRepository {
     public boolean atualizar(Album album) {
         String sql = """
                 UPDATE album
-                SET titulo = ?, artista = ?, ano_lancamento = ?
+                SET titulo = ?, artista = ?, ano_lancamento = ?, nota = ?
                 WHERE id = ? AND usuario_id = ?
                 """;
 
@@ -56,8 +61,13 @@ public final class AlbumDbRepository implements AlbumRepository {
             statement.setString(1, album.getTitulo());
             statement.setString(2, album.getArtista());
             statement.setInt(3, album.getAnoLancamento());
-            statement.setString(4, album.getId());
-            statement.setString(5, album.getUsuarioId());
+            if (album.getNota() != null) {
+                statement.setInt(4, album.getNota());
+            } else {
+                statement.setNull(4, java.sql.Types.INTEGER);
+            }
+            statement.setString(5, album.getId());
+            statement.setString(6, album.getUsuarioId());
         });
         return alterados == 1;
     }
@@ -121,11 +131,13 @@ public final class AlbumDbRepository implements AlbumRepository {
     }
 
     private Album mapear(ResultSet result) throws SQLException {
+        Integer nota = result.getObject("nota") != null ? result.getInt("nota") : null;
         return new Album(
                 result.getString("id"),
                 result.getString("titulo"),
                 result.getString("artista"),
                 result.getInt("ano_lancamento"),
+                nota,
                 result.getString("usuario_id")
         );
     }

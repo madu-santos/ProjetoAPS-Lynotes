@@ -118,13 +118,13 @@ public final class ArtistaController {
             List<Artista> artistas,
             String busca
     ) {
-        return Map.of(
-                "usuarioLogado", ctx.sessionAttribute("usuarioLogado"),
-                "listaArtistas", artistas,
-                "semArtistas", artistas.isEmpty(),
-                "busca", busca,
-                "buscaAtiva", !busca.isEmpty()
-        );
+        Map<String, Object> modelo = new java.util.HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("listaArtistas", artistas);
+        modelo.put("semArtistas", artistas.isEmpty());
+        modelo.put("busca", busca);
+        modelo.put("buscaAtiva", !busca.isEmpty());
+        return modelo;
     }
 
     private ArtistaDTO extrairFormulario(Context ctx) {
@@ -141,6 +141,9 @@ public final class ArtistaController {
         String solicitarVerificacaoStr = ctx.formParam("solicitarVerificacao");
         boolean solicitarVerificacao = "on".equalsIgnoreCase(solicitarVerificacaoStr) || "true".equalsIgnoreCase(solicitarVerificacaoStr);
         
+        String notaStr = ctx.formParam("nota");
+        Integer nota = (notaStr != null && !notaStr.trim().isEmpty()) ? Integer.parseInt(notaStr.trim()) : null;
+
         return new ArtistaDTO(
                 ctx.formParam("nome"),
                 ctx.formParam("generoMusical"),
@@ -153,7 +156,8 @@ public final class ArtistaController {
                 ctx.formParam("bairro"),
                 ctx.formParam("cidade"),
                 ctx.formParam("uf"),
-                solicitarVerificacao
+                solicitarVerificacao,
+                nota
         );
     }
 

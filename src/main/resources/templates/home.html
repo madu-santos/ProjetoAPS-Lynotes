@@ -12,88 +12,164 @@
 <body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
 <div id="app-content">
 
-<nav class="navbar navbar-expand bg-dark navbar-dark">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-purple" href="/">Lynotes</a>
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="/">Meu Catálogo</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/artistas">Artistas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/albums">Álbuns</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/playlists">Playlists</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/usuarios">Usuários</a>
-                </li>
-            </ul>
-            <form method="post" action="/logout">
-                <span class="text-white me-3" th:text="'Olá, ' + ${usuarioLogado}"></span>
-                <button class="btn btn-outline-light btn-sm" type="submit">Sair</button>
-            </form>
-        </div>
-    </nav>
+    <div th:insert="~{fragments/navbar :: navbar('catalogo')}"></div>
 
     <main class="container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-5">
-            <div>
-                <h1 class="fw-bold mb-1">Meu Catálogo</h1>
-                <p class="text-muted mb-0">Suas músicas catalogadas, resenhas e notas.</p>
-            </div>
-            <a class="btn btn-primary" href="/musicas/new">Adicionar Música</a>
+        <div class="mb-5 text-center text-md-start">
+            <h1 class="display-5 fw-bold text-purple mb-1">Meu Catálogo</h1>
+            <p class="text-secondary lead">Gerencie suas músicas, artistas e álbuns favoritos em um só acervo.</p>
         </div>
 
-        <!-- Estado Vazio -->
-        <div class="text-center py-5 card shadow-sm p-5" th:if="${semMusicas}">
-            <div class="mb-4">
-                <span class="fs-1 text-purple">🎵</span>
+        <!-- ABA MÚSICAS -->
+        <div class="mb-5 pb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
+                <h3 class="fw-bold mb-0">Minhas Músicas (<span th:text="${musicas.size()}">0</span>)</h3>
+                <a class="btn btn-primary btn-sm px-3" href="/musicas/new">Adicionar Música</a>
             </div>
-            <h3 class="fw-bold mb-2">Seu catálogo está vazio</h3>
-            <p class="text-muted mb-4">Comece a catalogar suas músicas favoritas, adicione notas de estrelas e crie suas resenhas!</p>
-            <a class="btn btn-primary btn-lg px-4" href="/musicas/new">Catalogar minha primeira música</a>
-        </div>
 
-        <!-- Grade de Músicas -->
-        <div class="music-grid" th:unless="${semMusicas}">
-            <div class="card music-card shadow-sm h-100" th:each="musica : ${musicas}">
-                <div class="card-body d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <h5 class="card-title fw-bold mb-1" th:text="${musica.titulo}"></h5>
-                            <h6 class="text-muted mb-0" th:text="${musica.artista}"></h6>
-                        </div>
-                    </div>
-                    
-                    <div class="stars-display mb-3" th:if="${musica.nota != null}">
-                        <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= musica.nota ? '★' : '☆'}"></span>
-                    </div>
-                    
-                    <p class="card-text text-secondary small flex-grow-1" th:text="${musica.resenha}"></p>
-                    
-                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary">
-                        <a th:if="${musica.spotifyUrl != null && !musica.spotifyUrl.isEmpty()}" 
-                           th:href="${musica.spotifyUrl}" 
-                           target="_blank" 
-                           class="btn btn-sm btn-outline-success">
-                            Spotify ↗
-                        </a>
-                        <span th:unless="${musica.spotifyUrl != null && !musica.spotifyUrl.isEmpty()}"></span>
-                        
-                        <div class="d-flex gap-1">
-                            <a class="btn btn-outline-primary btn-sm" th:href="${'/musicas/edit/' + musica.id}">Editar</a>
-                            <form class="d-inline" method="post" th:action="${'/musicas/delete/' + musica.id}">
-                                <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Tem certeza que deseja excluir esta música do catálogo?')">Excluir</button>
-                            </form>
+            <!-- Estado Vazio -->
+            <div class="text-center py-5 card shadow-sm p-5" th:if="${semMusicas}">
+                <div class="mb-4">
+                    <span class="fs-1">🎵</span>
+                </div>
+                <h3 class="fw-bold mb-2">Sem músicas catalogadas</h3>
+                <p class="text-secondary mb-4">Comece a catalogar suas músicas favoritas, adicione notas e resenhas!</p>
+                <a class="btn btn-primary btn-lg px-4" href="/musicas/new">Catalogar primeira música</a>
+            </div>
+
+            <!-- Grade de Músicas -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semMusicas}">
+                <div class="col" th:each="musica : ${musicas}">
+                    <div class="card h-100 shadow-sm music-card">
+                        <div class="card-body d-flex flex-column p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h5 class="card-title fw-bold mb-1 text-white" th:text="${musica.titulo}"></h5>
+                                    <h6 class="text-purple small mb-0" th:text="${musica.artista}"></h6>
+                                </div>
+                            </div>
+                            
+                            <div class="stars-display mb-3 text-warning" th:if="${musica.nota != null}">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= musica.nota ? '★' : '☆'}"></span>
+                            </div>
+                            
+                            <p class="card-text text-secondary small flex-grow-1" th:text="${musica.resenha}"></p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
+                                <a th:if="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}" 
+                                   th:href="${musica.youtubeUrl}" 
+                                   target="_blank" 
+                                   class="btn btn-sm btn-outline-danger">
+                                    YouTube ↗
+                                </a>
+                                <span th:unless="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}"></span>
+                                
+                                <div class="d-flex gap-1">
+                                    <a class="btn btn-outline-primary btn-sm" th:href="${'/musicas/edit/' + musica.id}">Editar</a>
+                                    <form class="d-inline" method="post" th:action="${'/musicas/delete/' + musica.id}">
+                                        <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Tem certeza que deseja excluir esta música?')">Excluir</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- ABA ARTISTAS -->
+        <div class="mb-5 pb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
+                <h3 class="fw-bold mb-0">Meus Artistas (<span th:text="${artistas.size()}">0</span>)</h3>
+                <a class="btn btn-primary btn-sm px-3" href="/artistas/novo">Adicionar Artista</a>
+            </div>
+
+            <!-- Estado Vazio -->
+            <div class="text-center py-5 card shadow-sm p-5" th:if="${semArtistas}">
+                <div class="mb-4">
+                    <span class="fs-1">🎤</span>
+                </div>
+                <h3 class="fw-bold mb-2">Sem artistas no catálogo</h3>
+                <p class="text-secondary mb-4">Adicione os artistas que você acompanha!</p>
+                <a class="btn btn-primary btn-lg px-4" href="/artistas/novo">Adicionar primeiro artista</a>
+            </div>
+
+            <!-- Grade de Artistas -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semArtistas}">
+                <div class="col" th:each="artista : ${artistas}">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column p-4">
+                            <h5 class="card-title fw-bold mb-1 text-white" th:text="${artista.nome}"></h5>
+                            <h6 class="text-purple small mb-2" th:text="${artista.generoMusical != null ? artista.generoMusical : 'Sem gênero'}"></h6>
+                            <div class="stars-display mb-3 text-warning" th:if="${artista.nota != null}">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= artista.nota ? '★' : '☆'}"></span>
+                            </div>
+                            <p class="card-text text-secondary small flex-grow-1" th:text="${artista.biografia != null and !artista.biografia.isEmpty() ? (artista.biografia.length() > 100 ? #strings.substring(artista.biografia, 0, 100) + '...' : artista.biografia) : 'Sem biografia disponível.'}"></p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
+                                <div>
+                                    <span class="badge bg-success" th:if="${artista.statusVerificacao.name() == 'APROVADO'}">Verificado</span>
+                                    <span class="badge bg-warning text-dark" th:if="${artista.statusVerificacao.name() == 'PENDENTE'}">Pendente</span>
+                                    <span class="badge bg-danger" th:if="${artista.statusVerificacao.name() == 'REJEITADO'}">Rejeitado</span>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    <a class="btn btn-outline-primary btn-sm" th:href="${'/artistas/' + artista.id + '/editar'}">Editar</a>
+                                    <form class="d-inline" method="post" th:action="${'/artistas/' + artista.id + '/excluir'}">
+                                        <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Tem certeza que deseja excluir este artista?')">Excluir</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA ÁLBUNS -->
+        <div class="mb-5 pb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
+                <h3 class="fw-bold mb-0">Meus Álbuns (<span th:text="${albums.size()}">0</span>)</h3>
+                <a class="btn btn-primary btn-sm px-3" href="/albums/novo">Adicionar Álbum</a>
+            </div>
+
+            <!-- Estado Vazio -->
+            <div class="text-center py-5 card shadow-sm p-5" th:if="${semAlbums}">
+                <div class="mb-4">
+                    <span class="fs-1">💿</span>
+                </div>
+                <h3 class="fw-bold mb-2">Sem álbuns catalogados</h3>
+                <p class="text-secondary mb-4">Adicione os álbuns mais marcantes da sua coleção!</p>
+                <a class="btn btn-primary btn-lg px-4" href="/albums/novo">Adicionar primeiro álbum</a>
+            </div>
+
+            <!-- Grade de Álbuns -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semAlbums}">
+                <div class="col" th:each="album : ${albums}">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column p-4">
+                            <h5 class="card-title fw-bold mb-1 text-white" th:text="${album.titulo}"></h5>
+                            <h6 class="text-purple small mb-2" th:text="${'De ' + album.artista}"></h6>
+                            <div class="stars-display mb-3 text-warning" th:if="${album.nota != null}">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= album.nota ? '★' : '☆'}"></span>
+                            </div>
+                            <p class="card-text text-secondary small flex-grow-1" th:text="${'Ano de Lançamento: ' + album.anoLancamento}"></p>
+                            
+                            <div class="d-flex justify-content-end align-items-center mt-4 pt-3 border-top border-secondary">
+                                <div class="d-flex gap-1">
+                                    <a class="btn btn-outline-primary btn-sm" th:href="${'/albums/' + album.id + '/editar'}">Editar</a>
+                                    <form class="d-inline" method="post" th:action="${'/albums/' + album.id + '/excluir'}">
+                                        <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Tem certeza que deseja excluir este álbum?')">Excluir</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS Bundle dentro do app-content para correto funcionamento dos pills -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </main>
 
 </div>

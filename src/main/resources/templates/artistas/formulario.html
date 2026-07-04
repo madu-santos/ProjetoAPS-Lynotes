@@ -14,28 +14,7 @@
 <body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
 <div id="app-content">
 
-<nav class="navbar navbar-expand bg-dark navbar-dark">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-purple" href="/">Lynotes</a>
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Meu Catálogo</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/artistas">Artistas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/albums">Álbuns</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/playlists">Playlists</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/usuarios">Usuários</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    <div th:insert="~{fragments/navbar :: navbar('artistas')}"></div>
 
     <main class="container py-5">
         <div class="row justify-content-center">
@@ -77,6 +56,22 @@
                                           name="biografia"
                                           rows="6"
                                           th:text="${form.biografia}"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label d-block text-white">Nota (Avaliação)</label>
+                                <div class="rating-input">
+                                    <input type="radio" id="star5" name="nota" value="5" th:checked="${form.nota == 5}" />
+                                    <label for="star5" title="5 estrelas">★</label>
+                                    <input type="radio" id="star4" name="nota" value="4" th:checked="${form.nota == 4}" />
+                                    <label for="star4" title="4 estrelas">★</label>
+                                    <input type="radio" id="star3" name="nota" value="3" th:checked="${form.nota == 3}" />
+                                    <label for="star3" title="3 estrelas">★</label>
+                                    <input type="radio" id="star2" name="nota" value="2" th:checked="${form.nota == 2}" />
+                                    <label for="star2" title="2 estrelas">★</label>
+                                    <input type="radio" id="star1" name="nota" value="1" th:checked="${form.nota == 1}" />
+                                    <label for="star1" title="1 estrela">★</label>
+                                </div>
                             </div>
 
                             <hr class="my-4">

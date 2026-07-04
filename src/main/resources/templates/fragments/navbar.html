@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+    <nav th:fragment="navbar(paginaAtiva)" class="navbar navbar-expand bg-dark navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-purple" href="/" hx-boost="false">Lynotes</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${paginaAtiva == 'catalogo'} ? 'active' : ''" href="/">Meu Catálogo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${paginaAtiva == 'musicas'} ? 'active' : ''" href="/musicas">Músicas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${paginaAtiva == 'artistas'} ? 'active' : ''" href="/artistas">Artistas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${paginaAtiva == 'albums'} ? 'active' : ''" href="/albums">Álbuns</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${paginaAtiva == 'playlists'} ? 'active' : ''" href="/playlists">Playlists</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:classappend="${paginaAtiva == 'comunidade'} ? 'active' : ''" href="/usuarios">Comunidade</a>
+                </li>
+            </ul>
+            <form method="post" action="/logout" hx-boost="false" th:if="${usuarioLogado != null}">
+                <span class="text-white me-3" th:text="'Olá, ' + ${usuarioLogado}"></span>
+                <button class="btn btn-outline-light btn-sm" type="submit">Sair</button>
+            </form>
+        </div>
+    </nav>
+</body>
+</html>

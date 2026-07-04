@@ -505,6 +505,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Botões primários (Roxo vibrante com contraste escuro) */
 .btn-primary {
+    --bs-btn-color: #000000 !important;
+    --bs-btn-bg: #BB86FC !important;
+    --bs-btn-border-color: #BB86FC !important;
+    --bs-btn-hover-color: #000000 !important;
+    --bs-btn-hover-bg: #9965db !important;
+    --bs-btn-hover-border-color: #9965db !important;
+    --bs-btn-focus-shadow-rgb: 187, 134, 252 !important;
+    --bs-btn-active-color: #000000 !important;
+    --bs-btn-active-bg: #9965db !important;
+    --bs-btn-active-border-color: #9965db !important;
     background-color: #BB86FC !important;
     border-color: #BB86FC !important;
     color: #000000 !important;
@@ -519,6 +529,15 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Botões outline primários */
 .btn-outline-primary {
+    --bs-btn-color: #BB86FC !important;
+    --bs-btn-border-color: #BB86FC !important;
+    --bs-btn-hover-color: #000000 !important;
+    --bs-btn-hover-bg: #BB86FC !important;
+    --bs-btn-hover-border-color: #BB86FC !important;
+    --bs-btn-focus-shadow-rgb: 187, 134, 252 !important;
+    --bs-btn-active-color: #000000 !important;
+    --bs-btn-active-bg: #BB86FC !important;
+    --bs-btn-active-border-color: #BB86FC !important;
     color: #BB86FC !important;
     border-color: #BB86FC !important;
 }
@@ -527,6 +546,23 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #BB86FC !important;
     border-color: #BB86FC !important;
     color: #000000 !important;
+}
+
+.btn-purple {
+    --bs-btn-color: #000000 !important;
+    --bs-btn-bg: #BB86FC !important;
+    --bs-btn-border-color: #BB86FC !important;
+    --bs-btn-hover-color: #000000 !important;
+    --bs-btn-hover-bg: #9965db !important;
+    --bs-btn-hover-border-color: #9965db !important;
+    --bs-btn-focus-shadow-rgb: 187, 134, 252 !important;
+    --bs-btn-active-color: #000000 !important;
+    --bs-btn-active-bg: #9965db !important;
+    --bs-btn-active-border-color: #9965db !important;
+    background-color: #BB86FC !important;
+    border-color: #BB86FC !important;
+    color: #000000 !important;
+    font-weight: 600;
 }
 
 .btn-secondary, .btn-outline-secondary {

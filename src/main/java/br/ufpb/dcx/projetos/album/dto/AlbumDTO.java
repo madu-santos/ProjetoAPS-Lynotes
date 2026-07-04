@@ -2,13 +2,18 @@ package br.ufpb.dcx.projetos.album.dto;
 
 import java.util.Objects;
 
-public record AlbumDTO(String titulo, String artista, String anoLancamento) {
+public record AlbumDTO(String titulo, String artista, String anoLancamento, Integer nota) {
+
+    public AlbumDTO(String titulo, String artista, String anoLancamento) {
+        this(titulo, artista, anoLancamento, null);
+    }
 
     public AlbumDTO normalizado() {
         return new AlbumDTO(
                 normalizarObrigatorio(titulo),
                 normalizarObrigatorio(artista),
-                normalizarObrigatorio(anoLancamento)
+                normalizarObrigatorio(anoLancamento),
+                nota
         );
     }
 

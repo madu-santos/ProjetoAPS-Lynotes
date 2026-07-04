@@ -16,28 +16,7 @@
 
     
     <!-- Navbar (Apenas se logado) -->
-    <nav class="navbar navbar-expand bg-dark navbar-dark w-100 position-absolute top-0" th:if="${usuarioLogado != null}">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-purple" href="/">Lynotes</a>
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Meu Catálogo</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/artistas">Artistas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/albums">Álbuns</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/playlists">Playlists</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="/usuarios">Usuários</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    <div th:insert="~{fragments/navbar :: navbar('comunidade')}" th:if="${usuarioLogado != null}"></div>
 
     <!-- Main Container para usuários NÃO logados (Centralizado) -->
     <div class="container w-100" th:if="${usuarioLogado == null}">
@@ -77,7 +56,7 @@
                             <button class="btn btn-primary w-100 btn-lg mb-3" type="submit">Cadastrar</button>
                         </form>
                         <div class="text-center">
-                            <a href="/" class="text-purple small">← Voltar para a tela inicial</a>
+                            <a href="/" hx-boost="false" class="text-purple small">← Voltar para a tela inicial</a>
                         </div>
                     </div>
                 </div>

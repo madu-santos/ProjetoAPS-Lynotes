@@ -8,6 +8,9 @@ import br.ufpb.dcx.projetos.musica.services.MusicaService;
 import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
 import br.ufpb.dcx.projetos.album.repositories.AlbumDbRepository;
 import br.ufpb.dcx.projetos.playlist.repositories.PlaylistDbRepository;
+import br.ufpb.dcx.projetos.artista.services.ArtistaService;
+import br.ufpb.dcx.projetos.artista.repositories.ArtistaDbRepository;
+import br.ufpb.dcx.projetos.artista.services.ArtistaValidator;
 import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 
@@ -20,12 +23,14 @@ public final class MusicaModule {
         var albumRepository = new AlbumDbRepository(connectionFactory);
         var musicaRepository = new MusicaDbRepository(connectionFactory);
         var playlistRepository = new PlaylistDbRepository(connectionFactory);
+        var artistaRepository = new ArtistaDbRepository(connectionFactory);
 
         var albumService = new AlbumService(albumRepository);
         var musicaService = new MusicaService(musicaRepository, albumRepository);
         var playlistService = new PlaylistService(playlistRepository);
+        var artistaService = new ArtistaService(artistaRepository, new ArtistaValidator());
 
-        var controller = new MusicaController(musicaService, albumService, playlistService);
+        var controller = new MusicaController(musicaService, albumService, playlistService, artistaService);
         
         app.get("/", controller::exibirHomeOuLanding, Role.ANYONE);
         app.get("/musicas", controller::listar, Role.USER);

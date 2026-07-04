@@ -3,7 +3,11 @@ package br.ufpb.dcx.projetos.artista.dto;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public record ArtistaDTO(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, Boolean solicitarVerificacao) {
+public record ArtistaDTO(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, Boolean solicitarVerificacao, Integer nota) {
+
+    public ArtistaDTO(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, Boolean solicitarVerificacao) {
+        this(nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, solicitarVerificacao, null);
+    }
 
     public ArtistaDTO normalizado() {
         return new ArtistaDTO(
@@ -18,7 +22,8 @@ public record ArtistaDTO(String nome, String generoMusical, String biografia, St
                 normalizarOpcional(bairro),
                 normalizarOpcional(cidade),
                 normalizarOpcional(uf),
-                solicitarVerificacao != null ? solicitarVerificacao : false
+                solicitarVerificacao != null ? solicitarVerificacao : false,
+                nota
         );
     }
 

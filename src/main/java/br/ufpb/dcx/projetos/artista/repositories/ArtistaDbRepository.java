@@ -20,7 +20,7 @@ public final class ArtistaDbRepository implements ArtistaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtistaDbRepository.class);
 
-    private static final String COLUNAS = "id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, usuario_id";
+    private static final String COLUNAS = "id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, nota, usuario_id";
 
     private final ConnectionFactory connectionFactory;
 
@@ -31,8 +31,8 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     @Override
     public void criar(Artista artista) {
         String sql = """
-                INSERT INTO artista (id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, usuario_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO artista (id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, nota, usuario_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> preencherArtista(statement, artista, true));
@@ -43,14 +43,14 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     public boolean atualizar(Artista artista) {
         String sql = """
                 UPDATE artista
-                SET nome = ?, genero_musical = ?, biografia = ?, cpf = ?, data_nascimento = ?, cep = ?, logradouro = ?, numero = ?, bairro = ?, cidade = ?, uf = ?, status_verificacao = ?
+                SET nome = ?, genero_musical = ?, biografia = ?, cpf = ?, data_nascimento = ?, cep = ?, logradouro = ?, numero = ?, bairro = ?, cidade = ?, uf = ?, status_verificacao = ?, nota = ?
                 WHERE id = ? AND usuario_id = ?
                 """;
 
         int alterados = executarAtualizacao(sql, statement -> {
             preencherArtista(statement, artista, false);
-            statement.setString(13, artista.getId());
-            statement.setString(14, artista.getUsuarioId());
+            statement.setString(14, artista.getId());
+            statement.setString(15, artista.getUsuarioId());
         });
         return alterados == 1;
     }
@@ -167,7 +167,12 @@ public final class ArtistaDbRepository implements ArtistaRepository {
             statement.setString(11, artista.getCidade());
             statement.setString(12, artista.getUf());
             statement.setString(13, artista.getStatusVerificacao().name());
-            statement.setString(14, artista.getUsuarioId());
+            if (artista.getNota() != null) {
+                statement.setInt(14, artista.getNota());
+            } else {
+                statement.setNull(14, java.sql.Types.INTEGER);
+            }
+            statement.setString(15, artista.getUsuarioId());
         } else {
             statement.setString(1, artista.getNome());
             statement.setString(2, artista.getGeneroMusical());
@@ -181,6 +186,11 @@ public final class ArtistaDbRepository implements ArtistaRepository {
             statement.setString(10, artista.getCidade());
             statement.setString(11, artista.getUf());
             statement.setString(12, artista.getStatusVerificacao().name());
+            if (artista.getNota() != null) {
+                statement.setInt(13, artista.getNota());
+            } else {
+                statement.setNull(13, java.sql.Types.INTEGER);
+            }
         }
     }
 
@@ -201,6 +211,7 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     private Artista mapear(ResultSet result) throws SQLException {
         java.sql.Date sqlDate = result.getDate("data_nascimento");
         LocalDate data = sqlDate != null ? sqlDate.toLocalDate() : null;
+        Integer nota = result.getObject("nota") != null ? result.getInt("nota") : null;
 
         return new Artista(
                 result.getString("id"),
@@ -216,6 +227,7 @@ public final class ArtistaDbRepository implements ArtistaRepository {
                 result.getString("cidade"),
                 result.getString("uf"),
                 br.ufpb.dcx.projetos.artista.models.StatusVerificacao.valueOf(result.getString("status_verificacao")),
+                nota,
                 result.getString("usuario_id")
         );
     }

@@ -11,6 +11,7 @@ public final class AlbumDTOView {
     private final String titulo;
     private final String artista;
     private final String anoLancamento;
+    private final Integer nota;
     private final boolean edicao;
     private final String acao;
 
@@ -19,6 +20,7 @@ public final class AlbumDTOView {
             String titulo,
             String artista,
             String anoLancamento,
+            Integer nota,
             boolean edicao,
             String acao
     ) {
@@ -26,6 +28,7 @@ public final class AlbumDTOView {
         this.titulo = titulo;
         this.artista = artista;
         this.anoLancamento = anoLancamento;
+        this.nota = nota;
         this.edicao = edicao;
         this.acao = acao;
     }
@@ -36,6 +39,7 @@ public final class AlbumDTOView {
                 valor(form.titulo()),
                 valor(form.artista()),
                 valor(form.anoLancamento()),
+                form.nota(),
                 false,
                 "/albums"
         );
@@ -47,6 +51,7 @@ public final class AlbumDTOView {
                 album.getTitulo(),
                 album.getArtista(),
                 String.valueOf(album.getAnoLancamento()),
+                album.getNota(),
                 true,
                 "/albums/" + album.getId()
         );
@@ -58,6 +63,7 @@ public final class AlbumDTOView {
                 valor(form.titulo()),
                 valor(form.artista()),
                 valor(form.anoLancamento()),
+                form.nota(),
                 true,
                 "/albums/" + id
             );
@@ -81,6 +87,10 @@ public final class AlbumDTOView {
 
     public String getAnoLancamento() {
         return anoLancamento;
+    }
+
+    public Integer getNota() {
+        return nota;
     }
 
     public boolean isEdicao() {

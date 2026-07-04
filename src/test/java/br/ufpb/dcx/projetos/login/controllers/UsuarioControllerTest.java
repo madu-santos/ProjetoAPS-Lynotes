@@ -49,8 +49,8 @@ class UsuarioControllerTest {
             try (var resposta = client.get("/usuarios")) {
                 assertEquals(200, resposta.code());
                 String html = resposta.body().string();
-                assertTrue(html.contains("Usuários"));
-                assertTrue(html.contains("admin@email.com"));
+                assertTrue(html.contains("Comunidade"));
+                assertTrue(html.contains("Admin"));
             }
         });
     }
@@ -138,9 +138,30 @@ class UsuarioControllerTest {
         };
         br.ufpb.dcx.projetos.musica.services.MusicaService musicaService = new br.ufpb.dcx.projetos.musica.services.MusicaService(mockMusicaRepo, null);
 
+        br.ufpb.dcx.projetos.artista.repositories.ArtistaRepository mockArtistaRepo = new br.ufpb.dcx.projetos.artista.repositories.ArtistaRepository() {
+            @Override public void criar(br.ufpb.dcx.projetos.artista.models.Artista a) {}
+            @Override public boolean atualizar(br.ufpb.dcx.projetos.artista.models.Artista a) { return false; }
+            @Override public Optional<br.ufpb.dcx.projetos.artista.models.Artista> buscarPorId(String id, String usuarioId) { return Optional.empty(); }
+            @Override public List<br.ufpb.dcx.projetos.artista.models.Artista> listarTodos(String usuarioId) { return List.of(); }
+            @Override public List<br.ufpb.dcx.projetos.artista.models.Artista> buscar(String busca, String usuarioId) { return List.of(); }
+            @Override public boolean remover(String id, String usuarioId) { return false; }
+            @Override public boolean atualizarStatusVerificacao(String id, br.ufpb.dcx.projetos.artista.models.StatusVerificacao status) { return false; }
+            @Override public List<br.ufpb.dcx.projetos.artista.models.Artista> listarPendentes() { return List.of(); }
+        };
+        br.ufpb.dcx.projetos.artista.services.ArtistaService mockArtistaService = new br.ufpb.dcx.projetos.artista.services.ArtistaService(mockArtistaRepo, null);
+
+        br.ufpb.dcx.projetos.album.repositories.AlbumRepository mockAlbumRepo = new br.ufpb.dcx.projetos.album.repositories.AlbumRepository() {
+            @Override public void criar(br.ufpb.dcx.projetos.album.models.Album a) {}
+            @Override public boolean atualizar(br.ufpb.dcx.projetos.album.models.Album a) { return false; }
+            @Override public Optional<br.ufpb.dcx.projetos.album.models.Album> buscarPorId(String id, String usuarioId) { return Optional.empty(); }
+            @Override public List<br.ufpb.dcx.projetos.album.models.Album> listarTodos(String usuarioId) { return List.of(); }
+            @Override public boolean remover(String id, String usuarioId) { return false; }
+        };
+        br.ufpb.dcx.projetos.album.services.AlbumService mockAlbumService = new br.ufpb.dcx.projetos.album.services.AlbumService(mockAlbumRepo);
+
         Javalin app = Javalin.create(config ->
                 config.fileRenderer(new JavalinThymeleaf(templateEngine())));
-        new UsuarioController(service, musicaService).registrarRotas(app);
+        new UsuarioController(service, musicaService, mockArtistaService, mockAlbumService).registrarRotas(app);
 
         JavalinTest.test(app, (server, client) -> {
             try (var resposta = client.get("/usuarios/" + usuario.getId())) {
@@ -155,7 +176,7 @@ class UsuarioControllerTest {
     private Javalin criarApp() {
         Javalin app = Javalin.create(config ->
                 config.fileRenderer(new JavalinThymeleaf(templateEngine())));
-        new UsuarioController(service, new br.ufpb.dcx.projetos.musica.services.MusicaService(null, null)).registrarRotas(app);
+        new UsuarioController(service, new br.ufpb.dcx.projetos.musica.services.MusicaService(null, null), null, null).registrarRotas(app);
         return app;
     }
 

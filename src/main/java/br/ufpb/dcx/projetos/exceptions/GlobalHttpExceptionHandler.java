@@ -42,7 +42,17 @@ public final class GlobalHttpExceptionHandler {
         app.exception(DatabaseException.class, (erro, ctx) -> {
             LOGGER.error("Erro de banco de dados: {}", erro.getMessage(), erro);
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .result("Ocorreu um erro interno no servidor ao acessar o banco de dados.");
+                    .result("Não foi possível concluir a operação de forma segura. Detalhes ocultados.");
+        });
+
+        // Javalin HTTP Responses
+        app.exception(io.javalin.http.HttpResponseException.class, (erro, ctx) -> {
+            ctx.status(erro.getStatus());
+            if (erro instanceof io.javalin.http.RedirectResponse) {
+                ctx.redirect(erro.getMessage());
+            } else {
+                ctx.result(erro.getMessage());
+            }
         });
 
         // General

@@ -20,6 +20,7 @@ public final class ArtistaDTOView {
     private final String cidade;
     private final String uf;
     private final boolean solicitarVerificacao;
+    private final Integer nota;
     private final boolean edicao;
     private final String acao;
 
@@ -36,6 +37,7 @@ public final class ArtistaDTOView {
             String cidade,
             String uf,
             boolean solicitarVerificacao,
+            Integer nota,
             boolean edicao,
             String acao
     ) {
@@ -51,6 +53,7 @@ public final class ArtistaDTOView {
         this.cidade = cidade;
         this.uf = uf;
         this.solicitarVerificacao = solicitarVerificacao;
+        this.nota = nota;
         this.edicao = edicao;
         this.acao = acao;
     }
@@ -69,6 +72,7 @@ public final class ArtistaDTOView {
                 valor(form.cidade()),
                 valor(form.uf()),
                 Boolean.TRUE.equals(form.solicitarVerificacao()),
+                form.nota(),
                 false,
                 "/artistas"
         );
@@ -88,6 +92,7 @@ public final class ArtistaDTOView {
                 artista.getCidade(),
                 artista.getUf(),
                 artista.getStatusVerificacao() == br.ufpb.dcx.projetos.artista.models.StatusVerificacao.PENDENTE || artista.getStatusVerificacao() == br.ufpb.dcx.projetos.artista.models.StatusVerificacao.APROVADO,
+                artista.getNota(),
                 true,
                 "/artistas/" + artista.getId()
         );
@@ -107,6 +112,7 @@ public final class ArtistaDTOView {
                 valor(form.cidade()),
                 valor(form.uf()),
                 Boolean.TRUE.equals(form.solicitarVerificacao()),
+                form.nota(),
                 true,
                 "/artistas/" + id
         );
@@ -166,6 +172,10 @@ public final class ArtistaDTOView {
 
     public boolean isEdicao() {
         return edicao;
+    }
+
+    public Integer getNota() {
+        return nota;
     }
 
     public String getAcao() {

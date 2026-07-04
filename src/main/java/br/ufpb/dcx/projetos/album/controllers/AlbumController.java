@@ -75,7 +75,7 @@ public final class AlbumController {
             dto.validar();
             int ano = Integer.parseInt(dto.anoLancamento().trim());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-            Album album = Album.novo(dto.titulo(), dto.artista(), ano, usuarioId);
+            Album album = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId);
             service.save(album, usuarioId);
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
@@ -115,7 +115,7 @@ public final class AlbumController {
             dto.validar();
             int ano = Integer.parseInt(dto.anoLancamento().trim());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-            Album albumDetails = new Album(id, dto.titulo(), dto.artista(), ano, usuarioId);
+            Album albumDetails = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId);
             service.update(id, albumDetails, usuarioId);
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
@@ -133,10 +133,13 @@ public final class AlbumController {
     }
 
     private AlbumDTO extrairFormulario(Context ctx) {
+        String notaStr = ctx.formParam("nota");
+        Integer nota = (notaStr != null && !notaStr.trim().isEmpty()) ? Integer.parseInt(notaStr.trim()) : null;
         return new AlbumDTO(
                 ctx.formParam("titulo"),
                 ctx.formParam("artista"),
-                ctx.formParam("anoLancamento")
+                ctx.formParam("anoLancamento"),
+                nota
         );
     }
 

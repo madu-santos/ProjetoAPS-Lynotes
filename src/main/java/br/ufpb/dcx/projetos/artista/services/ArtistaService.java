@@ -54,6 +54,7 @@ public final class ArtistaService implements ArtistaUseCase {
                 dados.cidade(),
                 dados.uf(),
                 status,
+                dados.nota(),
                 usuarioId
         );
         repository.criar(artista);
@@ -88,6 +89,7 @@ public final class ArtistaService implements ArtistaUseCase {
                 dados.cidade(),
                 dados.uf(),
                 status,
+                dados.nota(),
                 usuarioId
         );
 
