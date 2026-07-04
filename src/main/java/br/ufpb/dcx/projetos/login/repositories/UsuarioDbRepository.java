@@ -70,8 +70,8 @@ public class UsuarioDbRepository implements UsuarioRepository {
     public void salvar(Usuario usuario) {
         // Usamos a lógica de "Upsert" do PostgreSQL: tenta inserir,
         // se o ID já existir, atualiza os campos correspondentes.
-        String sql = "INSERT INTO usuario (id, nome, email, senha, tipo) VALUES (?, ?, ?, ?, ?) " +
-                     "ON CONFLICT (id) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, senha = EXCLUDED.senha, tipo = EXCLUDED.tipo;";
+        String sql = "INSERT INTO usuario (id, nome, email, senha, tipo, bio) VALUES (?, ?, ?, ?, ?, ?) " +
+                     "ON CONFLICT (id) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, senha = EXCLUDED.senha, tipo = EXCLUDED.tipo, bio = EXCLUDED.bio;";
 
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -80,6 +80,7 @@ public class UsuarioDbRepository implements UsuarioRepository {
             ps.setString(3, usuario.getEmail());
             ps.setString(4, usuario.getSenha());
             ps.setString(5, usuario.getTipo() != null ? usuario.getTipo() : "COMUM");
+            ps.setString(6, usuario.getBio());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar usuário no banco: " + e.getMessage(), e);
@@ -88,7 +89,7 @@ public class UsuarioDbRepository implements UsuarioRepository {
 
     @Override
     public Optional<Usuario> buscarPorId(String id) {
-        String sql = "SELECT id, nome, email, senha, tipo FROM usuario WHERE id = ?;";
+        String sql = "SELECT id, nome, email, senha, tipo, bio FROM usuario WHERE id = ?;";
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
@@ -99,7 +100,8 @@ public class UsuarioDbRepository implements UsuarioRepository {
                             rs.getString("nome"),
                             rs.getString("email"),
                             rs.getString("senha"),
-                            rs.getString("tipo")
+                            rs.getString("tipo"),
+                            rs.getString("bio")
                     );
                     return Optional.of(u);
                 }
@@ -112,7 +114,7 @@ public class UsuarioDbRepository implements UsuarioRepository {
 
     @Override
     public Optional<Usuario> buscarPorEmail(String email) {
-        String sql = "SELECT id, nome, email, senha, tipo FROM usuario WHERE email = ?;";
+        String sql = "SELECT id, nome, email, senha, tipo, bio FROM usuario WHERE email = ?;";
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
@@ -123,7 +125,8 @@ public class UsuarioDbRepository implements UsuarioRepository {
                             rs.getString("nome"),
                             rs.getString("email"),
                             rs.getString("senha"),
-                            rs.getString("tipo")
+                            rs.getString("tipo"),
+                            rs.getString("bio")
                     );
                     return Optional.of(u);
                 }
@@ -137,7 +140,7 @@ public class UsuarioDbRepository implements UsuarioRepository {
     @Override
     public List<Usuario> listarTodos() {
         List<Usuario> lista = new ArrayList<>();
-        String sql = "SELECT id, nome, email, senha, tipo FROM usuario;";
+        String sql = "SELECT id, nome, email, senha, tipo, bio FROM usuario;";
         try (Connection conn = obterConexao();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -147,7 +150,8 @@ public class UsuarioDbRepository implements UsuarioRepository {
                         rs.getString("nome"),
                         rs.getString("email"),
                         rs.getString("senha"),
-                        rs.getString("tipo")
+                        rs.getString("tipo"),
+                        rs.getString("bio")
                 );
                 lista.add(u);
             }

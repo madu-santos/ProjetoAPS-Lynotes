@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuários - Lynotes</title>
+    <title>Comunidade - Lynotes</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
@@ -29,7 +29,7 @@
                     <a class="nav-link" href="/playlists">Playlists</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/usuarios">Usuários</a>
+                    <a class="nav-link active" href="/usuarios">Comunidade</a>
                 </li>
             </ul>
             <form method="post" action="/logout" th:if="${usuarioLogado}">
@@ -42,52 +42,49 @@
     <main class="container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="text-purple">Usuários</h1>
-                <p class="text-secondary mb-0">Gerencie as contas de administradores e usuários do painel.</p>
+                <h1 class="text-purple">Comunidade</h1>
+                <p class="text-secondary mb-0">Descubra novos perfis e o que as pessoas estão ouvindo.</p>
             </div>
-            <a class="btn btn-primary" href="/usuarios/novo">Novo usuário</a>
+            <a class="btn btn-primary" href="/usuarios/novo">Participar da Comunidade</a>
         </div>
 
         <div class="alert alert-secondary" th:if="${semUsuarios}">
-            Nenhum usuário cadastrado no sistema.
+            Nenhum usuário cadastrado no momento.
         </div>
 
-        <div class="card shadow-sm" th:unless="${semUsuarios}">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nome</th>
-                            <th>E-mail</th>
-                            <th class="text-end">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="usuario : ${listaUsuarios}">
-                            <td class="fw-semibold">
-                                <a th:href="${'/usuarios/' + usuario.id}" th:text="${usuario.nome}" class="text-purple"></a>
-                            </td>
-                            <td th:text="${usuario.email}"></td>
-                            <td class="text-end text-nowrap">
-                                <div th:if="${usuarioLogadoTipo == 'ADMIN' or usuarioLogadoId == usuario.id}">
-                                    <a class="btn btn-outline-primary btn-sm"
-                                       th:href="${'/usuarios/' + usuario.id + '/editar'}">
-                                        Editar
-                                    </a>
-                                    <form class="d-inline"
-                                          method="post"
-                                          th:action="${'/usuarios/' + usuario.id + '/excluir'}">
-                                        <button class="btn btn-outline-danger btn-sm"
-                                                type="submit"
-                                                onclick="return confirm('Excluir este usuário?')">
-                                            Excluir
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semUsuarios}">
+            <div class="col" th:each="usuario : ${listaUsuarios}">
+                <div class="card h-100 shadow-sm border-0 bg-dark text-white card-hover">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-purple p-3 me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <span class="fw-bold fs-4" th:text="${#strings.substring(usuario.nome, 0, 1).toUpperCase()}">U</span>
+                            </div>
+                            <h5 class="card-title mb-0 text-truncate" th:text="${usuario.nome}">Nome do Usuário</h5>
+                        </div>
+
+                        <p class="card-text text-secondary small mb-4 flex-grow-1">
+                            <span th:if="${usuario.bio != null and !usuario.bio.isEmpty()}"
+                                  th:text="${usuario.bio.length() > 100 ? #strings.substring(usuario.bio, 0, 100) + '...' : usuario.bio}">
+                            </span>
+                            <i th:if="${usuario.bio == null or usuario.bio.isEmpty()}">Sem biografia disponível.</i>
+                        </p>
+
+                        <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
+                            <a class="btn btn-purple btn-sm w-100 fw-bold py-2"
+                               th:href="${'/usuarios/' + usuario.id}">
+                                Ver Perfil
+                            </a>
+
+                            <!-- Ações administrativas escondidas para o público -->
+                            <div th:if="${usuarioLogadoTipo == 'ADMIN' or usuarioLogadoId == usuario.id}" class="ms-2 d-flex gap-1">
+                                <a class="btn btn-outline-secondary btn-sm" th:href="${'/usuarios/' + usuario.id + '/editar'}" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -95,5 +92,6 @@
 </div>
 <div th:insert="fragments/player :: player"></div>
     <script src="/js/player.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </body>
 </html>

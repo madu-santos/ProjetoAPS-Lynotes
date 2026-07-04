@@ -60,12 +60,14 @@ public final class UsuarioController {
         UsuarioDTO dto = new UsuarioDTO(
                 ctx.formParam("nome"),
                 ctx.formParam("email"),
-                ctx.formParam("senha")
+                ctx.formParam("senha"),
+                ctx.formParam("bio")
         ).normalizado();
 
         try {
-            dto.validar();
+            dto.validarParaCriacao();
             Usuario usuario = new Usuario(dto.nome(), dto.email(), dto.senha());
+            usuario.setBio(dto.bio());
             service.cadastrarUsuario(usuario);
             if (ctx.sessionAttribute("usuarioLogado") != null) {
                 ctx.redirect("/usuarios");
@@ -79,6 +81,7 @@ public final class UsuarioController {
             modelo.put("acao", "/usuarios");
             modelo.put("nome", dto.nome());
             modelo.put("email", dto.email());
+            modelo.put("bio", dto.bio());
             modelo.put("erro", e.getMessage());
             ctx.status(HttpStatus.OK).render("usuarios/formulario", modelo);
         }
@@ -129,6 +132,7 @@ public final class UsuarioController {
         modelo.put("acao", "/usuarios/" + id);
         modelo.put("nome", usuario.getNome());
         modelo.put("email", usuario.getEmail());
+        modelo.put("bio", usuario.getBio());
         ctx.render("usuarios/formulario", modelo);
     }
 
@@ -146,24 +150,12 @@ public final class UsuarioController {
         UsuarioDTO dto = new UsuarioDTO(
                 ctx.formParam("nome"),
                 ctx.formParam("email"),
-                ctx.formParam("senha")
+                ctx.formParam("senha"),
+                ctx.formParam("bio")
         ).normalizado();
 
         try {
-            // Na atualização, a senha pode ser vazia se não quiser alterar
-            if (dto.senha() != null && !dto.senha().isEmpty()) {
-                if (dto.senha().length() < 6) {
-                    throw new IllegalArgumentException("A senha deve conter no mínimo 6 caracteres.");
-                }
-            }
-            
-            // Validações básicas (exceto senha se estiver vazia)
-            if (dto.nome() == null || dto.nome().trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome é obrigatório.");
-            }
-            if (dto.email() == null || dto.email().trim().isEmpty()) {
-                throw new IllegalArgumentException("E-mail é obrigatório.");
-            }
+            dto.validarParaAtualizacao();
 
             Optional<Usuario> usuarioOpt = service.buscarPorId(id);
             if (usuarioOpt.isEmpty()) {
@@ -174,7 +166,7 @@ public final class UsuarioController {
             Usuario usuarioAntigo = usuarioOpt.get();
             String senhaFinal = (dto.senha() == null || dto.senha().trim().isEmpty()) ? usuarioAntigo.getSenha() : dto.senha();
 
-            Usuario usuarioAtualizado = new Usuario(id, dto.nome(), dto.email(), senhaFinal, usuarioAntigo.getTipo());
+            Usuario usuarioAtualizado = new Usuario(id, dto.nome(), dto.email(), senhaFinal, usuarioAntigo.getTipo(), dto.bio());
 
             service.cadastrarUsuario(usuarioAtualizado);
             ctx.redirect("/usuarios");
@@ -185,6 +177,7 @@ public final class UsuarioController {
             modelo.put("acao", "/usuarios/" + id);
             modelo.put("nome", dto.nome());
             modelo.put("email", dto.email());
+            modelo.put("bio", dto.bio());
             modelo.put("erro", e.getMessage());
             ctx.status(HttpStatus.OK).render("usuarios/formulario", modelo);
         }

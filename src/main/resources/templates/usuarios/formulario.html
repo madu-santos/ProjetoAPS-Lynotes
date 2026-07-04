@@ -63,6 +63,12 @@
                                 <input class="form-control" id="email" name="email" type="email" th:value="${email}" required placeholder="nome@email.com">
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label" for="bio">Sobre mim</label>
+                                <textarea class="form-control" id="bio" name="bio" rows="3" maxlength="500" placeholder="Conte um pouco sobre você..." th:text="${bio}"></textarea>
+                                <div class="form-text">Máximo de 500 caracteres.</div>
+                            </div>
+
                             <div class="mb-4">
                                 <label class="form-label" for="senha">Senha</label>
                                 <input class="form-control" id="senha" name="senha" type="password" required placeholder="Mínimo de 6 caracteres">

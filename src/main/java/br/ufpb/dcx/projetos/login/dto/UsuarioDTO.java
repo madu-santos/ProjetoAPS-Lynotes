@@ -2,16 +2,34 @@ package br.ufpb.dcx.projetos.login.dto;
 
 import java.util.Objects;
 
-public record UsuarioDTO(String nome, String email, String senha) {
+public record UsuarioDTO(String nome, String email, String senha, String bio) {
     public UsuarioDTO normalizado() {
         return new UsuarioDTO(
                 Objects.toString(nome, "").trim(),
                 Objects.toString(email, "").trim(),
-                Objects.toString(senha, "")
+                Objects.toString(senha, ""),
+                Objects.toString(bio, "").trim()
         );
     }
 
-    public void validar() {
+    public void validarParaCriacao() {
+        validarCamposBasicos();
+        if (senha == null || senha.trim().isEmpty()) {
+            throw new IllegalArgumentException("Senha é obrigatória.");
+        }
+        if (senha.length() < 6) {
+            throw new IllegalArgumentException("A senha deve conter no mínimo 6 caracteres.");
+        }
+    }
+
+    public void validarParaAtualizacao() {
+        validarCamposBasicos();
+        if (senha != null && !senha.isEmpty() && senha.length() < 6) {
+            throw new IllegalArgumentException("A nova senha deve conter no mínimo 6 caracteres.");
+        }
+    }
+
+    private void validarCamposBasicos() {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome é obrigatório.");
         }
@@ -20,12 +38,6 @@ public record UsuarioDTO(String nome, String email, String senha) {
         }
         if (!email.contains("@") || !email.contains(".")) {
             throw new IllegalArgumentException("Formato de e-mail inválido.");
-        }
-        if (senha == null || senha.trim().isEmpty()) {
-            throw new IllegalArgumentException("Senha é obrigatória.");
-        }
-        if (senha.length() < 6) {
-            throw new IllegalArgumentException("A senha deve conter no mínimo 6 caracteres.");
         }
     }
 }
