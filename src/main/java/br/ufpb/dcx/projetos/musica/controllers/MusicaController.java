@@ -6,7 +6,7 @@ import br.ufpb.dcx.projetos.infra.database.DatabaseException;
 import br.ufpb.dcx.projetos.musica.dto.MusicaDTO;
 import br.ufpb.dcx.projetos.musica.models.Musica;
 import br.ufpb.dcx.projetos.musica.services.MusicaService;
-import br.ufpb.dcx.projetos.musica.views.MusicaFormView;
+import br.ufpb.dcx.projetos.musica.views.MusicaDTOView;
 import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
 import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
@@ -65,7 +65,7 @@ public final class MusicaController {
         List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
         renderizarFormulario(
                 ctx,
-                MusicaFormView.cadastro(new MusicaDTO("", "", null, null, null, null, null, null, null, null), albums,
+                MusicaDTOView.cadastro(new MusicaDTO("", "", null, null, null, null, null, null, null, null), albums,
                         playlists),
                 null);
     }
@@ -120,14 +120,14 @@ public final class MusicaController {
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaFormView.cadastro(form, albums, playlists), e.getMessage());
+            renderizarFormulario(ctx, MusicaDTOView.cadastro(form, albums, playlists), e.getMessage());
         } catch (DatabaseException e) {
             LOGGER.error("Erro de banco de dados ao cadastrar música. path={}", ctx.path(), e);
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaFormView.cadastro(form, albums, playlists),
+            renderizarFormulario(ctx, MusicaDTOView.cadastro(form, albums, playlists),
                     "Erro ao salvar a música. Tente novamente.");
         } catch (Exception e) {
             LOGGER.error("Erro inesperado ao cadastrar música. path={}", ctx.path(), e);
@@ -135,7 +135,7 @@ public final class MusicaController {
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaFormView.cadastro(form, albums, playlists),
+            renderizarFormulario(ctx, MusicaDTOView.cadastro(form, albums, playlists),
                     "Ocorreu um erro inesperado. Tente novamente.");
         }
     }
@@ -153,7 +153,7 @@ public final class MusicaController {
 
         List<Album> albums = albumService.findAll(usuarioId);
         List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
-        renderizarFormulario(ctx, MusicaFormView.edicao(musica, albums, playlists), null);
+        renderizarFormulario(ctx, MusicaDTOView.edicao(musica, albums, playlists), null);
     }
 
     public void atualizar(Context ctx) {
@@ -211,14 +211,14 @@ public final class MusicaController {
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaFormView.edicao(id, form, albums, playlists), e.getMessage());
+            renderizarFormulario(ctx, MusicaDTOView.edicao(id, form, albums, playlists), e.getMessage());
         } catch (DatabaseException e) {
             LOGGER.error("Erro de banco de dados ao atualizar música. path={}", ctx.path(), e);
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaFormView.edicao(id, form, albums, playlists),
+            renderizarFormulario(ctx, MusicaDTOView.edicao(id, form, albums, playlists),
                     "Erro ao salvar as alterações. Tente novamente.");
         } catch (Exception e) {
             LOGGER.error("Erro inesperado ao atualizar música. path={}", ctx.path(), e);
@@ -226,7 +226,7 @@ public final class MusicaController {
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
-            renderizarFormulario(ctx, MusicaFormView.edicao(id, form, albums, playlists),
+            renderizarFormulario(ctx, MusicaDTOView.edicao(id, form, albums, playlists),
                     "Ocorreu um erro inesperado. Tente novamente.");
         }
     }
@@ -264,7 +264,7 @@ public final class MusicaController {
                 ctx.formParam("novaPlaylistNome")).normalizado();
     }
 
-    private void renderizarFormulario(Context ctx, MusicaFormView view, String erro) {
+    private void renderizarFormulario(Context ctx, MusicaDTOView view, String erro) {
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("form", view);

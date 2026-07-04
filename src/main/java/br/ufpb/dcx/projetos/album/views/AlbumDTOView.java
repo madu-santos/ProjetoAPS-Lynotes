@@ -5,7 +5,7 @@ import br.ufpb.dcx.projetos.album.models.Album;
 
 import java.util.Objects;
 
-public final class AlbumFormView {
+public final class AlbumDTOView {
 
     private final String id;
     private final String titulo;
@@ -14,7 +14,7 @@ public final class AlbumFormView {
     private final boolean edicao;
     private final String acao;
 
-    private AlbumFormView(
+    private AlbumDTOView(
             String id,
             String titulo,
             String artista,
@@ -30,8 +30,8 @@ public final class AlbumFormView {
         this.acao = acao;
     }
 
-    public static AlbumFormView cadastro(AlbumDTO form) {
-        return new AlbumFormView(
+    public static AlbumDTOView cadastro(AlbumDTO form) {
+        return new AlbumDTOView(
                 null,
                 valor(form.titulo()),
                 valor(form.artista()),
@@ -41,8 +41,8 @@ public final class AlbumFormView {
         );
     }
 
-    public static AlbumFormView edicao(Album album) {
-        return new AlbumFormView(
+    public static AlbumDTOView edicao(Album album) {
+        return new AlbumDTOView(
                 album.getId(),
                 album.getTitulo(),
                 album.getArtista(),
@@ -52,8 +52,8 @@ public final class AlbumFormView {
         );
     }
 
-    public static AlbumFormView edicao(String id, AlbumDTO form) {
-        return new AlbumFormView(
+    public static AlbumDTOView edicao(String id, AlbumDTO form) {
+        return new AlbumDTOView(
                 id,
                 valor(form.titulo()),
                 valor(form.artista()),

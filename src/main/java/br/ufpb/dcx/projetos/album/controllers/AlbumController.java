@@ -3,7 +3,7 @@ package br.ufpb.dcx.projetos.album.controllers;
 import br.ufpb.dcx.projetos.album.dto.AlbumDTO;
 import br.ufpb.dcx.projetos.album.models.Album;
 import br.ufpb.dcx.projetos.album.services.AlbumService;
-import br.ufpb.dcx.projetos.album.views.AlbumFormView;
+import br.ufpb.dcx.projetos.album.views.AlbumDTOView;
 import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -45,7 +45,7 @@ public final class AlbumController {
     public void exibirCadastro(Context ctx) {
         renderizarFormulario(
                 ctx,
-                AlbumFormView.cadastro(new AlbumDTO("", "", "")),
+                AlbumDTOView.cadastro(new AlbumDTO("", "", "")),
                 null
         );
     }
@@ -61,7 +61,7 @@ public final class AlbumController {
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Formulário de cadastro de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
-            renderizarFormulario(ctx, AlbumFormView.cadastro(form), e.getMessage());
+            renderizarFormulario(ctx, AlbumDTOView.cadastro(form), e.getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ public final class AlbumController {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         Album album = service.findById(id, usuarioId)
                 .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Álbum não encontrado"));
-        renderizarFormulario(ctx, AlbumFormView.edicao(album), null);
+        renderizarFormulario(ctx, AlbumDTOView.edicao(album), null);
     }
 
     public void atualizar(Context ctx) {
@@ -85,7 +85,7 @@ public final class AlbumController {
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Formulário de edição de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
-            renderizarFormulario(ctx, AlbumFormView.edicao(id, form), e.getMessage());
+            renderizarFormulario(ctx, AlbumDTOView.edicao(id, form), e.getMessage());
         }
     }
 
@@ -115,7 +115,7 @@ public final class AlbumController {
         );
     }
 
-    private void renderizarFormulario(Context ctx, AlbumFormView view, String erro) {
+    private void renderizarFormulario(Context ctx, AlbumDTOView view, String erro) {
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("form", view);

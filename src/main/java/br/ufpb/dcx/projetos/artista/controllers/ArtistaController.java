@@ -4,7 +4,7 @@ import br.ufpb.dcx.projetos.artista.dto.ArtistaDTO;
 import br.ufpb.dcx.projetos.artista.exceptions.ArtistaValidacaoException;
 import br.ufpb.dcx.projetos.artista.models.Artista;
 import br.ufpb.dcx.projetos.artista.services.ArtistaUseCase;
-import br.ufpb.dcx.projetos.artista.views.ArtistaFormView;
+import br.ufpb.dcx.projetos.artista.views.ArtistaDTOView;
 import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -43,7 +43,7 @@ public final class ArtistaController {
     public void exibirCadastro(Context ctx) {
         renderizarFormulario(
                 ctx,
-                ArtistaFormView.cadastro(new ArtistaDTO("", "", "", "", null, "", "", "", "", "", "", false)),
+                ArtistaDTOView.cadastro(new ArtistaDTO("", "", "", "", null, "", "", "", "", "", "", false)),
                 null
         );
     }
@@ -56,7 +56,7 @@ public final class ArtistaController {
     public void exibirEdicao(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         Artista artista = useCase.obter(ctx.pathParam("id"), usuarioId);
-        renderizarFormulario(ctx, ArtistaFormView.edicao(artista), null);
+        renderizarFormulario(ctx, ArtistaDTOView.edicao(artista), null);
     }
 
     public void atualizar(Context ctx) {
@@ -132,15 +132,15 @@ public final class ArtistaController {
         );
     }
 
-    private ArtistaFormView viewFormulario(String id, ArtistaDTO form) {
+    private ArtistaDTOView viewFormulario(String id, ArtistaDTO form) {
         return Objects.isNull(id)
-                ? ArtistaFormView.cadastro(form)
-                : ArtistaFormView.edicao(id, form);
+                ? ArtistaDTOView.cadastro(form)
+                : ArtistaDTOView.edicao(id, form);
     }
 
     private void renderizarFormulario(
             Context ctx,
-            ArtistaFormView view,
+            ArtistaDTOView view,
             String erro
     ) {
         Map<String, Object> modelo = new HashMap<>();

@@ -7,7 +7,7 @@ import br.ufpb.dcx.projetos.musica.models.Musica;
 import java.util.List;
 import java.util.Objects;
 
-public final class MusicaFormView {
+public final class MusicaDTOView {
 
     private final String id;
     private final String titulo;
@@ -26,7 +26,7 @@ public final class MusicaFormView {
     private final List<Album> albums;
     private final List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists;
 
-    private MusicaFormView(
+    private MusicaDTOView(
             String id,
             String titulo,
             String artista,
@@ -62,8 +62,8 @@ public final class MusicaFormView {
         this.playlists = playlists;
     }
 
-    public static MusicaFormView cadastro(MusicaDTO form, List<Album> albums) {
-        return new MusicaFormView(
+    public static MusicaDTOView cadastro(MusicaDTO form, List<Album> albums) {
+        return new MusicaDTOView(
                 null,
                 valor(form.titulo()),
                 valor(form.artista()),
@@ -83,8 +83,8 @@ public final class MusicaFormView {
         );
     }
 
-    public static MusicaFormView cadastro(MusicaDTO form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
-        return new MusicaFormView(
+    public static MusicaDTOView cadastro(MusicaDTO form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
+        return new MusicaDTOView(
                 null,
                 valor(form.titulo()),
                 valor(form.artista()),
@@ -104,8 +104,8 @@ public final class MusicaFormView {
         );
     }
 
-    public static MusicaFormView edicao(Musica musica, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
-        return new MusicaFormView(
+    public static MusicaDTOView edicao(Musica musica, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
+        return new MusicaDTOView(
                 musica.getId(),
                 musica.getTitulo(),
                 musica.getArtista(),
@@ -125,8 +125,8 @@ public final class MusicaFormView {
         );
     }
 
-    public static MusicaFormView edicao(String id, MusicaDTO form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
-        return new MusicaFormView(
+    public static MusicaDTOView edicao(String id, MusicaDTO form, List<Album> albums, List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists) {
+        return new MusicaDTOView(
                 id,
                 valor(form.titulo()),
                 valor(form.artista()),

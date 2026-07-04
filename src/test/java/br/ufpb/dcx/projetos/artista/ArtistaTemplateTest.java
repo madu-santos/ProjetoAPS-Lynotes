@@ -1,7 +1,7 @@
 package br.ufpb.dcx.projetos.artista;
 
 import br.ufpb.dcx.projetos.artista.models.Artista;
-import br.ufpb.dcx.projetos.artista.views.ArtistaFormView;
+import br.ufpb.dcx.projetos.artista.views.ArtistaDTOView;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -51,7 +51,7 @@ class ArtistaTemplateTest {
                 br.ufpb.dcx.projetos.artista.models.StatusVerificacao.NAO_SOLICITADO,
                 "usuario-id-1"
         );
-        contexto.setVariable("form", ArtistaFormView.edicao(artista));
+        contexto.setVariable("form", ArtistaDTOView.edicao(artista));
 
         String html = engine.process("artistas/formulario", contexto);
 

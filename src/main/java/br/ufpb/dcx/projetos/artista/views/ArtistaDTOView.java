@@ -6,7 +6,7 @@ import br.ufpb.dcx.projetos.artista.models.Artista;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public final class ArtistaFormView {
+public final class ArtistaDTOView {
 
     private final String nome;
     private final String generoMusical;
@@ -23,7 +23,7 @@ public final class ArtistaFormView {
     private final boolean edicao;
     private final String acao;
 
-    private ArtistaFormView(
+    private ArtistaDTOView(
             String nome,
             String generoMusical,
             String biografia,
@@ -55,8 +55,8 @@ public final class ArtistaFormView {
         this.acao = acao;
     }
 
-    public static ArtistaFormView cadastro(ArtistaDTO form) {
-        return new ArtistaFormView(
+    public static ArtistaDTOView cadastro(ArtistaDTO form) {
+        return new ArtistaDTOView(
                 valor(form.nome()),
                 valor(form.generoMusical()),
                 valor(form.biografia()),
@@ -74,8 +74,8 @@ public final class ArtistaFormView {
         );
     }
 
-    public static ArtistaFormView edicao(Artista artista) {
-        return new ArtistaFormView(
+    public static ArtistaDTOView edicao(Artista artista) {
+        return new ArtistaDTOView(
                 artista.getNome(),
                 artista.getGeneroMusical(),
                 artista.getBiografia(),
@@ -93,8 +93,8 @@ public final class ArtistaFormView {
         );
     }
 
-    public static ArtistaFormView edicao(String id, ArtistaDTO form) {
-        return new ArtistaFormView(
+    public static ArtistaDTOView edicao(String id, ArtistaDTO form) {
+        return new ArtistaDTOView(
                 valor(form.nome()),
                 valor(form.generoMusical()),
                 valor(form.biografia()),
