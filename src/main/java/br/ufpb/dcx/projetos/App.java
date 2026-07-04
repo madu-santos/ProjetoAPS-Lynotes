@@ -24,6 +24,7 @@ import org.flywaydb.core.Flyway;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public final class App {
 
@@ -43,6 +44,8 @@ public final class App {
     public static Javalin criarApp() {
         carregarEnv();
         Javalin app = criarJavalin();
+
+        validarConfiguracaoBanco();
 
         // Access Manager replacement for Javalin 6
         app.beforeMatched(ctx -> {
@@ -67,9 +70,9 @@ public final class App {
 
         registrarRotasPublicas(app);
 
-        String dbUrl = variavelAmbiente("DB_URL", "jdbc:postgresql://localhost:5432/spotify_db");
-        String dbUser = variavelAmbiente("DB_USER", "postgres");
-        String dbPass = variavelAmbiente("DB_PASSWORD", "postgres");
+        String dbUrl = variavelAmbiente("DB_URL", null);
+        String dbUser = variavelAmbiente("DB_USER", null);
+        String dbPass = variavelAmbiente("DB_PASSWORD", null);
 
         // Executar Flyway Migrations
         try {
@@ -104,6 +107,32 @@ public final class App {
         GlobalHttpExceptionHandler.registrar(app);
         registrarTratamentoDeErrosStatus(app);
         return app;
+    }
+
+    private static void validarConfiguracaoBanco() {
+        if (estaEmAmbienteDeTeste()) {
+            return;
+        }
+
+        String url = variavelAmbiente("DB_URL", null);
+        String user = variavelAmbiente("DB_USER", null);
+        String pass = variavelAmbiente("DB_PASSWORD", null);
+
+        if (url == null || user == null || pass == null) {
+            throw new IllegalStateException(
+                    "Configuração de banco de dados ausente. As variáveis de ambiente " +
+                    "DB_URL, DB_USER e DB_PASSWORD são obrigatórias em produção."
+            );
+        }
+    }
+
+    private static boolean estaEmAmbienteDeTeste() {
+        // Detecta se está rodando via JUnit ou se a variável de ambiente APP_ENV é 'test'
+        String env = variavelAmbiente("APP_ENV", "prod");
+        if ("test".equalsIgnoreCase(env)) return true;
+        
+        return Stream.of(Thread.currentThread().getStackTrace())
+                .anyMatch(s -> s.getClassName().contains("org.junit") || s.getClassName().contains("JavalinTest"));
     }
 
     private static void carregarEnv() {
@@ -197,9 +226,9 @@ public final class App {
 
     private static ConnectionFactory criarConnectionFactory() {
         return new DriverManagerConnectionFactory(
-                variavelAmbiente("DB_URL", "jdbc:postgresql://localhost:5432/spotify_db"),
-                variavelAmbiente("DB_USER", "postgres"),
-                variavelAmbiente("DB_PASSWORD", "postgres")
+                variavelAmbiente("DB_URL", null),
+                variavelAmbiente("DB_USER", null),
+                variavelAmbiente("DB_PASSWORD", null)
         );
     }
 
