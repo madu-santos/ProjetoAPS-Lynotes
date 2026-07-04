@@ -195,9 +195,5 @@ class UsuarioControllerTest {
             return new ArrayList<>(usuarios.values());
         }
 
-        @Override
-        public void remover(String id) {
-            usuarios.remove(id);
-        }
     }
 }
