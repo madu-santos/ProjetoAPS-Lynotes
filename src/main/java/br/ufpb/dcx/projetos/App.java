@@ -7,6 +7,7 @@ import br.ufpb.dcx.projetos.login.controllers.LoginController;
 import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
+import io.javalin.http.ForbiddenResponse;
 import io.javalin.rendering.template.JavalinThymeleaf;
 import io.javalin.security.RouteRole;
 import org.slf4j.Logger;
@@ -41,17 +42,23 @@ public final class App {
         carregarEnv();
         Javalin app = criarJavalin();
 
+        // Access Manager replacement for Javalin 6
         app.beforeMatched(ctx -> {
             Set<RouteRole> routeRoles = ctx.routeRoles();
+            
             if (routeRoles.isEmpty() || routeRoles.contains(Role.ANYONE)) {
                 return;
             }
+
             if (!LoginController.estaAutenticado(ctx)) {
                 ctx.redirect("/login");
-            } else if (routeRoles.contains(Role.ADMIN)) {
+                return;
+            }
+
+            if (routeRoles.contains(Role.ADMIN)) {
                 String tipo = ctx.sessionAttribute("usuarioLogadoTipo");
                 if (!"ADMIN".equals(tipo)) {
-                    ctx.status(403).result("Acesso Negado");
+                    throw new io.javalin.http.ForbiddenResponse("Acesso Negado");
                 }
             }
         });
