@@ -3,26 +3,382 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lynotes - Catálogo Pessoal de Músicas</title>
+    <title>Lynotes - Sua plataforma musical</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="/css/index.css" rel="stylesheet">
 </head>
-<body class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 text-center">
-                <div class="py-5">
-                    <h1 class="display-3 fw-bold text-purple mb-4">Lynotes</h1>
-                    <p class="fs-4 text-secondary mb-5">
-                        Seu catálogo pessoal e social de músicas.
-                    </p>
-                    <div class="d-grid gap-3 col-8 mx-auto">
-                        <a class="btn btn-primary btn-lg" href="/login">Entrar (Login)</a>
-                        <a class="btn btn-outline-primary btn-lg" href="/usuarios/novo">Criar Conta</a>
-                    </div>
+<body class="landing-page">
+    <nav class="navbar navbar-expand-lg navbar-dark landing-nav sticky-top">
+        <div class="container py-2">
+            <a class="navbar-brand fw-bold" href="/">Lynotes</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav" aria-controls="landingNav" aria-expanded="false" aria-label="Alternar navegação">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="landingNav">
+                <div class="navbar-nav ms-auto gap-lg-2">
+                    <a class="nav-link" href="#sobre">Sobre</a>
+                    <a class="nav-link" href="#recursos">Recursos</a>
+                    <a class="nav-link" href="#faq">FAQ</a>
+                    <a class="nav-link" href="/login">Entrar</a>
+                </div>
+                <div class="d-flex ms-lg-3 mt-3 mt-lg-0">
+                    <a class="btn btn-outline-primary btn-sm px-3" href="/usuarios/novo">Criar conta</a>
                 </div>
             </div>
         </div>
-    </div>
+    </nav>
+
+    <main>
+        <section class="hero-section">
+            <div class="container py-5">
+                <div class="row align-items-center gy-5">
+                    <div class="col-lg-6" data-reveal>
+                        <span class="badge rounded-pill bg-purple text-uppercase px-3 py-2 mb-4">Plataforma musical premium</span>
+                        <h1 class="display-3 fw-bold lh-1 mb-4">Organize, descubra e viva sua música em um só lugar.</h1>
+                        <p class="lead text-secondary mb-4">
+                            O Lynotes é uma vitrine elegante para catalogar músicas, artistas, álbuns e playlists com uma experiência fluida, moderna e pensada para quem ama música.
+                        </p>
+                        <div class="d-flex flex-wrap gap-3 mb-4">
+                            <a class="btn btn-primary btn-lg" href="/login">Começar agora</a>
+                            <a class="btn btn-outline-primary btn-lg" href="#recursos">Explorar serviços</a>
+                        </div>
+                        <div class="hero-points">
+                            <span><i class="bi bi-stars"></i> Catálogo pessoal</span>
+                            <span><i class="bi bi-music-note-list"></i> Playlists e álbuns</span>
+                            <span><i class="bi bi-shield-check"></i> Área segura do usuário</span>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6" data-reveal>
+                        <div class="hero-visual">
+                            <div class="visual-orb visual-orb-1"></div>
+                            <div class="visual-orb visual-orb-2"></div>
+                            <div class="visual-card visual-card-main">
+                                <div class="d-flex justify-content-between align-items-start mb-4">
+                                    <div>
+                                        <p class="text-purple mb-1 fw-semibold">Sua biblioteca</p>
+                                        <h2 class="h4 fw-bold mb-0">Experiência de streaming, curadoria de acervo</h2>
+                                    </div>
+                                    <span class="badge bg-purple rounded-pill">Live</span>
+                                </div>
+                                <div class="mockup-track mb-3">
+                                    <div class="mockup-cover"></div>
+                                    <div>
+                                        <h3 class="h5 mb-1">Midnight Echoes</h3>
+                                        <p class="text-secondary small mb-0">Album • 12 faixas • 4.9/5</p>
+                                    </div>
+                                </div>
+                                <div class="mockup-bars">
+                                    <span></span><span></span><span></span><span></span><span></span><span></span>
+                                </div>
+                                <div class="d-flex gap-3 mt-4">
+                                    <div class="stat-pill">
+                                        <strong>120+</strong>
+                                        <small>músicas</small>
+                                    </div>
+                                    <div class="stat-pill">
+                                        <strong>18</strong>
+                                        <small>playlists</small>
+                                    </div>
+                                    <div class="stat-pill">
+                                        <strong>24/7</strong>
+                                        <small>acesso</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="floating-card floating-card-top">
+                                <i class="bi bi-play-circle-fill"></i>
+                                <div>
+                                    <strong>Ouça sem pausas</strong>
+                                    <p class="small mb-0 text-secondary">Player contínuo entre páginas</p>
+                                </div>
+                            </div>
+                            <div class="floating-card floating-card-bottom">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                <div>
+                                    <strong>Seu histórico</strong>
+                                    <p class="small mb-0 text-secondary">Notas, resenhas e organização</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-pad" id="sobre">
+            <div class="container">
+                <div class="section-heading text-center" data-reveal>
+                    <span class="eyebrow">Sobre a plataforma</span>
+                    <h2>Uma vitrine completa para quem quer viver música com mais controle e estilo.</h2>
+                    <p class="text-secondary">
+                        O Lynotes organiza sua coleção sem complicação, com visual premium, navegação fluida e foco em descoberta musical.
+                    </p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6" data-reveal>
+                        <div class="feature-panel">
+                            <i class="bi bi-compass"></i>
+                            <h3 class="h4">Diferente dos concorrentes</h3>
+                            <p class="mb-0 text-secondary">
+                                Em vez de só listar músicas, o Lynotes junta catálogo, playlists, artistas, álbuns e interação em uma mesma experiência.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6" data-reveal>
+                        <div class="feature-panel">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            <h3 class="h4">Pensado para fluidez</h3>
+                            <p class="mb-0 text-secondary">
+                                A interface é limpa, escura e elegante, com foco em performance visual, leitura rápida e navegação intuitiva.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-pad section-alt" id="recursos">
+            <div class="container">
+                <div class="section-heading text-center" data-reveal>
+                    <span class="eyebrow">Principais recursos</span>
+                    <h2>Ferramentas que deixam sua coleção mais poderosa.</h2>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3" data-reveal>
+                        <article class="resource-card h-100">
+                            <i class="bi bi-music-note-beamed"></i>
+                            <h3 class="h5">Catálogo musical</h3>
+                            <p class="mb-0 text-secondary">Cadastre faixas, notas, resenhas e links em poucos cliques.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-6 col-lg-3" data-reveal>
+                        <article class="resource-card h-100">
+                            <i class="bi bi-person-badge"></i>
+                            <h3 class="h5">Artistas e álbuns</h3>
+                            <p class="mb-0 text-secondary">Organize seu acervo por artistas e álbuns com navegação clara.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-6 col-lg-3" data-reveal>
+                        <article class="resource-card h-100">
+                            <i class="bi bi-collection-play"></i>
+                            <h3 class="h5">Playlists inteligentes</h3>
+                            <p class="mb-0 text-secondary">Monte coleções com reprodução contínua e curadoria pessoal.</p>
+                        </article>
+                    </div>
+                    <div class="col-md-6 col-lg-3" data-reveal>
+                        <article class="resource-card h-100">
+                            <i class="bi bi-shield-lock"></i>
+                            <h3 class="h5">Área segura</h3>
+                            <p class="mb-0 text-secondary">Acesse sua conta, seus dados e seu histórico com proteção.</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-pad" id="beneficios">
+            <div class="container">
+                <div class="section-heading text-center" data-reveal>
+                    <span class="eyebrow">Benefícios</span>
+                    <h2>Mais controle, mais organização e mais prazer ao ouvir.</h2>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-4" data-reveal>
+                        <div class="benefit-item">
+                            <i class="bi bi-stars"></i>
+                            <div>
+                                <h3 class="h5 mb-1">Curadoria personalizada</h3>
+                                <p class="text-secondary mb-0">Sua coleção reflete seu gosto, não um catálogo genérico.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" data-reveal>
+                        <div class="benefit-item">
+                            <i class="bi bi-clock-history"></i>
+                            <div>
+                                <h3 class="h5 mb-1">Acesso rápido</h3>
+                                <p class="text-secondary mb-0">Entre, ajuste e navegue sem perder tempo com interfaces pesadas.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" data-reveal>
+                        <div class="benefit-item">
+                            <i class="bi bi-heart-fill"></i>
+                            <div>
+                                <h3 class="h5 mb-1">Experiência agradável</h3>
+                                <p class="text-secondary mb-0">Visual premium com contraste e fluidez para uso diário.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-pad section-alt" id="como-funciona">
+            <div class="container">
+                <div class="section-heading text-center" data-reveal>
+                    <span class="eyebrow">Como funciona</span>
+                    <h2>Em poucos passos você já está pronto para catalogar.</h2>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-step" data-reveal>
+                        <span class="timeline-number">1</span>
+                        <h3 class="h5">Crie sua conta</h3>
+                        <p class="text-secondary mb-0">Acesse rapidamente e personalize sua experiência.</p>
+                    </div>
+                    <div class="timeline-step" data-reveal>
+                        <span class="timeline-number">2</span>
+                        <h3 class="h5">Adicione músicas</h3>
+                        <p class="text-secondary mb-0">Cadastre faixas, notas, resenhas e links favoritos.</p>
+                    </div>
+                    <div class="timeline-step" data-reveal>
+                        <span class="timeline-number">3</span>
+                        <h3 class="h5">Organize seu acervo</h3>
+                        <p class="text-secondary mb-0">Separe por álbuns, artistas e playlists do seu jeito.</p>
+                    </div>
+                    <div class="timeline-step" data-reveal>
+                        <span class="timeline-number">4</span>
+                        <h3 class="h5">Curta o resultado</h3>
+                        <p class="text-secondary mb-0">Sua biblioteca fica pronta para consulta e descoberta contínua.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-pad" id="depoimentos">
+            <div class="container">
+                <div class="section-heading text-center" data-reveal>
+                    <span class="eyebrow">Depoimentos</span>
+                    <h2>Quem usa, aprova a experiência.</h2>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4" data-reveal>
+                        <div class="testimonial-card h-100">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <p>"O visual ficou elegante e a organização das músicas me ajudou a usar o site todo dia."</p>
+                            <strong>Marina S.</strong>
+                            <small class="text-secondary d-block">Curadora musical</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4" data-reveal>
+                        <div class="testimonial-card h-100">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <p>"Gostei da sensação premium e da navegação rápida entre playlists e álbuns."</p>
+                            <strong>Lucas R.</strong>
+                            <small class="text-secondary d-block">Colecionador</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4" data-reveal>
+                        <div class="testimonial-card h-100">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <p>"A landing passa confiança e a plataforma parece feita sob medida para música."</p>
+                            <strong>Camila T.</strong>
+                            <small class="text-secondary d-block">Entusiasta de playlists</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-pad section-alt" id="faq">
+            <div class="container">
+                <div class="section-heading text-center" data-reveal>
+                    <span class="eyebrow">Perguntas frequentes</span>
+                    <h2>Respostas rápidas para as dúvidas mais comuns.</h2>
+                </div>
+                <div class="accordion faq-accordion" id="faqAccordion" data-reveal>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faqOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                O Lynotes é gratuito?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="faqOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-secondary">
+                                Sim. O acesso inicial é simples e pensado para você começar a organizar sua coleção rapidamente.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faqTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Posso organizar músicas e playlists separadamente?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="faqTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-secondary">
+                                Pode sim. A plataforma foi desenhada para manter músicas, artistas, álbuns e playlists em blocos bem definidos.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faqThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Funciona bem no celular?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="faqThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-secondary">
+                                Sim. O layout é responsivo e se adapta ao celular, tablet e desktop sem perder qualidade visual.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-pad cta-section" id="cta">
+            <div class="container">
+                <div class="cta-card text-center" data-reveal>
+                    <span class="eyebrow">Pronto para começar?</span>
+                    <h2 class="display-6 fw-bold mb-3">Transforme sua coleção em uma experiência premium.</h2>
+                    <p class="text-secondary mb-4">
+                        Crie sua conta, entre no Lynotes e descubra uma forma mais elegante de organizar sua música.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a class="btn btn-primary btn-lg" href="/usuarios/novo">Criar minha conta</a>
+                        <a class="btn btn-outline-primary btn-lg" href="/login">Já tenho conta</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="landing-footer">
+        <div class="container py-4">
+            <div class="row gy-4 align-items-start">
+                <div class="col-md-4">
+                    <h3 class="h5 fw-bold">Lynotes</h3>
+                    <p class="text-secondary mb-0">Uma vitrine musical moderna para catalogar, explorar e curtir suas faixas favoritas.</p>
+                </div>
+                <div class="col-md-4">
+                    <h3 class="h6 text-uppercase text-secondary">Links úteis</h3>
+                    <div class="footer-links">
+                        <a href="#sobre">Sobre</a>
+                        <a href="#recursos">Recursos</a>
+                        <a href="/login">Entrar</a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h3 class="h6 text-uppercase text-secondary">Redes sociais</h3>
+                    <div class="footer-socials">
+                        <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" aria-label="X"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-2 text-secondary small">
+                <span>© 2026 Lynotes. Todos os direitos reservados.</span>
+                <span>Feito para organizar sua música com estilo.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/landing.js" defer></script>
 </body>
 </html>
