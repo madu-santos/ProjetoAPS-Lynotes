@@ -5,6 +5,7 @@ import br.ufpb.dcx.projetos.playlist.controllers.PlaylistController;
 import br.ufpb.dcx.projetos.playlist.repositories.PlaylistDbRepository;
 import br.ufpb.dcx.projetos.playlist.repositories.PlaylistRepository;
 import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
+import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 
 public final class PlaylistModule {
@@ -15,6 +16,16 @@ public final class PlaylistModule {
     public static void registrar(Javalin app, ConnectionFactory connectionFactory) {
         PlaylistRepository playlistRepository = new PlaylistDbRepository(connectionFactory);
         PlaylistService playlistService = new PlaylistService(playlistRepository);
-        new PlaylistController(playlistService).registrarRotas(app);
+        PlaylistController controller = new PlaylistController(playlistService);
+        
+        app.get("/playlists", controller::listar, Role.USER);
+        app.post("/playlists", controller::criarPlaylist, Role.USER);
+        app.get("/playlists/{id}", controller::exibirPlaylist, Role.USER);
+        app.post("/playlists/{id}/items", controller::adicionarItem, Role.USER);
+        app.post("/playlists/{id}/items/{itemId}/remover", controller::removerItem, Role.USER);
+        app.get("/api/playlists", controller::listarJson, Role.USER);
+        app.post("/api/playlists", controller::criarPlaylistJson, Role.USER);
+        app.get("/api/playlists/{id}", controller::obterPlaylistJson, Role.USER);
+        app.post("/api/playlists/{id}/items", controller::adicionarItemJson, Role.USER);
     }
 }

@@ -17,18 +17,12 @@ public class AdminController {
         this.service = service;
     }
 
-    public void registrarRotas(Javalin app) {
-        app.get("/admin/verificacoes", ctx -> this.listarPendentes(ctx), Role.ADMIN);
-        app.post("/admin/verificacoes/{id}/aprovar", ctx -> this.aprovar(ctx), Role.ADMIN);
-        app.post("/admin/verificacoes/{id}/rejeitar", ctx -> this.rejeitar(ctx), Role.ADMIN);
-    }
-
-    private void listarPendentes(Context ctx) {
+    public void listarPendentes(Context ctx) {
         List<Artista> pendentes = service.listarPendentes();
         ctx.render("admin/verificacoes", Map.of("artistas", pendentes));
     }
 
-    private void aprovar(Context ctx) {
+    public void aprovar(Context ctx) {
         String id = ctx.pathParam("id");
         try {
             service.aprovar(id);
@@ -38,7 +32,7 @@ public class AdminController {
         ctx.redirect("/admin/verificacoes");
     }
 
-    private void rejeitar(Context ctx) {
+    public void rejeitar(Context ctx) {
         String id = ctx.pathParam("id");
         try {
             service.rejeitar(id);

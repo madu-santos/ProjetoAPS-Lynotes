@@ -32,16 +32,7 @@ public final class AlbumController {
         this.service = service;
     }
 
-    public void registrarRotas(Javalin app) {
-        app.get(ROTA_LISTAGEM, this::listar, Role.USER);
-        app.get(ROTA_NOVO, this::exibirCadastro, Role.USER);
-        app.post(ROTA_LISTAGEM, this::cadastrar, Role.USER);
-        app.get(ROTA_EDICAO, this::exibirEdicao, Role.USER);
-        app.post(ROTA_ATUALIZACAO, this::atualizar, Role.USER);
-        app.post(ROTA_EXCLUSAO, this::excluir, Role.USER);
-    }
-
-    private void listar(Context ctx) {
+    public void listar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         List<Album> albums = service.findAll(usuarioId);
         Map<String, Object> modelo = new HashMap<>();
@@ -51,7 +42,7 @@ public final class AlbumController {
         ctx.render("albums/lista", modelo);
     }
 
-    private void exibirCadastro(Context ctx) {
+    public void exibirCadastro(Context ctx) {
         renderizarFormulario(
                 ctx,
                 AlbumFormView.cadastro(new AlbumForm("", "", "")),
@@ -59,7 +50,7 @@ public final class AlbumController {
         );
     }
 
-    private void cadastrar(Context ctx) {
+    public void cadastrar(Context ctx) {
         AlbumForm form = extrairFormulario(ctx);
         try {
             int ano = parseAno(form.anoLancamento());
@@ -74,7 +65,7 @@ public final class AlbumController {
         }
     }
 
-    private void exibirEdicao(Context ctx) {
+    public void exibirEdicao(Context ctx) {
         String id = ctx.pathParam("id");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         Album album = service.findById(id, usuarioId)
@@ -82,7 +73,7 @@ public final class AlbumController {
         renderizarFormulario(ctx, AlbumFormView.edicao(album), null);
     }
 
-    private void atualizar(Context ctx) {
+    public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
         AlbumForm form = extrairFormulario(ctx);
         try {
@@ -98,7 +89,7 @@ public final class AlbumController {
         }
     }
 
-    private void excluir(Context ctx) {
+    public void excluir(Context ctx) {
         String id = ctx.pathParam("id");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         service.deleteById(id, usuarioId);

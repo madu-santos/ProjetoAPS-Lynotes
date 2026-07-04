@@ -20,19 +20,7 @@ public final class PlaylistController {
         this.service = service;
     }
 
-    public void registrarRotas(Javalin app) {
-        app.get("/playlists", this::listar, Role.USER);
-        app.post("/playlists", this::criarPlaylist, Role.USER);
-        app.get("/playlists/{id}", this::exibirPlaylist, Role.USER);
-        app.post("/playlists/{id}/items", this::adicionarItem, Role.USER);
-        app.post("/playlists/{id}/items/{itemId}/remover", this::removerItem, Role.USER);
-        app.get("/api/playlists", this::listarJson, Role.USER);
-        app.post("/api/playlists", this::criarPlaylistJson, Role.USER);
-        app.get("/api/playlists/{id}", this::obterPlaylistJson, Role.USER);
-        app.post("/api/playlists/{id}/items", this::adicionarItemJson, Role.USER);
-    }
-
-    private void listar(Context ctx) {
+    public void listar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
@@ -40,7 +28,7 @@ public final class PlaylistController {
         ctx.render("playlists/lista", modelo);
     }
 
-    private void criarPlaylist(Context ctx) {
+    public void criarPlaylist(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String nome = ctx.formParam("nome");
 
@@ -56,7 +44,7 @@ public final class PlaylistController {
         }
     }
 
-    private void exibirPlaylist(Context ctx) {
+    public void exibirPlaylist(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
         PlaylistWithItems playlist = service.findPlaylistWithItems(playlistId, usuarioId);
@@ -68,7 +56,7 @@ public final class PlaylistController {
         ctx.render("playlists/detalhe", modelo);
     }
 
-    private void adicionarItem(Context ctx) {
+    public void adicionarItem(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
         String url = ctx.formParam("url");
@@ -88,7 +76,7 @@ public final class PlaylistController {
         }
     }
 
-    private void removerItem(Context ctx) {
+    public void removerItem(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
         String itemId = ctx.pathParam("itemId");
@@ -97,7 +85,7 @@ public final class PlaylistController {
         ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
     }
 
-    private void listarJson(Context ctx) {
+    public void listarJson(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         if (usuarioId == null || usuarioId.isBlank()) {
             ctx.json(java.util.List.of());
@@ -106,7 +94,7 @@ public final class PlaylistController {
         ctx.json(service.findByUsuarioId(usuarioId));
     }
 
-    private void criarPlaylistJson(Context ctx) {
+    public void criarPlaylistJson(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         PlaylistRequest request = ctx.bodyAsClass(PlaylistRequest.class);
 
@@ -118,7 +106,7 @@ public final class PlaylistController {
         }
     }
 
-    private void obterPlaylistJson(Context ctx) {
+    public void obterPlaylistJson(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
         PlaylistWithItems playlist = service.findPlaylistWithItems(playlistId, usuarioId);
@@ -128,7 +116,7 @@ public final class PlaylistController {
         ctx.json(payload);
     }
 
-    private void adicionarItemJson(Context ctx) {
+    public void adicionarItemJson(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
         PlaylistItemRequest request = ctx.bodyAsClass(PlaylistItemRequest.class);

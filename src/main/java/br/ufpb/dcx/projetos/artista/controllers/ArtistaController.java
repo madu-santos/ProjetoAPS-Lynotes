@@ -33,23 +33,14 @@ public final class ArtistaController {
         this.useCase = useCase;
     }
 
-    public void registrarRotas(Javalin app) {
-        app.get(ROTA_LISTAGEM, this::listar, Role.USER);
-        app.get(ROTA_NOVO, this::exibirCadastro, Role.USER);
-        app.post(ROTA_LISTAGEM, this::cadastrar, Role.USER);
-        app.get(ROTA_EDICAO, this::exibirEdicao, Role.USER);
-        app.post(ROTA_ATUALIZACAO, this::atualizar, Role.USER);
-        app.post(ROTA_EXCLUSAO, this::excluir, Role.USER);
-    }
-
-    private void listar(Context ctx) {
+    public void listar(Context ctx) {
         String busca = parametro(ctx, "busca");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         List<Artista> artistas = useCase.listar(busca, usuarioId);
         ctx.render("artistas/lista", modeloListagem(ctx, artistas, busca));
     }
 
-    private void exibirCadastro(Context ctx) {
+    public void exibirCadastro(Context ctx) {
         renderizarFormulario(
                 ctx,
                 ArtistaFormView.cadastro(new ArtistaForm("", "", "", "", null, "", "", "", "", "", "", false)),
@@ -57,24 +48,24 @@ public final class ArtistaController {
         );
     }
 
-    private void cadastrar(Context ctx) {
+    public void cadastrar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         processarFormulario(ctx, null, form -> useCase.cadastrar(form, usuarioId));
     }
 
-    private void exibirEdicao(Context ctx) {
+    public void exibirEdicao(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         Artista artista = useCase.obter(ctx.pathParam("id"), usuarioId);
         renderizarFormulario(ctx, ArtistaFormView.edicao(artista), null);
     }
 
-    private void atualizar(Context ctx) {
+    public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         processarFormulario(ctx, id, form -> useCase.atualizar(id, form, usuarioId));
     }
 
-    private void excluir(Context ctx) {
+    public void excluir(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         useCase.remover(ctx.pathParam("id"), usuarioId);
         redirecionarParaListagem(ctx);

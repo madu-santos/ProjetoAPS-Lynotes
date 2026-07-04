@@ -40,17 +40,7 @@ public final class MusicaController {
         this.playlistService = playlistService;
     }
 
-    public void registrarRotas(Javalin app) {
-        app.get("/", this::exibirHomeOuLanding, Role.ANYONE);
-        app.get(ROTA_LISTAGEM, this::listar, Role.USER);
-        app.get(ROTA_NOVO, this::exibirCadastro, Role.USER);
-        app.post(ROTA_LISTAGEM, this::cadastrar, Role.USER);
-        app.get(ROTA_EDICAO, this::exibirEdicao, Role.USER);
-        app.post(ROTA_ATUALIZACAO, this::atualizar, Role.USER);
-        app.post(ROTA_EXCLUSAO, this::excluir, Role.USER);
-    }
-
-    private void exibirHomeOuLanding(Context ctx) {
+    public void exibirHomeOuLanding(Context ctx) {
         String usuarioLogado = ctx.sessionAttribute("usuarioLogado");
         if (usuarioLogado != null) {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
@@ -65,11 +55,11 @@ public final class MusicaController {
         }
     }
 
-    private void listar(Context ctx) {
+    public void listar(Context ctx) {
         ctx.redirect("/");
     }
 
-    private void exibirCadastro(Context ctx) {
+    public void exibirCadastro(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         List<Album> albums = albumService.findAll(usuarioId);
         List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
@@ -80,7 +70,7 @@ public final class MusicaController {
                 null);
     }
 
-    private void cadastrar(Context ctx) {
+    public void cadastrar(Context ctx) {
         MusicaForm form = extrairFormulario(ctx);
         try {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
@@ -150,7 +140,7 @@ public final class MusicaController {
         }
     }
 
-    private void exibirEdicao(Context ctx) {
+    public void exibirEdicao(Context ctx) {
         String id = ctx.pathParam("id");
         Musica musica = service.findById(id)
                 .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Música não encontrada"));
@@ -166,7 +156,7 @@ public final class MusicaController {
         renderizarFormulario(ctx, MusicaFormView.edicao(musica, albums, playlists), null);
     }
 
-    private void atualizar(Context ctx) {
+    public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
         MusicaForm form = extrairFormulario(ctx);
         try {
@@ -241,7 +231,7 @@ public final class MusicaController {
         }
     }
 
-    private void excluir(Context ctx) {
+    public void excluir(Context ctx) {
         String id = ctx.pathParam("id");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         if (usuarioId == null) {

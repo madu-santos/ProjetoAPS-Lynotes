@@ -5,6 +5,7 @@ import br.ufpb.dcx.projetos.infra.database.ConnectionFactory;
 import br.ufpb.dcx.projetos.infra.database.DriverManagerConnectionFactory;
 import br.ufpb.dcx.projetos.login.controllers.LoginController;
 import br.ufpb.dcx.projetos.login.models.Role;
+import br.ufpb.dcx.projetos.musica.MusicaModule;
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.ForbiddenResponse;
@@ -86,9 +87,18 @@ public final class App {
 
         registrarAutenticacao(app, service);
 
-        ArtistaModule.registrar(app, criarConnectionFactory());
-        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, criarConnectionFactory(), service);
-        br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, criarConnectionFactory());
+        var connectionFactory = criarConnectionFactory();
+        ArtistaModule.registrar(app, connectionFactory);
+        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, connectionFactory);
+        MusicaModule.registrar(app, connectionFactory);
+        br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, connectionFactory);
+
+        // Registrar UsuarioController explicitamente se não estiver em nenhum módulo
+        var musicaRepo = new br.ufpb.dcx.projetos.musica.repositories.MusicaDbRepository(connectionFactory);
+        var albumRepo = new br.ufpb.dcx.projetos.album.repositories.AlbumDbRepository(connectionFactory);
+        var musicaService = new br.ufpb.dcx.projetos.musica.services.MusicaService(musicaRepo, albumRepo);
+        new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service, musicaService).registrarRotas(app);
+
         registrarLogHttp(app);
         registrarTratamentoDeErrosGlobais(app);
         return app;
