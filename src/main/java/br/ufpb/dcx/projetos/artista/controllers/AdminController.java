@@ -2,6 +2,7 @@ package br.ufpb.dcx.projetos.artista.controllers;
 
 import br.ufpb.dcx.projetos.artista.models.Artista;
 import br.ufpb.dcx.projetos.artista.services.ArtistaService;
+import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -17,9 +18,9 @@ public class AdminController {
     }
 
     public void registrarRotas(Javalin app) {
-        app.get("/admin/verificacoes", this::listarPendentes);
-        app.post("/admin/verificacoes/{id}/aprovar", this::aprovar);
-        app.post("/admin/verificacoes/{id}/rejeitar", this::rejeitar);
+        app.get("/admin/verificacoes", ctx -> this.listarPendentes(ctx), Role.ADMIN);
+        app.post("/admin/verificacoes/{id}/aprovar", ctx -> this.aprovar(ctx), Role.ADMIN);
+        app.post("/admin/verificacoes/{id}/rejeitar", ctx -> this.rejeitar(ctx), Role.ADMIN);
     }
 
     private void listarPendentes(Context ctx) {

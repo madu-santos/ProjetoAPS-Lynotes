@@ -4,6 +4,7 @@ import br.ufpb.dcx.projetos.login.models.Usuario;
 import br.ufpb.dcx.projetos.login.services.UsuarioService;
 import br.ufpb.dcx.projetos.musica.models.Musica;
 import br.ufpb.dcx.projetos.musica.services.MusicaService;
+import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -24,13 +25,13 @@ public final class UsuarioController {
     }
 
     public void registrarRotas(Javalin app) {
-        app.get("/usuarios", this::listar);
-        app.get("/usuarios/novo", this::exibirCadastro);
-        app.post("/usuarios", this::cadastrar);
-        app.get("/usuarios/{id}", this::exibirPerfilPublico);
-        app.get("/usuarios/{id}/editar", this::exibirEdicao);
-        app.post("/usuarios/{id}", this::atualizar);
-        app.post("/usuarios/{id}/excluir", this::excluir);
+        app.get("/usuarios", this::listar, Role.ADMIN);
+        app.get("/usuarios/novo", this::exibirCadastro, Role.ANYONE);
+        app.post("/usuarios", this::cadastrar, Role.ANYONE);
+        app.get("/usuarios/{id}", this::exibirPerfilPublico, Role.USER);
+        app.get("/usuarios/{id}/editar", this::exibirEdicao, Role.USER);
+        app.post("/usuarios/{id}", this::atualizar, Role.USER);
+        app.post("/usuarios/{id}/excluir", this::excluir, Role.USER);
     }
 
     private void listar(Context ctx) {

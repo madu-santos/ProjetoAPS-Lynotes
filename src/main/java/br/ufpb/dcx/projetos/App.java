@@ -4,8 +4,11 @@ import br.ufpb.dcx.projetos.artista.ArtistaModule;
 import br.ufpb.dcx.projetos.infra.database.ConnectionFactory;
 import br.ufpb.dcx.projetos.infra.database.DriverManagerConnectionFactory;
 import br.ufpb.dcx.projetos.login.controllers.LoginController;
+import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
+import io.javalin.http.HttpStatus;
 import io.javalin.rendering.template.JavalinThymeleaf;
+import io.javalin.security.RouteRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -17,6 +20,7 @@ import io.javalin.openapi.plugin.swagger.SwaggerPlugin;
 import org.flywaydb.core.Flyway;
 
 import java.util.Objects;
+import java.util.Set;
 
 public final class App {
 
@@ -36,6 +40,22 @@ public final class App {
     public static Javalin criarApp() {
         carregarEnv();
         Javalin app = criarJavalin();
+
+        app.beforeMatched(ctx -> {
+            Set<RouteRole> routeRoles = ctx.routeRoles();
+            if (routeRoles.isEmpty() || routeRoles.contains(Role.ANYONE)) {
+                return;
+            }
+            if (!LoginController.estaAutenticado(ctx)) {
+                ctx.redirect("/login");
+            } else if (routeRoles.contains(Role.ADMIN)) {
+                String tipo = ctx.sessionAttribute("usuarioLogadoTipo");
+                if (!"ADMIN".equals(tipo)) {
+                    ctx.status(403).result("Acesso Negado");
+                }
+            }
+        });
+
         registrarRotasPublicas(app);
 
         String dbUrl = variavelAmbiente("DB_URL", "jdbc:postgresql://localhost:5432/spotify_db");
@@ -59,8 +79,6 @@ public final class App {
 
         registrarAutenticacao(app, service);
 
-        // Remover ou ignorar as inicializações antigas
-        // ArtistaSchemaInitializer.inicializar(criarConnectionFactory());
         ArtistaModule.registrar(app, criarConnectionFactory());
         br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, criarConnectionFactory(), service);
         br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, criarConnectionFactory());
@@ -137,37 +155,6 @@ public final class App {
     private static void registrarAutenticacao(Javalin app, br.ufpb.dcx.projetos.login.services.UsuarioService service) {
         LoginController loginController = new LoginController(service);
         loginController.registrarRotas(app);
-        app.beforeMatched(ctx -> {
-            if (rotaProtegida(ctx.path(), ctx.method().name()) && !LoginController.estaAutenticado(ctx)) {
-                ctx.redirect("/login");
-                ctx.skipRemainingHandlers();
-            }
-            if (rotaAdmin(ctx.path()) && !isAdmin(ctx)) {
-                ctx.status(403).result("Acesso negado. Esta rota é restrita a administradores.");
-                ctx.skipRemainingHandlers();
-            }
-        });
-    }
-
-    private static boolean rotaAdmin(String path) {
-        return path.startsWith("/admin");
-    }
-
-    private static boolean isAdmin(io.javalin.http.Context ctx) {
-        if (!LoginController.estaAutenticado(ctx)) return false;
-        String tipo = ctx.sessionAttribute("usuarioLogadoTipo");
-        return "ADMIN".equals(tipo);
-    }
-
-    private static boolean rotaProtegida(String path, String method) {
-        // Permite o acesso público para criação de novos usuários (GET e POST)
-        if (path.equals("/usuarios/novo") && method.equalsIgnoreCase("GET")) {
-            return false;
-        }
-        if (path.equals("/usuarios") && method.equalsIgnoreCase("POST")) {
-            return false;
-        }
-        return path.startsWith("/artistas") || path.startsWith("/usuarios") || path.startsWith("/albums") || path.startsWith("/musicas") || path.startsWith("/playlists") || path.startsWith("/api/playlists");
     }
 
     private static void registrarLogHttp(Javalin app) {

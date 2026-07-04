@@ -8,6 +8,7 @@ import br.ufpb.dcx.projetos.musica.models.Musica;
 import br.ufpb.dcx.projetos.musica.services.MusicaService;
 import br.ufpb.dcx.projetos.musica.views.MusicaFormView;
 import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
+import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -40,13 +41,13 @@ public final class MusicaController {
     }
 
     public void registrarRotas(Javalin app) {
-        app.get("/", this::exibirHomeOuLanding);
-        app.get(ROTA_LISTAGEM, this::listar);
-        app.get(ROTA_NOVO, this::exibirCadastro);
-        app.post(ROTA_LISTAGEM, this::cadastrar);
-        app.get(ROTA_EDICAO, this::exibirEdicao);
-        app.post(ROTA_ATUALIZACAO, this::atualizar);
-        app.post(ROTA_EXCLUSAO, this::excluir);
+        app.get("/", this::exibirHomeOuLanding, Role.ANYONE);
+        app.get(ROTA_LISTAGEM, this::listar, Role.USER);
+        app.get(ROTA_NOVO, this::exibirCadastro, Role.USER);
+        app.post(ROTA_LISTAGEM, this::cadastrar, Role.USER);
+        app.get(ROTA_EDICAO, this::exibirEdicao, Role.USER);
+        app.post(ROTA_ATUALIZACAO, this::atualizar, Role.USER);
+        app.post(ROTA_EXCLUSAO, this::excluir, Role.USER);
     }
 
     private void exibirHomeOuLanding(Context ctx) {

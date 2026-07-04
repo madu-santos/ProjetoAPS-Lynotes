@@ -1,5 +1,6 @@
 package br.ufpb.dcx.projetos.login.controllers;
 
+import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -17,9 +18,9 @@ public class LoginController {
     }
 
     public void registrarRotas(Javalin app) {
-        app.get("/login", this::exibirLogin);
-        app.post("/login", this::autenticar);
-        app.post("/logout", this::sair);
+        app.get("/login", this::exibirLogin, Role.ANYONE);
+        app.post("/login", this::autenticar, Role.ANYONE);
+        app.post("/logout", this::sair, Role.ANYONE);
     }
 
     public static boolean estaAutenticado(Context ctx) {

@@ -4,6 +4,7 @@ import br.ufpb.dcx.projetos.playlist.models.Playlist;
 import br.ufpb.dcx.projetos.playlist.models.PlaylistItem;
 import br.ufpb.dcx.projetos.playlist.models.PlaylistWithItems;
 import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
+import br.ufpb.dcx.projetos.login.models.Role;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -20,15 +21,15 @@ public final class PlaylistController {
     }
 
     public void registrarRotas(Javalin app) {
-        app.get("/playlists", this::listar);
-        app.post("/playlists", this::criarPlaylist);
-        app.get("/playlists/{id}", this::exibirPlaylist);
-        app.post("/playlists/{id}/items", this::adicionarItem);
-        app.post("/playlists/{id}/items/{itemId}/remover", this::removerItem);
-        app.get("/api/playlists", this::listarJson);
-        app.post("/api/playlists", this::criarPlaylistJson);
-        app.get("/api/playlists/{id}", this::obterPlaylistJson);
-        app.post("/api/playlists/{id}/items", this::adicionarItemJson);
+        app.get("/playlists", this::listar, Role.USER);
+        app.post("/playlists", this::criarPlaylist, Role.USER);
+        app.get("/playlists/{id}", this::exibirPlaylist, Role.USER);
+        app.post("/playlists/{id}/items", this::adicionarItem, Role.USER);
+        app.post("/playlists/{id}/items/{itemId}/remover", this::removerItem, Role.USER);
+        app.get("/api/playlists", this::listarJson, Role.USER);
+        app.post("/api/playlists", this::criarPlaylistJson, Role.USER);
+        app.get("/api/playlists/{id}", this::obterPlaylistJson, Role.USER);
+        app.post("/api/playlists/{id}/items", this::adicionarItemJson, Role.USER);
     }
 
     private void listar(Context ctx) {
