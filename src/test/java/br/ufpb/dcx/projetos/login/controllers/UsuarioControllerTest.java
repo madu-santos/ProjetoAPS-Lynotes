@@ -113,6 +113,7 @@ class UsuarioControllerTest {
             @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> listarTodas() { return List.of(); }
             @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> buscarPorAlbumId(String albumId) { return List.of(); }
             @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> buscarPorUsuarioId(String usuarioId) { return List.of(); }
+            @Override public boolean remover(String id) { return false; }
         };
         br.ufpb.dcx.projetos.musica.services.MusicaService musicaService = new br.ufpb.dcx.projetos.musica.services.MusicaService(mockMusicaRepo, null);
 
@@ -173,6 +174,5 @@ class UsuarioControllerTest {
             return new ArrayList<>(usuarios.values());
         }
 
-        @Override
     }
 }

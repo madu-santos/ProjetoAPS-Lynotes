@@ -150,6 +150,5 @@ class LoginControllerTest {
             return new ArrayList<>(usuarios.values());
         }
 
-        @Override
     }
 }
