@@ -31,7 +31,7 @@
 
                         <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
 
-                        <form method="post" action="/usuarios">
+                        <form method="post" action="/usuarios" hx-boost="false">
                             <div class="mb-3">
                                 <label class="form-label" for="nome">Nome completo</label>
                                 <input class="form-control" id="nome" name="nome" th:value="${nome}" required autofocus placeholder="Seu nome">
@@ -77,7 +77,7 @@
                     <div class="card-body p-4">
                         <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
 
-                        <form method="post" th:action="${acao}">
+                        <form method="post" th:action="${acao}" hx-boost="false">
                             <div class="mb-3">
                                 <label class="form-label" for="nome_admin">Nome completo</label>
                                 <input class="form-control"
