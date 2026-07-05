@@ -32,7 +32,7 @@ public final class UsuarioController {
     }
 
     public void registrarRotas(Javalin app) {
-        app.get("/usuarios", this::listar, Role.ADMIN);
+        app.get("/usuarios", this::listar, Role.USER);
         app.get("/usuarios/novo", this::exibirCadastro, Role.ANYONE);
         app.post("/usuarios", this::cadastrar, Role.ANYONE);
         app.get("/usuarios/{id}", this::exibirPerfilPublico, Role.USER);
@@ -59,6 +59,7 @@ public final class UsuarioController {
         modelo.put("acao", "/usuarios");
         modelo.put("nome", "");
         modelo.put("email", "");
+        modelo.put("bio", "");
         ctx.render("usuarios/formulario", modelo);
     }
 
