@@ -100,10 +100,39 @@ public final class PlaylistController {
             Playlist playlist = service.createPlaylist(request.nome, usuarioId);
             ctx.status(HttpStatus.CREATED).json(playlist);
         } catch (IllegalArgumentException e) {
-            responderErroJson(ctx, e.getMessage());
+            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).result(e.getMessage());
         }
     }
 
+    public void editarPlaylist(Context ctx) {
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        String playlistId = ctx.pathParam("id");
+        String nome = ctx.formParam("nome");
+        boolean oculta = ctx.formParam("oculta") != null;
+
+        try {
+            service.updatePlaylist(playlistId, nome, oculta, usuarioId);
+            ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroPlaylist", e.getMessage());
+            ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
+        }
+    }
+
+    public void excluirPlaylist(Context ctx) {
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        String playlistId = ctx.pathParam("id");
+
+        try {
+            service.deletePlaylist(playlistId, usuarioId);
+            ctx.redirect("/playlists", HttpStatus.SEE_OTHER);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroPlaylist", e.getMessage());
+            ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
+        }
+    }
+
+    // JSON API Endpoints
     public void obterPlaylistJson(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");

@@ -24,7 +24,14 @@
         </div>
 
         <div class="alert alert-secondary" th:if="${semUsuarios}">
-            Nenhum usuário cadastrado no momento.
+            <span th:if="${q == null or q.isEmpty()}">Nenhum usuário cadastrado no momento.</span>
+            <span th:unless="${q == null or q.isEmpty()}" th:text="'Nenhum usuário encontrado para a busca: ' + ${q}"></span>
+            <a th:unless="${q == null or q.isEmpty()}" href="/usuarios" class="alert-link ms-2">Limpar busca</a>
+        </div>
+
+        <div class="mb-4" th:if="${q != null and !q.isEmpty() and !semUsuarios}">
+            <h4 class="text-white">Resultados da busca por "<span th:text="${q}" class="text-purple"></span>"</h4>
+            <a href="/usuarios" class="btn btn-sm btn-outline-secondary mt-2">Limpar busca</a>
         </div>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semUsuarios}">

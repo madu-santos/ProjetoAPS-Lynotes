@@ -24,13 +24,15 @@ public final class UsuarioController {
     private final ArtistaService artistaService;
     private final AlbumService albumService;
     private final br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService;
+    private final br.ufpb.dcx.projetos.playlist.services.PlaylistService playlistService;
 
-    public UsuarioController(UsuarioService service, MusicaService musicaService, ArtistaService artistaService, AlbumService albumService, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
+    public UsuarioController(UsuarioService service, MusicaService musicaService, ArtistaService artistaService, AlbumService albumService, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService, br.ufpb.dcx.projetos.playlist.services.PlaylistService playlistService) {
         this.service = service;
         this.musicaService = musicaService;
         this.artistaService = artistaService;
         this.albumService = albumService;
         this.comunidadeService = comunidadeService;
+        this.playlistService = playlistService;
     }
 
     public void registrarRotas(Javalin app) {
@@ -44,13 +46,16 @@ public final class UsuarioController {
     }
 
     private void listar(Context ctx) {
-        List<Usuario> usuarios = service.listarTodos();
+        String q = ctx.queryParam("q");
+        List<Usuario> usuarios = (q != null && !q.trim().isEmpty()) ? service.buscar(q) : service.listarTodos();
+
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("usuarioLogadoId", ctx.sessionAttribute("usuarioLogadoId"));
         modelo.put("usuarioLogadoTipo", ctx.sessionAttribute("usuarioLogadoTipo"));
         modelo.put("listaUsuarios", usuarios);
         modelo.put("semUsuarios", usuarios.isEmpty());
+        modelo.put("q", q);
         ctx.render("usuarios/lista", modelo);
     }
 
@@ -109,6 +114,7 @@ public final class UsuarioController {
         List<Musica> musicas = musicaService.findByUsuarioId(id);
         List<br.ufpb.dcx.projetos.artista.models.Artista> artistas = artistaService.listar("", id);
         List<br.ufpb.dcx.projetos.album.models.Album> albums = albumService.findAll(id);
+        List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(id);
         
         String logadoId = (String) ctx.sessionAttribute("usuarioLogadoId");
         List<br.ufpb.dcx.projetos.comunidade.views.PostViewDTO> userPosts = comunidadeService.listarFeed(logadoId, id);
@@ -130,6 +136,9 @@ public final class UsuarioController {
         
         modelo.put("albums", albums);
         modelo.put("semAlbums", albums.isEmpty());
+        
+        modelo.put("playlists", playlists);
+        modelo.put("semPlaylists", playlists.isEmpty());
         
         ctx.render("perfil", modelo);
     }

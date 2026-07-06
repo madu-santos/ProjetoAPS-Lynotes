@@ -23,6 +23,8 @@ public final class PlaylistModule {
         app.get("/playlists/{id}", controller::exibirPlaylist, Role.USER);
         app.post("/playlists/{id}/items", controller::adicionarItem, Role.USER);
         app.post("/playlists/{id}/items/{itemId}/remover", controller::removerItem, Role.USER);
+        app.post("/playlists/{id}/editar", controller::editarPlaylist, Role.USER);
+        app.post("/playlists/{id}/excluir", controller::excluirPlaylist, Role.USER);
         app.get("/api/playlists", controller::listarJson, Role.USER);
         app.post("/api/playlists", controller::criarPlaylistJson, Role.USER);
         app.get("/api/playlists/{id}", controller::obterPlaylistJson, Role.USER);

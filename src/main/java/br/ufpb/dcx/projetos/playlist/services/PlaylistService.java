@@ -37,6 +37,31 @@ public final class PlaylistService {
                 .toList();
     }
 
+    public void updatePlaylist(String id, String nome, boolean oculta, String usuarioId) {
+        validarNome(nome);
+        validarUsuarioId(usuarioId);
+        Playlist playlist = playlistRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Playlist não encontrada."));
+        if (!playlist.getUsuarioId().equals(usuarioId)) {
+            throw new IllegalArgumentException("Você não tem permissão para editar esta playlist.");
+        }
+        Playlist playlistAtualizada = new Playlist(playlist.getId(), nome.trim(), playlist.getUsuarioId(), oculta, playlist.getCriadoEm());
+        playlistRepository.update(playlistAtualizada);
+    }
+
+    public void deletePlaylist(String id, String usuarioId) {
+        validarUsuarioId(usuarioId);
+        Playlist playlist = playlistRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Playlist não encontrada."));
+        if (!playlist.getUsuarioId().equals(usuarioId)) {
+            throw new IllegalArgumentException("Você não tem permissão para excluir esta playlist.");
+        }
+        if (playlist.isOculta() && "Músicas do seu catálogo".equalsIgnoreCase(playlist.getNome())) {
+            throw new IllegalArgumentException("Você não pode excluir a playlist oculta do catálogo principal.");
+        }
+        playlistRepository.delete(id);
+    }
+
     public Playlist findOrCreateHiddenPlaylist(String usuarioId) {
         validarUsuarioId(usuarioId);
         return playlistRepository.findByUsuarioId(usuarioId).stream()

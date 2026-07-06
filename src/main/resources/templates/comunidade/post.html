@@ -32,8 +32,30 @@
                                 <a th:href="@{'/usuarios/' + ${post.usuarioId}}" class="text-decoration-none fw-bold text-dark fs-4" th:text="${post.usuarioNome}"></a>
                                 <div class="text-muted small" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
                             </div>
+                            <div class="d-flex gap-1" th:if="${usuarioLogadoId == post.usuarioId}">
+                                <button class="btn btn-sm btn-outline-secondary border-0" type="button" data-bs-toggle="collapse" th:data-bs-target="'#editPost' + ${post.id}" title="Editar post">
+                                    ✏️
+                                </button>
+                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirm('Tem certeza que deseja excluir este post?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Excluir post">
+                                        🗑️
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <p class="card-text mb-4 fs-5" th:text="${post.conteudo}"></p>
+                        <p class="card-text mb-4 fs-5 text-break" style="white-space: pre-wrap;" th:text="${post.conteudo}"></p>
+                        
+                        <div class="collapse mb-4" th:id="'editPost' + ${post.id}">
+                            <div class="card card-body bg-light">
+                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/editar'}" method="post" hx-boost="false">
+                                    <textarea class="form-control mb-2" name="conteudo" rows="3" required maxlength="500" th:text="${post.conteudo}"></textarea>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="collapse" th:data-bs-target="'#editPost' + ${post.id}">Cancelar</button>
+                                        <button type="submit" class="btn btn-sm btn-primary">Salvar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         
                         <div class="d-flex gap-3 border-top pt-3">
                             <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" hx-boost="false">
@@ -77,8 +99,16 @@
                                 <a th:href="@{'/usuarios/' + ${comentario.usuarioId}}" class="text-decoration-none fw-bold text-dark" th:text="${comentario.usuarioNome}"></a>
                                 <span class="text-muted small ms-2" th:text="${#temporals.format(comentario.dataCriacao, 'dd/MM/yyyy HH:mm')}"></span>
                             </div>
+                            <div th:if="${usuarioLogadoId == comentario.usuarioId}">
+                                <form th:action="@{'/comunidade/comentario/' + ${comentario.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirm('Tem certeza que deseja excluir este comentário?');">
+                                    <input type="hidden" name="postId" th:value="${post.id}" />
+                                    <button type="submit" class="btn btn-sm text-danger border-0 p-0" title="Excluir comentário">
+                                        <small>Excluir</small>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <p class="card-text mb-0" th:text="${comentario.conteudo}"></p>
+                        <p class="card-text mb-0 text-break" th:text="${comentario.conteudo}"></p>
                     </div>
                 </div>
                 
