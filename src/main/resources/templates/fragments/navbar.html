@@ -23,7 +23,7 @@
                     <a class="nav-link" th:classappend="${paginaAtiva == 'playlists'} ? 'active' : ''" href="/playlists">Playlists</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:classappend="${paginaAtiva == 'comunidade'} ? 'active' : ''" href="/usuarios">Comunidade</a>
+                    <a class="nav-link" th:classappend="${paginaAtiva == 'comunidade'} ? 'active' : ''" href="/comunidade">Comunidade</a>
                 </li>
             </ul>
             <form method="post" action="/logout" hx-boost="false" th:if="${usuarioLogado != null}">

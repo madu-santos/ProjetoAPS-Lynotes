@@ -15,10 +15,58 @@
     <div th:insert="~{fragments/navbar :: navbar('comunidade')}"></div>
 
     <main class="container py-5">
-        <div class="mb-5">
-            <a class="text-decoration-none" href="/usuarios">&larr; Voltar para usuários</a>
-            <h1 class="fw-bold mt-2" th:text="'Catálogo de ' + ${perfilNome}"></h1>
-            <p class="text-muted mb-0">Confira as músicas catalogadas e as avaliações deste usuário.</p>
+        <div class="mb-5 d-flex justify-content-between align-items-center">
+            <div>
+                <a class="text-decoration-none" href="/usuarios">&larr; Voltar para usuários</a>
+                <h1 class="fw-bold mt-2" th:text="'Catálogo de ' + ${perfilNome}"></h1>
+                <p class="text-muted mb-0">Confira as músicas catalogadas e as avaliações deste usuário.</p>
+            </div>
+            <div th:if="${usuarioLogadoId != null and usuarioLogadoId == perfilId}">
+                <a th:href="@{'/usuarios/' + ${perfilId} + '/editar'}" class="btn btn-outline-primary">✏️ Editar Perfil</a>
+            </div>
+        </div>
+
+        <!-- SEÇÃO POSTS -->
+        <div class="mb-5 pb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
+                <h3 class="fw-bold mb-0 text-white">Posts na Comunidade</h3>
+            </div>
+
+            <!-- Estado Vazio -->
+            <div class="text-center py-5 card shadow-sm p-5" th:if="${semPosts}">
+                <div class="mb-4">
+                    <span class="fs-1">💬</span>
+                </div>
+                <h3 class="fw-bold mb-2">Nenhum post</h3>
+                <p class="text-secondary mb-0">Este usuário ainda não postou nada na comunidade.</p>
+            </div>
+
+            <!-- Lista de Posts (Apenas Leitura/Interação básica) -->
+            <div th:unless="${semPosts}">
+                <div class="card shadow-sm mb-3" th:each="post : ${userPosts}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="fw-bold text-dark fs-5" th:text="${post.usuarioNome}"></span>
+                                <span class="text-muted small ms-2" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></span>
+                            </div>
+                        </div>
+                        <p class="card-text mb-3" th:text="${post.conteudo}"></p>
+                        
+                        <div class="d-flex gap-3">
+                            <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" hx-boost="false">
+                                <button type="submit" class="btn btn-sm d-flex align-items-center gap-1" th:classappend="${post.estreladoPorMim} ? 'btn-warning text-dark fw-bold' : 'btn-outline-secondary'">
+                                    <span th:text="${post.estreladoPorMim} ? '★' : '☆'"></span>
+                                    <span th:text="${post.qtdEstrelas}"></span>
+                                </button>
+                            </form>
+                            <a th:href="@{'/comunidade/post/' + ${post.id}}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+                                💬 <span th:text="${post.qtdComentarios}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- SEÇÃO MÚSICAS -->
