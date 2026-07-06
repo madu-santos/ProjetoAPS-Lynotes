@@ -31,6 +31,27 @@ public class ComunidadeService {
         repository.salvarPost(post);
     }
 
+    public void editarPost(String postId, String usuarioId, String novoConteudo) {
+        if (usuarioId == null || usuarioId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Usuário inválido para editar.");
+        }
+        if (novoConteudo == null || novoConteudo.trim().isEmpty()) {
+            throw new IllegalArgumentException("O post não pode estar vazio.");
+        }
+        if (novoConteudo.length() > 500) {
+            throw new IllegalArgumentException("O post não pode exceder 500 caracteres.");
+        }
+        Post post = repository.buscarPostPorId(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post não encontrado."));
+        
+        if (!post.getUsuarioId().equals(usuarioId)) {
+            throw new IllegalArgumentException("Você não tem permissão para editar este post.");
+        }
+        
+        Post postAtualizado = new Post(post.getId(), post.getUsuarioId(), novoConteudo.trim(), post.getDataCriacao());
+        repository.salvarPost(postAtualizado);
+    }
+
     public void criarComentario(String postId, String usuarioId, String conteudo) {
         if (usuarioId == null || usuarioId.trim().isEmpty()) {
             throw new IllegalArgumentException("Usuário inválido para comentar.");
@@ -75,5 +96,33 @@ public class ComunidadeService {
     
     public List<ComentarioViewDTO> listarComentarios(String postId) {
         return repository.listarComentarios(postId);
+    }
+
+    public void deletarPost(String postId, String usuarioId) {
+        if (usuarioId == null || usuarioId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Usuário inválido.");
+        }
+        Optional<Post> post = repository.buscarPostPorId(postId);
+        if (post.isEmpty()) {
+            throw new IllegalArgumentException("Post não encontrado.");
+        }
+        if (!post.get().getUsuarioId().equals(usuarioId)) {
+            throw new IllegalArgumentException("Você não tem permissão para excluir este post.");
+        }
+        repository.deletarPost(postId);
+    }
+
+    public void deletarComentario(String comentarioId, String usuarioId) {
+        if (usuarioId == null || usuarioId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Usuário inválido.");
+        }
+        Optional<Comentario> comentario = repository.buscarComentarioPorId(comentarioId);
+        if (comentario.isEmpty()) {
+            throw new IllegalArgumentException("Comentário não encontrado.");
+        }
+        if (!comentario.get().getUsuarioId().equals(usuarioId)) {
+            throw new IllegalArgumentException("Você não tem permissão para excluir este comentário.");
+        }
+        repository.deletarComentario(comentarioId);
     }
 }

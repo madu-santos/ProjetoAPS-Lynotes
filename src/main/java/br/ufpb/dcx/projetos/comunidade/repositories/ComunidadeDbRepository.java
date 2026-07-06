@@ -211,4 +211,49 @@ public class ComunidadeDbRepository {
         }
         return comentarios;
     }
+
+
+    public Optional<Comentario> buscarComentarioPorId(String comentarioId) {
+        String sql = "SELECT id, post_id, usuario_id, conteudo, data_criacao FROM comentario WHERE id = ?";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, comentarioId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(new Comentario(
+                            rs.getString("id"),
+                            rs.getString("post_id"),
+                            rs.getString("usuario_id"),
+                            rs.getString("conteudo"),
+                            rs.getTimestamp("data_criacao").toLocalDateTime()
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar comentario: " + e.getMessage(), e);
+        }
+        return Optional.empty();
+    }
+
+    public void deletarPost(String postId) {
+        String sql = "DELETE FROM post WHERE id = ?";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, postId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar post: " + e.getMessage(), e);
+        }
+    }
+
+    public void deletarComentario(String comentarioId) {
+        String sql = "DELETE FROM comentario WHERE id = ?";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, comentarioId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deletar comentário: " + e.getMessage(), e);
+        }
+    }
 }

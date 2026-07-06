@@ -14,6 +14,10 @@ public interface PlaylistRepository {
 
     List<Playlist> findByUsuarioId(String usuarioId);
 
+    void update(Playlist playlist);
+
+    boolean delete(String playlistId);
+
     int countItemsByPlaylistId(String playlistId);
 
     void createItem(PlaylistItem item);

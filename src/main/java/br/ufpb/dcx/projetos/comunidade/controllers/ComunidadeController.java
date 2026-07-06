@@ -13,17 +13,22 @@ import java.util.Map;
 public class ComunidadeController {
 
     private final ComunidadeService service;
+    private final br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService;
 
-    public ComunidadeController(ComunidadeService service) {
+    public ComunidadeController(ComunidadeService service, br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService) {
         this.service = service;
+        this.usuarioService = usuarioService;
     }
 
     public void registrarRotas(Javalin app) {
         app.get("/comunidade", this::feed, Role.USER);
-        app.post("/comunidade/postar", this::postar, Role.USER);
-        app.get("/comunidade/post/{id}", this::detalhePost, Role.USER);
-        app.post("/comunidade/post/{id}/comentar", this::comentar, Role.USER);
+        app.post("/comunidade/post", this::postar, Role.USER);
         app.post("/comunidade/post/{id}/estrela", this::estrela, Role.USER);
+        app.post("/comunidade/post/{id}/editar", this::editarPost, Role.USER);
+        app.post("/comunidade/post/{id}/comentar", this::comentar, Role.USER);
+        app.post("/comunidade/post/{id}/excluir", this::excluirPost, Role.USER);
+        app.post("/comunidade/comentario/{id}/excluir", this::excluirComentario, Role.USER);
+        app.get("/comunidade/post/{id}", this::detalhePost, Role.USER);
     }
 
     private void feed(Context ctx) {
@@ -33,11 +38,13 @@ public class ComunidadeController {
         // Aqui o filtro de usuário será implementado no front com busca de usuarios real, mas por enquanto:
         // Apenas listamos o feed
         var posts = service.listarFeed(usuarioLogadoId, null);
+        var usuarios = usuarioService.listarTodos();
         
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("usuarioLogadoId", usuarioLogadoId);
         modelo.put("posts", posts);
+        modelo.put("usuarios", usuarios);
         modelo.put("erro", ctx.sessionAttribute("erroComunidade")); // flash message
         ctx.sessionAttribute("erroComunidade", null); // limpa a msg
         
@@ -97,6 +104,51 @@ public class ComunidadeController {
         }
         
         ctx.redirect("/comunidade/post/" + postId);
+    }
+
+    private void excluirPost(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        String postId = ctx.pathParam("id");
+        
+        try {
+            service.deletarPost(postId, usuarioLogadoId);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroComunidade", e.getMessage());
+        }
+        
+        ctx.redirect("/comunidade");
+    }
+
+    private void editarPost(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        String postId = ctx.pathParam("id");
+        String novoConteudo = ctx.formParam("conteudo");
+
+        try {
+            service.editarPost(postId, usuarioLogadoId, novoConteudo);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroComunidade", e.getMessage());
+        }
+        
+        ctx.redirect("/comunidade");
+    }
+
+    private void excluirComentario(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        String comentarioId = ctx.pathParam("id");
+        String postId = ctx.formParam("postId"); // Precisamos do postId para redirecionar de volta
+        
+        try {
+            service.deletarComentario(comentarioId, usuarioLogadoId);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroComunidade", e.getMessage());
+        }
+        
+        if (postId != null && !postId.trim().isEmpty()) {
+            ctx.redirect("/comunidade/post/" + postId);
+        } else {
+            ctx.redirect("/comunidade");
+        }
     }
 
     private void estrela(Context ctx) {

@@ -42,11 +42,8 @@
                                 <input class="form-control" id="email" name="email" type="email" th:value="${email}" required placeholder="nome@email.com">
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label" for="bio">Sobre mim</label>
-                                <textarea class="form-control" id="bio" name="bio" rows="3" maxlength="500" placeholder="Conte um pouco sobre você..." th:text="${bio}"></textarea>
-                                <div class="form-text">Máximo de 500 caracteres.</div>
-                            </div>
+                            <!-- Apenas exibe 'Sobre mim' se for edição de conta na visão do painel (não na tela de Criar Conta principal).
+                                 Como este é o formulário de cadastro principal, removemos a bio. -->
 
                             <div class="mb-4">
                                 <label class="form-label" for="senha">Senha</label>

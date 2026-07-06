@@ -162,6 +162,37 @@ public class UsuarioDbRepository implements UsuarioRepository {
     }
 
     @Override
+    public List<Usuario> buscar(String termo) {
+        List<Usuario> lista = new ArrayList<>();
+        if (termo == null || termo.trim().isEmpty()) {
+            return lista;
+        }
+        String sql = "SELECT id, nome, email, senha, tipo, bio FROM usuario WHERE nome ILIKE ? OR email ILIKE ?;";
+        try (Connection conn = obterConexao();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            String wildcard = "%" + termo.trim() + "%";
+            ps.setString(1, wildcard);
+            ps.setString(2, wildcard);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Usuario u = new Usuario(
+                            rs.getString("id"),
+                            rs.getString("nome"),
+                            rs.getString("email"),
+                            rs.getString("senha"),
+                            rs.getString("tipo"),
+                            rs.getString("bio")
+                    );
+                    lista.add(u);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar usuários pelo termo: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
+    @Override
     public void remover(String id) {
         String sql = "DELETE FROM usuario WHERE id = ?;";
         try (Connection conn = obterConexao();

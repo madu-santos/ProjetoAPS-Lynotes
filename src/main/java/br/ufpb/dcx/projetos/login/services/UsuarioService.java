@@ -102,6 +102,13 @@ public class UsuarioService {
         return repository.listarTodos();
     }
 
+    public List<Usuario> buscar(String termo) {
+        if (termo == null || termo.trim().isEmpty()) {
+            return listarTodos();
+        }
+        return repository.buscar(termo);
+    }
+
     public void remover(String id) {
         if (Objects.isNull(id) || id.trim().isEmpty()) {
             throw new IllegalArgumentException("ID inválido para remoção.");

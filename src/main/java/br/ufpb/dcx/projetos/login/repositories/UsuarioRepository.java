@@ -24,6 +24,9 @@ public interface UsuarioRepository {
     // Retorna a lista completa de usuários cadastrados
     List<Usuario> listarTodos();
 
+    // Busca usuários por nome ou email (termo parcial)
+    List<Usuario> buscar(String termo);
+
     // Remove um usuário pelo ID
     void remover(String id);
 }

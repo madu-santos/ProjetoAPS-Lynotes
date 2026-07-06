@@ -80,6 +80,30 @@ public final class PlaylistDbRepository implements PlaylistRepository {
     }
 
     @Override
+    public void update(Playlist playlist) {
+        String sql = "UPDATE playlist SET nome = ?, oculta = ? WHERE id = ?";
+        executarAtualizacao(sql, statement -> {
+            statement.setString(1, playlist.getNome());
+            statement.setBoolean(2, playlist.isOculta());
+            statement.setString(3, playlist.getId());
+        });
+        LOGGER.debug("Playlist atualizada. id={} nome={}", playlist.getId(), playlist.getNome());
+    }
+
+    @Override
+    public boolean delete(String playlistId) {
+        String sql = "DELETE FROM playlist WHERE id = ?";
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, playlistId);
+            int affectedRows = statement.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            throw erroPersistencia("excluir playlist", e);
+        }
+    }
+
+    @Override
     public int countItemsByPlaylistId(String playlistId) {
         String sql = "SELECT COUNT(*) FROM playlist_item WHERE playlist_id = ?";
 

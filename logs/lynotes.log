@@ -1,0 +1,824 @@
+2026-07-04 17:05:01.459 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-07-04 17:05:03.801 [main] WARN  br.ufpb.dcx.projetos.App - Erro ao executar Flyway Migrations (provavelmente banco offline): Unable to obtain connection from database (jdbc:postgresql://localhost:5432/spotify_db) for user 'postgres': Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+
+2026-07-04 17:05:05.832 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:05:05.847 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:05:06.144 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:05:06.236 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@4aedaf61{/,null,AVAILABLE}
+2026-07-04 17:05:06.289 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@4038cd3a{HTTP/1.1, (http/1.1)}{0.0.0.0:41845}
+2026-07-04 17:05:06.307 [main] INFO  org.eclipse.jetty.server.Server - Started Server@23b3aa8c{STARTING}[11.0.20,sto=0] @12200ms
+2026-07-04 17:05:06.309 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:05:06.314 [main] INFO  io.javalin.Javalin - Javalin started in 1082ms \o/
+2026-07-04 17:05:08.897 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///app/target/classes/public/'
+2026-07-04 17:05:08.927 [main] INFO  io.javalin.Javalin - Listening on http://localhost:41845/
+2026-07-04 17:05:08.946 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:05:11.138 [JettyServerThreadPool-43] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-07-04 17:05:11.228 [JettyServerThreadPool-37] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=DELETE path=/clear-cookies-9db28cdb-db3b-4d38-be3c-1705942bf6ca status=200
+2026-07-04 17:05:11.230 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:05:11.232 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@23b3aa8c{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:05:11.259 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@4038cd3a{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:05:11.272 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@4aedaf61{/,null,STOPPED}
+2026-07-04 17:05:11.277 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:05:11.295 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-07-04 17:05:11.351 [main] WARN  br.ufpb.dcx.projetos.App - Erro ao executar Flyway Migrations (provavelmente banco offline): Unable to obtain connection from database (jdbc:postgresql://localhost:5432/spotify_db) for user 'postgres': Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+
+2026-07-04 17:05:11.368 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:05:11.369 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:05:11.382 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:05:11.385 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@78ec89a6{/,null,AVAILABLE}
+2026-07-04 17:05:11.388 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@5cf8676a{HTTP/1.1, (http/1.1)}{0.0.0.0:42185}
+2026-07-04 17:05:11.390 [main] INFO  org.eclipse.jetty.server.Server - Started Server@3520963d{STARTING}[11.0.20,sto=0] @17283ms
+2026-07-04 17:05:11.392 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:05:11.393 [main] INFO  io.javalin.Javalin - Javalin started in 26ms \o/
+2026-07-04 17:05:11.433 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///app/target/classes/public/'
+2026-07-04 17:05:11.455 [main] INFO  io.javalin.Javalin - Listening on http://localhost:42185/
+2026-07-04 17:05:11.460 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:05:11.881 [JettyServerThreadPool-57] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-07-04 17:05:11.903 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=DELETE path=/clear-cookies-5e173ebe-dbf1-4a1f-8179-ae2393f923a9 status=200
+2026-07-04 17:05:11.905 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:05:11.907 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@3520963d{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:05:11.911 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@5cf8676a{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:05:11.913 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@78ec89a6{/,null,STOPPED}
+2026-07-04 17:05:11.916 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:05:11.929 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-07-04 17:05:11.984 [main] WARN  br.ufpb.dcx.projetos.App - Erro ao executar Flyway Migrations (provavelmente banco offline): Unable to obtain connection from database (jdbc:postgresql://localhost:5432/spotify_db) for user 'postgres': Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+
+2026-07-04 17:05:11.999 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:05:12.001 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:05:12.012 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:05:12.014 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@c889805{/,null,AVAILABLE}
+2026-07-04 17:05:12.018 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@47c7a9e5{HTTP/1.1, (http/1.1)}{0.0.0.0:42037}
+2026-07-04 17:05:12.020 [main] INFO  org.eclipse.jetty.server.Server - Started Server@4ed9f7b1{STARTING}[11.0.20,sto=0] @17913ms
+2026-07-04 17:05:12.021 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:05:12.022 [main] INFO  io.javalin.Javalin - Javalin started in 24ms \o/
+2026-07-04 17:05:12.041 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///app/target/classes/public/'
+2026-07-04 17:05:12.070 [main] INFO  io.javalin.Javalin - Listening on http://localhost:42037/
+2026-07-04 17:05:12.076 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:05:12.137 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-07-04 17:05:12.144 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=DELETE path=/clear-cookies-87a807c0-27e0-4121-ace6-0293d50d0e99 status=200
+2026-07-04 17:05:12.146 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:05:12.148 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@4ed9f7b1{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:05:12.152 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@47c7a9e5{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:05:12.154 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@c889805{/,null,STOPPED}
+2026-07-04 17:05:12.157 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:05:12.168 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-07-04 17:05:12.213 [main] WARN  br.ufpb.dcx.projetos.App - Erro ao executar Flyway Migrations (provavelmente banco offline): Unable to obtain connection from database (jdbc:postgresql://localhost:5432/spotify_db) for user 'postgres': Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+
+2026-07-04 17:05:12.229 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:05:12.230 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:05:12.240 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:05:12.244 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@71b6172c{/,null,AVAILABLE}
+2026-07-04 17:05:12.247 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@3e8799f{HTTP/1.1, (http/1.1)}{0.0.0.0:33625}
+2026-07-04 17:05:12.248 [main] INFO  org.eclipse.jetty.server.Server - Started Server@270d43a7{STARTING}[11.0.20,sto=0] @18142ms
+2026-07-04 17:05:12.249 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:05:12.251 [main] INFO  io.javalin.Javalin - Javalin started in 23ms \o/
+2026-07-04 17:05:12.270 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///app/target/classes/public/'
+2026-07-04 17:05:12.295 [main] INFO  io.javalin.Javalin - Listening on http://localhost:33625/
+2026-07-04 17:05:12.298 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:05:12.331 [JettyServerThreadPool-75] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-07-04 17:05:12.337 [JettyServerThreadPool-80] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=DELETE path=/clear-cookies-be773637-6839-4dbc-815e-a484b2b6c3fa status=200
+2026-07-04 17:05:12.339 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:05:12.341 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@270d43a7{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:05:12.344 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@3e8799f{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:05:12.346 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@71b6172c{/,null,STOPPED}
+2026-07-04 17:05:12.349 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:05:13.063 [main] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][main][artistas/lista] Deprecated unwrapped fragment expression "fragments/player :: player" found in template artistas/lista, line 132, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:05:13.640 [main] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][main][artistas/formulario] Deprecated unwrapped fragment expression "fragments/player :: player" found in template artistas/formulario, line 211, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:05:13.686 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:05:13.688 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:05:13.707 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:05:13.710 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@ab4aa5e{/,null,AVAILABLE}
+2026-07-04 17:05:13.714 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@2f9a10df{HTTP/1.1, (http/1.1)}{0.0.0.0:42707}
+2026-07-04 17:05:13.716 [main] INFO  org.eclipse.jetty.server.Server - Started Server@15e1f8fe{STARTING}[11.0.20,sto=0] @19609ms
+2026-07-04 17:05:13.717 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:05:13.719 [main] INFO  io.javalin.Javalin - Javalin started in 34ms \o/
+2026-07-04 17:05:13.721 [main] INFO  io.javalin.Javalin - Listening on http://localhost:42707/
+2026-07-04 17:05:13.727 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:05:13.770 [JettyServerThreadPool-93] WARN  b.u.d.p.a.c.ArtistaHttpExceptionHandler - Requisição com ID de artista inválido. path=/artistas/id-invalido/editar mensagem=ID de artista inválido: id-invalido
+2026-07-04 17:05:13.778 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:05:13.780 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@15e1f8fe{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:05:13.785 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@2f9a10df{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:05:13.788 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@ab4aa5e{/,null,STOPPED}
+2026-07-04 17:05:13.792 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:05:13.814 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:05:13.815 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:05:13.835 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:05:13.839 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@6e1ae763{/,null,AVAILABLE}
+2026-07-04 17:05:13.842 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@d653e41{HTTP/1.1, (http/1.1)}{0.0.0.0:32885}
+2026-07-04 17:05:13.844 [main] INFO  org.eclipse.jetty.server.Server - Started Server@7f5614f9{STARTING}[11.0.20,sto=0] @19737ms
+2026-07-04 17:05:13.845 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:05:13.846 [main] INFO  io.javalin.Javalin - Javalin started in 34ms \o/
+2026-07-04 17:05:13.848 [main] INFO  io.javalin.Javalin - Listening on http://localhost:32885/
+2026-07-04 17:05:13.852 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:05:13.860 [JettyServerThreadPool-105] WARN  b.u.d.p.a.c.ArtistaHttpExceptionHandler - Artista não encontrado. path=/artistas/fce7e912-82d2-402f-bc19-4dba7b28361a/editar mensagem=Artista não encontrado: fce7e912-82d2-402f-bc19-4dba7b28361a
+2026-07-04 17:05:13.866 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:05:13.868 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@7f5614f9{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:05:13.872 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@d653e41{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:05:13.874 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@6e1ae763{/,null,STOPPED}
+2026-07-04 17:05:13.878 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:05:13.893 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:05:13.894 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:05:13.907 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:05:13.910 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@6bcae9{/,null,AVAILABLE}
+2026-07-04 17:05:13.913 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@5b5f9003{HTTP/1.1, (http/1.1)}{0.0.0.0:39485}
+2026-07-04 17:05:13.915 [main] INFO  org.eclipse.jetty.server.Server - Started Server@2f9dda71{STARTING}[11.0.20,sto=0] @19808ms
+2026-07-04 17:05:13.917 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:05:13.918 [main] INFO  io.javalin.Javalin - Javalin started in 26ms \o/
+2026-07-04 17:05:13.919 [main] INFO  io.javalin.Javalin - Listening on http://localhost:39485/
+2026-07-04 17:05:13.924 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:05:14.002 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:05:14.005 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@2f9dda71{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:05:14.010 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@5b5f9003{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:05:14.012 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@6bcae9{/,null,STOPPED}
+2026-07-04 17:05:14.015 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:05:14.029 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:05:14.031 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:05:14.042 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:05:14.045 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@73893ec1{/,null,AVAILABLE}
+2026-07-04 17:05:14.048 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@118acf70{HTTP/1.1, (http/1.1)}{0.0.0.0:36041}
+2026-07-04 17:05:14.049 [main] INFO  org.eclipse.jetty.server.Server - Started Server@8c12524{STARTING}[11.0.20,sto=0] @19943ms
+2026-07-04 17:05:14.051 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:05:14.052 [main] INFO  io.javalin.Javalin - Javalin started in 23ms \o/
+2026-07-04 17:05:14.053 [main] INFO  io.javalin.Javalin - Listening on http://localhost:36041/
+2026-07-04 17:05:14.057 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:05:14.064 [JettyServerThreadPool-130] WARN  b.u.d.p.a.c.ArtistaController - Formulário de artista inválido. path=/artistas mensagem=Nome obrigatório
+2026-07-04 17:05:14.110 [JettyServerThreadPool-130] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][JettyServerThreadPool-130][artistas/formulario] Deprecated unwrapped fragment expression "fragments/player :: player" found in template artistas/formulario, line 211, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:05:14.136 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:05:14.138 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@8c12524{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:05:14.143 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@118acf70{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:05:14.145 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@73893ec1{/,null,STOPPED}
+2026-07-04 17:05:14.148 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:05:14.161 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:05:14.162 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:05:14.173 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:05:14.176 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@18709cb2{/,null,AVAILABLE}
+2026-07-04 17:05:14.179 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@67e0fd6d{HTTP/1.1, (http/1.1)}{0.0.0.0:45927}
+2026-07-04 17:05:14.180 [main] INFO  org.eclipse.jetty.server.Server - Started Server@1129829c{STARTING}[11.0.20,sto=0] @20074ms
+2026-07-04 17:05:14.182 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:05:14.183 [main] INFO  io.javalin.Javalin - Javalin started in 23ms \o/
+2026-07-04 17:05:14.185 [main] INFO  io.javalin.Javalin - Listening on http://localhost:45927/
+2026-07-04 17:05:14.189 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:05:14.195 [JettyServerThreadPool-142] ERROR b.u.d.p.a.c.ArtistaHttpExceptionHandler - Falha de persistência no domínio de artistas. path=/artistas
+br.ufpb.dcx.projetos.infra.database.DatabaseException: conexão recusada
+	at br.ufpb.dcx.projetos.artista.controllers.ArtistaControllerTest$FakeUseCase.listar(ArtistaControllerTest.java:140)
+	at br.ufpb.dcx.projetos.artista.controllers.ArtistaController.listar(ArtistaController.java:47)
+	at io.javalin.router.Endpoint.handle(Endpoint.kt:52)
+	at io.javalin.router.ParsedEndpoint.handle(ParsedEndpoint.kt:15)
+	at io.javalin.http.servlet.DefaultTasks.HTTP$lambda$9$lambda$7$lambda$6(DefaultTasks.kt:52)
+	at io.javalin.http.servlet.JavalinServlet.handleTask(JavalinServlet.kt:99)
+	at io.javalin.http.servlet.JavalinServlet.handleSync(JavalinServlet.kt:64)
+	at io.javalin.http.servlet.JavalinServlet.handle(JavalinServlet.kt:50)
+	at io.javalin.http.servlet.JavalinServlet.service(JavalinServlet.kt:30)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at io.javalin.jetty.JavalinJettyServlet.service(JavalinJettyServlet.kt:52)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:764)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:529)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1580)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1381)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:176)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:484)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1553)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:174)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1303)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:129)
+	at org.eclipse.jetty.server.handler.StatisticsHandler.handle(StatisticsHandler.java:173)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:122)
+	at org.eclipse.jetty.server.Server.handle(Server.java:563)
+	at org.eclipse.jetty.server.HttpChannel$RequestDispatchable.dispatch(HttpChannel.java:1598)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:753)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:501)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:287)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:314)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:100)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:53)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:969)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.lang.IllegalStateException: banco indisponível
+	at br.ufpb.dcx.projetos.artista.controllers.ArtistaControllerTest$FakeUseCase.listar(ArtistaControllerTest.java:142)
+	... 37 common frames omitted
+2026-07-04 17:05:14.210 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:05:14.212 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@1129829c{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:05:14.215 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@67e0fd6d{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:05:14.217 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@18709cb2{/,null,STOPPED}
+2026-07-04 17:05:14.220 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:05:14.287 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=cba9ff4d-9cb7-4083-81c1-37b4f21b5e51 nome=Djavan usuarioId=usuario-id-1
+2026-07-04 17:05:14.289 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=058479e1-15d1-4603-9846-7a2b54f87283 nome=Djavan usuarioId=usuario-id-1
+2026-07-04 17:05:14.295 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=d09a1312-57d4-481d-9673-3a50496c037d nome=BaianaSystem usuarioId=usuario-id-1
+2026-07-04 17:05:14.298 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista atualizado. id=d09a1312-57d4-481d-9673-3a50496c037d nome=BaianaSystem
+2026-07-04 17:05:14.308 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=cbcc5283-7885-415d-bbfc-6c66e51a910b nome=Liniker usuarioId=usuario-id-1
+2026-07-04 17:05:14.328 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=e6a8fb80-ba15-4fe0-a177-9ba3ff104401 nome=Elis Regina usuarioId=usuario-id-1
+2026-07-04 17:05:14.330 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista removido. id=e6a8fb80-ba15-4fe0-a177-9ba3ff104401
+2026-07-04 17:05:14.335 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=fe1d1e5a-ef3a-406e-93c4-d1893162bd3a nome=Djavan usuarioId=usuario-id-1
+2026-07-04 17:05:14.337 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=bbe62983-d22d-4a76-90f1-729f69f1118e nome=Nina Simone usuarioId=usuario-id-1
+2026-07-04 17:09:13.337 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-07-04 17:09:18.317 [Thread-1] INFO  io.javalin.Javalin - It looks like you created a Javalin instance, but you never started it.
+2026-07-04 17:09:18.322 [Thread-1] INFO  io.javalin.Javalin - Try: Javalin app = Javalin.create().start();
+2026-07-04 17:09:18.324 [Thread-1] INFO  io.javalin.Javalin - For more help, visit https://javalin.io/documentation#server-setup
+2026-07-04 17:09:19.161 [main] WARN  br.ufpb.dcx.projetos.App - Erro ao executar Flyway Migrations (provavelmente banco offline): Unable to obtain connection from database (jdbc:postgresql://localhost:5432/spotify_db) for user 'postgres': Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+
+2026-07-04 17:09:24.254 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:24.280 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:25.055 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:25.286 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@1e530163{/,null,AVAILABLE}
+2026-07-04 17:09:25.419 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@77134e08{HTTP/1.1, (http/1.1)}{0.0.0.0:36419}
+2026-07-04 17:09:25.472 [main] INFO  org.eclipse.jetty.server.Server - Started Server@5d01ea21{STARTING}[11.0.20,sto=0] @24038ms
+2026-07-04 17:09:25.476 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:25.487 [main] INFO  io.javalin.Javalin - Javalin started in 2802ms \o/
+2026-07-04 17:09:32.064 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///app/target/classes/public/'
+2026-07-04 17:09:32.128 [main] INFO  io.javalin.Javalin - Listening on http://localhost:36419/
+2026-07-04 17:09:32.172 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:37.836 [JettyServerThreadPool-40] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-07-04 17:09:38.043 [JettyServerThreadPool-34] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=DELETE path=/clear-cookies-8281203f-4267-483f-b5ef-91f6a5b047f9 status=200
+2026-07-04 17:09:38.049 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:38.053 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@5d01ea21{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:38.106 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@77134e08{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:38.134 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@1e530163{/,null,STOPPED}
+2026-07-04 17:09:38.143 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:38.184 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-07-04 17:09:38.296 [main] WARN  br.ufpb.dcx.projetos.App - Erro ao executar Flyway Migrations (provavelmente banco offline): Unable to obtain connection from database (jdbc:postgresql://localhost:5432/spotify_db) for user 'postgres': Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+
+2026-07-04 17:09:38.336 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:38.338 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:38.358 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:38.365 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@5e13f156{/,null,AVAILABLE}
+2026-07-04 17:09:38.371 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@168b4cb0{HTTP/1.1, (http/1.1)}{0.0.0.0:35327}
+2026-07-04 17:09:38.374 [main] INFO  org.eclipse.jetty.server.Server - Started Server@35b17c06{STARTING}[11.0.20,sto=0] @36947ms
+2026-07-04 17:09:38.377 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:38.380 [main] INFO  io.javalin.Javalin - Javalin started in 46ms \o/
+2026-07-04 17:09:38.478 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///app/target/classes/public/'
+2026-07-04 17:09:38.536 [main] INFO  io.javalin.Javalin - Listening on http://localhost:35327/
+2026-07-04 17:09:38.545 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:38.983 [JettyServerThreadPool-54] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-07-04 17:09:39.027 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=DELETE path=/clear-cookies-235404a3-a2ba-467a-80a5-db6a4dd92b45 status=200
+2026-07-04 17:09:39.033 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:39.037 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@35b17c06{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:39.045 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@168b4cb0{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:39.051 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@5e13f156{/,null,STOPPED}
+2026-07-04 17:09:39.056 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:39.082 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-07-04 17:09:39.183 [main] WARN  br.ufpb.dcx.projetos.App - Erro ao executar Flyway Migrations (provavelmente banco offline): Unable to obtain connection from database (jdbc:postgresql://localhost:5432/spotify_db) for user 'postgres': Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+
+2026-07-04 17:09:39.230 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:39.234 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:39.255 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:39.266 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@3cd26422{/,null,AVAILABLE}
+2026-07-04 17:09:39.274 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@5f5827d0{HTTP/1.1, (http/1.1)}{0.0.0.0:42047}
+2026-07-04 17:09:39.278 [main] INFO  org.eclipse.jetty.server.Server - Started Server@4337afd{STARTING}[11.0.20,sto=0] @37852ms
+2026-07-04 17:09:39.283 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:39.287 [main] INFO  io.javalin.Javalin - Javalin started in 59ms \o/
+2026-07-04 17:09:39.343 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///app/target/classes/public/'
+2026-07-04 17:09:39.406 [main] INFO  io.javalin.Javalin - Listening on http://localhost:42047/
+2026-07-04 17:09:39.415 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:39.575 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-07-04 17:09:39.589 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=DELETE path=/clear-cookies-1fc32e71-c10a-450f-85fa-f04e587df6ba status=200
+2026-07-04 17:09:39.595 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:39.599 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@4337afd{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:39.607 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@5f5827d0{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:39.615 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@3cd26422{/,null,STOPPED}
+2026-07-04 17:09:39.621 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:39.649 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-07-04 17:09:39.808 [main] WARN  br.ufpb.dcx.projetos.App - Erro ao executar Flyway Migrations (provavelmente banco offline): Unable to obtain connection from database (jdbc:postgresql://localhost:5432/spotify_db) for user 'postgres': Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5432 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+
+2026-07-04 17:09:39.852 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:39.856 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:39.885 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:39.892 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@363c32cc{/,null,AVAILABLE}
+2026-07-04 17:09:39.900 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@c889805{HTTP/1.1, (http/1.1)}{0.0.0.0:45333}
+2026-07-04 17:09:39.906 [main] INFO  org.eclipse.jetty.server.Server - Started Server@78d9f51b{STARTING}[11.0.20,sto=0] @38479ms
+2026-07-04 17:09:39.909 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:39.912 [main] INFO  io.javalin.Javalin - Javalin started in 64ms \o/
+2026-07-04 17:09:39.951 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///app/target/classes/public/'
+2026-07-04 17:09:40.024 [main] INFO  io.javalin.Javalin - Listening on http://localhost:45333/
+2026-07-04 17:09:40.037 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:40.135 [JettyServerThreadPool-72] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-07-04 17:09:40.154 [JettyServerThreadPool-77] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=DELETE path=/clear-cookies-151cad0c-2387-4a5c-9635-c62ec9142365 status=200
+2026-07-04 17:09:40.161 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:40.165 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@78d9f51b{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:40.174 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@c889805{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:40.179 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@363c32cc{/,null,STOPPED}
+2026-07-04 17:09:40.193 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:41.914 [main] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][main][artistas/lista] Deprecated unwrapped fragment expression "fragments/player :: player" found in template artistas/lista, line 132, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:09:43.115 [main] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][main][artistas/formulario] Deprecated unwrapped fragment expression "fragments/player :: player" found in template artistas/formulario, line 211, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:09:43.197 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:43.200 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:43.219 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:43.223 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@44f0ff2b{/,null,AVAILABLE}
+2026-07-04 17:09:43.228 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@613f7eb7{HTTP/1.1, (http/1.1)}{0.0.0.0:38897}
+2026-07-04 17:09:43.230 [main] INFO  org.eclipse.jetty.server.Server - Started Server@587c5c1{STARTING}[11.0.20,sto=0] @41804ms
+2026-07-04 17:09:43.232 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:43.235 [main] INFO  io.javalin.Javalin - Javalin started in 40ms \o/
+2026-07-04 17:09:43.237 [main] INFO  io.javalin.Javalin - Listening on http://localhost:38897/
+2026-07-04 17:09:43.244 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:43.323 [JettyServerThreadPool-90] WARN  b.u.d.p.a.c.ArtistaHttpExceptionHandler - Requisição com ID de artista inválido. path=/artistas/id-invalido/editar mensagem=ID de artista inválido: id-invalido
+2026-07-04 17:09:43.335 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:43.338 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@587c5c1{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:43.344 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@613f7eb7{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:43.349 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@44f0ff2b{/,null,STOPPED}
+2026-07-04 17:09:43.354 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:43.379 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:43.383 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:43.406 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:43.409 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@491cafec{/,null,AVAILABLE}
+2026-07-04 17:09:43.413 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6b8d54da{HTTP/1.1, (http/1.1)}{0.0.0.0:35649}
+2026-07-04 17:09:43.416 [main] INFO  org.eclipse.jetty.server.Server - Started Server@217235f5{STARTING}[11.0.20,sto=0] @41990ms
+2026-07-04 17:09:43.419 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:43.422 [main] INFO  io.javalin.Javalin - Javalin started in 46ms \o/
+2026-07-04 17:09:43.424 [main] INFO  io.javalin.Javalin - Listening on http://localhost:35649/
+2026-07-04 17:09:43.431 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:43.442 [JettyServerThreadPool-102] WARN  b.u.d.p.a.c.ArtistaHttpExceptionHandler - Artista não encontrado. path=/artistas/fce7e912-82d2-402f-bc19-4dba7b28361a/editar mensagem=Artista não encontrado: fce7e912-82d2-402f-bc19-4dba7b28361a
+2026-07-04 17:09:43.456 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:43.459 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@217235f5{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:43.466 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@6b8d54da{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:43.473 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@491cafec{/,null,STOPPED}
+2026-07-04 17:09:43.478 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:43.512 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:43.516 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:43.541 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:43.545 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@243bf087{/,null,AVAILABLE}
+2026-07-04 17:09:43.550 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@2de9ca6{HTTP/1.1, (http/1.1)}{0.0.0.0:35823}
+2026-07-04 17:09:43.554 [main] INFO  org.eclipse.jetty.server.Server - Started Server@2ee39e73{STARTING}[11.0.20,sto=0] @42127ms
+2026-07-04 17:09:43.556 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:43.558 [main] INFO  io.javalin.Javalin - Javalin started in 48ms \o/
+2026-07-04 17:09:43.560 [main] INFO  io.javalin.Javalin - Listening on http://localhost:35823/
+2026-07-04 17:09:43.569 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:43.668 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:43.672 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@2ee39e73{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:43.680 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@2de9ca6{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:43.684 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@243bf087{/,null,STOPPED}
+2026-07-04 17:09:43.689 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:43.721 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:43.722 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:43.742 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:43.748 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@445bce9a{/,null,AVAILABLE}
+2026-07-04 17:09:43.752 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6a55594b{HTTP/1.1, (http/1.1)}{0.0.0.0:44449}
+2026-07-04 17:09:43.755 [main] INFO  org.eclipse.jetty.server.Server - Started Server@44598ef7{STARTING}[11.0.20,sto=0] @42328ms
+2026-07-04 17:09:43.757 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:43.759 [main] INFO  io.javalin.Javalin - Javalin started in 40ms \o/
+2026-07-04 17:09:43.761 [main] INFO  io.javalin.Javalin - Listening on http://localhost:44449/
+2026-07-04 17:09:43.769 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:43.780 [JettyServerThreadPool-127] WARN  b.u.d.p.a.c.ArtistaController - Formulário de artista inválido. path=/artistas mensagem=Nome obrigatório
+2026-07-04 17:09:43.879 [JettyServerThreadPool-127] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][JettyServerThreadPool-127][artistas/formulario] Deprecated unwrapped fragment expression "fragments/player :: player" found in template artistas/formulario, line 211, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:09:43.943 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:43.949 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@44598ef7{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:43.956 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@6a55594b{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:43.961 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@445bce9a{/,null,STOPPED}
+2026-07-04 17:09:43.967 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:43.994 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:43.996 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:44.028 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:44.038 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@7ca492d9{/,null,AVAILABLE}
+2026-07-04 17:09:44.045 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@62c3f556{HTTP/1.1, (http/1.1)}{0.0.0.0:43297}
+2026-07-04 17:09:44.051 [main] INFO  org.eclipse.jetty.server.Server - Started Server@2f95653f{STARTING}[11.0.20,sto=0] @42624ms
+2026-07-04 17:09:44.054 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:44.061 [main] INFO  io.javalin.Javalin - Javalin started in 69ms \o/
+2026-07-04 17:09:44.067 [main] INFO  io.javalin.Javalin - Listening on http://localhost:43297/
+2026-07-04 17:09:44.079 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:44.097 [JettyServerThreadPool-139] ERROR b.u.d.p.a.c.ArtistaHttpExceptionHandler - Falha de persistência no domínio de artistas. path=/artistas
+br.ufpb.dcx.projetos.infra.database.DatabaseException: conexão recusada
+	at br.ufpb.dcx.projetos.artista.controllers.ArtistaControllerTest$FakeUseCase.listar(ArtistaControllerTest.java:140)
+	at br.ufpb.dcx.projetos.artista.controllers.ArtistaController.listar(ArtistaController.java:47)
+	at io.javalin.router.Endpoint.handle(Endpoint.kt:52)
+	at io.javalin.router.ParsedEndpoint.handle(ParsedEndpoint.kt:15)
+	at io.javalin.http.servlet.DefaultTasks.HTTP$lambda$9$lambda$7$lambda$6(DefaultTasks.kt:52)
+	at io.javalin.http.servlet.JavalinServlet.handleTask(JavalinServlet.kt:99)
+	at io.javalin.http.servlet.JavalinServlet.handleSync(JavalinServlet.kt:64)
+	at io.javalin.http.servlet.JavalinServlet.handle(JavalinServlet.kt:50)
+	at io.javalin.http.servlet.JavalinServlet.service(JavalinServlet.kt:30)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at io.javalin.jetty.JavalinJettyServlet.service(JavalinJettyServlet.kt:52)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:764)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:529)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1580)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1381)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:176)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:484)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1553)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:174)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1303)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:129)
+	at org.eclipse.jetty.server.handler.StatisticsHandler.handle(StatisticsHandler.java:173)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:122)
+	at org.eclipse.jetty.server.Server.handle(Server.java:563)
+	at org.eclipse.jetty.server.HttpChannel$RequestDispatchable.dispatch(HttpChannel.java:1598)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:753)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:501)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:287)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:314)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:100)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:53)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:969)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.lang.IllegalStateException: banco indisponível
+	at br.ufpb.dcx.projetos.artista.controllers.ArtistaControllerTest$FakeUseCase.listar(ArtistaControllerTest.java:142)
+	... 37 common frames omitted
+2026-07-04 17:09:44.150 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:44.156 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@2f95653f{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:44.164 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@62c3f556{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:44.175 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@7ca492d9{/,null,STOPPED}
+2026-07-04 17:09:44.180 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:44.337 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=004d9db0-48fc-4c05-b947-3f988d762e83 nome=Djavan usuarioId=usuario-id-1
+2026-07-04 17:09:44.341 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=77dfca55-9bbb-4c21-a5d3-c9838e992da8 nome=Djavan usuarioId=usuario-id-1
+2026-07-04 17:09:44.356 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=d9ed7973-5878-4d04-951b-fc471ce6aec5 nome=BaianaSystem usuarioId=usuario-id-1
+2026-07-04 17:09:44.362 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista atualizado. id=d9ed7973-5878-4d04-951b-fc471ce6aec5 nome=BaianaSystem
+2026-07-04 17:09:44.395 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=90a19f94-7b10-4364-9137-dcaad189fdf5 nome=Liniker usuarioId=usuario-id-1
+2026-07-04 17:09:44.427 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=6ab6018d-1a17-442f-a28b-abeb5d86d7d4 nome=Elis Regina usuarioId=usuario-id-1
+2026-07-04 17:09:44.430 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista removido. id=6ab6018d-1a17-442f-a28b-abeb5d86d7d4
+2026-07-04 17:09:44.442 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=3c13e152-8b0e-4a14-a4e8-55e07aad412b nome=Djavan usuarioId=usuario-id-1
+2026-07-04 17:09:44.444 [main] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=0b883220-834e-47fa-bbf7-336bb52e9447 nome=Nina Simone usuarioId=usuario-id-1
+2026-07-04 17:09:44.583 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:44.586 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:44.613 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:44.623 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@450f0235{/,null,AVAILABLE}
+2026-07-04 17:09:44.629 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@39ab5ef7{HTTP/1.1, (http/1.1)}{0.0.0.0:39397}
+2026-07-04 17:09:44.633 [main] INFO  org.eclipse.jetty.server.Server - Started Server@77cca767{STARTING}[11.0.20,sto=0] @43206ms
+2026-07-04 17:09:44.636 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:44.638 [main] INFO  io.javalin.Javalin - Javalin started in 58ms \o/
+2026-07-04 17:09:44.640 [main] INFO  io.javalin.Javalin - Listening on http://localhost:39397/
+2026-07-04 17:09:44.649 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:44.771 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:44.774 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@77cca767{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:44.781 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@39ab5ef7{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:44.788 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@450f0235{/,null,STOPPED}
+2026-07-04 17:09:44.792 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:44.825 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:44.828 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:44.864 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:44.877 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@764fffa0{/,null,AVAILABLE}
+2026-07-04 17:09:44.888 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6a98f353{HTTP/1.1, (http/1.1)}{0.0.0.0:37843}
+2026-07-04 17:09:44.891 [main] INFO  org.eclipse.jetty.server.Server - Started Server@1e00bfe2{STARTING}[11.0.20,sto=0] @43465ms
+2026-07-04 17:09:44.893 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:44.896 [main] INFO  io.javalin.Javalin - Javalin started in 73ms \o/
+2026-07-04 17:09:44.899 [main] INFO  io.javalin.Javalin - Listening on http://localhost:37843/
+2026-07-04 17:09:44.909 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:45.012 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:45.014 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@1e00bfe2{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:45.021 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@6a98f353{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:45.026 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@764fffa0{/,null,STOPPED}
+2026-07-04 17:09:45.029 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:45.054 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:45.056 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:45.076 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:45.080 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@269222ae{/,null,AVAILABLE}
+2026-07-04 17:09:45.085 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@527a8665{HTTP/1.1, (http/1.1)}{0.0.0.0:35039}
+2026-07-04 17:09:45.088 [main] INFO  org.eclipse.jetty.server.Server - Started Server@437c4b25{STARTING}[11.0.20,sto=0] @43661ms
+2026-07-04 17:09:45.091 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:45.092 [main] INFO  io.javalin.Javalin - Javalin started in 39ms \o/
+2026-07-04 17:09:45.095 [main] INFO  io.javalin.Javalin - Listening on http://localhost:35039/
+2026-07-04 17:09:45.102 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:45.167 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:45.170 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@437c4b25{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:45.175 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@527a8665{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:45.180 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@269222ae{/,null,STOPPED}
+2026-07-04 17:09:45.185 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:45.210 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:45.212 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:45.240 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:45.247 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@7f0f84d4{/,null,AVAILABLE}
+2026-07-04 17:09:45.252 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6c742b84{HTTP/1.1, (http/1.1)}{0.0.0.0:38331}
+2026-07-04 17:09:45.254 [main] INFO  org.eclipse.jetty.server.Server - Started Server@53a50b0a{STARTING}[11.0.20,sto=0] @43828ms
+2026-07-04 17:09:45.255 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:45.257 [main] INFO  io.javalin.Javalin - Javalin started in 48ms \o/
+2026-07-04 17:09:45.262 [main] INFO  io.javalin.Javalin - Listening on http://localhost:38331/
+2026-07-04 17:09:45.270 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:45.311 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:45.313 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@53a50b0a{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:45.320 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@6c742b84{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:45.323 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@7f0f84d4{/,null,STOPPED}
+2026-07-04 17:09:45.330 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:45.385 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:45.387 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:45.410 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:45.420 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@689faf79{/,null,AVAILABLE}
+2026-07-04 17:09:45.424 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@1efac5b9{HTTP/1.1, (http/1.1)}{0.0.0.0:36615}
+2026-07-04 17:09:45.427 [main] INFO  org.eclipse.jetty.server.Server - Started Server@69796bd0{STARTING}[11.0.20,sto=0] @44000ms
+2026-07-04 17:09:45.431 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:45.438 [main] INFO  io.javalin.Javalin - Javalin started in 54ms \o/
+2026-07-04 17:09:45.457 [main] INFO  io.javalin.Javalin - Listening on http://localhost:36615/
+2026-07-04 17:09:45.471 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:45.580 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:45.584 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@69796bd0{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:45.594 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@1efac5b9{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:45.606 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@689faf79{/,null,STOPPED}
+2026-07-04 17:09:45.610 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:45.646 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:45.654 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:45.688 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:45.694 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@320be73{/,null,AVAILABLE}
+2026-07-04 17:09:45.702 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@16bd7ae1{HTTP/1.1, (http/1.1)}{0.0.0.0:33939}
+2026-07-04 17:09:45.709 [main] INFO  org.eclipse.jetty.server.Server - Started Server@3312f4f4{STARTING}[11.0.20,sto=0] @44282ms
+2026-07-04 17:09:45.712 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:45.716 [main] INFO  io.javalin.Javalin - Javalin started in 71ms \o/
+2026-07-04 17:09:45.720 [main] INFO  io.javalin.Javalin - Listening on http://localhost:33939/
+2026-07-04 17:09:45.727 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:45.895 [JettyServerThreadPool-211] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][JettyServerThreadPool-211][usuarios/formulario] Deprecated unwrapped fragment expression "fragments/player :: player" found in template usuarios/formulario, line 144, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:09:45.945 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:45.946 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@3312f4f4{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:45.953 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@16bd7ae1{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:45.956 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@320be73{/,null,STOPPED}
+2026-07-04 17:09:45.960 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:45.986 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:45.988 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:46.013 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:46.019 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@183fc2fa{/,null,AVAILABLE}
+2026-07-04 17:09:46.024 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@69ec93c2{HTTP/1.1, (http/1.1)}{0.0.0.0:46439}
+2026-07-04 17:09:46.027 [main] INFO  org.eclipse.jetty.server.Server - Started Server@5287ba5f{STARTING}[11.0.20,sto=0] @44600ms
+2026-07-04 17:09:46.028 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:46.030 [main] INFO  io.javalin.Javalin - Javalin started in 46ms \o/
+2026-07-04 17:09:46.032 [main] INFO  io.javalin.Javalin - Listening on http://localhost:46439/
+2026-07-04 17:09:46.039 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:46.386 [JettyServerThreadPool-223] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][JettyServerThreadPool-223][usuarios/lista] Deprecated unwrapped fragment expression "fragments/player :: player" found in template usuarios/lista, line 85, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:09:46.476 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:46.480 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@5287ba5f{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:46.489 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@69ec93c2{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:46.494 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@183fc2fa{/,null,STOPPED}
+2026-07-04 17:09:46.507 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:46.544 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:46.546 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:46.575 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:46.581 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@29d25e65{/,null,AVAILABLE}
+2026-07-04 17:09:46.589 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@1eca3ea7{HTTP/1.1, (http/1.1)}{0.0.0.0:42855}
+2026-07-04 17:09:46.592 [main] INFO  org.eclipse.jetty.server.Server - Started Server@73a6cc79{STARTING}[11.0.20,sto=0] @45166ms
+2026-07-04 17:09:46.595 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:46.597 [main] INFO  io.javalin.Javalin - Javalin started in 56ms \o/
+2026-07-04 17:09:46.600 [main] INFO  io.javalin.Javalin - Listening on http://localhost:42855/
+2026-07-04 17:09:46.608 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:46.700 [JettyServerThreadPool-235] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][JettyServerThreadPool-235][usuarios/formulario] Deprecated unwrapped fragment expression "fragments/player :: player" found in template usuarios/formulario, line 144, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:09:46.757 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:46.759 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@73a6cc79{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:46.765 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@1eca3ea7{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:46.768 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@29d25e65{/,null,STOPPED}
+2026-07-04 17:09:46.771 [main] INFO  io.javalin.Javalin - Javalin has stopped
+2026-07-04 17:09:46.915 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-07-04 17:09:46.917 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 21.0.7+6-LTS
+2026-07-04 17:09:46.933 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-07-04 17:09:46.939 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@3887c7d7{/,null,AVAILABLE}
+2026-07-04 17:09:46.942 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@66f16742{HTTP/1.1, (http/1.1)}{0.0.0.0:45361}
+2026-07-04 17:09:46.944 [main] INFO  org.eclipse.jetty.server.Server - Started Server@3c54ddec{STARTING}[11.0.20,sto=0] @45518ms
+2026-07-04 17:09:46.946 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-07-04 17:09:46.948 [main] INFO  io.javalin.Javalin - Javalin started in 33ms \o/
+2026-07-04 17:09:46.950 [main] INFO  io.javalin.Javalin - Listening on http://localhost:45361/
+2026-07-04 17:09:46.957 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 853 days old. Consider checking for a newer version.).
+2026-07-04 17:09:47.044 [JettyServerThreadPool-247] WARN  o.t.s.p.AbstractStandardFragmentInsertionTagProcessor - [THYMELEAF][JettyServerThreadPool-247][perfil] Deprecated unwrapped fragment expression "fragments/player :: player" found in template perfil, line 86, col 6. Please use the complete syntax of fragment expressions instead ("~{fragments/player :: player}"). The old, unwrapped syntax for fragment expressions will be removed in future versions of Thymeleaf.
+2026-07-04 17:09:47.083 [main] INFO  io.javalin.Javalin - Stopping Javalin ...
+2026-07-04 17:09:47.085 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@3c54ddec{STOPPING}[11.0.20,sto=0]
+2026-07-04 17:09:47.089 [main] INFO  o.e.jetty.server.AbstractConnector - Stopped ServerConnector@66f16742{HTTP/1.1, (http/1.1)}{0.0.0.0:0}
+2026-07-04 17:09:47.091 [main] INFO  o.e.j.server.handler.ContextHandler - Stopped o.e.j.s.ServletContextHandler@3887c7d7{/,null,STOPPED}
+2026-07-04 17:09:47.093 [main] INFO  io.javalin.Javalin - Javalin has stopped
