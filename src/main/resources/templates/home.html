@@ -56,12 +56,17 @@
                             <p class="card-text text-secondary small flex-grow-1" th:text="${musica.resenha}"></p>
                             
                             <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
-                                <a th:if="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}" 
-                                   th:href="${musica.youtubeUrl}" 
-                                   target="_blank" 
-                                   class="btn btn-sm btn-outline-danger">
-                                    YouTube ↗
-                                </a>
+                                <div th:if="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}" class="d-flex gap-1">
+                                    <button type="button" class="btn btn-outline-success btn-sm"
+                                            th:data-url="${musica.youtubeUrl}"
+                                            th:data-titulo="${musica.titulo}"
+                                            onclick="try { playerLoad(playerExtractVideoId(this.getAttribute('data-url')), this.getAttribute('data-titulo'), null); } catch(e) { alert(e.message); }">
+                                        ▶ Play
+                                    </button>
+                                    <a th:href="${musica.youtubeUrl}" target="_blank" class="btn btn-sm btn-outline-danger" title="Abrir no YouTube">
+                                        YouTube ↗
+                                    </a>
+                                </div>
                                 <span th:unless="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}"></span>
                                 
                                 <div class="d-flex gap-1">
