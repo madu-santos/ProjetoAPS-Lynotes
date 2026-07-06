@@ -145,6 +145,35 @@ public final class PlaylistService {
         return "YouTube - " + videoId;
     }
 
+    public Integer fetchYouTubeDuration(String url) {
+        if (url == null || url.isBlank()) return null;
+        try {
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(java.time.Duration.ofSeconds(5))
+                    .followRedirects(HttpClient.Redirect.ALWAYS)
+                    .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("User-Agent", "Mozilla/5.0")
+                    .header("Accept-Language", "en-US,en;q=0.9")
+                    .timeout(java.time.Duration.ofSeconds(5))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                String body = response.body();
+                java.util.regex.Pattern p = java.util.regex.Pattern.compile("\"lengthSeconds\":\"(\\d+)\"");
+                java.util.regex.Matcher m = p.matcher(body);
+                if (m.find()) {
+                    return Integer.parseInt(m.group(1));
+                }
+            }
+        } catch (Exception e) {
+            // fallback
+        }
+        return null;
+    }
+
     private void validarNome(String nome) {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("O nome da playlist é obrigatório.");

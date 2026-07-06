@@ -122,15 +122,17 @@ public final class MusicaController {
                 notaVal = Integer.parseInt(dto.nota());
             }
 
+            Integer duracaoVal = null;
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
-                playlistService.extractVideoId(dto.youtubeUrl());
+                playlistService.extractVideoId(dto.youtubeUrl()); // throws if invalid
+                duracaoVal = playlistService.fetchYouTubeDuration(dto.youtubeUrl());
             }
 
             Musica musica = Musica.novo(
                     dto.titulo(),
                     dto.artista(),
                     null, // genero
-                    null, // duracaoSegundos
+                    duracaoVal, // duracaoSegundos
                     dto.resenha(),
                     notaVal,
                     dto.spotifyUrl(),
@@ -217,12 +219,18 @@ public final class MusicaController {
                 notaVal = Integer.parseInt(dto.nota());
             }
 
+            Integer duracaoVal = musicaExistente.getDuracaoSegundos();
+            if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
+                // If they provided a new URL or kept the existing one, we can fetch its duration.
+                duracaoVal = playlistService.fetchYouTubeDuration(dto.youtubeUrl());
+            }
+
             Musica musicaDetails = new Musica(
                     id,
                     dto.titulo(),
                     dto.artista(),
                     musicaExistente.getGenero(),
-                    musicaExistente.getDuracaoSegundos(),
+                    duracaoVal,
                     dto.resenha(),
                     notaVal,
                     dto.spotifyUrl(),
@@ -293,8 +301,8 @@ public final class MusicaController {
         return new MusicaDTO(
                 ctx.formParam("titulo"),
                 ctx.formParam("artista"),
-                null,
-                null,
+                ctx.formParam("duracaoSegundos"),
+                ctx.formParam("albumId"),
                 ctx.formParam("nota"),
                 ctx.formParam("resenha"),
                 ctx.formParam("spotifyUrl"),

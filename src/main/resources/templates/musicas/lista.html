@@ -35,7 +35,7 @@
                             <th>Título</th>
                             <th>Gênero</th>
                             <th>Duração (segundos)</th>
-                            <th>Álbum</th>
+                            <th>Artista</th>
                             <th class="text-end">Ações</th>
                         </tr>
                     </thead>
@@ -43,8 +43,8 @@
                         <tr th:each="musica : ${musicas}">
                             <td class="fw-semibold" th:text="${musica.titulo}"></td>
                             <td th:text="${musica.genero}"></td>
-                            <td th:text="${musica.duracaoSegundos + ' s'}"></td>
-                            <td th:text="${musica.albumTitulo}"></td>
+                            <td th:text="${musica.duracaoSegundos != null ? musica.duracaoSegundos + ' s' : '-'}"></td>
+                            <td th:text="${musica.artista}"></td>
                             <td class="text-end text-nowrap">
                                 <a class="btn btn-outline-primary btn-sm"
                                    th:href="${'/musicas/edit/' + musica.id}">
