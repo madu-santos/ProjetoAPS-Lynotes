@@ -23,12 +23,14 @@ public final class UsuarioController {
     private final MusicaService musicaService;
     private final ArtistaService artistaService;
     private final AlbumService albumService;
+    private final br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService;
 
-    public UsuarioController(UsuarioService service, MusicaService musicaService, ArtistaService artistaService, AlbumService albumService) {
+    public UsuarioController(UsuarioService service, MusicaService musicaService, ArtistaService artistaService, AlbumService albumService, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
         this.service = service;
         this.musicaService = musicaService;
         this.artistaService = artistaService;
         this.albumService = albumService;
+        this.comunidadeService = comunidadeService;
     }
 
     public void registrarRotas(Javalin app) {
@@ -107,10 +109,18 @@ public final class UsuarioController {
         List<Musica> musicas = musicaService.findByUsuarioId(id);
         List<br.ufpb.dcx.projetos.artista.models.Artista> artistas = artistaService.listar("", id);
         List<br.ufpb.dcx.projetos.album.models.Album> albums = albumService.findAll(id);
+        
+        String logadoId = (String) ctx.sessionAttribute("usuarioLogadoId");
+        List<br.ufpb.dcx.projetos.comunidade.views.PostViewDTO> userPosts = comunidadeService.listarFeed(logadoId, id);
 
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("usuarioLogadoId", logadoId);
+        modelo.put("perfilId", id);
         modelo.put("perfilNome", usuario.getNome());
+        
+        modelo.put("userPosts", userPosts);
+        modelo.put("semPosts", userPosts.isEmpty());
         
         modelo.put("musicas", musicas);
         modelo.put("semMusicas", musicas.isEmpty());

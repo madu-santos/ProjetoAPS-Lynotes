@@ -108,4 +108,18 @@ public class UsuarioService {
         }
         repository.remover(id);
     }
+
+    public void atualizarPerfil(String id, String nome, String bio) {
+        if (Objects.isNull(nome) || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome é obrigatório.");
+        }
+        Optional<Usuario> usuarioOpt = repository.buscarPorId(id);
+        if (usuarioOpt.isEmpty()) {
+            throw new IllegalArgumentException("Usuário não encontrado.");
+        }
+        Usuario usuario = usuarioOpt.get();
+        usuario.setNome(nome.trim());
+        usuario.setBio(bio != null ? bio.trim() : "");
+        repository.salvar(usuario);
+    }
 }

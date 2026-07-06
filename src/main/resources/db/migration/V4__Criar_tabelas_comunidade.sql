@@ -1,0 +1,26 @@
+CREATE TABLE post (
+    id VARCHAR(36) PRIMARY KEY,
+    usuario_id VARCHAR(36) NOT NULL,
+    conteudo VARCHAR(500) NOT NULL,
+    data_criacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+);
+
+CREATE TABLE post_estrela (
+    post_id VARCHAR(36) NOT NULL,
+    usuario_id VARCHAR(36) NOT NULL,
+    data_criacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (post_id, usuario_id),
+    FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+);
+
+CREATE TABLE comentario (
+    id VARCHAR(36) PRIMARY KEY,
+    post_id VARCHAR(36) NOT NULL,
+    usuario_id VARCHAR(36) NOT NULL,
+    conteudo VARCHAR(500) NOT NULL,
+    data_criacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
+);

@@ -95,6 +95,7 @@ public final class App {
         br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, connectionFactory);
         MusicaModule.registrar(app, connectionFactory);
         br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, connectionFactory);
+        br.ufpb.dcx.projetos.comunidade.ComunidadeModule.registrar(app, connectionFactory);
 
         // Registrar UsuarioController explicitamente se não estiver em nenhum módulo
         var musicaRepo = new br.ufpb.dcx.projetos.musica.repositories.MusicaDbRepository(connectionFactory);
@@ -103,7 +104,10 @@ public final class App {
         var artistaRepo = new br.ufpb.dcx.projetos.artista.repositories.ArtistaDbRepository(connectionFactory);
         var artistaService = new br.ufpb.dcx.projetos.artista.services.ArtistaService(artistaRepo, new br.ufpb.dcx.projetos.artista.services.ArtistaValidator());
         var albumService = new br.ufpb.dcx.projetos.album.services.AlbumService(albumRepo);
-        new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service, musicaService, artistaService, albumService).registrarRotas(app);
+        var comunidadeRepo = new br.ufpb.dcx.projetos.comunidade.repositories.ComunidadeDbRepository(connectionFactory);
+        var comunidadeService = new br.ufpb.dcx.projetos.comunidade.services.ComunidadeService(comunidadeRepo);
+        
+        new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service, musicaService, artistaService, albumService, comunidadeService).registrarRotas(app);
 
         registrarLogHttp(app);
         GlobalHttpExceptionHandler.registrar(app);
