@@ -31,7 +31,7 @@ class LoginControllerTest {
         service = new UsuarioService(repo, new PlaintextHashingStrategy());
         
         // Cadastra um usuário padrão para testes de login
-        repo.salvar(new Usuario("Admin User", "admin@email.com", "senha123"));
+        repo.salvar(new Usuario("Admin User", "admin", "admin@email.com", "senha123"));
     }
 
     @Test
@@ -45,13 +45,13 @@ class LoginControllerTest {
     }
 
     @Test
-    void deveAutenticarComSucessoRedirecionar() {
+    void deveAutenticarComUsernameSucessoRedirecionar() {
         JavalinTest.test(criarApp(), (server, client) -> {
             OkHttpClient http = new OkHttpClient.Builder()
                     .followRedirects(false)
                     .build();
             FormBody body = new FormBody.Builder()
-                    .add("usuario", "admin@email.com")
+                    .add("usuario", "admin")
                     .add("senha", "senha123")
                     .build();
             Request request = new Request.Builder()
@@ -146,8 +146,27 @@ class LoginControllerTest {
         }
 
         @Override
+        public Optional<Usuario> buscarPorUsername(String username) {
+            return usuarios.values().stream()
+                    .filter(u -> u.getUsername() != null && u.getUsername().equalsIgnoreCase(username.trim()))
+                    .findFirst();
+        }
+
+        @Override
         public List<Usuario> listarTodos() {
             return new ArrayList<>(usuarios.values());
+        }
+
+        @Override
+        public List<Usuario> buscar(String termo) {
+            if (termo == null || termo.trim().isEmpty()) {
+                return listarTodos();
+            }
+            return usuarios.values().stream()
+                    .filter(u -> (u.getNome() != null && u.getNome().toLowerCase().contains(termo.toLowerCase().trim()))
+                            || (u.getEmail() != null && u.getEmail().toLowerCase().contains(termo.toLowerCase().trim()))
+                            || (u.getUsername() != null && u.getUsername().toLowerCase().contains(termo.toLowerCase().trim())))
+                    .toList();
         }
 
         @Override

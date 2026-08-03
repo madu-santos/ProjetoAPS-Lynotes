@@ -70,17 +70,19 @@ public class UsuarioDbRepository implements UsuarioRepository {
     public void salvar(Usuario usuario) {
         // Usamos a lógica de "Upsert" do PostgreSQL: tenta inserir,
         // se o ID já existir, atualiza os campos correspondentes.
-        String sql = "INSERT INTO usuario (id, nome, email, senha, tipo, bio) VALUES (?, ?, ?, ?, ?, ?) " +
-                     "ON CONFLICT (id) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, senha = EXCLUDED.senha, tipo = EXCLUDED.tipo, bio = EXCLUDED.bio;";
+        String sql = "INSERT INTO usuario (id, nome, username, email, senha, tipo, bio, foto_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+                     "ON CONFLICT (id) DO UPDATE SET nome = EXCLUDED.nome, username = EXCLUDED.username, email = EXCLUDED.email, senha = EXCLUDED.senha, tipo = EXCLUDED.tipo, bio = EXCLUDED.bio, foto_url = EXCLUDED.foto_url;";
 
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, usuario.getId());
             ps.setString(2, usuario.getNome());
-            ps.setString(3, usuario.getEmail());
-            ps.setString(4, usuario.getSenha());
-            ps.setString(5, usuario.getTipo() != null ? usuario.getTipo() : "COMUM");
-            ps.setString(6, usuario.getBio());
+            ps.setString(3, usuario.getUsername());
+            ps.setString(4, usuario.getEmail());
+            ps.setString(5, usuario.getSenha());
+            ps.setString(6, usuario.getTipo() != null ? usuario.getTipo() : "COMUM");
+            ps.setString(7, usuario.getBio());
+            ps.setString(8, usuario.getFotoUrl());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar usuário no banco: " + e.getMessage(), e);
@@ -89,7 +91,7 @@ public class UsuarioDbRepository implements UsuarioRepository {
 
     @Override
     public Optional<Usuario> buscarPorId(String id) {
-        String sql = "SELECT id, nome, email, senha, tipo, bio FROM usuario WHERE id = ?;";
+        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE id = ?;";
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
@@ -98,10 +100,12 @@ public class UsuarioDbRepository implements UsuarioRepository {
                     Usuario u = new Usuario(
                             rs.getString("id"),
                             rs.getString("nome"),
+                            rs.getString("username"),
                             rs.getString("email"),
                             rs.getString("senha"),
                             rs.getString("tipo"),
-                            rs.getString("bio")
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
                     );
                     return Optional.of(u);
                 }
@@ -114,7 +118,7 @@ public class UsuarioDbRepository implements UsuarioRepository {
 
     @Override
     public Optional<Usuario> buscarPorEmail(String email) {
-        String sql = "SELECT id, nome, email, senha, tipo, bio FROM usuario WHERE email = ?;";
+        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE email = ?;";
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
@@ -123,10 +127,12 @@ public class UsuarioDbRepository implements UsuarioRepository {
                     Usuario u = new Usuario(
                             rs.getString("id"),
                             rs.getString("nome"),
+                            rs.getString("username"),
                             rs.getString("email"),
                             rs.getString("senha"),
                             rs.getString("tipo"),
-                            rs.getString("bio")
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
                     );
                     return Optional.of(u);
                 }
@@ -138,9 +144,36 @@ public class UsuarioDbRepository implements UsuarioRepository {
     }
 
     @Override
+    public Optional<Usuario> buscarPorUsername(String username) {
+        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE username = ?;";
+        try (Connection conn = obterConexao();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Usuario u = new Usuario(
+                            rs.getString("id"),
+                            rs.getString("nome"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("senha"),
+                            rs.getString("tipo"),
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
+                    );
+                    return Optional.of(u);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar usuário por username: " + e.getMessage(), e);
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public List<Usuario> listarTodos() {
         List<Usuario> lista = new ArrayList<>();
-        String sql = "SELECT id, nome, email, senha, tipo, bio FROM usuario;";
+        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario;";
         try (Connection conn = obterConexao();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -148,10 +181,12 @@ public class UsuarioDbRepository implements UsuarioRepository {
                 Usuario u = new Usuario(
                         rs.getString("id"),
                         rs.getString("nome"),
+                        rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("senha"),
                         rs.getString("tipo"),
-                        rs.getString("bio")
+                        rs.getString("bio"),
+                        rs.getString("foto_url")
                 );
                 lista.add(u);
             }
@@ -167,21 +202,24 @@ public class UsuarioDbRepository implements UsuarioRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return lista;
         }
-        String sql = "SELECT id, nome, email, senha, tipo, bio FROM usuario WHERE nome ILIKE ? OR email ILIKE ?;";
+        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE nome ILIKE ? OR email ILIKE ? OR username ILIKE ?;";
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             String wildcard = "%" + termo.trim() + "%";
             ps.setString(1, wildcard);
             ps.setString(2, wildcard);
+            ps.setString(3, wildcard);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Usuario u = new Usuario(
                             rs.getString("id"),
                             rs.getString("nome"),
+                            rs.getString("username"),
                             rs.getString("email"),
                             rs.getString("senha"),
                             rs.getString("tipo"),
-                            rs.getString("bio")
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
                     );
                     lista.add(u);
                 }

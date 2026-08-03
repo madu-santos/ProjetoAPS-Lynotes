@@ -25,15 +25,18 @@
                 <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
                 
                 <!-- Post Principal -->
-                <div class="card shadow-sm mb-4 border-primary">
+                <div class="card community-post-card shadow-sm mb-4 border-primary">
                     <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div>
-                                <a th:href="@{'/usuarios/' + ${post.usuarioId}}" class="text-decoration-none fw-bold text-dark fs-4" th:text="${post.usuarioNome}"></a>
-                                <div class="text-muted small" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3" th:text="${#strings.substring(post.usuarioNome, 0, 1).toUpperCase()}">U</div>
+                                <div>
+                                    <a th:href="@{'/usuarios/' + ${post.usuarioId}}" class="text-decoration-none fw-bold post-user-link fs-4" th:text="${post.usuarioNome}"></a>
+                                    <div class="text-muted small" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
+                                </div>
                             </div>
                             <div class="d-flex gap-1" th:if="${usuarioLogadoId == post.usuarioId}">
-                                <button class="btn btn-sm btn-outline-secondary border-0" type="button" data-bs-toggle="collapse" th:data-bs-target="'#editPost' + ${post.id}" title="Editar post">
+                                <button class="btn btn-sm btn-outline-secondary border-0 text-white" type="button" data-bs-toggle="collapse" th:data-bs-target="'#editPost' + ${post.id}" title="Editar post">
                                     ✏️
                                 </button>
                                 <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirm('Tem certeza que deseja excluir este post?');">
@@ -43,14 +46,14 @@
                                 </form>
                             </div>
                         </div>
-                        <p class="card-text mb-4 fs-5 text-break" style="white-space: pre-wrap;" th:text="${post.conteudo}"></p>
+                        <p class="card-text mb-4 fs-5 text-break" style="white-space: pre-wrap; color: #e1e1e1;" th:text="${post.conteudo}"></p>
                         
                         <div class="collapse mb-4" th:id="'editPost' + ${post.id}">
-                            <div class="card card-body bg-light">
+                            <div class="card card-body bg-dark border-secondary">
                                 <form th:action="@{'/comunidade/post/' + ${post.id} + '/editar'}" method="post" hx-boost="false">
-                                    <textarea class="form-control mb-2" name="conteudo" rows="3" required maxlength="500" th:text="${post.conteudo}"></textarea>
+                                    <textarea class="form-control post-textarea mb-2" name="conteudo" rows="3" required maxlength="500" th:text="${post.conteudo}"></textarea>
                                     <div class="d-flex justify-content-end gap-2">
-                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="collapse" th:data-bs-target="'#editPost' + ${post.id}">Cancelar</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" th:data-bs-target="'#editPost' + ${post.id}">Cancelar</button>
                                         <button type="submit" class="btn btn-sm btn-primary">Salvar</button>
                                     </div>
                                 </form>
@@ -72,11 +75,11 @@
                 </div>
                 
                 <!-- Formulário de Comentário -->
-                <div class="card shadow-sm mb-5 bg-light">
+                <div class="card shadow-sm mb-5 bg-dark border-secondary">
                     <div class="card-body">
                         <form th:action="@{'/comunidade/post/' + ${post.id} + '/comentar'}" method="post" hx-boost="false">
                             <div class="mb-3">
-                                <textarea class="form-control" name="conteudo" rows="2" placeholder="Escreva seu comentário..." required maxlength="500"></textarea>
+                                <textarea class="form-control post-textarea" name="conteudo" rows="2" placeholder="Escreva seu comentário..." required maxlength="500"></textarea>
                             </div>
                             <div class="d-flex justify-content-end">
                                 <button type="submit" class="btn btn-primary btn-sm px-4">Comentar</button>
@@ -92,12 +95,15 @@
                     Seja o primeiro a comentar neste post!
                 </div>
                 
-                <div class="card shadow-sm mb-3" th:each="comentario : ${comentarios}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <a th:href="@{'/usuarios/' + ${comentario.usuarioId}}" class="text-decoration-none fw-bold text-dark" th:text="${comentario.usuarioNome}"></a>
-                                <span class="text-muted small ms-2" th:text="${#temporals.format(comentario.dataCriacao, 'dd/MM/yyyy HH:mm')}"></span>
+                <div class="card community-post-card shadow-sm mb-3" th:each="comentario : ${comentarios}">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3" style="width: 38px; height: 38px; font-size: 1rem;" th:text="${#strings.substring(comentario.usuarioNome, 0, 1).toUpperCase()}">U</div>
+                                <div>
+                                    <a th:href="@{'/usuarios/' + ${comentario.usuarioId}}" class="text-decoration-none fw-bold post-user-link" th:text="${comentario.usuarioNome}"></a>
+                                    <div class="text-muted small" th:text="${#temporals.format(comentario.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
+                                </div>
                             </div>
                             <div th:if="${usuarioLogadoId == comentario.usuarioId}">
                                 <form th:action="@{'/comunidade/comentario/' + ${comentario.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirm('Tem certeza que deseja excluir este comentário?');">
@@ -108,7 +114,7 @@
                                 </form>
                             </div>
                         </div>
-                        <p class="card-text mb-0 text-break" th:text="${comentario.conteudo}"></p>
+                        <p class="card-text mb-0 text-break" style="color: #e1e1e1;" th:text="${comentario.conteudo}"></p>
                     </div>
                 </div>
                 

@@ -2,13 +2,15 @@ package br.ufpb.dcx.projetos.login.dto;
 
 import java.util.Objects;
 
-public record UsuarioDTO(String nome, String email, String senha, String bio) {
+public record UsuarioDTO(String nome, String username, String email, String senha, String bio, String fotoUrl) {
     public UsuarioDTO normalizado() {
         return new UsuarioDTO(
                 Objects.toString(nome, "").trim(),
+                Objects.toString(username, "").trim(),
                 Objects.toString(email, "").trim(),
                 Objects.toString(senha, ""),
-                Objects.toString(bio, "").trim()
+                Objects.toString(bio, "").trim(),
+                Objects.toString(fotoUrl, "").trim()
         );
     }
 
@@ -32,6 +34,9 @@ public record UsuarioDTO(String nome, String email, String senha, String bio) {
     private void validarCamposBasicos() {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome é obrigatório.");
+        }
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username é obrigatório.");
         }
         if (email == null || email.trim().isEmpty()) {
             throw new IllegalArgumentException("E-mail é obrigatório.");

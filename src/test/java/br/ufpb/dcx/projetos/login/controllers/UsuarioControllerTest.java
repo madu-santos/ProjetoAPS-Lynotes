@@ -43,7 +43,7 @@ class UsuarioControllerTest {
 
     @Test
     void deveExibirListagemDeUsuarios() {
-        repo.salvar(new Usuario("Admin", "admin@email.com", "senha123"));
+        repo.salvar(new Usuario("Admin", "admin", "admin@email.com", "senha123"));
 
         JavalinTest.test(criarApp(), (server, client) -> {
             try (var resposta = client.get("/usuarios")) {
@@ -63,6 +63,7 @@ class UsuarioControllerTest {
                     .build();
             FormBody body = new FormBody.Builder()
                     .add("nome", "Maria Eduarda")
+                    .add("username", "madu")
                     .add("email", "madu@email.com")
                     .add("senha", "senha123")
                     .build();
@@ -86,6 +87,7 @@ class UsuarioControllerTest {
                     .build();
             FormBody body = new FormBody.Builder()
                     .add("nome", "")
+                    .add("username", "madu")
                     .add("email", "madu@email.com")
                     .add("senha", "123")
                     .build();
@@ -103,7 +105,7 @@ class UsuarioControllerTest {
 
     @Test
     void deveBloquearExclusaoNaoAutenticada() {
-        Usuario usuario = new Usuario("Teste", "teste@email.com", "senha123");
+        Usuario usuario = new Usuario("Teste", "teste", "teste@email.com", "senha123");
         repo.salvar(usuario);
 
         JavalinTest.test(criarApp(), (server, client) -> {
@@ -124,7 +126,7 @@ class UsuarioControllerTest {
 
     @Test
     void deveExibirPerfilPublicoDoUsuario() {
-        Usuario usuario = new Usuario("Maria", "maria@email.com", "senha123");
+        Usuario usuario = new Usuario("Maria", "maria", "maria@email.com", "senha123");
         repo.salvar(usuario);
 
         br.ufpb.dcx.projetos.musica.repositories.MusicaRepository mockMusicaRepo = new br.ufpb.dcx.projetos.musica.repositories.MusicaRepository() {
@@ -212,8 +214,27 @@ class UsuarioControllerTest {
         }
 
         @Override
+        public Optional<Usuario> buscarPorUsername(String username) {
+            return usuarios.values().stream()
+                    .filter(u -> u.getUsername() != null && u.getUsername().equalsIgnoreCase(username.trim()))
+                    .findFirst();
+        }
+
+        @Override
         public List<Usuario> listarTodos() {
             return new ArrayList<>(usuarios.values());
+        }
+
+        @Override
+        public List<Usuario> buscar(String termo) {
+            if (termo == null || termo.trim().isEmpty()) {
+                return listarTodos();
+            }
+            return usuarios.values().stream()
+                    .filter(u -> (u.getNome() != null && u.getNome().toLowerCase().contains(termo.toLowerCase().trim()))
+                            || (u.getEmail() != null && u.getEmail().toLowerCase().contains(termo.toLowerCase().trim()))
+                            || (u.getUsername() != null && u.getUsername().toLowerCase().contains(termo.toLowerCase().trim())))
+                    .toList();
         }
 
         @Override

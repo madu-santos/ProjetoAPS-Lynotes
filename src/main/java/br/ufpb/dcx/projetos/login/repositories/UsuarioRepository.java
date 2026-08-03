@@ -21,6 +21,9 @@ public interface UsuarioRepository {
     // Busca um usuário pelo email (essencial para a tela de login)
     Optional<Usuario> buscarPorEmail(String email);
 
+    // Busca um usuário pelo username
+    Optional<Usuario> buscarPorUsername(String username);
+
     // Retorna a lista completa de usuários cadastrados
     List<Usuario> listarTodos();
 

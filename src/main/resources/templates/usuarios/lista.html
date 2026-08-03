@@ -42,7 +42,10 @@
                             <div class="rounded-circle bg-purple p-3 me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                                 <span class="fw-bold fs-4" th:text="${#strings.substring(usuario.nome, 0, 1).toUpperCase()}">U</span>
                             </div>
-                            <h5 class="card-title mb-0 text-truncate" th:text="${usuario.nome}">Nome do Usuário</h5>
+                            <h5 class="card-title mb-0 text-truncate">
+                                <span th:text="${usuario.nome}">Nome do Usuário</span>
+                                <span class="text-secondary small d-block">@<span th:text="${usuario.username}">username</span></span>
+                            </h5>
                         </div>
 
                         <p class="card-text text-secondary small mb-4 flex-grow-1">

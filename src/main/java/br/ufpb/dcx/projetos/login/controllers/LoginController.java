@@ -37,11 +37,13 @@ public class LoginController {
     }
 
     private void autenticar(Context ctx) {
-        String email = ctx.formParam("usuario");
+        String identificador = ctx.formParam("usuario");
         String senha = ctx.formParam("senha");
 
-        if (service.verificarCredenciais(email, senha)) {
-            br.ufpb.dcx.projetos.login.models.Usuario usuario = service.buscarPorEmail(email).orElseThrow();
+        if (service.verificarCredenciais(identificador, senha)) {
+            br.ufpb.dcx.projetos.login.models.Usuario usuario = service.buscarPorEmail(identificador)
+                    .or(() -> service.buscarPorUsername(identificador))
+                    .orElseThrow();
             ctx.sessionAttribute(ATRIBUTO_USUARIO_SESSAO, usuario.getNome());
             ctx.sessionAttribute("usuarioLogadoId", usuario.getId());
             ctx.sessionAttribute("usuarioLogadoTipo", usuario.getTipo());
@@ -51,7 +53,7 @@ public class LoginController {
 
         ctx.status(401).render("login", Map.of(
                 "erro", "Usuário ou senha inválidos.",
-                "usuarioInformado", Objects.toString(email, "")
+                "usuarioInformado", Objects.toString(identificador, "")
         ));
     }
 

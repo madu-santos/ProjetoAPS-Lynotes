@@ -43,10 +43,21 @@ public class UsuarioService {
             throw new IllegalArgumentException("Formato de e-mail inválido.");
         }
 
+        // 2b. Validação do Username (Presença)
+        if (Objects.isNull(usuario.getUsername()) || usuario.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username é obrigatório e não pode ser vazio.");
+        }
+
         // 3. Validação de E-mail Duplicado (Regra de Negócio Crucial)
         Optional<Usuario> existente = repository.buscarPorEmail(usuario.getEmail().trim());
         if (existente.isPresent() && !existente.get().getId().equals(usuario.getId())) {
             throw new IllegalArgumentException("Já existe um usuário cadastrado com este e-mail.");
+        }
+
+        // 3b. Validação de Username Duplicado
+        Optional<Usuario> existenteUsername = repository.buscarPorUsername(usuario.getUsername().trim());
+        if (existenteUsername.isPresent() && !existenteUsername.get().getId().equals(usuario.getId())) {
+            throw new IllegalArgumentException("Já existe um usuário cadastrado com este username.");
         }
 
         // 4. Validação do tamanho da senha (mínimo de 6 caracteres)
@@ -57,26 +68,33 @@ public class UsuarioService {
             throw new IllegalArgumentException("A senha deve conter no mínimo 6 caracteres.");
         }
 
-        // Limpa espaços em branco extras do e-mail antes de salvar
+        // Limpa espaços em branco extras do e-mail e username antes de salvar
         usuario.setEmail(usuario.getEmail().trim());
+        usuario.setUsername(usuario.getUsername().trim());
 
-        // Criptografa a senha usando a estratégia ativa
-        String senhaHashed = hashingStrategy.hash(usuario.getSenha());
-        usuario.setSenha(senhaHashed);
+        // Criptografa a senha usando a estratégia ativa se não for um hash existente
+        boolean jaEhHash = usuario.getSenha().startsWith("$2a$") || usuario.getSenha().startsWith("$2y$") || usuario.getSenha().startsWith("$2b$");
+        if (!jaEhHash) {
+            String senhaHashed = hashingStrategy.hash(usuario.getSenha());
+            usuario.setSenha(senhaHashed);
+        }
 
         // Se todas as regras passarem, solicita a gravação ao repositório
         repository.salvar(usuario);
     }
 
     /**
-     * Valida as credenciais de e-mail e senha de um usuário no sistema.
+     * Valida as credenciais de e-mail/username e senha de um usuário no sistema.
      * Utiliza a estratégia ativa para descriptografar/verificar o hash.
      */
-    public boolean verificarCredenciais(String email, String senha) {
-        if (email == null || senha == null || email.trim().isEmpty() || senha.trim().isEmpty()) {
+    public boolean verificarCredenciais(String identificador, String senha) {
+        if (identificador == null || senha == null || identificador.trim().isEmpty() || senha.trim().isEmpty()) {
             return false;
         }
-        Optional<Usuario> usuarioOpt = repository.buscarPorEmail(email.trim());
+        Optional<Usuario> usuarioOpt = repository.buscarPorEmail(identificador.trim());
+        if (usuarioOpt.isEmpty()) {
+            usuarioOpt = repository.buscarPorUsername(identificador.trim());
+        }
         if (usuarioOpt.isEmpty()) {
             return false;
         }
@@ -96,6 +114,13 @@ public class UsuarioService {
             return Optional.empty();
         }
         return repository.buscarPorEmail(email.trim());
+    }
+
+    public Optional<Usuario> buscarPorUsername(String username) {
+        if (Objects.isNull(username) || username.trim().isEmpty()) {
+            return Optional.empty();
+        }
+        return repository.buscarPorUsername(username.trim());
     }
 
     public List<Usuario> listarTodos() {

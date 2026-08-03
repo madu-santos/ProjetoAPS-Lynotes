@@ -16,13 +16,24 @@
 
     <main class="container py-5">
         <div class="mb-5 d-flex justify-content-between align-items-center">
-            <div>
-                <a class="text-decoration-none" href="/usuarios">&larr; Voltar para usuários</a>
-                <h1 class="fw-bold mt-2" th:text="'Catálogo de ' + ${perfilNome}"></h1>
-                <p class="text-muted mb-0">Confira as músicas catalogadas e as avaliações deste usuário.</p>
+            <div class="d-flex align-items-center gap-3">
+                <div class="profile-avatar-preview shadow-sm" style="width: 80px; height: 80px; font-size: 1.8rem; border-width: 2px;">
+                    <img th:if="${perfilFotoUrl != null and !perfilFotoUrl.isEmpty()}" 
+                         th:src="${perfilFotoUrl}" 
+                         class="w-100 h-100 rounded-circle object-fit-cover">
+                    <span th:if="${perfilFotoUrl == null or perfilFotoUrl.isEmpty()}" th:text="${#strings.substring(perfilNome, 0, 1).toUpperCase()}">U</span>
+                </div>
+                <div>
+                    <a class="text-decoration-none" href="/usuarios">&larr; Voltar para usuários</a>
+                    <h1 class="fw-bold mt-2 mb-1">
+                        <span th:text="'Catálogo de ' + ${perfilNome}"></span>
+                        <span class="text-secondary fs-4">(@<span th:text="${perfilUsername}">username</span>)</span>
+                    </h1>
+                    <p class="text-muted mb-0">Confira as músicas catalogadas e as avaliações deste usuário.</p>
+                </div>
             </div>
             <div th:if="${usuarioLogadoId != null and usuarioLogadoId == perfilId}">
-                <a th:href="@{'/usuarios/' + ${perfilId} + '/editar'}" class="btn btn-outline-primary">✏️ Editar Perfil</a>
+                <a href="/usuarios/me" class="btn btn-outline-primary">✏️ Editar Perfil</a>
             </div>
         </div>
 

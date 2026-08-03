@@ -39,6 +39,10 @@ public final class UsuarioController {
         app.get("/usuarios", this::listar, Role.USER);
         app.get("/usuarios/novo", this::exibirCadastro, Role.ANYONE);
         app.post("/usuarios", this::cadastrar, Role.ANYONE);
+        app.get("/usuarios/me", this::exibirMeuPerfil, Role.USER);
+        app.post("/usuarios/me", this::salvarMeuPerfil, Role.USER);
+        app.get("/usuarios/me/check-username", this::verificarDisponibilidadeUsernameEndpoint, Role.USER);
+        app.post("/usuarios/me/excluir", this::excluirMinhaConta, Role.USER);
         app.get("/usuarios/{id}", this::exibirPerfilPublico, Role.USER);
         app.get("/usuarios/{id}/editar", this::exibirEdicao, Role.USER);
         app.post("/usuarios/{id}", this::atualizar, Role.USER);
@@ -65,6 +69,7 @@ public final class UsuarioController {
         modelo.put("edicao", false);
         modelo.put("acao", "/usuarios");
         modelo.put("nome", "");
+        modelo.put("username", "");
         modelo.put("email", "");
         modelo.put("bio", "");
         ctx.render("usuarios/formulario", modelo);
@@ -73,14 +78,16 @@ public final class UsuarioController {
     private void cadastrar(Context ctx) {
         UsuarioDTO dto = new UsuarioDTO(
                 ctx.formParam("nome"),
+                ctx.formParam("username"),
                 ctx.formParam("email"),
                 ctx.formParam("senha"),
-                ctx.formParam("bio")
+                ctx.formParam("bio"),
+                null
         ).normalizado();
 
         try {
             dto.validarParaCriacao();
-            Usuario usuario = new Usuario(dto.nome(), dto.email(), dto.senha());
+            Usuario usuario = new Usuario(dto.nome(), dto.username(), dto.email(), dto.senha());
             usuario.setBio(dto.bio());
             service.cadastrarUsuario(usuario);
             if (ctx.sessionAttribute("usuarioLogado") != null) {
@@ -94,6 +101,7 @@ public final class UsuarioController {
             modelo.put("edicao", false);
             modelo.put("acao", "/usuarios");
             modelo.put("nome", dto.nome());
+            modelo.put("username", dto.username());
             modelo.put("email", dto.email());
             modelo.put("bio", dto.bio());
             modelo.put("erro", e.getMessage());
@@ -124,6 +132,8 @@ public final class UsuarioController {
         modelo.put("usuarioLogadoId", logadoId);
         modelo.put("perfilId", id);
         modelo.put("perfilNome", usuario.getNome());
+        modelo.put("perfilUsername", usuario.getUsername());
+        modelo.put("perfilFotoUrl", usuario.getFotoUrl() != null ? usuario.getFotoUrl() : "");
         
         modelo.put("userPosts", userPosts);
         modelo.put("semPosts", userPosts.isEmpty());
@@ -167,6 +177,7 @@ public final class UsuarioController {
         modelo.put("edicao", true);
         modelo.put("acao", "/usuarios/" + id);
         modelo.put("nome", usuario.getNome());
+        modelo.put("username", usuario.getUsername());
         modelo.put("email", usuario.getEmail());
         modelo.put("bio", usuario.getBio());
         ctx.render("usuarios/formulario", modelo);
@@ -185,9 +196,11 @@ public final class UsuarioController {
 
         UsuarioDTO dto = new UsuarioDTO(
                 ctx.formParam("nome"),
+                ctx.formParam("username"),
                 ctx.formParam("email"),
                 ctx.formParam("senha"),
-                ctx.formParam("bio")
+                ctx.formParam("bio"),
+                null
         ).normalizado();
 
         try {
@@ -202,7 +215,7 @@ public final class UsuarioController {
             Usuario usuarioAntigo = usuarioOpt.get();
             String senhaFinal = (dto.senha() == null || dto.senha().trim().isEmpty()) ? usuarioAntigo.getSenha() : dto.senha();
 
-            Usuario usuarioAtualizado = new Usuario(id, dto.nome(), dto.email(), senhaFinal, usuarioAntigo.getTipo(), dto.bio());
+            Usuario usuarioAtualizado = new Usuario(id, dto.nome(), dto.username(), dto.email(), senhaFinal, usuarioAntigo.getTipo(), dto.bio(), usuarioAntigo.getFotoUrl());
 
             service.cadastrarUsuario(usuarioAtualizado);
             ctx.redirect("/usuarios");
@@ -212,6 +225,7 @@ public final class UsuarioController {
             modelo.put("edicao", true);
             modelo.put("acao", "/usuarios/" + id);
             modelo.put("nome", dto.nome());
+            modelo.put("username", dto.username());
             modelo.put("email", dto.email());
             modelo.put("bio", dto.bio());
             modelo.put("erro", e.getMessage());
@@ -233,5 +247,108 @@ public final class UsuarioController {
 
         ctx.req().getSession().invalidate();
         ctx.redirect("/login");
+    }
+
+    private void exibirMeuPerfil(Context ctx) {
+        String idLogado = ctx.sessionAttribute("usuarioLogadoId");
+        if (idLogado == null) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        Optional<Usuario> usuarioOpt = service.buscarPorId(idLogado);
+        if (usuarioOpt.isEmpty()) {
+            ctx.status(HttpStatus.NOT_FOUND).result("Usuário não encontrado");
+            return;
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("nome", usuario.getNome());
+        modelo.put("username", usuario.getUsername());
+        modelo.put("email", usuario.getEmail());
+        modelo.put("bio", usuario.getBio());
+        modelo.put("fotoUrl", usuario.getFotoUrl() != null ? usuario.getFotoUrl() : "");
+        modelo.put("sucesso", ctx.queryParam("sucesso") != null);
+        ctx.render("usuarios/me", modelo);
+    }
+
+    private void salvarMeuPerfil(Context ctx) {
+        String idLogado = ctx.sessionAttribute("usuarioLogadoId");
+        if (idLogado == null) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        UsuarioDTO dto = new UsuarioDTO(
+                ctx.formParam("nome"),
+                ctx.formParam("username"),
+                ctx.formParam("email"),
+                ctx.formParam("senha"),
+                ctx.formParam("bio"),
+                ctx.formParam("fotoUrl")
+        ).normalizado();
+
+        try {
+            dto.validarParaAtualizacao();
+
+            Optional<Usuario> usuarioOpt = service.buscarPorId(idLogado);
+            if (usuarioOpt.isEmpty()) {
+                ctx.status(HttpStatus.NOT_FOUND).result("Usuário não encontrado");
+                return;
+            }
+
+            Usuario usuarioAntigo = usuarioOpt.get();
+            String senhaFinal = (dto.senha() == null || dto.senha().trim().isEmpty()) ? usuarioAntigo.getSenha() : dto.senha();
+
+            Usuario usuarioAtualizado = new Usuario(idLogado, dto.nome(), dto.username(), dto.email(), senhaFinal, usuarioAntigo.getTipo(), dto.bio(), dto.fotoUrl());
+
+            service.cadastrarUsuario(usuarioAtualizado);
+
+            // Atualiza o nome logado na sessão caso tenha mudado
+            ctx.sessionAttribute("usuarioLogado", usuarioAtualizado.getNome());
+
+            ctx.redirect("/usuarios/me?sucesso=true");
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> modelo = new HashMap<>();
+            modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+            modelo.put("nome", dto.nome());
+            modelo.put("username", dto.username());
+            modelo.put("email", dto.email());
+            modelo.put("bio", dto.bio());
+            modelo.put("fotoUrl", dto.fotoUrl());
+            modelo.put("erro", e.getMessage());
+            ctx.status(HttpStatus.OK).render("usuarios/me", modelo);
+        }
+    }
+
+    private void verificarDisponibilidadeUsernameEndpoint(Context ctx) {
+        String username = ctx.queryParam("username");
+        String idLogado = ctx.sessionAttribute("usuarioLogadoId");
+
+        if (username == null || username.trim().isEmpty()) {
+            ctx.html("<span class='text-danger small'>Username inválido</span>");
+            return;
+        }
+
+        Optional<Usuario> existente = service.buscarPorUsername(username.trim());
+        if (existente.isEmpty() || existente.get().getId().equals(idLogado)) {
+            ctx.html("<span class='text-success small'>✓ Username disponível</span>");
+        } else {
+            ctx.html("<span class='text-danger small'>✗ Username já está em uso</span>");
+        }
+    }
+
+    private void excluirMinhaConta(Context ctx) {
+        String idLogado = ctx.sessionAttribute("usuarioLogadoId");
+        if (idLogado == null) {
+            ctx.redirect("/login");
+            return;
+        }
+
+        service.remover(idLogado);
+        ctx.req().getSession().invalidate();
+        ctx.redirect("/login?excluido=true");
     }
 }

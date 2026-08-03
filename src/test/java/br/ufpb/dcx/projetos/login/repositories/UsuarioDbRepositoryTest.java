@@ -44,7 +44,7 @@ public class UsuarioDbRepositoryTest {
     @Test
     public void testSalvarEBuscarUsuarioComSucesso() {
         // 1. Cria um novo usuário fictício
-        Usuario usuario = new Usuario("Maria Teste", "maria.teste@email.com", "hash_bcrypt_seguro");
+        Usuario usuario = new Usuario("Maria Teste", "mariateste", "maria.teste@email.com", "hash_bcrypt_seguro");
 
         // 2. Salva no banco de dados do Docker
         repo.salvar(usuario);

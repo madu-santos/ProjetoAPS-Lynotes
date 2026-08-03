@@ -33,8 +33,13 @@
 
                         <form method="post" action="/usuarios" hx-boost="false">
                             <div class="mb-3">
-                                <label class="form-label" for="nome">Nome completo</label>
+                                <label class="form-label" for="nome">Nome</label>
                                 <input class="form-control" id="nome" name="nome" th:value="${nome}" required autofocus placeholder="Seu nome">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="username">Username</label>
+                                <input class="form-control" id="username" name="username" th:value="${username}" required placeholder="ex: m4iz44">
                             </div>
 
                             <div class="mb-3">
@@ -52,6 +57,10 @@
 
                             <button class="btn btn-primary w-100 btn-lg mb-3" type="submit">Cadastrar</button>
                         </form>
+                        <div class="text-center mt-2 mb-3">
+                            <span class="text-secondary small">Já possui uma conta?</span>
+                            <a href="/login" hx-boost="false" class="text-purple small fw-bold ms-1">Entrar na conta</a>
+                        </div>
                         <div class="text-center">
                             <a href="/" hx-boost="false" class="text-purple small">← Voltar para a tela inicial</a>
                         </div>
@@ -76,7 +85,7 @@
 
                         <form method="post" th:action="${acao}" hx-boost="false">
                             <div class="mb-3">
-                                <label class="form-label" for="nome_admin">Nome completo</label>
+                                <label class="form-label" for="nome_admin">Nome</label>
                                 <input class="form-control"
                                        id="nome_admin"
                                        name="nome"
@@ -84,6 +93,16 @@
                                        th:value="${nome}"
                                        required
                                        autofocus>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="username_admin">Username</label>
+                                <input class="form-control"
+                                       id="username_admin"
+                                       name="username"
+                                       maxlength="100"
+                                       th:value="${username}"
+                                       required>
                             </div>
 
                             <div class="mb-3">
@@ -129,7 +148,7 @@
     </main>
     
 </div>
-<div th:insert="fragments/player :: player"></div>
-    <script src="/js/player.js" defer></script>
+<div th:insert="fragments/player :: player" th:if="${usuarioLogado != null}"></div>
+    <script src="/js/player.js" defer th:if="${usuarioLogado != null}"></script>
 </body>
 </html>
