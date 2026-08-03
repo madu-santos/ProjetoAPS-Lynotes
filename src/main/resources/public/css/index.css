@@ -777,3 +777,73 @@ thead th {
     font-size: 2.5rem;
     color: #000000;
 }
+
+/* Custom Premium Glassmorphic Navbar */
+.custom-navbar {
+    background: rgba(18, 18, 18, 0.85) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 0;
+    transition: all 0.3s ease;
+}
+
+.custom-navbar .navbar-brand {
+    font-size: 1.45rem;
+    letter-spacing: -0.5px;
+    position: relative;
+    font-weight: 800;
+}
+
+.custom-navbar .nav-link {
+    color: #b3b3b3 !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 6px 16px !important;
+    border-radius: 20px;
+    transition: all 0.25s ease;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.custom-navbar .nav-link.active {
+    color: #BB86FC !important;
+    background: rgba(187, 134, 252, 0.1);
+    font-weight: 600;
+}
+
+.navbar-profile-btn {
+    border-radius: 20px;
+    font-weight: 600;
+    padding: 6px 18px;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+    border: 1px solid #BB86FC;
+    color: #BB86FC !important;
+    background: transparent;
+}
+
+.navbar-profile-btn:hover {
+    background: #BB86FC;
+    color: #121212 !important;
+    box-shadow: 0 0 12px rgba(187, 134, 252, 0.4);
+}
+
+.navbar-logout-btn {
+    border-radius: 20px;
+    font-weight: 500;
+    padding: 6px 16px;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff !important;
+    background: transparent;
+}
+
+.navbar-logout-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+}
