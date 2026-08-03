@@ -12,9 +12,34 @@ import java.util.Optional;
 public class ComunidadeService {
 
     private final ComunidadeDbRepository repository;
+    private final List<ComunidadeObserver> observers = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     public ComunidadeService(ComunidadeDbRepository repository) {
         this.repository = repository;
+    }
+
+    public void registrarObserver(ComunidadeObserver observer) {
+        observers.add(observer);
+    }
+
+    private void notificarPostCriado(Post post) {
+        for (ComunidadeObserver obs : observers) {
+            try {
+                obs.onPostCriado(post);
+            } catch (Exception e) {
+                // Logar ou ignorar falha segura do observer
+            }
+        }
+    }
+
+    private void notificarComentarioCriado(Comentario comentario) {
+        for (ComunidadeObserver obs : observers) {
+            try {
+                obs.onComentarioCriado(comentario);
+            } catch (Exception e) {
+                // Logar ou ignorar falha segura do observer
+            }
+        }
     }
 
     public void criarPost(String usuarioId, String conteudo) {
@@ -29,6 +54,7 @@ public class ComunidadeService {
         }
         Post post = new Post(usuarioId, conteudo.trim());
         repository.salvarPost(post);
+        notificarPostCriado(post);
     }
 
     public void editarPost(String postId, String usuarioId, String novoConteudo) {
@@ -73,6 +99,7 @@ public class ComunidadeService {
         
         Comentario comentario = new Comentario(postId, usuarioId, conteudo.trim());
         repository.salvarComentario(comentario);
+        notificarComentarioCriado(comentario);
     }
 
     public void alternarEstrela(String postId, String usuarioId) {

@@ -11,6 +11,21 @@ public class ComunidadeModule {
     public static void registrar(Javalin app, ConnectionFactory factory, br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService) {
         var repo = new ComunidadeDbRepository(factory);
         var service = new ComunidadeService(repo);
+
+        service.registrarObserver(new br.ufpb.dcx.projetos.comunidade.services.ComunidadeObserver() {
+            private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("AuditoriaComunidade");
+
+            @Override
+            public void onPostCriado(br.ufpb.dcx.projetos.comunidade.models.Post post) {
+                LOGGER.info("AUDITORIA: Novo Post criado! id={} usuarioId={}", post.getId(), post.getUsuarioId());
+            }
+
+            @Override
+            public void onComentarioCriado(br.ufpb.dcx.projetos.comunidade.models.Comentario comentario) {
+                LOGGER.info("AUDITORIA: Novo Comentário adicionado! id={} no post={}", comentario.getId(), comentario.getPostId());
+            }
+        });
+
         var controller = new ComunidadeController(service, usuarioService);
         controller.registrarRotas(app);
     }

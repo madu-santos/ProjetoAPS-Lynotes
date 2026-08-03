@@ -85,7 +85,8 @@ public final class App {
             LOGGER.warn("Erro ao executar Flyway Migrations (provavelmente banco offline): {}", e.getMessage());
         }
 
-        var repo = new br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository(dbUrl, dbUser, dbPass);
+        var dbRepo = new br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository(dbUrl, dbUser, dbPass);
+        var repo = new br.ufpb.dcx.projetos.login.repositories.LoggingUsuarioRepositoryDecorator(dbRepo);
         var service = new br.ufpb.dcx.projetos.login.services.UsuarioService(repo, new br.ufpb.dcx.projetos.login.services.BCryptHashingStrategy());
 
         registrarAutenticacao(app, service);
