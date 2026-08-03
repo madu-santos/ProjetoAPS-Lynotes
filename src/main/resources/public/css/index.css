@@ -847,3 +847,95 @@ thead th {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.4);
 }
+
+/* Custom Music Card styling (balões) */
+.music-card {
+    background: #181818 !important;
+    border: 1px solid #282828 !important;
+    border-radius: 16px !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.music-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5) !important;
+    border-color: rgba(187, 134, 252, 0.3) !important;
+}
+
+/* Play button custom design */
+.music-card .btn-outline-success {
+    background-color: #1DB954 !important;
+    color: #121212 !important;
+    border: none !important;
+    font-weight: 700 !important;
+    border-radius: 20px !important;
+    padding: 6px 18px !important;
+    transition: all 0.2s ease !important;
+}
+
+.music-card .btn-outline-success:hover {
+    background-color: #1ed760 !important;
+    transform: scale(1.04);
+    box-shadow: 0 0 12px rgba(29, 185, 84, 0.4);
+}
+
+/* YouTube button custom design */
+.music-card .btn-outline-danger,
+.music-card .btn-danger {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+    color: #ff5c5c !important;
+    border: 1px solid rgba(220, 53, 69, 0.3) !important;
+    font-weight: 600 !important;
+    border-radius: 20px !important;
+    padding: 6px 16px !important;
+    transition: all 0.2s ease !important;
+}
+
+.music-card .btn-outline-danger:hover,
+.music-card .btn-danger:hover {
+    background-color: rgba(220, 53, 69, 0.25) !important;
+    border-color: #ff5c5c !important;
+    color: #ffffff !important;
+}
+
+/* Editar button custom design */
+.music-card .btn-outline-primary {
+    background-color: rgba(187, 134, 252, 0.1) !important;
+    color: #BB86FC !important;
+    border: 1px solid rgba(187, 134, 252, 0.3) !important;
+    font-weight: 600 !important;
+    border-radius: 20px !important;
+    padding: 6px 16px !important;
+    transition: all 0.2s ease !important;
+}
+
+.music-card .btn-outline-primary:hover {
+    background-color: rgba(187, 134, 252, 0.2) !important;
+    border-color: #BB86FC !important;
+    color: #ffffff !important;
+}
+
+/* Excluir button custom design */
+.music-card .btn-outline-danger:not([title="Abrir no YouTube"]), 
+.music-card button.btn-outline-danger {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+    color: #ff5c5c !important;
+    border: 1px solid rgba(220, 53, 69, 0.3) !important;
+    font-weight: 600 !important;
+    border-radius: 20px !important;
+    padding: 6px 16px !important;
+    transition: all 0.2s ease !important;
+}
+
+.music-card .btn-outline-danger:not([title="Abrir no YouTube"]):hover,
+.music-card button.btn-outline-danger:hover {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    border-color: #dc3545 !important;
+}
+
+/* Stars rating override */
+.music-card .stars-display {
+    letter-spacing: 2px;
+    font-size: 0.95rem;
+}
