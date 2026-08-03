@@ -15,5 +15,7 @@ public interface AlbumRepository {
 
     List<Album> listarTodos(String usuarioId);
 
+    List<Album> buscar(String termo, String usuarioId);
+
     boolean remover(String id, String usuarioId);
 }

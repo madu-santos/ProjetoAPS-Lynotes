@@ -33,9 +33,21 @@
             </form>
         </div>
 
+        <form class="premium-search-form" method="get" action="/playlists">
+            <input class="premium-search-input"
+                   name="busca"
+                   placeholder="Buscar playlists por nome..."
+                   th:value="${busca}">
+            <a th:if="${buscaAtiva}" class="premium-search-clear" href="/playlists">Limpar</a>
+            <button class="premium-search-btn" type="submit">Buscar</button>
+        </form>
+
         <div class="row g-3">
-            <div class="col-12" th:if="${#lists.isEmpty(playlists)}">
+            <div class="col-12" th:if="${#lists.isEmpty(playlists) and not buscaAtiva}">
                 <div class="alert alert-secondary">Nenhuma playlist cadastrada ainda.</div>
+            </div>
+            <div class="col-12" th:if="${#lists.isEmpty(playlists) and buscaAtiva}">
+                <div class="alert alert-info">Nenhuma playlist encontrada para o termo pesquisado.</div>
             </div>
             <div class="col-12 col-md-6" th:each="playlist : ${playlists}">
                 <div class="card shadow-sm h-100">

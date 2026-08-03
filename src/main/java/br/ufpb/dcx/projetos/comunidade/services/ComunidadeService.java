@@ -73,6 +73,11 @@ public class ComunidadeService {
         if (!post.getUsuarioId().equals(usuarioId)) {
             throw new IllegalArgumentException("Você não tem permissão para editar este post.");
         }
+
+        var comentarios = repository.listarComentarios(postId);
+        if (!comentarios.isEmpty()) {
+            throw new IllegalArgumentException("Não é permitido editar postagens que já possuem comentários.");
+        }
         
         Post postAtualizado = new Post(post.getId(), post.getUsuarioId(), novoConteudo.trim(), post.getDataCriacao());
         repository.salvarPost(postAtualizado);

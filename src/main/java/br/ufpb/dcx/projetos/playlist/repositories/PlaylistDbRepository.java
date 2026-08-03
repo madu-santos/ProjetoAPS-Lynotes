@@ -80,6 +80,29 @@ public final class PlaylistDbRepository implements PlaylistRepository {
     }
 
     @Override
+    public List<Playlist> buscar(String termo, String usuarioId) {
+        if (termo == null || termo.trim().isEmpty()) {
+            return findByUsuarioId(usuarioId);
+        }
+        String sql = "SELECT id, nome, usuario_id, oculta, criado_em FROM playlist WHERE nome ILIKE ? AND usuario_id = ? ORDER BY criado_em DESC";
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            String wildcard = "%" + termo.trim() + "%";
+            statement.setString(1, wildcard);
+            statement.setString(2, usuarioId);
+            try (ResultSet result = statement.executeQuery()) {
+                List<Playlist> playlists = new ArrayList<>();
+                while (result.next()) {
+                    playlists.add(mapPlaylist(result));
+                }
+                return playlists;
+            }
+        } catch (SQLException e) {
+            throw erroPersistencia("buscar playlists com filtro", e);
+        }
+    }
+
+    @Override
     public void update(Playlist playlist) {
         String sql = "UPDATE playlist SET nome = ?, oculta = ? WHERE id = ?";
         executarAtualizacao(sql, statement -> {

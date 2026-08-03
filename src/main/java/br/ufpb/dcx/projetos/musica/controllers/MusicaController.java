@@ -76,12 +76,15 @@ public final class MusicaController {
 
     public void listar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-        List<Musica> musicas = service.findByUsuarioId(usuarioId);
+        String busca = ctx.queryParam("busca");
+        List<Musica> musicas = service.search(busca, usuarioId);
 
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("musicas", musicas);
-        modelo.put("semMusicas", musicas.isEmpty());
+        modelo.put("semMusicas", musicas.isEmpty() && (busca == null || busca.trim().isEmpty()));
+        modelo.put("busca", busca != null ? busca : "");
+        modelo.put("buscaAtiva", busca != null && !busca.trim().isEmpty());
         ctx.render("musicas/lista", modelo);
     }
 

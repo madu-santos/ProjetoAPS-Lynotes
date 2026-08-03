@@ -24,13 +24,28 @@
         <div class="mb-5 pb-4">
             <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
                 <h3 class="fw-bold mb-0">Minhas Músicas (<span th:text="${musicas.size()}">0</span>)</h3>
-                <a class="btn btn-primary btn-sm px-3" href="/musicas/new">Adicionar Música</a>
+                <div class="d-flex align-items-center gap-3">
+                    <form class="discrete-search-form" method="get" action="/">
+                        <input class="discrete-search-input" name="busca" placeholder="Pesquisar no catálogo..." th:value="${busca}">
+                        <a th:if="${buscaAtiva}" class="discrete-search-clear text-decoration-none" href="/">✕</a>
+                        <button class="discrete-search-btn" type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                            </svg>
+                        </button>
+                    </form>
+                    <a class="btn btn-primary btn-sm px-3" href="/musicas/new">Adicionar Música</a>
+                </div>
             </div>
 
             <!-- Estado Vazio -->
             <div class="text-center py-5 card shadow-sm p-5" th:if="${semMusicas}">
-                <div class="mb-4">
-                    <span class="fs-1">🎵</span>
+                <div class="mb-4 text-purple">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-music-note-beamed" viewBox="0 0 16 16">
+                        <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13s1.12-2 2.5-2 2.5.895 2.5 2m9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2"/>
+                        <path fill-rule="evenodd" d="M14 11V2h1v9zM6 3v10H5V3z"/>
+                        <path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4z"/>
+                    </svg>
                 </div>
                 <h3 class="fw-bold mb-2">Sem músicas catalogadas</h3>
                 <p class="text-secondary mb-4">Comece a catalogar suas músicas favoritas, adicione notas e resenhas!</p>
@@ -40,41 +55,46 @@
             <!-- Grade de Músicas -->
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semMusicas}">
                 <div class="col" th:each="musica : ${musicas}">
-                    <div class="card h-100 shadow-sm music-card">
-                        <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h5 class="card-title fw-bold mb-1 text-white" th:text="${musica.titulo}"></h5>
-                                    <h6 class="text-purple small mb-0" th:text="${musica.artista}"></h6>
+                    <div class="card shadow-sm music-card py-2 px-1">
+                        <div class="card-body d-flex flex-column justify-content-between p-3" style="min-height: 190px;">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <div style="max-width: 80%;">
+                                        <h5 class="card-title fw-bold mb-0 text-white text-truncate" th:text="${musica.titulo}" th:title="${musica.titulo}"></h5>
+                                        <h6 class="text-purple small mb-1 text-truncate" th:text="${musica.artista}"></h6>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <span class="fs-5">⋮</span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                                            <li><a class="dropdown-item" th:href="${'/musicas/edit/' + musica.id}">Editar</a></li>
+                                            <li>
+                                                <form method="post" th:action="${'/musicas/delete/' + musica.id}" onsubmit="return confirm('Tem certeza que deseja excluir esta música?');">
+                                                    <button class="dropdown-item text-danger" type="submit">Excluir</button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <div class="stars-display mb-3 text-warning" th:if="${musica.nota != null}">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= musica.nota ? '★' : '☆'}"></span>
-                            </div>
-                            
-                            <p class="card-text text-secondary small flex-grow-1" th:text="${musica.resenha}"></p>
-                            
-                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
-                                <div th:if="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}" class="d-flex gap-1">
-                                    <button type="button" class="btn btn-outline-success btn-sm"
-                                            th:data-url="${musica.youtubeUrl}"
-                                            th:data-titulo="${musica.titulo}"
-                                            onclick="try { playerLoad(playerExtractVideoId(this.getAttribute('data-url')), this.getAttribute('data-titulo'), null); } catch(e) { alert(e.message); }">
-                                        ▶ Play
-                                    </button>
-                                    <a th:href="${musica.youtubeUrl}" target="_blank" class="btn btn-sm btn-outline-danger" title="Abrir no YouTube">
-                                        YouTube ↗
-                                    </a>
-                                </div>
-                                <span th:unless="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}"></span>
                                 
-                                <div class="d-flex gap-1">
-                                    <a class="btn btn-outline-primary btn-sm" th:href="${'/musicas/edit/' + musica.id}">Editar</a>
-                                    <form class="d-inline" method="post" th:action="${'/musicas/delete/' + musica.id}">
-                                        <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Tem certeza que deseja excluir esta música?')">Excluir</button>
-                                    </form>
+                                <div class="stars-display mb-2 text-warning" th:if="${musica.nota != null}">
+                                    <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= musica.nota ? '★' : '☆'}"></span>
                                 </div>
+                                
+                                <p class="card-text text-secondary small mb-3 text-truncate-2" th:text="${musica.resenha}"></p>
+                            </div>
+                            
+                            <div class="d-flex align-items-center gap-2 mt-2 pt-2 border-top border-secondary" th:if="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}">
+                                <button type="button" class="btn btn-outline-success btn-sm"
+                                        th:data-url="${musica.youtubeUrl}"
+                                        th:data-titulo="${musica.titulo}"
+                                        onclick="try { playerLoad(playerExtractVideoId(this.getAttribute('data-url')), this.getAttribute('data-titulo'), null); } catch(e) { alert(e.message); }">
+                                    ▶ Play
+                                </button>
+                                <a th:href="${musica.youtubeUrl}" target="_blank" class="btn btn-sm btn-outline-danger" title="Abrir no YouTube">
+                                    YouTube ↗
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -91,8 +111,11 @@
 
             <!-- Estado Vazio -->
             <div class="text-center py-5 card shadow-sm p-5" th:if="${semArtistas}">
-                <div class="mb-4">
-                    <span class="fs-1">🎤</span>
+                <div class="mb-4 text-purple">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
+                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+                        <path d="M5 4a3 3 0 0 1 6 0v4a3 3 0 0 1-6 0z"/>
+                    </svg>
                 </div>
                 <h3 class="fw-bold mb-2">Sem artistas no catálogo</h3>
                 <p class="text-secondary mb-4">Adicione os artistas que você acompanha!</p>
@@ -139,8 +162,11 @@
 
             <!-- Estado Vazio -->
             <div class="text-center py-5 card shadow-sm p-5" th:if="${semAlbums}">
-                <div class="mb-4">
-                    <span class="fs-1">💿</span>
+                <div class="mb-4 text-purple">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-disc" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8"/>
+                    </svg>
                 </div>
                 <h3 class="fw-bold mb-2">Sem álbuns catalogados</h3>
                 <p class="text-secondary mb-4">Adicione os álbuns mais marcantes da sua coleção!</p>

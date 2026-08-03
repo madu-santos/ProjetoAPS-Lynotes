@@ -42,11 +42,14 @@ public final class AlbumController {
     )
     public void listar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-        List<Album> albums = service.findAll(usuarioId);
+        String busca = ctx.queryParam("busca");
+        List<Album> albums = service.search(busca, usuarioId);
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("albums", albums);
-        modelo.put("semAlbums", albums.isEmpty());
+        modelo.put("semAlbums", albums.isEmpty() && (busca == null || busca.trim().isEmpty()));
+        modelo.put("busca", busca != null ? busca : "");
+        modelo.put("buscaAtiva", busca != null && !busca.trim().isEmpty());
         ctx.render("albums/lista", modelo);
     }
 

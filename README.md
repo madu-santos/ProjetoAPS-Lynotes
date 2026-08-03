@@ -4,9 +4,9 @@ Este repositório contém a entrega inicial do **Lynotes**, um painel administra
 
 ---
 
-### 🎥 Vídeo de Apresentação do Projeto
+### Vídeo de Apresentação do Projeto
 Assista à nossa apresentação no YouTube com a demonstração prática das funcionalidades, detalhes da arquitetura e decisões técnicas do projeto:
-👉 **[Acesse o Vídeo de Apresentação no YouTube](https://youtu.be/hnuIOO55QWY)**
+**[Acesse o Vídeo de Apresentação no YouTube](https://youtu.be/hnuIOO55QWY)**
 
 ---
 

@@ -179,6 +179,28 @@ public final class MusicaDbRepository implements MusicaRepository {
     }
 
     @Override
+    public List<Musica> buscar(String termo, String usuarioId) {
+        if (termo == null || termo.trim().isEmpty()) {
+            return buscarPorUsuarioId(usuarioId);
+        }
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE (titulo ILIKE ? OR artista ILIKE ? OR genero ILIKE ? OR resenha ILIKE ?) AND usuario_id = ?;";
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            String wildcard = "%" + termo.trim() + "%";
+            statement.setString(1, wildcard);
+            statement.setString(2, wildcard);
+            statement.setString(3, wildcard);
+            statement.setString(4, wildcard);
+            statement.setString(5, usuarioId);
+            try (ResultSet result = statement.executeQuery()) {
+                return mapearLista(result);
+            }
+        } catch (SQLException e) {
+            throw erroPersistencia("buscar músicas com filtro", e);
+        }
+    }
+
+    @Override
     public boolean remover(String id) {
         String sql = "DELETE FROM musica WHERE id = ?";
         return executarAtualizacao(sql, statement -> statement.setString(1, id)) == 1;

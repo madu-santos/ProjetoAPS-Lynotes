@@ -43,6 +43,10 @@ public class MusicaService {
         return musicaRepository.buscarPorUsuarioId(usuarioId);
     }
 
+    public List<Musica> search(String termo, String usuarioId) {
+        return musicaRepository.buscar(termo, usuarioId);
+    }
+
     public Optional<Musica> findById(String id) {
         return musicaRepository.buscarPorId(id);
     }

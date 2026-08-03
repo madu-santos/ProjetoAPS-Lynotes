@@ -19,5 +19,7 @@ public interface MusicaRepository {
 
     List<Musica> buscarPorUsuarioId(String usuarioId);
 
+    List<Musica> buscar(String termo, String usuarioId);
+
     boolean remover(String id);
 }

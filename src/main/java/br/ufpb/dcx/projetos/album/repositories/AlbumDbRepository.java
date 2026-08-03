@@ -112,6 +112,26 @@ public final class AlbumDbRepository implements AlbumRepository {
         }) == 1;
     }
 
+    @Override
+    public List<Album> buscar(String termo, String usuarioId) {
+        if (termo == null || termo.trim().isEmpty()) {
+            return listarTodos(usuarioId);
+        }
+        String sql = "SELECT id, titulo, artista, ano_lancamento, nota, usuario_id FROM album WHERE (titulo ILIKE ? OR artista ILIKE ?) AND usuario_id = ?;";
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            String wildcard = "%" + termo.trim() + "%";
+            statement.setString(1, wildcard);
+            statement.setString(2, wildcard);
+            statement.setString(3, usuarioId);
+            try (ResultSet result = statement.executeQuery()) {
+                return mapearLista(result);
+            }
+        } catch (SQLException e) {
+            throw erroPersistencia("buscar álbuns com filtro", e);
+        }
+    }
+
     private int executarAtualizacao(String sql, StatementBinder binder) {
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {

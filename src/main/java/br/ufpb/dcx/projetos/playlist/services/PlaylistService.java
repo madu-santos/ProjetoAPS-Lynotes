@@ -37,6 +37,13 @@ public final class PlaylistService {
                 .toList();
     }
 
+    public List<Playlist> search(String termo, String usuarioId) {
+        validarUsuarioId(usuarioId);
+        return playlistRepository.buscar(termo, usuarioId).stream()
+                .filter(playlist -> !playlist.isOculta())
+                .toList();
+    }
+
     public void updatePlaylist(String id, String nome, boolean oculta, String usuarioId) {
         validarNome(nome);
         validarUsuarioId(usuarioId);

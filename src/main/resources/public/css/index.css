@@ -939,3 +939,153 @@ thead th {
     letter-spacing: 2px;
     font-size: 0.95rem;
 }
+
+/* Unified Premium Search Bar */
+.premium-search-form {
+    background: #181818;
+    border: 1px solid #282828;
+    border-radius: 30px;
+    padding: 6px 6px 6px 20px;
+    display: flex;
+    align-items: center;
+    max-width: 600px;
+    margin-bottom: 28px;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.premium-search-form:focus-within {
+    border-color: #BB86FC;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.2);
+}
+
+.premium-search-input {
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-size: 0.95rem;
+    outline: none !important;
+    box-shadow: none !important;
+    flex-grow: 1;
+    padding-right: 10px;
+}
+
+.premium-search-input::placeholder {
+    color: #808080;
+}
+
+.premium-search-btn {
+    background: #BB86FC !important;
+    color: #121212 !important;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 6px 20px;
+    border: none;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.premium-search-btn:hover {
+    background: #c79eff !important;
+    transform: scale(1.02);
+}
+
+.premium-search-clear {
+    background: transparent;
+    color: #a0a0a0;
+    border: none;
+    font-size: 0.85rem;
+    margin-right: 15px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.premium-search-clear:hover {
+    color: #ff5c5c;
+    text-decoration: none;
+}
+
+/* Discrete Search Bar for Home Catalog */
+.discrete-search-form {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 4px 6px 4px 14px;
+    display: flex;
+    align-items: center;
+    width: 250px;
+    transition: all 0.25s ease;
+}
+
+.discrete-search-form:focus-within {
+    border-color: rgba(187, 134, 252, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.discrete-search-input {
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-size: 0.85rem;
+    outline: none !important;
+    box-shadow: none !important;
+    width: 100%;
+}
+
+.discrete-search-input::placeholder {
+    color: #a0a0a0;
+}
+
+.discrete-search-btn {
+    background: transparent;
+    border: none;
+    color: #b3b3b3;
+    font-size: 0.85rem;
+    padding: 0 8px;
+    transition: color 0.2s ease;
+}
+
+.discrete-search-btn:hover {
+    color: #BB86FC;
+}
+
+.discrete-search-clear {
+    background: transparent;
+    color: #a0a0a0;
+    border: none;
+    font-size: 0.8rem;
+    margin-right: 10px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.discrete-search-clear:hover {
+    color: #ff5c5c;
+    text-decoration: none;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+
+/* Fix three dots dropdown button styling */
+.music-card .dropdown button.btn-link {
+    text-decoration: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    transition: color 0.2s ease;
+}
+
+.music-card .dropdown button.btn-link:hover,
+.music-card .dropdown button.btn-link:focus,
+.music-card .dropdown button.btn-link:active {
+    text-decoration: none !important;
+    color: #BB86FC !important;
+}
+
+.music-card .dropdown-menu {
+    border: 1px solid #282828 !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
+}

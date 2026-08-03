@@ -23,8 +23,20 @@
             <a class="btn btn-primary" href="/musicas/new">Nova música</a>
         </div>
 
-        <div class="alert alert-secondary" th:if="${semMusicas}">
+        <form class="premium-search-form" method="get" action="/musicas">
+            <input class="premium-search-input"
+                   name="busca"
+                   placeholder="Buscar músicas por título, artista, gênero..."
+                   th:value="${busca}">
+            <a th:if="${buscaAtiva}" class="premium-search-clear" href="/musicas">Limpar</a>
+            <button class="premium-search-btn" type="submit">Buscar</button>
+        </form>
+
+        <div class="alert alert-secondary" th:if="${semMusicas and not buscaAtiva}">
             Nenhuma música cadastrada.
+        </div>
+        <div class="alert alert-info" th:if="${semMusicas and buscaAtiva}">
+            Nenhuma música encontrada para o termo pesquisado.
         </div>
 
         <div class="card shadow-sm" th:unless="${semMusicas}">

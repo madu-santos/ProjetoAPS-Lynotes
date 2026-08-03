@@ -29,6 +29,10 @@ public class AlbumService {
         return albumRepository.listarTodos(usuarioId);
     }
 
+    public List<Album> search(String termo, String usuarioId) {
+        return albumRepository.buscar(termo, usuarioId);
+    }
+
     public Optional<Album> findById(String id, String usuarioId) {
         return albumRepository.buscarPorId(id, usuarioId);
     }

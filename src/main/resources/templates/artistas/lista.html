@@ -23,23 +23,13 @@
             <a class="btn btn-primary" href="/artistas/novo">Novo artista</a>
         </div>
 
-        <form class="card card-body shadow-sm mb-4" method="get" action="/artistas">
-            <div class="row g-2">
-                <div class="col">
-                    <label class="visually-hidden" for="busca">Buscar artistas</label>
-                    <input class="form-control"
-                           id="busca"
-                           name="busca"
-                           placeholder="Buscar por nome, gênero ou biografia"
-                           th:value="${busca}">
-                </div>
-                <div class="col-auto">
-                    <button class="btn btn-primary" type="submit">Buscar</button>
-                </div>
-                <div class="col-auto" th:if="${buscaAtiva}">
-                    <a class="btn btn-outline-secondary" href="/artistas">Limpar</a>
-                </div>
-            </div>
+        <form class="premium-search-form" method="get" action="/artistas">
+            <input class="premium-search-input"
+                   name="busca"
+                   placeholder="Buscar artistas por nome, gênero, biografia..."
+                   th:value="${busca}">
+            <a th:if="${buscaAtiva}" class="premium-search-clear" href="/artistas">Limpar</a>
+            <button class="premium-search-btn" type="submit">Buscar</button>
         </form>
 
         <div class="alert alert-secondary" th:if="${semArtistas and not buscaAtiva}">

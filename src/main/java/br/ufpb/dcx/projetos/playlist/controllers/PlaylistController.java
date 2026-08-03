@@ -20,9 +20,12 @@ public final class PlaylistController {
 
     public void listar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        String busca = ctx.queryParam("busca");
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
-        modelo.put("playlists", service.findByUsuarioId(usuarioId));
+        modelo.put("playlists", service.search(busca, usuarioId));
+        modelo.put("busca", busca != null ? busca : "");
+        modelo.put("buscaAtiva", busca != null && !busca.trim().isEmpty());
         ctx.render("playlists/lista", modelo);
     }
 

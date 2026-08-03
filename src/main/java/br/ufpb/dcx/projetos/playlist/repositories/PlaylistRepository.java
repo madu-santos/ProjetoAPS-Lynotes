@@ -14,6 +14,8 @@ public interface PlaylistRepository {
 
     List<Playlist> findByUsuarioId(String usuarioId);
 
+    List<Playlist> buscar(String termo, String usuarioId);
+
     void update(Playlist playlist);
 
     boolean delete(String playlistId);
