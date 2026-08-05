@@ -92,9 +92,27 @@ public final class App {
         registrarAutenticacao(app, service);
 
         var connectionFactory = criarConnectionFactory();
-        ArtistaModule.registrar(app, connectionFactory);
-        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, connectionFactory);
-        MusicaModule.registrar(app, connectionFactory);
+        
+        var comunidadeRepo = new br.ufpb.dcx.projetos.comunidade.repositories.ComunidadeDbRepository(connectionFactory);
+        var comunidadeService = new br.ufpb.dcx.projetos.comunidade.services.ComunidadeService(comunidadeRepo);
+
+        // Interceptor para Bolinha Vermelha de Notificação da Comunidade
+        app.before(ctx -> {
+            String logadoId = ctx.sessionAttribute("usuarioLogadoId");
+            if (logadoId != null && !ctx.path().startsWith("/comunidade") && !ctx.path().startsWith("/public") && !ctx.path().startsWith("/js") && !ctx.path().startsWith("/css")) {
+                java.time.LocalDateTime lastVisited = ctx.sessionAttribute("comunidadeLastVisited");
+                if (lastVisited == null) {
+                    lastVisited = java.time.LocalDateTime.now().minusDays(1);
+                }
+                boolean temNovos = comunidadeService.temNovosPosts(logadoId, lastVisited);
+                boolean temPedidos = !comunidadeService.listarPedidosRecebidos(logadoId).isEmpty();
+                ctx.sessionAttribute("novidadesComunidade", temNovos || temPedidos);
+            }
+        });
+
+        ArtistaModule.registrar(app, connectionFactory, comunidadeService);
+        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, connectionFactory, comunidadeService);
+        MusicaModule.registrar(app, connectionFactory, comunidadeService);
         br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, connectionFactory);
         br.ufpb.dcx.projetos.comunidade.ComunidadeModule.registrar(app, connectionFactory, service);
 
@@ -105,11 +123,12 @@ public final class App {
         var artistaRepo = new br.ufpb.dcx.projetos.artista.repositories.ArtistaDbRepository(connectionFactory);
         var artistaService = new br.ufpb.dcx.projetos.artista.services.ArtistaService(artistaRepo, new br.ufpb.dcx.projetos.artista.services.ArtistaValidator());
         var albumService = new br.ufpb.dcx.projetos.album.services.AlbumService(albumRepo);
-        var comunidadeRepo = new br.ufpb.dcx.projetos.comunidade.repositories.ComunidadeDbRepository(connectionFactory);
-        var comunidadeService = new br.ufpb.dcx.projetos.comunidade.services.ComunidadeService(comunidadeRepo);
         
         var playlistRepo = new br.ufpb.dcx.projetos.playlist.repositories.PlaylistDbRepository(connectionFactory);
         var playlistService = new br.ufpb.dcx.projetos.playlist.services.PlaylistService(playlistRepo);
+        
+        var rankingController = new br.ufpb.dcx.projetos.rankings.RankingController(musicaService, albumService, artistaService);
+        app.get("/rankings", rankingController::index, Role.USER);
         
         new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service, musicaService, artistaService, albumService, comunidadeService, playlistService).registrarRotas(app);
 

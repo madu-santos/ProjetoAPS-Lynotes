@@ -87,7 +87,7 @@ public class MusicaService {
         musicaRepository.remover(id);
     }
 
-    private void validar(String titulo, String artista, Integer nota) {
+    private void validar(String titulo, String artista, Double nota) {
         if (titulo == null || titulo.trim().isEmpty()) {
             throw new IllegalArgumentException("O título da música é obrigatório");
         }

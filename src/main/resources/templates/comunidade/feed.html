@@ -14,13 +14,13 @@
 
     <div th:insert="~{fragments/navbar :: navbar('comunidade')}"></div>
 
-    <main class="container py-5">
+    <main class="spotify-main container py-5">
         
         <div class="row">
             <!-- Feed de Posts (Centro) -->
             <div class="col-lg-8">
                 <div class="mb-4">
-                    <h1 class="text-purple fw-bold mb-3">Comunidade</h1>
+                    <h1 class="display-5 fw-bold text-purple mb-1">Comunidade</h1>
                     
                     <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
                     
@@ -29,7 +29,7 @@
                         <div class="card-body">
                             <form action="/comunidade/post" method="post" hx-boost="false">
                                 <div class="mb-3">
-                                    <textarea class="form-control post-textarea" name="conteudo" rows="3" placeholder="No que você está pensando ou ouvindo hoje?" required maxlength="500"></textarea>
+                                    <textarea class="form-control post-textarea" name="conteudo" rows="3" placeholder="No que vocêê está pensando ou ouvindo hoje?" required maxlength="500"></textarea>
                                 </div>
                                 <div class="d-flex justify-content-end">
                                     <button type="submit" class="btn btn-primary rounded-pill px-4">Publicar</button>
@@ -44,7 +44,7 @@
                         <p>Seja o primeiro a publicar algo!</p>
                     </div>
                     
-                    <div class="card community-post-card shadow-sm mb-3" th:each="post : ${posts}">
+                    <div class="card community-post-card shadow-sm mb-3" th:each="post : ${posts}" data-reveal="fade-up">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="d-flex align-items-center">
@@ -107,23 +107,36 @@
             
             <!-- Barra Lateral (Busca e Usuários Ativos) -->
             <div class="col-lg-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Usuários Ativos</h5>
-                        <div class="list-group list-group-flush mt-3" th:if="${not usuarios.isEmpty()}">
+                <button type="button" class="btn btn-primary bg-purple w-100 fw-bold py-2 mb-4 rounded-pill border-0 text-dark" data-bs-toggle="modal" data-bs-target="#usuariosModal">
+                    Ver Usuários Ativos
+                </button>
+
+                <!-- Modal Flutuante de Usuários -->
+                <div class="modal fade" id="usuariosModal" tabindex="-1" aria-labelledby="usuariosModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content border-secondary" style="background-color: #1a1a1a;">
+                      <div class="modal-header border-secondary">
+                        <h1 class="modal-title fs-5 fw-bold" id="usuariosModalLabel">Usuários Ativos no Lynotes</h1>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body p-0">
+                         <div class="list-group list-group-flush" th:if="${usuarios != null and not usuarios.isEmpty()}">
                             <a th:each="u : ${usuarios}" 
                                th:href="@{'/usuarios/' + ${u.id}}" 
-                               class="list-group-item list-group-item-action active-user-item d-flex align-items-center gap-3 border-0 px-2 py-2 mb-1">
-                                <div class="rounded-circle bg-purple text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 0.9rem;" th:text="${#strings.substring(u.nome, 0, 1).toUpperCase()}">U</div>
-                                <div>
-                                    <h6 class="mb-0 fw-bold" th:text="${u.nome}"></h6>
+                               class="list-group-item list-group-item-action d-flex align-items-center gap-3 border-secondary px-4 py-3" style="background-color: transparent; color: white;">
+                                <div class="rounded-circle bg-purple text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 48px; height: 48px; font-size: 1.1rem;" th:text="${#strings.substring(u.nome, 0, 1).toUpperCase()}">U</div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-0 fw-bold" th:text="${u.nome}"></h5>
                                 </div>
+                                <div class="btn btn-sm btn-outline-light rounded-pill px-3">Ver Perfil</div>
                             </a>
-                        </div>
-                        <div th:if="${usuarios.isEmpty()}" class="text-muted small mt-2">
+                         </div>
+                         <div th:if="${usuarios == null or usuarios.isEmpty()}" class="p-5 text-center text-secondary">
                             Nenhum usuário encontrado.
-                        </div>
+                         </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
                 
                 <div class="card shadow-sm mb-4">
@@ -148,7 +161,7 @@
     </main>
 
 </div>
-<div th:insert="fragments/player :: player"></div>
-    <script src="/js/player.js" defer></script>
+<div th:insert="~{fragments/player :: bottom-player}"></div>
+    
 </body>
 </html>

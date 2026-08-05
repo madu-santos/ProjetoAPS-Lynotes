@@ -20,14 +20,20 @@ public class ComunidadeDbRepository {
     }
 
     public void salvarPost(Post post) {
-        String sql = "INSERT INTO post (id, usuario_id, conteudo, data_criacao) VALUES (?, ?, ?, ?) " +
-                     "ON CONFLICT (id) DO UPDATE SET conteudo = EXCLUDED.conteudo;";
+        String sql = "INSERT INTO post (id, usuario_id, conteudo, data_criacao, tipo, musica_id, album_id, artista_id) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+                     "ON CONFLICT (id) DO UPDATE SET conteudo = EXCLUDED.conteudo, tipo = EXCLUDED.tipo, " +
+                     "musica_id = EXCLUDED.musica_id, album_id = EXCLUDED.album_id, artista_id = EXCLUDED.artista_id;";
         try (Connection conn = factory.abrir();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, post.getId());
             ps.setString(2, post.getUsuarioId());
             ps.setString(3, post.getConteudo());
             ps.setTimestamp(4, Timestamp.valueOf(post.getDataCriacao()));
+            ps.setString(5, post.getTipo());
+            ps.setString(6, post.getMusicaId());
+            ps.setString(7, post.getAlbumId());
+            ps.setString(8, post.getArtistaId());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar post: " + e.getMessage(), e);
@@ -45,7 +51,11 @@ public class ComunidadeDbRepository {
                             rs.getString("id"),
                             rs.getString("usuario_id"),
                             rs.getString("conteudo"),
-                            rs.getTimestamp("data_criacao").toLocalDateTime()
+                            rs.getTimestamp("data_criacao").toLocalDateTime(),
+                            rs.getString("tipo"),
+                            rs.getString("musica_id"),
+                            rs.getString("album_id"),
+                            rs.getString("artista_id")
                     ));
                 }
             }
@@ -66,7 +76,7 @@ public class ComunidadeDbRepository {
             ps.setTimestamp(5, Timestamp.valueOf(comentario.getDataCriacao()));
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao salvar comentário: " + e.getMessage(), e);
+            throw new RuntimeException("Erro ao salvar comentÃ¡rio: " + e.getMessage(), e);
         }
     }
 
@@ -103,18 +113,54 @@ public class ComunidadeDbRepository {
         }
     }
 
+    private PostViewDTO mapPostView(ResultSet rs) throws SQLException {
+        return new PostViewDTO(
+                rs.getString("id"),
+                rs.getString("usuario_id"),
+                rs.getString("usuario_nome"),
+                rs.getString("usuario_username"),
+                rs.getString("usuario_foto_url"),
+                rs.getString("conteudo"),
+                rs.getTimestamp("data_criacao").toLocalDateTime(),
+                rs.getInt("qtd_estrelas"),
+                rs.getInt("qtd_comentarios"),
+                rs.getBoolean("estrelado_por_mim"),
+                rs.getString("tipo"),
+                rs.getString("musica_id"),
+                rs.getString("musica_titulo"),
+                rs.getString("musica_artista"),
+                rs.getObject("musica_nota") != null ? rs.getDouble("musica_nota") : null,
+                rs.getString("musica_youtube_url"),
+                rs.getString("album_id"),
+                rs.getString("album_titulo"),
+                rs.getString("album_artista"),
+                rs.getObject("album_nota") != null ? rs.getDouble("album_nota") : null,
+                rs.getString("artista_id"),
+                rs.getString("artista_nome")
+        );
+    }
+
     public List<PostViewDTO> listarFeed(String usuarioLogadoId, String filtroUsuarioId) {
         List<PostViewDTO> feed = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-            "SELECT p.id, p.usuario_id, u.nome AS usuario_nome, p.conteudo, p.data_criacao, " +
+            "SELECT p.id, p.usuario_id, u.nome AS usuario_nome, u.username AS usuario_username, u.foto_url AS usuario_foto_url, " +
+            "p.conteudo, p.data_criacao, p.tipo, p.musica_id, p.album_id, p.artista_id, " +
             "(SELECT COUNT(*) FROM post_estrela pe WHERE pe.post_id = p.id) AS qtd_estrelas, " +
             "(SELECT COUNT(*) FROM comentario c WHERE c.post_id = p.id) AS qtd_comentarios, " +
-            "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim " +
+            "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim, " +
+            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, " +
+            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, " +
+            "ar.nome AS artista_nome " +
             "FROM post p " +
-            "JOIN usuario u ON p.usuario_id = u.id "
+            "JOIN usuario u ON p.usuario_id = u.id " +
+            "LEFT JOIN musica m ON p.musica_id = m.id " +
+            "LEFT JOIN album al ON p.album_id = al.id " +
+            "LEFT JOIN artista ar ON p.artista_id = ar.id "
         );
         
-        if (filtroUsuarioId != null) {
+        if (filtroUsuarioId == null || "seguindo".equals(filtroUsuarioId)) {
+            sql.append("WHERE p.usuario_id IN (SELECT s1.seguido_id FROM seguidor s1 JOIN seguidor s2 ON s1.seguido_id = s2.seguidor_id WHERE s1.seguidor_id = ? AND s2.seguido_id = ?) ");
+        } else {
             sql.append("WHERE p.usuario_id = ? ");
         }
         
@@ -125,22 +171,16 @@ public class ComunidadeDbRepository {
             
             ps.setString(1, usuarioLogadoId != null ? usuarioLogadoId : "");
             
-            if (filtroUsuarioId != null) {
+            if (filtroUsuarioId == null || "seguindo".equals(filtroUsuarioId)) {
+                ps.setString(2, usuarioLogadoId != null ? usuarioLogadoId : "");
+                ps.setString(3, usuarioLogadoId != null ? usuarioLogadoId : "");
+            } else {
                 ps.setString(2, filtroUsuarioId);
             }
             
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    feed.add(new PostViewDTO(
-                            rs.getString("id"),
-                            rs.getString("usuario_id"),
-                            rs.getString("usuario_nome"),
-                            rs.getString("conteudo"),
-                            rs.getTimestamp("data_criacao").toLocalDateTime(),
-                            rs.getInt("qtd_estrelas"),
-                            rs.getInt("qtd_comentarios"),
-                            rs.getBoolean("estrelado_por_mim")
-                    ));
+                    feed.add(mapPostView(rs));
                 }
             }
         } catch (SQLException e) {
@@ -150,12 +190,19 @@ public class ComunidadeDbRepository {
     }
 
     public Optional<PostViewDTO> buscarPostView(String postId, String usuarioLogadoId) {
-        String sql = "SELECT p.id, p.usuario_id, u.nome AS usuario_nome, p.conteudo, p.data_criacao, " +
+        String sql = "SELECT p.id, p.usuario_id, u.nome AS usuario_nome, u.username AS usuario_username, u.foto_url AS usuario_foto_url, " +
+            "p.conteudo, p.data_criacao, p.tipo, p.musica_id, p.album_id, p.artista_id, " +
             "(SELECT COUNT(*) FROM post_estrela pe WHERE pe.post_id = p.id) AS qtd_estrelas, " +
             "(SELECT COUNT(*) FROM comentario c WHERE c.post_id = p.id) AS qtd_comentarios, " +
-            "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim " +
+            "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim, " +
+            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, " +
+            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, " +
+            "ar.nome AS artista_nome " +
             "FROM post p " +
             "JOIN usuario u ON p.usuario_id = u.id " +
+            "LEFT JOIN musica m ON p.musica_id = m.id " +
+            "LEFT JOIN album al ON p.album_id = al.id " +
+            "LEFT JOIN artista ar ON p.artista_id = ar.id " +
             "WHERE p.id = ?";
             
         try (Connection conn = factory.abrir();
@@ -165,16 +212,7 @@ public class ComunidadeDbRepository {
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return Optional.of(new PostViewDTO(
-                            rs.getString("id"),
-                            rs.getString("usuario_id"),
-                            rs.getString("usuario_nome"),
-                            rs.getString("conteudo"),
-                            rs.getTimestamp("data_criacao").toLocalDateTime(),
-                            rs.getInt("qtd_estrelas"),
-                            rs.getInt("qtd_comentarios"),
-                            rs.getBoolean("estrelado_por_mim")
-                    ));
+                    return Optional.of(mapPostView(rs));
                 }
             }
         } catch (SQLException e) {
@@ -253,7 +291,163 @@ public class ComunidadeDbRepository {
             ps.setString(1, comentarioId);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao deletar comentário: " + e.getMessage(), e);
+            throw new RuntimeException("Erro ao deletar comentÃ¡rio: " + e.getMessage(), e);
         }
+    }
+
+    public void seguir(String seguidorId, String seguidoId) {
+        String sql = "INSERT INTO seguidor (seguidor_id, seguido_id) VALUES (?, ?) ON CONFLICT DO NOTHING;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, seguidorId);
+            ps.setString(2, seguidoId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao seguir usuÃ¡rio: " + e.getMessage(), e);
+        }
+    }
+
+    public void deixarDeSeguir(String seguidorId, String seguidoId) {
+        String sql = "DELETE FROM seguidor WHERE seguidor_id = ? AND seguido_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, seguidorId);
+            ps.setString(2, seguidoId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao deixar de seguir usuÃ¡rio: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean isSeguindo(String seguidorId, String seguidoId) {
+        String sql = "SELECT 1 FROM seguidor WHERE seguidor_id = ? AND seguido_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, seguidorId);
+            ps.setString(2, seguidoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao verificar se segue usuÃ¡rio: " + e.getMessage(), e);
+        }
+    }
+
+    public void criarPedidoSeguir(String seguidorId, String seguidoId) {
+        String sql = "INSERT INTO pedido_seguir (seguidor_id, seguido_id) VALUES (?, ?) ON CONFLICT DO NOTHING;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, seguidorId);
+            ps.setString(2, seguidoId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao criar pedido de seguir: " + e.getMessage(), e);
+        }
+    }
+
+    public void removerPedidoSeguir(String seguidorId, String seguidoId) {
+        String sql = "DELETE FROM pedido_seguir WHERE seguidor_id = ? AND seguido_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, seguidorId);
+            ps.setString(2, seguidoId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao remover pedido de seguir: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean isPedidoPendente(String seguidorId, String seguidoId) {
+        String sql = "SELECT 1 FROM pedido_seguir WHERE seguidor_id = ? AND seguido_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, seguidorId);
+            ps.setString(2, seguidoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao verificar pedido pendente: " + e.getMessage(), e);
+        }
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarPedidosRecebidos(String seguidoId) {
+        List<br.ufpb.dcx.projetos.login.models.Usuario> lista = new ArrayList<>();
+        String sql = "SELECT u.id, u.nome, u.username, u.email, u.senha, u.tipo, u.bio, u.foto_url " +
+                     "FROM usuario u " +
+                     "JOIN pedido_seguir p ON u.id = p.seguidor_id " +
+                     "WHERE p.seguido_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, seguidoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new br.ufpb.dcx.projetos.login.models.Usuario(
+                            rs.getString("id"),
+                            rs.getString("nome"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("senha"),
+                            rs.getString("tipo"),
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar pedidos recebidos: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarAmigos(String usuarioId) {
+        List<br.ufpb.dcx.projetos.login.models.Usuario> lista = new ArrayList<>();
+        String sql = "SELECT u.id, u.nome, u.username, u.email, u.senha, u.tipo, u.bio, u.foto_url " +
+                     "FROM usuario u " +
+                     "JOIN seguidor s1 ON u.id = s1.seguido_id " +
+                     "JOIN seguidor s2 ON s1.seguido_id = s2.seguidor_id " +
+                     "WHERE s1.seguidor_id = ? AND s2.seguido_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuarioId);
+            ps.setString(2, usuarioId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new br.ufpb.dcx.projetos.login.models.Usuario(
+                            rs.getString("id"),
+                            rs.getString("nome"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("senha"),
+                            rs.getString("tipo"),
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar amigos: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
+    public boolean temNovosPosts(String usuarioId, java.time.LocalDateTime desde) {
+        String sql = "SELECT COUNT(*) FROM post p " +
+                     "WHERE p.usuario_id IN (SELECT s1.seguido_id FROM seguidor s1 JOIN seguidor s2 ON s1.seguido_id = s2.seguidor_id WHERE s1.seguidor_id = ? AND s2.seguido_id = ?) " +
+                     "AND p.data_criacao > ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuarioId);
+            ps.setString(2, usuarioId);
+            ps.setTimestamp(3, java.sql.Timestamp.valueOf(desde));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            // Ignorar falhas silenciosamente para resiliÃªncia do navbar
+        }
+        return false;
     }
 }

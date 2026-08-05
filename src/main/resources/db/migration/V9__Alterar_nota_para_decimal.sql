@@ -1,0 +1,4 @@
+-- V9__Alterar_nota_para_decimal.sql
+ALTER TABLE musica ALTER COLUMN nota TYPE DECIMAL(3,1);
+ALTER TABLE album ALTER COLUMN nota TYPE DECIMAL(3,1);
+ALTER TABLE artista ALTER COLUMN nota TYPE DECIMAL(3,1);

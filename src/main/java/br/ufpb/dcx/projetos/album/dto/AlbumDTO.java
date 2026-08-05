@@ -2,7 +2,7 @@ package br.ufpb.dcx.projetos.album.dto;
 
 import java.util.Objects;
 
-public record AlbumDTO(String titulo, String artista, String anoLancamento, Integer nota) {
+public record AlbumDTO(String titulo, String artista, String anoLancamento, Double nota) {
 
     public AlbumDTO(String titulo, String artista, String anoLancamento) {
         this(titulo, artista, anoLancamento, null);

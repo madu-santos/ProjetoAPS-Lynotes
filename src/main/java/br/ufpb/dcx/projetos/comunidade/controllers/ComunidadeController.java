@@ -23,6 +23,11 @@ public class ComunidadeController {
     public void registrarRotas(Javalin app) {
         app.get("/comunidade", this::feed, Role.USER);
         app.post("/comunidade/post", this::postar, Role.USER);
+        app.post("/comunidade/post/compartilhar", this::compartilharItem, Role.USER);
+        app.post("/comunidade/seguir/{id}", this::seguirUsuario, Role.USER);
+        app.post("/comunidade/deseguir/{id}", this::deseguirUsuario, Role.USER);
+        app.post("/comunidade/pedidos/{id}/aceitar", this::aceitarPedido, Role.USER);
+        app.post("/comunidade/pedidos/{id}/recusar", this::recusarPedido, Role.USER);
         app.post("/comunidade/post/{id}/estrela", this::estrela, Role.USER);
         app.post("/comunidade/post/{id}/editar", this::editarPost, Role.USER);
         app.post("/comunidade/post/{id}/comentar", this::comentar, Role.USER);
@@ -33,18 +38,27 @@ public class ComunidadeController {
 
     private void feed(Context ctx) {
         String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
-        String q = ctx.queryParam("q"); // busca de usuario (opcional)
         
-        // Aqui o filtro de usuário será implementado no front com busca de usuarios real, mas por enquanto:
-        // Apenas listamos o feed
-        var posts = service.listarFeed(usuarioLogadoId, null);
-        var usuarios = usuarioService.listarTodos();
+        ctx.sessionAttribute("comunidadeLastVisited", java.time.LocalDateTime.now());
+        ctx.sessionAttribute("novidadesComunidade", false);
+
+        var posts = service.listarFeed(usuarioLogadoId, "seguindo");
+        var amigos = service.listarAmigos(usuarioLogadoId);
+        var pedidos = service.listarPedidosRecebidos(usuarioLogadoId);
+        
+        var comentarios = new java.util.HashMap<String, java.util.List<br.ufpb.dcx.projetos.comunidade.views.ComentarioViewDTO>>();
+        for (var p : posts) {
+            comentarios.put(p.id(), service.listarComentarios(p.id()));
+        }
         
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("usuarioLogadoId", usuarioLogadoId);
         modelo.put("posts", posts);
-        modelo.put("usuarios", usuarios);
+        modelo.put("amigos", amigos);
+        modelo.put("pedidos", pedidos);
+        modelo.put("usuarios", usuarioService.listarTodos());
+        modelo.put("comentarios", comentarios);
         modelo.put("erro", ctx.sessionAttribute("erroComunidade")); // flash message
         ctx.sessionAttribute("erroComunidade", null); // limpa a msg
         
@@ -168,5 +182,78 @@ public class ComunidadeController {
         } else {
             ctx.redirect("/comunidade");
         }
+    }
+
+    private void compartilharItem(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        String tipo = ctx.formParam("tipo");
+        String itemId = ctx.formParam("itemId");
+        String conteudo = ctx.formParam("conteudo");
+        
+        try {
+            service.criarPostCompartilhado(usuarioLogadoId, tipo, itemId, conteudo);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroComunidade", e.getMessage());
+        }
+        
+        ctx.redirect("/comunidade");
+    }
+
+    private void seguirUsuario(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        String seguidoId = ctx.pathParam("id");
+        
+        try {
+            service.enviarSolicitacao(usuarioLogadoId, seguidoId);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroComunidade", e.getMessage());
+        }
+        
+        String urlReferencia = ctx.header("Referer");
+        if (urlReferencia != null) {
+            ctx.redirect(urlReferencia);
+        } else {
+            ctx.redirect("/comunidade");
+        }
+    }
+
+    private void deseguirUsuario(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        String seguidoId = ctx.pathParam("id");
+        
+        try {
+            service.desfazerAmizade(usuarioLogadoId, seguidoId);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroComunidade", e.getMessage());
+        }
+        
+        String urlReferencia = ctx.header("Referer");
+        if (urlReferencia != null) {
+            ctx.redirect(urlReferencia);
+        } else {
+            ctx.redirect("/comunidade");
+        }
+    }
+
+    private void aceitarPedido(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        String seguidorId = ctx.pathParam("id");
+        try {
+            service.aceitarSolicitacao(seguidorId, usuarioLogadoId);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroComunidade", e.getMessage());
+        }
+        ctx.redirect("/comunidade");
+    }
+
+    private void recusarPedido(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        String seguidorId = ctx.pathParam("id");
+        try {
+            service.recusarSolicitacao(seguidorId, usuarioLogadoId);
+        } catch (IllegalArgumentException e) {
+            ctx.sessionAttribute("erroComunidade", e.getMessage());
+        }
+        ctx.redirect("/comunidade");
     }
 }

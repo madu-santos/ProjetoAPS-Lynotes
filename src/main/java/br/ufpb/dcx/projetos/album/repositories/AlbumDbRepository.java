@@ -40,13 +40,13 @@ public final class AlbumDbRepository implements AlbumRepository {
             statement.setString(3, album.getArtista());
             statement.setInt(4, album.getAnoLancamento());
             if (album.getNota() != null) {
-                statement.setInt(5, album.getNota());
+                statement.setDouble(5, album.getNota());
             } else {
-                statement.setNull(5, java.sql.Types.INTEGER);
+                statement.setNull(5, java.sql.Types.DOUBLE);
             }
             statement.setString(6, album.getUsuarioId());
         });
-        LOGGER.debug("Álbum persistido. id={}", album.getId());
+        LOGGER.debug("ÃƒÂ lbum persistido. id={}", album.getId());
     }
 
     @Override
@@ -62,9 +62,9 @@ public final class AlbumDbRepository implements AlbumRepository {
             statement.setString(2, album.getArtista());
             statement.setInt(3, album.getAnoLancamento());
             if (album.getNota() != null) {
-                statement.setInt(4, album.getNota());
+                statement.setDouble(4, album.getNota());
             } else {
-                statement.setNull(4, java.sql.Types.INTEGER);
+                statement.setNull(4, java.sql.Types.DOUBLE);
             }
             statement.setString(5, album.getId());
             statement.setString(6, album.getUsuarioId());
@@ -84,7 +84,7 @@ public final class AlbumDbRepository implements AlbumRepository {
                 return result.next() ? Optional.of(mapear(result)) : Optional.empty();
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar álbum por ID", e);
+            throw erroPersistencia("buscar ÃƒÂ¡lbum por ID", e);
         }
     }
 
@@ -99,7 +99,19 @@ public final class AlbumDbRepository implements AlbumRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("listar álbuns", e);
+            throw erroPersistencia("listar ÃƒÂ¡lbuns", e);
+        }
+    }
+
+    public List<Album> listarTodosGlobal() {
+        String sql = "SELECT " + COLUNAS + " FROM album ORDER BY titulo, id";
+
+        try (Connection connection = connectionFactory.abrir();
+             Statement statement = connection.createStatement();
+             ResultSet result = statement.executeQuery(sql)) {
+            return mapearLista(result);
+        } catch (SQLException e) {
+            throw erroPersistencia("listar todos os álbuns globais", e);
         }
     }
 
@@ -128,7 +140,7 @@ public final class AlbumDbRepository implements AlbumRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar álbuns com filtro", e);
+            throw erroPersistencia("buscar ÃƒÂ¡lbuns com filtro", e);
         }
     }
 
@@ -138,7 +150,7 @@ public final class AlbumDbRepository implements AlbumRepository {
             binder.bind(statement);
             return statement.executeUpdate();
         } catch (SQLException e) {
-            throw erroPersistencia("alterar dados de álbum", e);
+            throw erroPersistencia("alterar dados de ÃƒÂ¡lbum", e);
         }
     }
 
@@ -151,7 +163,7 @@ public final class AlbumDbRepository implements AlbumRepository {
     }
 
     private Album mapear(ResultSet result) throws SQLException {
-        Integer nota = result.getObject("nota") != null ? result.getInt("nota") : null;
+        Double nota = result.getObject("nota") != null ? result.getDouble("nota") : null;
         return new Album(
                 result.getString("id"),
                 result.getString("titulo"),

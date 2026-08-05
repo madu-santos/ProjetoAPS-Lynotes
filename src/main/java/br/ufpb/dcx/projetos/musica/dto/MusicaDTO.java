@@ -32,19 +32,19 @@ public record MusicaDTO(
 
     public void validar() {
         if (titulo == null || titulo.trim().isEmpty()) {
-            throw new IllegalArgumentException("O título da música é obrigatório");
+            throw new IllegalArgumentException("O tÃ­tulo da mÃºsica Ã© obrigatÃ³rio");
         }
         if (artista == null || artista.trim().isEmpty()) {
-            throw new IllegalArgumentException("O artista é obrigatório");
+            throw new IllegalArgumentException("O artista Ã© obrigatÃ³rio");
         }
         if (nota != null && !nota.isBlank()) {
             try {
-                int notaVal = Integer.parseInt(nota);
+                double notaVal = Double.parseDouble(nota);
                 if (notaVal < 1 || notaVal > 5) {
                     throw new IllegalArgumentException("A nota deve ser entre 1 e 5 estrelas");
                 }
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("A nota deve ser um número inteiro válido");
+                throw new IllegalArgumentException("A nota deve ser um nÃºmero inteiro vÃ¡lido");
             }
         }
     }

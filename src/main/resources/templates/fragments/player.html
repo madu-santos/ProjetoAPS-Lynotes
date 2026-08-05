@@ -1,5 +1,6 @@
-<div id="mini-player" th:fragment="player">
+<div id="mini-player" th:fragment="bottom-player">
     <button id="player-toggle-tab" class="player-toggle-tab" type="button" onclick="playerTogglePanel()" title="Abrir/fechar player">
+        <span class="player-toggle-text" style="writing-mode: vertical-rl; font-size: 0.65rem; letter-spacing: 2px; margin-bottom: 5px; transform: rotate(180deg);">PLAYER</span>
         <span class="player-toggle-icon">&#9654;</span>
     </button>
     <div class="player-panel">
@@ -51,4 +52,5 @@
         <div class="player-message" id="player-message"></div>
         <div class="player-track-list" id="player-track-list"></div>
     </div>
+    <script src="/js/player.js"></script>
 </div>

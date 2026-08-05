@@ -137,6 +137,7 @@ class UsuarioControllerTest {
             @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> buscarPorAlbumId(String albumId) { return List.of(); }
             @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> buscarPorUsuarioId(String usuarioId) { return List.of(); }
             @Override public boolean remover(String id) { return false; }
+            @Override public List<br.ufpb.dcx.projetos.musica.models.Musica> buscar(String busca, String usuarioId) { return List.of(); }
         };
         br.ufpb.dcx.projetos.musica.services.MusicaService musicaService = new br.ufpb.dcx.projetos.musica.services.MusicaService(mockMusicaRepo, null);
 
@@ -145,6 +146,7 @@ class UsuarioControllerTest {
             @Override public boolean atualizar(br.ufpb.dcx.projetos.artista.models.Artista a) { return false; }
             @Override public Optional<br.ufpb.dcx.projetos.artista.models.Artista> buscarPorId(String id, String usuarioId) { return Optional.empty(); }
             @Override public List<br.ufpb.dcx.projetos.artista.models.Artista> listarTodos(String usuarioId) { return List.of(); }
+            @Override public List<br.ufpb.dcx.projetos.artista.models.Artista> listarTodosGlobal() { return List.of(); }
             @Override public List<br.ufpb.dcx.projetos.artista.models.Artista> buscar(String busca, String usuarioId) { return List.of(); }
             @Override public boolean remover(String id, String usuarioId) { return false; }
             @Override public boolean atualizarStatusVerificacao(String id, br.ufpb.dcx.projetos.artista.models.StatusVerificacao status) { return false; }
@@ -157,13 +159,20 @@ class UsuarioControllerTest {
             @Override public boolean atualizar(br.ufpb.dcx.projetos.album.models.Album a) { return false; }
             @Override public Optional<br.ufpb.dcx.projetos.album.models.Album> buscarPorId(String id, String usuarioId) { return Optional.empty(); }
             @Override public List<br.ufpb.dcx.projetos.album.models.Album> listarTodos(String usuarioId) { return List.of(); }
+            @Override public List<br.ufpb.dcx.projetos.album.models.Album> listarTodosGlobal() { return List.of(); }
             @Override public boolean remover(String id, String usuarioId) { return false; }
+            @Override public List<br.ufpb.dcx.projetos.album.models.Album> buscar(String termo, String usuarioId) { return List.of(); }
         };
         br.ufpb.dcx.projetos.album.services.AlbumService mockAlbumService = new br.ufpb.dcx.projetos.album.services.AlbumService(mockAlbumRepo);
 
+        var mockPlaylistService = org.mockito.Mockito.mock(br.ufpb.dcx.projetos.playlist.services.PlaylistService.class);
+        org.mockito.Mockito.when(mockPlaylistService.findByUsuarioId(org.mockito.ArgumentMatchers.any())).thenReturn(List.of());
+        var mockComunidadeService = org.mockito.Mockito.mock(br.ufpb.dcx.projetos.comunidade.services.ComunidadeService.class);
+        org.mockito.Mockito.when(mockComunidadeService.listarFeed(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any())).thenReturn(List.of());
+
         Javalin app = Javalin.create(config ->
                 config.fileRenderer(new JavalinThymeleaf(templateEngine())));
-        new UsuarioController(service, musicaService, mockArtistaService, mockAlbumService).registrarRotas(app);
+        new UsuarioController(service, musicaService, mockArtistaService, mockAlbumService, mockComunidadeService, mockPlaylistService).registrarRotas(app);
 
         JavalinTest.test(app, (server, client) -> {
             try (var resposta = client.get("/usuarios/" + usuario.getId())) {
@@ -178,7 +187,7 @@ class UsuarioControllerTest {
     private Javalin criarApp() {
         Javalin app = Javalin.create(config ->
                 config.fileRenderer(new JavalinThymeleaf(templateEngine())));
-        new UsuarioController(service, new br.ufpb.dcx.projetos.musica.services.MusicaService(null, null), null, null).registrarRotas(app);
+        new UsuarioController(service, new br.ufpb.dcx.projetos.musica.services.MusicaService(null, null), null, null, null, null).registrarRotas(app);
         return app;
     }
 

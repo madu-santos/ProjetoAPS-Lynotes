@@ -86,6 +86,18 @@ public final class ArtistaDbRepository implements ArtistaRepository {
         }
     }
 
+    public List<Artista> listarTodosGlobal() {
+        String sql = "SELECT " + COLUNAS + " FROM artista ORDER BY nome, id";
+
+        try (Connection connection = connectionFactory.abrir();
+             Statement statement = connection.createStatement();
+             ResultSet result = statement.executeQuery(sql)) {
+            return mapearLista(result);
+        } catch (SQLException e) {
+            throw erroPersistencia("listar todos artistas", e);
+        }
+    }
+
     @Override
     public List<Artista> buscar(String termo, String usuarioId) {
         String sql = """
@@ -168,9 +180,9 @@ public final class ArtistaDbRepository implements ArtistaRepository {
             statement.setString(12, artista.getUf());
             statement.setString(13, artista.getStatusVerificacao().name());
             if (artista.getNota() != null) {
-                statement.setInt(14, artista.getNota());
+                statement.setDouble(14, artista.getNota());
             } else {
-                statement.setNull(14, java.sql.Types.INTEGER);
+                statement.setNull(14, java.sql.Types.DOUBLE);
             }
             statement.setString(15, artista.getUsuarioId());
         } else {
@@ -187,9 +199,9 @@ public final class ArtistaDbRepository implements ArtistaRepository {
             statement.setString(11, artista.getUf());
             statement.setString(12, artista.getStatusVerificacao().name());
             if (artista.getNota() != null) {
-                statement.setInt(13, artista.getNota());
+                statement.setDouble(13, artista.getNota());
             } else {
-                statement.setNull(13, java.sql.Types.INTEGER);
+                statement.setNull(13, java.sql.Types.DOUBLE);
             }
         }
     }
@@ -211,7 +223,7 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     private Artista mapear(ResultSet result) throws SQLException {
         java.sql.Date sqlDate = result.getDate("data_nascimento");
         LocalDate data = sqlDate != null ? sqlDate.toLocalDate() : null;
-        Integer nota = result.getObject("nota") != null ? result.getInt("nota") : null;
+        Double nota = result.getObject("nota") != null ? result.getDouble("nota") : null;
 
         return new Artista(
                 result.getString("id"),

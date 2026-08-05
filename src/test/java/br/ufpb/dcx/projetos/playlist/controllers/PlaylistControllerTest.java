@@ -24,7 +24,8 @@ class PlaylistControllerTest {
     private PlaylistService playlistService;
 
     private Javalin criarApp() {
-        var app = Javalin.create();
+        var app = Javalin.create(config ->
+                config.fileRenderer(new io.javalin.rendering.template.JavalinThymeleaf(templateEngine())));
         PlaylistController controller = new PlaylistController(playlistService);
         // Simular sessão
         app.before(ctx -> {
@@ -39,9 +40,20 @@ class PlaylistControllerTest {
         return app;
     }
 
+    private org.thymeleaf.TemplateEngine templateEngine() {
+        org.thymeleaf.templateresolver.ClassLoaderTemplateResolver resolver = new org.thymeleaf.templateresolver.ClassLoaderTemplateResolver();
+        resolver.setPrefix("/templates/");
+        resolver.setSuffix(".html");
+        resolver.setTemplateMode("HTML");
+        resolver.setCharacterEncoding("UTF-8");
+        org.thymeleaf.TemplateEngine engine = new org.thymeleaf.TemplateEngine();
+        engine.setTemplateResolver(resolver);
+        return engine;
+    }
+
     @Test
     void deveListarPlaylists() {
-        when(playlistService.findByUsuarioId(anyString())).thenReturn(Collections.emptyList());
+        when(playlistService.search(any(), anyString())).thenReturn(Collections.emptyList());
 
         JavalinTest.test(criarApp(), (server, client) -> {
             try (var resposta = client.get("/playlists")) {

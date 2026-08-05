@@ -29,9 +29,11 @@ public final class ArtistaController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtistaController.class);
 
     private final ArtistaUseCase useCase;
+    private final br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService;
 
-    public ArtistaController(ArtistaUseCase useCase) {
+    public ArtistaController(ArtistaUseCase useCase, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
         this.useCase = useCase;
+        this.comunidadeService = comunidadeService;
     }
 
     @OpenApi(
@@ -69,13 +71,28 @@ public final class ArtistaController {
             methods = io.javalin.openapi.HttpMethod.POST,
             tags = {"Artistas"},
             responses = {
-                    @OpenApiResponse(status = "303", description = "Redireciona para a listagem após o cadastro"),
-                    @OpenApiResponse(status = "422", description = "Dados do formulário inválidos")
+                    @OpenApiResponse(status = "303", description = "Redireciona para a listagem apÃ³s o cadastro"),
+                    @OpenApiResponse(status = "422", description = "Dados do formulÃ¡rio invÃ¡lidos")
             }
     )
     public void cadastrar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-        processarFormulario(ctx, null, dto -> useCase.cadastrar(dto, usuarioId));
+        processarFormulario(ctx, null, dto -> {
+            Artista artista = useCase.cadastrar(dto, usuarioId);
+            String compartilhar = ctx.formParam("compartilharComunidade");
+            String mensagem = ctx.formParam("mensagemComunidade");
+
+            if (comunidadeService != null && "on".equals(compartilhar)) {
+                String msg = "Catalogou o artista: **" + artista.getNome() + "**";
+                if (artista.getNota() != null) {
+                    msg += " e avaliou com " + artista.getNota() + " estrelas. â­";
+                }
+                if (mensagem != null && !mensagem.trim().isEmpty()) {
+                    msg += "\n\n\"" + mensagem.trim() + "\"";
+                }
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ARTIST", artista.getId(), msg);
+            }
+        });
     }
 
     public void exibirEdicao(Context ctx) {
@@ -87,7 +104,22 @@ public final class ArtistaController {
     public void atualizar(Context ctx) {
         String id = ctx.pathParam("id");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-        processarFormulario(ctx, id, dto -> useCase.atualizar(id, dto, usuarioId));
+        processarFormulario(ctx, id, dto -> {
+            Artista artista = useCase.atualizar(id, dto, usuarioId);
+            String compartilhar = ctx.formParam("compartilharComunidade");
+            String mensagem = ctx.formParam("mensagemComunidade");
+
+            if (comunidadeService != null && "on".equals(compartilhar)) {
+                String msg = "Atualizou o artista: **" + artista.getNome() + "**";
+                if (artista.getNota() != null) {
+                    msg += " e avaliou com " + artista.getNota() + " estrelas. â­";
+                }
+                if (mensagem != null && !mensagem.trim().isEmpty()) {
+                    msg += "\n\n\"" + mensagem.trim() + "\"";
+                }
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ARTIST", id, msg);
+            }
+        });
     }
 
     public void excluir(Context ctx) {
@@ -106,7 +138,7 @@ public final class ArtistaController {
             operacao.executar(dto);
             redirecionarParaListagem(ctx);
         } catch (ArtistaValidacaoException erro) {
-            LOGGER.warn("DTO de artista inválido. path={} mensagem={}",
+            LOGGER.warn("DTO de artista invÃ¡lido. path={} mensagem={}",
                     ctx.path(), erro.getMessage());
             ctx.status(HttpStatus.OK);
             renderizarFormulario(ctx, viewFormulario(id, dto), erro.getMessage());
@@ -142,7 +174,7 @@ public final class ArtistaController {
         boolean solicitarVerificacao = "on".equalsIgnoreCase(solicitarVerificacaoStr) || "true".equalsIgnoreCase(solicitarVerificacaoStr);
         
         String notaStr = ctx.formParam("nota");
-        Integer nota = (notaStr != null && !notaStr.trim().isEmpty()) ? Integer.parseInt(notaStr.trim()) : null;
+        Double nota = (notaStr != null && !notaStr.trim().isEmpty()) ? Double.parseDouble(notaStr.trim()) : null;
 
         return new ArtistaDTO(
                 ctx.formParam("nome"),

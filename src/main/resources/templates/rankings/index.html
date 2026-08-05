@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rankings da Comunidade - Lynotes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+    <link href="/css/player.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <style>
+        .nav-pills .nav-link {
+            color: #b3b3b3;
+            border-radius: 30px;
+            padding: 8px 24px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 10px;
+            background-color: #282828;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .nav-pills .nav-link:hover {
+            background-color: #3e3e3e;
+            color: #fff;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #BB86FC !important;
+            color: #000 !important;
+        }
+        .aoty-score-box {
+            display: inline-block;
+            margin-top: 8px;
+            background-color: #1e1e1e;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border-left: 3px solid #BB86FC;
+        }
+        .aoty-score {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        .aoty-score-text {
+            font-size: 0.7rem;
+            color: #aaa;
+            margin-left: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+<div id="app-content">
+
+    <div th:insert="~{fragments/navbar :: navbar('rankings')}"></div>
+
+    <main class="spotify-main container py-5">
+        <div class="mb-5 text-center">
+            <h1 class="display-5 fw-bold text-purple mb-1">Rankings Globais</h1>
+            <p class="text-secondary lead">Os mais aclamados de todos os tempos pela comunidade do Lynotes.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills justify-content-center mb-5" id="rankingTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="musicas-tab" data-bs-toggle="pill" data-bs-target="#musicas" type="button" role="tab" aria-controls="musicas" aria-selected="true">Músicas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="albuns-tab" data-bs-toggle="pill" data-bs-target="#albuns" type="button" role="tab" aria-controls="albuns" aria-selected="false">Álbuns</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="artistas-tab" data-bs-toggle="pill" data-bs-target="#artistas" type="button" role="tab" aria-controls="artistas" aria-selected="false">Artistas</button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="rankingTabsContent">
+            
+            <!-- ABA MÚSICAS -->
+            <div class="tab-pane fade show active" id="musicas" role="tabpanel" aria-labelledby="musicas-tab">
+                <div class="spotify-grid" th:if="${not #lists.isEmpty(topMusicas)}">
+                    <div class="col" th:each="item : ${topMusicas}" data-reveal>
+                        <div class="card h-100 spotify-card-hover p-3 border-0">
+                            <div class="position-relative mb-3">
+                                <div class="w-100 rounded shadow d-flex align-items-center justify-content-center" style="aspect-ratio: 1; background-color: #282828; color: #555;">
+                                    <i class="bi bi-music-note-beamed fs-1"></i>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column align-items-center text-center">
+                                <h6 class="fw-bold text-white mb-1 w-100 text-truncate" th:text="${item.titulo}"></h6>
+                                <p class="text-secondary small mb-1 w-100 text-truncate" th:text="${item.subtitulo}"></p>
+                                <div class="aoty-score-box">
+                                    <span class="aoty-score" th:text="${item.notaFormatada}">4.5</span>
+                                    <span class="aoty-score-text" th:text="'estrelas (' + ${item.totalAvaliacoes} + ' avaliações)'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center py-5 card shadow-sm p-5 border-0 bg-dark" th:if="${#lists.isEmpty(topMusicas)}">
+                    <h4 class="fw-bold mb-2 text-white">Nenhuma música avaliada ainda.</h4>
+                    <p class="text-secondary">Seja o primeiro a deixar sua nota para as músicas!</p>
+                </div>
+            </div>
+
+            <!-- ABA ÁLBUNS -->
+            <div class="tab-pane fade" id="albuns" role="tabpanel" aria-labelledby="albuns-tab">
+                <div class="spotify-grid" th:if="${not #lists.isEmpty(topAlbuns)}">
+                    <div class="col" th:each="item : ${topAlbuns}" data-reveal>
+                        <div class="card h-100 spotify-card-hover p-3 border-0">
+                            <div class="position-relative mb-3">
+                                <div class="w-100 rounded shadow d-flex align-items-center justify-content-center" style="aspect-ratio: 1; background-color: #282828; color: #555;">
+                                    <i class="bi bi-disc-fill fs-1"></i>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column align-items-center text-center">
+                                <h6 class="fw-bold text-white mb-1 w-100 text-truncate" th:text="${item.titulo}"></h6>
+                                <p class="text-secondary small mb-1 w-100 text-truncate" th:text="${item.subtitulo}"></p>
+                                <div class="aoty-score-box">
+                                    <span class="aoty-score" th:text="${item.notaFormatada}">4.5</span>
+                                    <span class="aoty-score-text" th:text="'estrelas (' + ${item.totalAvaliacoes} + ' avaliações)'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center py-5 card shadow-sm p-5 border-0 bg-dark" th:if="${#lists.isEmpty(topAlbuns)}">
+                    <h4 class="fw-bold mb-2 text-white">Nenhum álbum avaliado ainda.</h4>
+                    <p class="text-secondary">Seja o primeiro a deixar sua nota para os álbuns!</p>
+                </div>
+            </div>
+
+            <!-- ABA ARTISTAS -->
+            <div class="tab-pane fade" id="artistas" role="tabpanel" aria-labelledby="artistas-tab">
+                <div class="spotify-grid" th:if="${not #lists.isEmpty(topArtistas)}">
+                    <div class="col" th:each="item : ${topArtistas}" data-reveal>
+                        <div class="card h-100 spotify-card-hover p-3 border-0">
+                            <div class="position-relative mb-3">
+                                <div class="w-100 rounded-circle shadow d-flex align-items-center justify-content-center" style="aspect-ratio: 1; background-color: #282828; color: #555;">
+                                    <i class="bi bi-mic-fill fs-1"></i>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column align-items-start">
+                                <h6 class="fw-bold text-white mb-1 w-100 text-truncate" th:text="${item.titulo}"></h6>
+                                <p class="text-secondary small mb-1 w-100 text-truncate">Artista</p>
+                                <div class="aoty-score-box">
+                                    <span class="aoty-score" th:text="${item.notaFormatada}">4.5</span>
+                                    <span class="aoty-score-text" th:text="'estrelas (' + ${item.totalAvaliacoes} + ' avaliações)'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center py-5 card shadow-sm p-5 border-0 bg-dark" th:if="${#lists.isEmpty(topArtistas)}">
+                    <h4 class="fw-bold mb-2 text-white">Nenhum artista avaliado ainda.</h4>
+                    <p class="text-secondary">Seja o primeiro a deixar sua nota para os artistas!</p>
+                </div>
+            </div>
+            
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Add listener to Bootstrap tabs to trigger scroll animations on newly visible cards
+            document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function (event) {
+                    if (typeof initScrollAnimations === 'function') {
+                        initScrollAnimations();
+                    }
+                });
+            });
+        </script>
+    </main>
+</div>
+<div th:insert="~{fragments/player :: bottom-player}"></div>
+
+<script>
+    function initScrollAnimations() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('[data-reveal]:not(.is-visible)').forEach((el) => {
+            observer.observe(el);
+        });
+    }
+    document.addEventListener("DOMContentLoaded", initScrollAnimations);
+    document.body.addEventListener("htmx:afterSettle", initScrollAnimations);
+</script>
+
+</body>
+</html>

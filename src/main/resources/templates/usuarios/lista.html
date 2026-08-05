@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
@@ -14,7 +14,7 @@
 
     <div th:insert="~{fragments/navbar :: navbar('comunidade')}"></div>
 
-    <main class="container py-5">
+    <main class="spotify-main container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h1 class="text-purple">Comunidade</h1>
@@ -75,8 +75,8 @@
     </main>
 
 </div>
-<div th:insert="fragments/player :: player"></div>
-    <script src="/js/player.js" defer></script>
+<div th:insert="~{fragments/player :: bottom-player}"></div>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </body>
 </html>

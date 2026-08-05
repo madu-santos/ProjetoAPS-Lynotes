@@ -140,6 +140,18 @@ public class AlbumServiceTest {
         }
 
         @Override
+        public List<Album> listarTodosGlobal() {
+            return new ArrayList<>(albums.values());
+        }
+
+        @Override
+        public List<Album> buscar(String termo, String usuarioId) {
+            return albums.values().stream()
+                    .filter(a -> a.getUsuarioId().equals(usuarioId) && a.getTitulo().toLowerCase().contains(termo.toLowerCase()))
+                    .toList();
+        }
+
+        @Override
         public boolean remover(String id, String usuarioId) {
             Album a = albums.get(id);
             if (a != null && a.getUsuarioId().equals(usuarioId)) {

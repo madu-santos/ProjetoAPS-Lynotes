@@ -72,6 +72,7 @@ public final class UsuarioController {
         modelo.put("username", "");
         modelo.put("email", "");
         modelo.put("bio", "");
+        modelo.put("fotoUrl", "");
         ctx.render("usuarios/formulario", modelo);
     }
 
@@ -82,13 +83,14 @@ public final class UsuarioController {
                 ctx.formParam("email"),
                 ctx.formParam("senha"),
                 ctx.formParam("bio"),
-                null
+                ctx.formParam("fotoUrl")
         ).normalizado();
 
         try {
             dto.validarParaCriacao();
             Usuario usuario = new Usuario(dto.nome(), dto.username(), dto.email(), dto.senha());
             usuario.setBio(dto.bio());
+            usuario.setFotoUrl(dto.fotoUrl());
             service.cadastrarUsuario(usuario);
             if (ctx.sessionAttribute("usuarioLogado") != null) {
                 ctx.redirect("/usuarios");
@@ -104,6 +106,7 @@ public final class UsuarioController {
             modelo.put("username", dto.username());
             modelo.put("email", dto.email());
             modelo.put("bio", dto.bio());
+            modelo.put("fotoUrl", dto.fotoUrl());
             modelo.put("erro", e.getMessage());
             ctx.status(HttpStatus.OK).render("usuarios/formulario", modelo);
         }
@@ -111,8 +114,14 @@ public final class UsuarioController {
 
     private void exibirPerfilPublico(Context ctx) {
         String id = ctx.pathParam("id");
-        Optional<Usuario> usuarioOpt = service.buscarPorId(id);
+        String logadoId = (String) ctx.sessionAttribute("usuarioLogadoId");
 
+        if (id.equals(logadoId)) {
+            ctx.redirect("/");
+            return;
+        }
+
+        Optional<Usuario> usuarioOpt = service.buscarPorId(id);
         if (usuarioOpt.isEmpty()) {
             ctx.status(HttpStatus.NOT_FOUND).result("Usuário não encontrado");
             return;
@@ -124,7 +133,6 @@ public final class UsuarioController {
         List<br.ufpb.dcx.projetos.album.models.Album> albums = albumService.findAll(id);
         List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(id);
         
-        String logadoId = (String) ctx.sessionAttribute("usuarioLogadoId");
         List<br.ufpb.dcx.projetos.comunidade.views.PostViewDTO> userPosts = comunidadeService.listarFeed(logadoId, id);
 
         Map<String, Object> modelo = new HashMap<>();
@@ -134,6 +142,21 @@ public final class UsuarioController {
         modelo.put("perfilNome", usuario.getNome());
         modelo.put("perfilUsername", usuario.getUsername());
         modelo.put("perfilFotoUrl", usuario.getFotoUrl() != null ? usuario.getFotoUrl() : "");
+        
+        boolean amigos = false;
+        boolean pedidoPendenteEnviado = false;
+        boolean pedidoPendenteRecebido = false;
+        
+        if (comunidadeService != null && logadoId != null) {
+            amigos = comunidadeService.isSeguindo(logadoId, id) && comunidadeService.isSeguindo(id, logadoId);
+            pedidoPendenteEnviado = comunidadeService.isPedidoPendente(logadoId, id);
+            pedidoPendenteRecebido = comunidadeService.isPedidoPendente(id, logadoId);
+        }
+        
+        modelo.put("amigos", amigos);
+        modelo.put("pedidoPendenteEnviado", pedidoPendenteEnviado);
+        modelo.put("pedidoPendenteRecebido", pedidoPendenteRecebido);
+        modelo.put("isMe", false);
         
         modelo.put("userPosts", userPosts);
         modelo.put("semPosts", userPosts.isEmpty());
@@ -165,7 +188,6 @@ public final class UsuarioController {
         }
 
         Optional<Usuario> usuarioOpt = service.buscarPorId(id);
-
         if (usuarioOpt.isEmpty()) {
             ctx.status(HttpStatus.NOT_FOUND).result("Usuário não encontrado");
             return;
@@ -180,12 +202,12 @@ public final class UsuarioController {
         modelo.put("username", usuario.getUsername());
         modelo.put("email", usuario.getEmail());
         modelo.put("bio", usuario.getBio());
+        modelo.put("fotoUrl", usuario.getFotoUrl() != null ? usuario.getFotoUrl() : "");
         ctx.render("usuarios/formulario", modelo);
     }
 
     private void atualizar(Context ctx) {
         String idLogado = ctx.sessionAttribute("usuarioLogadoId");
-        String tipoLogado = ctx.sessionAttribute("usuarioLogadoTipo");
         String id = ctx.pathParam("id");
 
         if (idLogado == null || !idLogado.equals(id)) {
@@ -200,7 +222,7 @@ public final class UsuarioController {
                 ctx.formParam("email"),
                 ctx.formParam("senha"),
                 ctx.formParam("bio"),
-                null
+                ctx.formParam("fotoUrl")
         ).normalizado();
 
         try {
@@ -215,7 +237,7 @@ public final class UsuarioController {
             Usuario usuarioAntigo = usuarioOpt.get();
             String senhaFinal = (dto.senha() == null || dto.senha().trim().isEmpty()) ? usuarioAntigo.getSenha() : dto.senha();
 
-            Usuario usuarioAtualizado = new Usuario(id, dto.nome(), dto.username(), dto.email(), senhaFinal, usuarioAntigo.getTipo(), dto.bio(), usuarioAntigo.getFotoUrl());
+            Usuario usuarioAtualizado = new Usuario(id, dto.nome(), dto.username(), dto.email(), senhaFinal, usuarioAntigo.getTipo(), dto.bio(), dto.fotoUrl());
 
             service.cadastrarUsuario(usuarioAtualizado);
             ctx.redirect("/usuarios");
@@ -228,6 +250,7 @@ public final class UsuarioController {
             modelo.put("username", dto.username());
             modelo.put("email", dto.email());
             modelo.put("bio", dto.bio());
+            modelo.put("fotoUrl", dto.fotoUrl());
             modelo.put("erro", e.getMessage());
             ctx.status(HttpStatus.OK).render("usuarios/formulario", modelo);
         }

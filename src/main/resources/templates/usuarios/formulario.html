@@ -118,7 +118,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label" for="bio_admin">Sobre mim</label>
-                                <textarea class="form-control" id="bio_admin" name="bio" rows="3" maxlength="500" placeholder="Conte um pouco sobre você..." th:text="${bio}"></textarea>
+                                <textarea class="form-control" id="bio_admin" name="bio" rows="3" maxlength="500" placeholder="Conte um pouco sobre vocêê..." th:text="${bio}"></textarea>
                                 <div class="form-text">Máximo de 500 caracteres.</div>
                             </div>
 
@@ -148,7 +148,7 @@
     </main>
     
 </div>
-<div th:insert="fragments/player :: player" th:if="${usuarioLogado != null}"></div>
+<div th:insert="~{fragments/player :: bottom-player}"></div>
     <script src="/js/player.js" defer th:if="${usuarioLogado != null}"></script>
 </body>
 </html>

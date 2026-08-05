@@ -20,7 +20,7 @@ public final class ArtistaDTOView {
     private final String cidade;
     private final String uf;
     private final boolean solicitarVerificacao;
-    private final Integer nota;
+    private final Double nota;
     private final boolean edicao;
     private final String acao;
 
@@ -37,7 +37,7 @@ public final class ArtistaDTOView {
             String cidade,
             String uf,
             boolean solicitarVerificacao,
-            Integer nota,
+            Double nota,
             boolean edicao,
             String acao
     ) {
@@ -174,7 +174,7 @@ public final class ArtistaDTOView {
         return edicao;
     }
 
-    public Integer getNota() {
+    public Double getNota() {
         return nota;
     }
 

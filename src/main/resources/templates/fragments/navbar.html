@@ -3,36 +3,150 @@
 <head>
 </head>
 <body>
-    <nav th:fragment="navbar(paginaAtiva)" class="navbar navbar-expand-md custom-navbar sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-purple" href="/" hx-boost="false">Lynotes</a>
-            <ul class="navbar-nav me-auto mb-0">
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${paginaAtiva == 'catalogo'} ? 'active' : ''" href="/">Meu Catálogo</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${paginaAtiva == 'musicas'} ? 'active' : ''" href="/musicas">Músicas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${paginaAtiva == 'artistas'} ? 'active' : ''" href="/artistas">Artistas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${paginaAtiva == 'albums'} ? 'active' : ''" href="/albums">Álbuns</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${paginaAtiva == 'playlists'} ? 'active' : ''" href="/playlists">Playlists</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:classappend="${paginaAtiva == 'comunidade'} ? 'active' : ''" href="/comunidade">Comunidade</a>
-                </li>
-            </ul>
-            <div class="d-flex align-items-center gap-2" th:if="${usuarioLogado != null}">
-                <a class="navbar-profile-btn text-decoration-none" href="/usuarios/me">Acessar perfil</a>
+    <div th:fragment="navbar(paginaAtiva)">
+        <!-- Spotify-style Sidebar -->
+        <nav class="spotify-sidebar d-flex flex-column">
+            <div class="d-flex align-items-center justify-content-between mb-4 mt-2 px-1">
+                <div class="d-flex align-items-center px-4">
+                    <i class="bi bi-music-note-beamed text-purple fs-4 me-3"></i>
+                    <span class="fw-bold text-purple fs-3 sidebar-text" style="letter-spacing: -0.5px;">Lynotes</span>
+                </div>
+            </div>
+            
+            <script>
+                function applySidebarState() {
+                    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                    const sidebar = document.querySelector('.spotify-sidebar');
+                    if (sidebar) {
+                        sidebar.classList.toggle('collapsed', isCollapsed);
+                    }
+                    document.querySelectorAll('.spotify-main').forEach(m => m.classList.toggle('expanded', isCollapsed));
+                }
+                // Apply immediately to prevent flicker
+                applySidebarState();
+                
+                function toggleSidebar() {
+                    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                    localStorage.setItem('sidebarCollapsed', !isCollapsed);
+                    applySidebarState();
+                }
+                
+                // Re-apply when HTMX swaps content (since navbar might be recreated)
+                document.body.addEventListener('htmx:afterSwap', function(evt) {
+                    if (evt.detail.target.id === 'app-content') {
+                        applySidebarState();
+                        // Re-apply player margin state
+                        if (typeof playerState !== 'undefined') {
+                            document.querySelectorAll('.spotify-main').forEach(el => {
+                                el.classList.toggle('player-open', !playerState.collapsed);
+                            });
+                        }
+                        initInteractiveStars();
+                    }
+                });
+
+                function initInteractiveStars() {
+                    document.querySelectorAll('.interactive-stars').forEach(container => {
+                        if (container.dataset.initialized) return;
+                        container.dataset.initialized = 'true';
+                        
+                        const input = document.getElementById(container.dataset.input);
+                        const stars = container.querySelectorAll('.star-btn');
+                        let currentRating = parseFloat(container.dataset.initial) || 0;
+
+                        const render = (rating) => {
+                            stars.forEach((star, idx) => {
+                                let starValue = idx + 1;
+                                if (rating >= starValue) {
+                                    star.className = 'bi bi-star-fill star-btn text-purple';
+                                } else if (rating >= starValue - 0.5) {
+                                    star.className = 'bi bi-star-half star-btn text-purple';
+                                } else {
+                                    star.className = 'bi bi-star star-btn text-muted';
+                                }
+                            });
+                        };
+
+                        render(currentRating);
+
+                        stars.forEach((star, idx) => {
+                            star.addEventListener('mousemove', e => {
+                                const rect = star.getBoundingClientRect();
+                                const isHalf = e.clientX - rect.left < rect.width / 2;
+                                const rating = isHalf ? idx + 0.5 : idx + 1;
+                                render(rating);
+                            });
+                            star.addEventListener('mouseleave', () => {
+                                render(currentRating);
+                            });
+                            star.addEventListener('click', e => {
+                                const rect = star.getBoundingClientRect();
+                                const isHalf = e.clientX - rect.left < rect.width / 2;
+                                currentRating = isHalf ? idx + 0.5 : idx + 1;
+                                input.value = currentRating;
+                                render(currentRating);
+                            });
+                        });
+                        container.addEventListener('mouseleave', () => render(currentRating));
+                    });
+                }
+                
+                document.addEventListener('DOMContentLoaded', initInteractiveStars);
+            </script>
+            
+            <div class="flex-grow-1">
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'catalogo'} ? 'active' : ''" href="/">
+                    <i class="bi bi-house-door-fill fs-5"></i>
+                    <span class="sidebar-text">Meu Catálogo</span>
+                </a>
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'musicas'} ? 'active' : ''" href="/musicas">
+                    <i class="bi bi-music-note-list fs-5"></i>
+                    <span class="sidebar-text">Músicas</span>
+                </a>
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'artistas'} ? 'active' : ''" href="/artistas">
+                    <i class="bi bi-mic-fill fs-5"></i>
+                    <span class="sidebar-text">Artistas</span>
+                </a>
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'albums'} ? 'active' : ''" href="/albums">
+                    <i class="bi bi-disc-fill fs-5"></i>
+                    <span class="sidebar-text">Álbuns</span>
+                </a>
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'comunidade'} ? 'active' : ''" href="/comunidade">
+                    <div class="position-relative">
+                        <i class="bi bi-people-fill fs-5"></i>
+                        <span th:if="${session != null and session.novidadesComunidade}" class="position-absolute top-0 start-100 translate-middle p-1 bg-purple border border-dark rounded-circle">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    </div>
+                    <span class="sidebar-text">Comunidade</span>
+                </a>
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'rankings'} ? 'active' : ''" href="/rankings">
+                    <i class="bi bi-collection-play-fill fs-5"></i>
+                    <span class="sidebar-text">Rankings da Comunidade</span>
+                </a>
+                
+                <!-- Perfil movido para baixo de Comunidade -->
+                <a class="spotify-sidebar-link" th:if="${usuarioLogado != null}" href="/usuarios/me">
+                    <i class="bi bi-person-circle fs-5"></i>
+                    <span class="sidebar-text text-truncate">Meu Perfil</span>
+                </a>
+            </div>
+            
+            <!-- Botão de Sair sozinho embaixo -->
+            <div class="p-3 mt-auto" th:if="${usuarioLogado != null}">
                 <form method="post" action="/logout" hx-boost="false" class="m-0">
-                    <button class="navbar-logout-btn" type="submit">Sair</button>
+                    <button class="spotify-sidebar-link bg-transparent border-0 w-100 text-start" type="submit">
+                        <i class="bi bi-box-arrow-right fs-5"></i>
+                        <span class="sidebar-text">Sair</span>
+                    </button>
                 </form>
             </div>
-        </div>
-    </nav>
+        </nav>
+        
+        <!-- Nova abinha flutuante para minimizar a barra -->
+        <button class="sidebar-toggle-tab" id="sidebar-toggle-btn" type="button" onclick="toggleSidebar()" title="Ocultar/Mostrar Menu">
+            <span class="sidebar-toggle-icon">&#9664;</span>
+        </button>
+    </div>
 </body>
 </html>

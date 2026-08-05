@@ -14,8 +14,8 @@
 
     <div th:insert="~{fragments/navbar :: navbar('catalogo')}"></div>
 
-    <main class="container py-5">
-        <div class="mb-5 text-center text-md-start">
+    <main class="spotify-main container py-5">
+        <div class="mb-5 text-center">
             <h1 class="display-5 fw-bold text-purple mb-1">Meu Catálogo</h1>
             <p class="text-secondary lead">Gerencie suas músicas, artistas e álbuns favoritos em um só acervo.</p>
         </div>
@@ -53,48 +53,32 @@
             </div>
 
             <!-- Grade de Músicas -->
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semMusicas}">
-                <div class="col" th:each="musica : ${musicas}">
-                    <div class="card shadow-sm music-card py-2 px-1">
-                        <div class="card-body d-flex flex-column justify-content-between p-3" style="min-height: 190px;">
-                            <div>
-                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <div style="max-width: 80%;">
-                                        <h5 class="card-title fw-bold mb-0 text-white text-truncate" th:text="${musica.titulo}" th:title="${musica.titulo}"></h5>
-                                        <h6 class="text-purple small mb-1 text-truncate" th:text="${musica.artista}"></h6>
-                                    </div>
-                                    <div class="dropdown">
-                                        <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <span class="fs-5">⋮</span>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
-                                            <li><a class="dropdown-item" th:href="${'/musicas/edit/' + musica.id}">Editar</a></li>
-                                            <li>
-                                                <form method="post" th:action="${'/musicas/delete/' + musica.id}" onsubmit="return confirm('Tem certeza que deseja excluir esta música?');">
-                                                    <button class="dropdown-item text-danger" type="submit">Excluir</button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                
-                                <div class="stars-display mb-2 text-warning" th:if="${musica.nota != null}">
-                                    <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= musica.nota ? '★' : '☆'}"></span>
-                                </div>
-                                
-                                <p class="card-text text-secondary small mb-3 text-truncate-2" th:text="${musica.resenha}"></p>
-                            </div>
-                            
-                            <div class="d-flex align-items-center gap-2 mt-2 pt-2 border-top border-secondary" th:if="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}">
-                                <button type="button" class="btn btn-outline-success btn-sm"
-                                        th:data-url="${musica.youtubeUrl}"
-                                        th:data-titulo="${musica.titulo}"
-                                        onclick="try { playerLoad(playerExtractVideoId(this.getAttribute('data-url')), this.getAttribute('data-titulo'), null); } catch(e) { alert(e.message); }">
-                                    ▶ Play
+            <div class="spotify-grid" th:unless="${semMusicas}">
+                <div class="col" th:each="musica : ${musicas}" data-reveal>
+                    <div class="card h-100 spotify-card-hover p-3 border-0">
+                        <div class="position-relative mb-3">
+                            <div class="w-100 rounded shadow" style="aspect-ratio: 1; background-color: #282828;"></div>
+                            <div class="play-btn-overlay position-absolute bottom-0 end-0 m-2">
+                                <button class="btn btn-primary bg-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center border-0" style="width: 48px; height: 48px; color: #000;">
+                                    <i class="bi bi-play-fill fs-3" style="margin-left: 4px;"></i>
                                 </button>
-                                <a th:href="${musica.youtubeUrl}" target="_blank" class="btn btn-sm btn-outline-danger" title="Abrir no YouTube">
-                                    YouTube ↗
-                                </a>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div style="max-width: 85%; overflow: hidden;">
+                                <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${musica.titulo}"></h6>
+                                <p class="text-secondary small mb-0 text-truncate" th:text="${musica.artista}"></p>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link text-secondary p-0 border-0 text-decoration-none" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-dark shadow">
+                                    <li><a class="dropdown-item" th:href="${'/musicas/edit/' + musica.id}">Editar</a></li>
+                                    <li>
+                                        <form method="post" th:action="${'/musicas/delete/' + musica.id}" onsubmit="return confirm('Tem certeza?');">
+                                            <button class="dropdown-item text-danger" type="submit">Excluir</button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -123,29 +107,32 @@
             </div>
 
             <!-- Grade de Artistas -->
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semArtistas}">
-                <div class="col" th:each="artista : ${artistas}">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column p-4">
-                            <h5 class="card-title fw-bold mb-1 text-white" th:text="${artista.nome}"></h5>
-                            <h6 class="text-purple small mb-2" th:text="${artista.generoMusical != null ? artista.generoMusical : 'Sem gênero'}"></h6>
-                            <div class="stars-display mb-3 text-warning" th:if="${artista.nota != null}">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= artista.nota ? '★' : '☆'}"></span>
+            <div class="spotify-grid" th:unless="${semArtistas}">
+                <div class="col" th:each="artista : ${artistas}" data-reveal>
+                    <div class="card h-100 spotify-card-hover p-3 border-0">
+                        <div class="position-relative mb-3">
+                            <div class="w-100 rounded-circle shadow" style="aspect-ratio: 1; background-color: #282828;"></div>
+                            <div class="play-btn-overlay position-absolute bottom-0 end-0 m-2">
+                                <button class="btn btn-primary bg-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center border-0" style="width: 48px; height: 48px; color: #000;">
+                                    <i class="bi bi-play-fill fs-3" style="margin-left: 4px;"></i>
+                                </button>
                             </div>
-                            <p class="card-text text-secondary small flex-grow-1" th:text="${artista.biografia != null and !artista.biografia.isEmpty() ? (artista.biografia.length() > 100 ? #strings.substring(artista.biografia, 0, 100) + '...' : artista.biografia) : 'Sem biografia disponível.'}"></p>
-                            
-                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
-                                <div>
-                                    <span class="badge bg-success" th:if="${artista.statusVerificacao.name() == 'APROVADO'}">Verificado</span>
-                                    <span class="badge bg-warning text-dark" th:if="${artista.statusVerificacao.name() == 'PENDENTE'}">Pendente</span>
-                                    <span class="badge bg-danger" th:if="${artista.statusVerificacao.name() == 'REJEITADO'}">Rejeitado</span>
-                                </div>
-                                <div class="d-flex gap-1">
-                                    <a class="btn btn-outline-primary btn-sm" th:href="${'/artistas/' + artista.id + '/editar'}">Editar</a>
-                                    <form class="d-inline" method="post" th:action="${'/artistas/' + artista.id + '/excluir'}">
-                                        <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Tem certeza que deseja excluir este artista?')">Excluir</button>
-                                    </form>
-                                </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div style="max-width: 85%; overflow: hidden;">
+                                <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${artista.nome}"></h6>
+                                <p class="text-secondary small mb-0 text-truncate" th:text="${artista.generoMusical != null ? artista.generoMusical : 'Artista'}"></p>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link text-secondary p-0 border-0 text-decoration-none" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-dark shadow">
+                                    <li><a class="dropdown-item" th:href="${'/artistas/' + artista.id + '/editar'}">Editar</a></li>
+                                    <li>
+                                        <form method="post" th:action="${'/artistas/' + artista.id + '/excluir'}" onsubmit="return confirm('Tem certeza?');">
+                                            <button class="dropdown-item text-danger" type="submit">Excluir</button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -174,24 +161,32 @@
             </div>
 
             <!-- Grade de Álbuns -->
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semAlbums}">
-                <div class="col" th:each="album : ${albums}">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column p-4">
-                            <h5 class="card-title fw-bold mb-1 text-white" th:text="${album.titulo}"></h5>
-                            <h6 class="text-purple small mb-2" th:text="${'De ' + album.artista}"></h6>
-                            <div class="stars-display mb-3 text-warning" th:if="${album.nota != null}">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= album.nota ? '★' : '☆'}"></span>
+            <div class="spotify-grid" th:unless="${semAlbums}">
+                <div class="col" th:each="album : ${albums}" data-reveal>
+                    <div class="card h-100 spotify-card-hover p-3 border-0">
+                        <div class="position-relative mb-3">
+                            <div class="w-100 rounded shadow" style="aspect-ratio: 1; background-color: #282828;"></div>
+                            <div class="play-btn-overlay position-absolute bottom-0 end-0 m-2">
+                                <button class="btn btn-primary bg-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center border-0" style="width: 48px; height: 48px; color: #000;">
+                                    <i class="bi bi-play-fill fs-3" style="margin-left: 4px;"></i>
+                                </button>
                             </div>
-                            <p class="card-text text-secondary small flex-grow-1" th:text="${'Ano de Lançamento: ' + album.anoLancamento}"></p>
-                            
-                            <div class="d-flex justify-content-end align-items-center mt-4 pt-3 border-top border-secondary">
-                                <div class="d-flex gap-1">
-                                    <a class="btn btn-outline-primary btn-sm" th:href="${'/albums/' + album.id + '/editar'}">Editar</a>
-                                    <form class="d-inline" method="post" th:action="${'/albums/' + album.id + '/excluir'}">
-                                        <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Tem certeza que deseja excluir este álbum?')">Excluir</button>
-                                    </form>
-                                </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div style="max-width: 85%; overflow: hidden;">
+                                <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${album.titulo}"></h6>
+                                <p class="text-secondary small mb-0 text-truncate" th:text="${album.anoLancamento}"></p>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-link text-secondary p-0 border-0 text-decoration-none" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-dark shadow">
+                                    <li><a class="dropdown-item" th:href="${'/albums/' + album.id + '/editar'}">Editar</a></li>
+                                    <li>
+                                        <form method="post" th:action="${'/albums/' + album.id + '/excluir'}" onsubmit="return confirm('Tem certeza?');">
+                                            <button class="dropdown-item text-danger" type="submit">Excluir</button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -204,7 +199,27 @@
     </main>
 
 </div>
-<div th:insert="fragments/player :: player"></div>
-    <script src="/js/player.js" defer></script>
+<div th:insert="~{fragments/player :: bottom-player}"></div>
+
+<script>
+    // Animações de Rolagem integradas com HTMX
+    function initScrollAnimations() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('[data-reveal]:not(.is-visible)').forEach((el) => {
+            observer.observe(el);
+        });
+    }
+    document.addEventListener("DOMContentLoaded", initScrollAnimations);
+    document.body.addEventListener("htmx:afterSettle", initScrollAnimations);
+</script>
+    
 </body>
 </html>

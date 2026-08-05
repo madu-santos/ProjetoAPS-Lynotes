@@ -25,7 +25,8 @@ class ComunidadeControllerTest {
     private UsuarioService usuarioService;
 
     private Javalin criarApp() {
-        var app = Javalin.create();
+        var app = Javalin.create(config ->
+                config.fileRenderer(new io.javalin.rendering.template.JavalinThymeleaf(templateEngine())));
         ComunidadeController controller = new ComunidadeController(comunidadeService, usuarioService);
         
         app.before(ctx -> {
@@ -33,19 +34,61 @@ class ComunidadeControllerTest {
             ctx.sessionAttribute("usuarioLogado", "User Teste");
         });
         
-        app.get("/comunidade", ctx -> controller.registrarRotas(app));
         controller.registrarRotas(app);
         return app;
     }
 
+    private org.thymeleaf.TemplateEngine templateEngine() {
+        org.thymeleaf.templateresolver.ClassLoaderTemplateResolver resolver = new org.thymeleaf.templateresolver.ClassLoaderTemplateResolver();
+        resolver.setPrefix("/templates/");
+        resolver.setSuffix(".html");
+        resolver.setTemplateMode("HTML");
+        resolver.setCharacterEncoding("UTF-8");
+        org.thymeleaf.TemplateEngine engine = new org.thymeleaf.TemplateEngine();
+        engine.setTemplateResolver(resolver);
+        return engine;
+    }
+
     @Test
     void deveExibirFeedDaComunidade() {
-        when(comunidadeService.listarFeed(anyString(), isNull())).thenReturn(Collections.emptyList());
-        when(usuarioService.listarTodos()).thenReturn(Collections.emptyList());
+        when(comunidadeService.listarFeed(anyString(), eq("seguindo"))).thenReturn(Collections.emptyList());
+        when(comunidadeService.listarAmigos(anyString())).thenReturn(Collections.emptyList());
+        when(comunidadeService.listarPedidosRecebidos(anyString())).thenReturn(Collections.emptyList());
 
         JavalinTest.test(criarApp(), (server, client) -> {
             try (var resposta = client.get("/comunidade")) {
                 assertEquals(200, resposta.code());
+            }
+        });
+    }
+
+    @Test
+    void deveCompartilharItemComSucesso() {
+        JavalinTest.test(criarApp(), (server, client) -> {
+            var form = "tipo=SHARE_MUSIC&itemId=musica1&conteudo=Excelente música!";
+            try (var resposta = client.post("/comunidade/post/compartilhar", form)) {
+                assertEquals(200, resposta.code());
+                verify(comunidadeService, times(1)).criarPostCompartilhado("user123", "SHARE_MUSIC", "musica1", "Excelente música!");
+            }
+        });
+    }
+
+    @Test
+    void deveSeguirUsuarioComSucesso() {
+        JavalinTest.test(criarApp(), (server, client) -> {
+            try (var resposta = client.post("/comunidade/seguir/user456")) {
+                assertEquals(200, resposta.code());
+                verify(comunidadeService, times(1)).enviarSolicitacao("user123", "user456");
+            }
+        });
+    }
+
+    @Test
+    void deveDeseguirUsuarioComSucesso() {
+        JavalinTest.test(criarApp(), (server, client) -> {
+            try (var resposta = client.post("/comunidade/deseguir/user456")) {
+                assertEquals(200, resposta.code());
+                verify(comunidadeService, times(1)).desfazerAmizade("user123", "user456");
             }
         });
     }

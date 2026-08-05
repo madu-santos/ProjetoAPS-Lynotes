@@ -14,10 +14,10 @@
 
     <div th:insert="~{fragments/navbar :: navbar('musicas')}"></div>
 
-    <main class="container py-5">
+    <main class="spotify-main container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1>Músicas</h1>
+                <h1 class="display-5 fw-bold text-purple mb-1">Músicas</h1>
                 <p class="text-secondary mb-0">Cadastre e gerencie as músicas do catálogo.</p>
             </div>
             <a class="btn btn-primary" href="/musicas/new">Nova música</a>
@@ -80,7 +80,7 @@
     </main>
     
 </div>
-<div th:insert="fragments/player :: player"></div>
-    <script src="/js/player.js" defer></script>
+<div th:insert="~{fragments/player :: bottom-player}"></div>
+    
 </body>
 </html>

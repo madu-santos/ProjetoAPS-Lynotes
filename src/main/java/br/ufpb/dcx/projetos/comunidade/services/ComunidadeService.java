@@ -157,4 +157,117 @@ public class ComunidadeService {
         }
         repository.deletarComentario(comentarioId);
     }
+
+    public void criarPostCompartilhado(String usuarioId, String tipo, String itemId, String conteudo) {
+        if (usuarioId == null || usuarioId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Usuário inválido para postar.");
+        }
+        String cont = (conteudo == null) ? "" : conteudo.trim();
+        if (cont.length() > 500) {
+            throw new IllegalArgumentException("O post não pode exceder 500 caracteres.");
+        }
+        
+        String musicaId = null;
+        String albumId = null;
+        String artistaId = null;
+        
+        if ("SHARE_MUSIC".equals(tipo) || "ACTIVITY_MUSIC".equals(tipo)) {
+            musicaId = itemId;
+        } else if ("SHARE_ALBUM".equals(tipo) || "ACTIVITY_ALBUM".equals(tipo)) {
+            albumId = itemId;
+        } else if ("SHARE_ARTIST".equals(tipo) || "ACTIVITY_ARTIST".equals(tipo)) {
+            artistaId = itemId;
+        } else {
+            throw new IllegalArgumentException("Tipo de compartilhamento inválido.");
+        }
+        
+        Post post = new Post(
+                java.util.UUID.randomUUID().toString(),
+                usuarioId,
+                cont,
+                java.time.LocalDateTime.now(),
+                tipo,
+                musicaId,
+                albumId,
+                artistaId
+        );
+        repository.salvarPost(post);
+        notificarPostCriado(post);
+    }
+
+    public void seguir(String seguidorId, String seguidoId) {
+        if (seguidorId == null || seguidoId == null || seguidorId.equals(seguidoId)) {
+            throw new IllegalArgumentException("Operação de seguir inválida.");
+        }
+        repository.seguir(seguidorId, seguidoId);
+    }
+
+    public void deixarDeSeguir(String seguidorId, String seguidoId) {
+        if (seguidorId == null || seguidoId == null) {
+            throw new IllegalArgumentException("Operação de deixar de seguir inválida.");
+        }
+        repository.deixarDeSeguir(seguidorId, seguidoId);
+    }
+
+    public boolean isSeguindo(String seguidorId, String seguidoId) {
+        if (seguidorId == null || seguidoId == null) {
+            return false;
+        }
+        return repository.isSeguindo(seguidorId, seguidoId);
+    }
+
+    public void enviarSolicitacao(String deId, String paraId) {
+        if (deId == null || paraId == null || deId.equals(paraId)) {
+            throw new IllegalArgumentException("Operação inválida.");
+        }
+        if (repository.isPedidoPendente(paraId, deId)) {
+            aceitarSolicitacao(paraId, deId);
+        } else {
+            repository.criarPedidoSeguir(deId, paraId);
+        }
+    }
+
+    public void aceitarSolicitacao(String deId, String paraId) {
+        if (deId == null || paraId == null) {
+            throw new IllegalArgumentException("IDs inválidos.");
+        }
+        repository.seguir(deId, paraId);
+        repository.seguir(paraId, deId);
+        repository.removerPedidoSeguir(deId, paraId);
+    }
+
+    public void recusarSolicitacao(String deId, String paraId) {
+        if (deId == null || paraId == null) {
+            throw new IllegalArgumentException("IDs inválidos.");
+        }
+        repository.removerPedidoSeguir(deId, paraId);
+    }
+
+    public void desfazerAmizade(String usuarioA, String usuarioB) {
+        if (usuarioA == null || usuarioB == null) {
+            throw new IllegalArgumentException("IDs inválidos.");
+        }
+        repository.deixarDeSeguir(usuarioA, usuarioB);
+        repository.deixarDeSeguir(usuarioB, usuarioA);
+    }
+
+    public boolean isPedidoPendente(String seguidorId, String seguidoId) {
+        if (seguidorId == null || seguidoId == null) return false;
+        return repository.isPedidoPendente(seguidorId, seguidoId);
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarPedidosRecebidos(String seguidoId) {
+        if (seguidoId == null) return java.util.Collections.emptyList();
+        return repository.listarPedidosRecebidos(seguidoId);
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarAmigos(String usuarioId) {
+        if (usuarioId == null) return java.util.Collections.emptyList();
+        return repository.listarAmigos(usuarioId);
+    }
+
+    public boolean temNovosPosts(String usuarioId, java.time.LocalDateTime desde) {
+        if (usuarioId == null || desde == null) return false;
+        return repository.temNovosPosts(usuarioId, desde);
+    }
 }

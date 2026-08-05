@@ -14,11 +14,11 @@
 
     <div th:insert="~{fragments/navbar :: navbar('artistas')}"></div>
 
-    <main class="container py-5">
+    <main class="spotify-main container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1>Artistas</h1>
-                <p class="text-secondary mb-0">Cadastre e gerencie os artistas do catálogo.</p>
+                <h1 class="display-5 fw-bold text-purple mb-1">Artistas</h1>
+                <p class="text-secondary mb-0" data-reveal="fade-up">Cadastre e gerencie os artistas do catálogo.</p>
             </div>
             <a class="btn btn-primary" href="/artistas/novo">Novo artista</a>
         </div>
@@ -94,7 +94,7 @@
     </main>
 
 </div>
-<div th:insert="fragments/player :: player"></div>
-    <script src="/js/player.js" defer></script>
+<div th:insert="~{fragments/player :: bottom-player}"></div>
+    
 </body>
 </html>

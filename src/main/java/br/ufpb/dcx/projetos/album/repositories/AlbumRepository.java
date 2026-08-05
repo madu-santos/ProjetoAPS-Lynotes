@@ -14,6 +14,8 @@ public interface AlbumRepository {
     Optional<Album> buscarPorId(String id, String usuarioId);
 
     List<Album> listarTodos(String usuarioId);
+    
+    List<Album> listarTodosGlobal();
 
     List<Album> buscar(String termo, String usuarioId);
 

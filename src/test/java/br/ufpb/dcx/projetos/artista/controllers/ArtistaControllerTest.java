@@ -114,7 +114,7 @@ class ArtistaControllerTest {
         Javalin app = Javalin.create(config ->
                 config.fileRenderer(new JavalinThymeleaf(templateEngine())));
         br.ufpb.dcx.projetos.exceptions.GlobalHttpExceptionHandler.registrar(app);
-        ArtistaController controller = new ArtistaController(useCase);
+        ArtistaController controller = new ArtistaController(useCase, org.mockito.Mockito.mock(br.ufpb.dcx.projetos.comunidade.services.ComunidadeService.class));
         app.get("/artistas", controller::listar);
         app.get("/artistas/novo", controller::exibirCadastro);
         app.post("/artistas", controller::cadastrar);

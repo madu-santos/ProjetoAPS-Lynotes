@@ -16,7 +16,7 @@
 
     <div th:insert="~{fragments/navbar :: navbar('artistas')}"></div>
 
-    <main class="container py-5">
+    <main class="spotify-main container py-5">
         <div class="row justify-content-center">
             <div class="col-lg-7">
                 <div class="mb-4">
@@ -41,7 +41,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label" for="generoMusical">Gênero musical</label>
+                                <label class="form-label" for="generoMusical">GÃƒÂªnero musical</label>
                                 <input class="form-control"
                                        id="generoMusical"
                                        name="generoMusical"
@@ -59,19 +59,15 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label d-block text-white">Nota (Avaliação)</label>
-                                <div class="rating-input">
-                                    <input type="radio" id="star5" name="nota" value="5" th:checked="${form.nota == 5}" />
-                                    <label for="star5" title="5 estrelas">★</label>
-                                    <input type="radio" id="star4" name="nota" value="4" th:checked="${form.nota == 4}" />
-                                    <label for="star4" title="4 estrelas">★</label>
-                                    <input type="radio" id="star3" name="nota" value="3" th:checked="${form.nota == 3}" />
-                                    <label for="star3" title="3 estrelas">★</label>
-                                    <input type="radio" id="star2" name="nota" value="2" th:checked="${form.nota == 2}" />
-                                    <label for="star2" title="2 estrelas">★</label>
-                                    <input type="radio" id="star1" name="nota" value="1" th:checked="${form.nota == 1}" />
-                                    <label for="star1" title="1 estrela">★</label>
+                                <label class="form-label d-block text-white">Nota (AvaliaÃƒÂ§ÃƒÂ£o)</label>
+                                <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
+                                    <i class="bi bi-star star-btn" data-index="1"></i>
+                                    <i class="bi bi-star star-btn" data-index="2"></i>
+                                    <i class="bi bi-star star-btn" data-index="3"></i>
+                                    <i class="bi bi-star star-btn" data-index="4"></i>
+                                    <i class="bi bi-star star-btn" data-index="5"></i>
                                 </div>
+                                <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
                             </div>
 
                             <hr class="my-4">
@@ -87,11 +83,11 @@
                             </div>
 
                             <div id="dadosVerificacao" style="display: none;">
-                                <h5 class="mb-3 text-primary">Dados de Verificação (Exigidos para selo)</h5>
+                                <h5 class="mb-3 text-primary">Dados de VerificaÃƒÂ§ÃƒÂ£o (Exigidos para selo)</h5>
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label" for="cpf">CPF (Apenas números)</label>
+                                        <label class="form-label" for="cpf">CPF (Apenas nÃƒÂºmeros)</label>
                                         <input class="form-control"
                                                id="cpf"
                                                name="cpf"
@@ -101,7 +97,7 @@
                                     </div>
 
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label" for="dataNascimento">Data de Nascimento / Fundação</label>
+                                        <label class="form-label" for="dataNascimento">Data de Nascimento / FundaÃƒÂ§ÃƒÂ£o</label>
                                         <input class="form-control"
                                                type="date"
                                                id="dataNascimento"
@@ -123,7 +119,7 @@
                                 
                                 <div class="row">
                                     <div class="col-md-3 mb-3">
-                                        <label class="form-label" for="numero">Número</label>
+                                        <label class="form-label" for="numero">NÃƒÂºmero</label>
                                         <input class="form-control" id="numero" name="numero" maxlength="20" th:value="${form.numero}">
                                     </div>
                                     <div class="col-md-9 mb-3">
@@ -166,7 +162,7 @@
                                     function apenasNumeros(e) {
                                         if (/\D/.test(e.target.value)) {
                                             e.target.value = e.target.value.replace(/\D/g, '');
-                                            e.target.setCustomValidity("Somente números são aceitos.");
+                                            e.target.setCustomValidity("Somente nÃƒÂºmeros sÃƒÂ£o aceitos.");
                                             e.target.reportValidity();
                                             setTimeout(() => {
                                                 e.target.setCustomValidity("");
@@ -184,14 +180,25 @@
                                     
                                     checkbox.addEventListener('change', toggleCampos);
                                     
-                                    // Chamar no carregamento da página para inicializar corretamente o estado de edição
+                                    // Chamar no carregamento da pÃƒÂ¡gina para inicializar corretamente o estado de ediÃƒÂ§ÃƒÂ£o
                                     toggleCampos();
                                 })();
                             </script>
 
+                            <div class="mb-4 p-3 rounded" style="background-color: #282828;">
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="compartilharComunidade" name="compartilharComunidade" onchange="document.getElementById('twitterBox').classList.toggle('d-none', !this.checked)" checked>
+                                    <label class="form-check-label fw-bold text-white" for="compartilharComunidade">Tweetar na Comunidade <i class="bi bi-chat-text ms-1"></i></label>
+                                </div>
+                                <div id="twitterBox" class="mt-2">
+                                    <textarea class="form-control bg-dark text-white border-secondary" name="mensagemComunidade" maxlength="280" rows="3" placeholder="O que vocÃƒÂª acha deste artista? Compartilhe com a galera..." oninput="document.getElementById('charCount').textContent = this.value.length"></textarea>
+                                    <div class="form-text text-end text-secondary mt-1"><span id="charCount">0</span>/280</div>
+                                </div>
+                            </div>
+
                             <div class="d-flex gap-2">
                                 <button class="btn btn-primary" type="submit"
-                                        th:text="${form.edicao ? 'Salvar alterações' : 'Cadastrar artista'}">
+                                        th:text="${form.edicao ? 'Salvar alteraÃƒÂ§ÃƒÂµes' : 'Cadastrar artista'}">
                                 </button>
                                 <a class="btn btn-outline-secondary" href="/artistas">Cancelar</a>
                             </div>
@@ -203,7 +210,7 @@
     </main>
 
 </div>
-<div th:insert="fragments/player :: player"></div>
-    <script src="/js/player.js" defer></script>
+<div th:insert="~{fragments/player :: bottom-player}"></div>
+    
 </body>
 </html>

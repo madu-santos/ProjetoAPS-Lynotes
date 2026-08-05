@@ -11,7 +11,7 @@ public final class AlbumDTOView {
     private final String titulo;
     private final String artista;
     private final String anoLancamento;
-    private final Integer nota;
+    private final Double nota;
     private final boolean edicao;
     private final String acao;
 
@@ -20,7 +20,7 @@ public final class AlbumDTOView {
             String titulo,
             String artista,
             String anoLancamento,
-            Integer nota,
+            Double nota,
             boolean edicao,
             String acao
     ) {
@@ -89,7 +89,7 @@ public final class AlbumDTOView {
         return anoLancamento;
     }
 
-    public Integer getNota() {
+    public Double getNota() {
         return nota;
     }
 

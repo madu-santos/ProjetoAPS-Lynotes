@@ -51,6 +51,10 @@ function playerTogglePanel() {
     playerState.collapsed = !playerState.collapsed;
     container.classList.toggle('collapsed', playerState.collapsed);
 
+    document.querySelectorAll('.spotify-main').forEach(el => {
+        el.classList.toggle('player-open', !playerState.collapsed);
+    });
+
     // Recarrega playlists ao abrir o painel (pega qualquer nova playlist criada)
     if (!playerState.collapsed) {
         const currentSelected = playerState.currentPlaylistId;
@@ -500,6 +504,10 @@ async function initPlayerModule() {
             playerSetMessage('Falha ao carregar playlists.')
         );
     }
+    
+    document.querySelectorAll('.spotify-main').forEach(el => {
+        el.classList.toggle('player-open', !playerState.collapsed);
+    });
 
     // Carregar YouTube IFrame API
     if (!window.YT || !window.YT.Player) {

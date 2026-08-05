@@ -14,7 +14,7 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
-public final class PlaylistService {
+public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
 

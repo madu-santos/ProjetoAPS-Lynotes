@@ -16,11 +16,11 @@ public final class ArtistaModule {
     private ArtistaModule() {
     }
 
-    public static void registrar(Javalin app, ConnectionFactory connectionFactory) {
+    public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
         ArtistaRepository repository = new ArtistaDbRepository(connectionFactory);
         ArtistaUseCase useCase = new ArtistaService(repository, new ArtistaValidator());
 
-        ArtistaController controller = new ArtistaController(useCase);
+        ArtistaController controller = new ArtistaController(useCase, comunidadeService);
         AdminController adminController = new AdminController((ArtistaService) useCase);
 
         // Registro de rotas de Artistas

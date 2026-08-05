@@ -148,6 +148,11 @@ class ArtistaServiceTest {
         }
 
         @Override
+        public List<Artista> listarTodosGlobal() {
+            return new ArrayList<>(artistas.values());
+        }
+
+        @Override
         public List<Artista> buscar(String termo, String usuarioId) {
             String busca = termo.toLowerCase();
             return artistas.values().stream()

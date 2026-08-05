@@ -34,22 +34,24 @@ public final class MusicaController {
     private final AlbumService albumService;
     private final PlaylistService playlistService;
     private final ArtistaService artistaService;
+    private final br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService;
 
-    public MusicaController(MusicaService service, AlbumService albumService, PlaylistService playlistService, ArtistaService artistaService) {
+    public MusicaController(MusicaService service, AlbumService albumService, PlaylistService playlistService, ArtistaService artistaService, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
         this.service = service;
         this.albumService = albumService;
         this.playlistService = playlistService;
         this.artistaService = artistaService;
+        this.comunidadeService = comunidadeService;
     }
 
     @io.javalin.openapi.OpenApi(
-            summary = "Página inicial ou landing page",
+            summary = "PÃ¡gina inicial ou landing page",
             operationId = "home",
             path = "/",
             methods = io.javalin.openapi.HttpMethod.GET,
-            tags = {"Músicas"},
+            tags = {"MÃºsicas"},
             responses = {
-                    @io.javalin.openapi.OpenApiResponse(status = "200", description = "Página renderizada com sucesso")
+                    @io.javalin.openapi.OpenApiResponse(status = "200", description = "PÃ¡gina renderizada com sucesso")
             }
     )
     public void exibirHomeOuLanding(Context ctx) {
@@ -100,14 +102,14 @@ public final class MusicaController {
     }
 
     @io.javalin.openapi.OpenApi(
-            summary = "Catalogar nova música",
+            summary = "Catalogar nova mÃºsica",
             operationId = "cadastrarMusica",
             path = "/musicas",
             methods = io.javalin.openapi.HttpMethod.POST,
-            tags = {"Músicas"},
+            tags = {"MÃºsicas"},
             responses = {
                     @io.javalin.openapi.OpenApiResponse(status = "303", description = "Redireciona para a home"),
-                    @io.javalin.openapi.OpenApiResponse(status = "422", description = "Dados inválidos")
+                    @io.javalin.openapi.OpenApiResponse(status = "422", description = "Dados invÃ¡lidos")
             }
     )
     public void cadastrar(Context ctx) {
@@ -120,9 +122,9 @@ public final class MusicaController {
                 return;
             }
 
-            Integer notaVal = null;
+            Double notaVal = null;
             if (dto.nota() != null && !dto.nota().isBlank()) {
-                notaVal = Integer.parseInt(dto.nota());
+                notaVal = Double.parseDouble(dto.nota());
             }
 
             Integer duracaoVal = null;
@@ -144,6 +146,20 @@ public final class MusicaController {
                     usuarioId);
             service.save(musica);
 
+            String compartilhar = ctx.formParam("compartilharComunidade");
+            String mensagem = ctx.formParam("mensagemComunidade");
+
+            if (comunidadeService != null && "on".equals(compartilhar)) {
+                String msg = "Catalogou a mÃºsica: **" + musica.getTitulo() + "** (" + musica.getArtista() + ")";
+                if (musica.getNota() != null) {
+                    msg += " e avaliou com " + musica.getNota() + " estrelas. â­";
+                }
+                if (mensagem != null && !mensagem.trim().isEmpty()) {
+                    msg += "\n\n\"" + mensagem.trim() + "\"";
+                }
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", musica.getId(), msg);
+            }
+
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
                 String videoId = playlistService.extractVideoId(dto.youtubeUrl());
                 if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
@@ -158,22 +174,22 @@ public final class MusicaController {
 
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("DTO de cadastro de música inválido. path={} mensagem={}", ctx.path(), e.getMessage());
+            LOGGER.warn("DTO de cadastro de mÃºsica invÃ¡lido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
             renderizarFormulario(ctx, MusicaDTOView.cadastro(dto, albums, playlists), e.getMessage());
         } catch (DatabaseException e) {
-            LOGGER.error("Erro de banco de dados ao cadastrar música. path={}", ctx.path(), e);
+            LOGGER.error("Erro de banco de dados ao cadastrar mÃºsica. path={}", ctx.path(), e);
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
             renderizarFormulario(ctx, MusicaDTOView.cadastro(dto, albums, playlists),
-                    "Erro ao salvar a música. Tente novamente.");
+                    "Erro ao salvar a mÃºsica. Tente novamente.");
         } catch (Exception e) {
-            LOGGER.error("Erro inesperado ao cadastrar música. path={}", ctx.path(), e);
+            LOGGER.error("Erro inesperado ao cadastrar mÃºsica. path={}", ctx.path(), e);
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
@@ -186,11 +202,11 @@ public final class MusicaController {
     public void exibirEdicao(Context ctx) {
         String id = ctx.pathParam("id");
         Musica musica = service.findById(id)
-                .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Música não encontrada"));
+                .orElseThrow(() -> new io.javalin.http.NotFoundResponse("MÃºsica nÃ£o encontrada"));
 
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         if (usuarioId == null || !usuarioId.equals(musica.getUsuarioId())) {
-            ctx.status(HttpStatus.FORBIDDEN).result("Você não tem permissão para editar esta música.");
+            ctx.status(HttpStatus.FORBIDDEN).result("VocÃª nÃ£o tem permissÃ£o para editar esta mÃºsica.");
             return;
         }
 
@@ -210,16 +226,16 @@ public final class MusicaController {
                 return;
             }
             Musica musicaExistente = service.findById(id)
-                    .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Música não encontrada"));
+                    .orElseThrow(() -> new io.javalin.http.NotFoundResponse("MÃºsica nÃ£o encontrada"));
 
             if (!usuarioId.equals(musicaExistente.getUsuarioId())) {
-                ctx.status(HttpStatus.FORBIDDEN).result("Você não tem permissão para atualizar esta música.");
+                ctx.status(HttpStatus.FORBIDDEN).result("VocÃª nÃ£o tem permissÃ£o para atualizar esta mÃºsica.");
                 return;
             }
 
-            Integer notaVal = null;
+            Double notaVal = null;
             if (dto.nota() != null && !dto.nota().isBlank()) {
-                notaVal = Integer.parseInt(dto.nota());
+                notaVal = Double.parseDouble(dto.nota());
             }
 
             Integer duracaoVal = musicaExistente.getDuracaoSegundos();
@@ -242,6 +258,20 @@ public final class MusicaController {
                     usuarioId);
             service.update(id, musicaDetails);
 
+            String compartilhar = ctx.formParam("compartilharComunidade");
+            String mensagem = ctx.formParam("mensagemComunidade");
+
+            if (comunidadeService != null && "on".equals(compartilhar)) {
+                String msg = "Atualizou a mÃºsica: **" + musicaDetails.getTitulo() + "** (" + musicaDetails.getArtista() + ")";
+                if (musicaDetails.getNota() != null) {
+                    msg += " e avaliou com " + musicaDetails.getNota() + " estrelas. â­";
+                }
+                if (mensagem != null && !mensagem.trim().isEmpty()) {
+                    msg += "\n\n\"" + mensagem.trim() + "\"";
+                }
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", id, msg);
+            }
+
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
                 String videoId = playlistService.extractVideoId(dto.youtubeUrl());
                 if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
@@ -256,22 +286,22 @@ public final class MusicaController {
 
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("DTO de edição de música inválido. path={} mensagem={}", ctx.path(), e.getMessage());
+            LOGGER.warn("DTO de ediÃ§Ã£o de mÃºsica invÃ¡lido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
             renderizarFormulario(ctx, MusicaDTOView.edicao(id, dto, albums, playlists), e.getMessage());
         } catch (DatabaseException e) {
-            LOGGER.error("Erro de banco de dados ao atualizar música. path={}", ctx.path(), e);
+            LOGGER.error("Erro de banco de dados ao atualizar mÃºsica. path={}", ctx.path(), e);
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
                     .findByUsuarioId(ctx.sessionAttribute("usuarioLogadoId"));
             renderizarFormulario(ctx, MusicaDTOView.edicao(id, dto, albums, playlists),
-                    "Erro ao salvar as alterações. Tente novamente.");
+                    "Erro ao salvar as alteraÃ§Ãµes. Tente novamente.");
         } catch (Exception e) {
-            LOGGER.error("Erro inesperado ao atualizar música. path={}", ctx.path(), e);
+            LOGGER.error("Erro inesperado ao atualizar mÃºsica. path={}", ctx.path(), e);
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
             List<Album> albums = albumService.findAll(ctx.sessionAttribute("usuarioLogadoId"));
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService
@@ -289,10 +319,10 @@ public final class MusicaController {
             return;
         }
         Musica musicaExistente = service.findById(id)
-                .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Música não encontrada"));
+                .orElseThrow(() -> new io.javalin.http.NotFoundResponse("MÃºsica nÃ£o encontrada"));
 
         if (!usuarioId.equals(musicaExistente.getUsuarioId())) {
-            ctx.status(HttpStatus.FORBIDDEN).result("Você não tem permissão para excluir esta música.");
+            ctx.status(HttpStatus.FORBIDDEN).result("VocÃª nÃ£o tem permissÃ£o para excluir esta mÃºsica.");
             return;
         }
 

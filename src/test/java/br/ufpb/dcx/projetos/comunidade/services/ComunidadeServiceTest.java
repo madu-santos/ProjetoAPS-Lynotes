@@ -59,4 +59,30 @@ class ComunidadeServiceTest {
             comunidadeService.editarPost(post.getId(), "outroUser", "Texto novo");
         });
     }
+
+    @Test
+    void deveCriarPostCompartilhadoComSucesso() {
+        comunidadeService.criarPostCompartilhado("user123", "SHARE_MUSIC", "music1", "Recomendo!");
+        verify(comunidadeRepository, times(1)).salvarPost(any(Post.class));
+    }
+
+    @Test
+    void naoDeveCriarPostCompartilhadoComTipoInvalido() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            comunidadeService.criarPostCompartilhado("user123", "TIPO_INVALIDO", "item1", "Recomendo!");
+        });
+    }
+
+    @Test
+    void deveSeguirUsuarioComSucesso() {
+        comunidadeService.seguir("user1", "user2");
+        verify(comunidadeRepository, times(1)).seguir("user1", "user2");
+    }
+
+    @Test
+    void naoDeveSeguirASiMesmo() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            comunidadeService.seguir("user1", "user1");
+        });
+    }
 }

@@ -11,13 +11,13 @@ public final class Musica {
     private final String genero;
     private final Integer duracaoSegundos; // Nullable
     private final String resenha; // Nullable
-    private final Integer nota; // Nullable (1 a 5 estrelas)
+    private final Double nota; // Nullable (1 a 5 estrelas)
     private final String spotifyUrl; // Nullable
     private final String youtubeUrl; // Nullable
     private final String albumId; // Nullable
     private final String usuarioId; // Nullable
 
-    public Musica(String id, String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Integer nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId) {
+    public Musica(String id, String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Double nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId) {
         this.id = Objects.requireNonNull(id);
         this.titulo = Objects.requireNonNull(titulo);
         this.artista = Objects.requireNonNull(artista);
@@ -31,7 +31,7 @@ public final class Musica {
         this.usuarioId = usuarioId;
     }
 
-    public static Musica novo(String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Integer nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId) {
+    public static Musica novo(String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Double nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId) {
         return new Musica(UUID.randomUUID().toString(), titulo, artista, genero, duracaoSegundos, resenha, nota, spotifyUrl, youtubeUrl, albumId, usuarioId);
     }
 
@@ -59,7 +59,7 @@ public final class Musica {
         return resenha;
     }
 
-    public Integer getNota() {
+    public Double getNota() {
         return nota;
     }
 

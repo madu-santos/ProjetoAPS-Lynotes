@@ -9,10 +9,10 @@ public final class Album {
     private final String titulo;
     private final String artista;
     private final int anoLancamento;
-    private final Integer nota;
+    private final Double nota;
     private final String usuarioId;
 
-    public Album(String id, String titulo, String artista, int anoLancamento, Integer nota, String usuarioId) {
+    public Album(String id, String titulo, String artista, int anoLancamento, Double nota, String usuarioId) {
         this.id = Objects.requireNonNull(id);
         this.titulo = titulo;
         this.artista = artista;
@@ -29,7 +29,7 @@ public final class Album {
         return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, null, usuarioId);
     }
 
-    public static Album novo(String titulo, String artista, int anoLancamento, Integer nota, String usuarioId) {
+    public static Album novo(String titulo, String artista, int anoLancamento, Double nota, String usuarioId) {
         return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, nota, usuarioId);
     }
 
@@ -53,7 +53,7 @@ public final class Album {
         return usuarioId;
     }
 
-    public Integer getNota() {
+    public Double getNota() {
         return nota;
     }
 

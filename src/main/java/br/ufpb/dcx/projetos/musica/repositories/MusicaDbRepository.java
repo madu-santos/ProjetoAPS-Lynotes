@@ -44,15 +44,15 @@ public final class MusicaDbRepository implements MusicaRepository {
             if (musica.getDuracaoSegundos() != null) {
                 statement.setInt(5, musica.getDuracaoSegundos());
             } else {
-                statement.setNull(5, Types.INTEGER);
+                statement.setNull(5, Types.DOUBLE);
             }
             
             statement.setString(6, musica.getResenha());
             
             if (musica.getNota() != null) {
-                statement.setInt(7, musica.getNota());
+                statement.setDouble(7, musica.getNota());
             } else {
-                statement.setNull(7, Types.INTEGER);
+                statement.setNull(7, Types.DOUBLE);
             }
             
             statement.setString(8, musica.getSpotifyUrl());
@@ -70,7 +70,7 @@ public final class MusicaDbRepository implements MusicaRepository {
                 statement.setNull(11, Types.VARCHAR);
             }
         });
-        LOGGER.debug("Música persistida no catálogo. id={}", musica.getId());
+        LOGGER.debug("MÃºsica persistida no catÃ¡logo. id={}", musica.getId());
     }
 
     @Override
@@ -89,15 +89,15 @@ public final class MusicaDbRepository implements MusicaRepository {
             if (musica.getDuracaoSegundos() != null) {
                 statement.setInt(4, musica.getDuracaoSegundos());
             } else {
-                statement.setNull(4, Types.INTEGER);
+                statement.setNull(4, Types.DOUBLE);
             }
             
             statement.setString(5, musica.getResenha());
             
             if (musica.getNota() != null) {
-                statement.setInt(6, musica.getNota());
+                statement.setDouble(6, musica.getNota());
             } else {
-                statement.setNull(6, Types.INTEGER);
+                statement.setNull(6, Types.DOUBLE);
             }
             
             statement.setString(7, musica.getSpotifyUrl());
@@ -131,7 +131,7 @@ public final class MusicaDbRepository implements MusicaRepository {
                 return result.next() ? Optional.of(mapear(result)) : Optional.empty();
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar música por ID", e);
+            throw erroPersistencia("buscar mÃºsica por ID", e);
         }
     }
 
@@ -144,7 +144,7 @@ public final class MusicaDbRepository implements MusicaRepository {
              ResultSet result = statement.executeQuery(sql)) {
             return mapearLista(result);
         } catch (SQLException e) {
-            throw erroPersistencia("listar músicas", e);
+            throw erroPersistencia("listar mÃºsicas", e);
         }
     }
 
@@ -159,7 +159,7 @@ public final class MusicaDbRepository implements MusicaRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar músicas por ID do álbum", e);
+            throw erroPersistencia("buscar mÃºsicas por ID do Ã¡lbum", e);
         }
     }
 
@@ -174,7 +174,7 @@ public final class MusicaDbRepository implements MusicaRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar músicas por ID do usuário", e);
+            throw erroPersistencia("buscar mÃºsicas por ID do usuÃ¡rio", e);
         }
     }
 
@@ -196,7 +196,7 @@ public final class MusicaDbRepository implements MusicaRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar músicas com filtro", e);
+            throw erroPersistencia("buscar mÃºsicas com filtro", e);
         }
     }
 
@@ -212,7 +212,7 @@ public final class MusicaDbRepository implements MusicaRepository {
             binder.bind(statement);
             return statement.executeUpdate();
         } catch (SQLException e) {
-            throw erroPersistencia("alterar dados de música", e);
+            throw erroPersistencia("alterar dados de mÃºsica", e);
         }
     }
 
@@ -232,7 +232,7 @@ public final class MusicaDbRepository implements MusicaRepository {
                 result.getString("genero"),
                 result.getObject("duracao_segundos", Integer.class),
                 result.getString("resenha"),
-                result.getObject("nota", Integer.class),
+                result.getObject("nota") != null ? result.getDouble("nota") : null,
                 result.getString("spotify_url"),
                 result.getString("youtube_url"),
                 result.getString("album_id"),

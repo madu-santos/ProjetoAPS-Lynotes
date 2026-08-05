@@ -27,7 +27,7 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaComSucessoSemAlbum() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa mÃºsica", 5.0, null, null, null, "user-1");
         service.save(musica);
 
         Optional<Musica> cadastrada = service.findById(musica.getId());
@@ -43,7 +43,7 @@ public class MusicaServiceTest {
         Album album = Album.novo("Samba Esquema Novo", "Jorge Ben", 1963, "user-1");
         albumRepo.criar(album);
 
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, album.getId(), "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa mÃºsica", 5.0, null, null, album.getId(), "user-1");
         service.save(musica);
 
         Optional<Musica> cadastrada = service.findById(musica.getId());
@@ -54,25 +54,25 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaTituloVazio() {
-        Musica musica = Musica.novo("", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
+        Musica musica = Musica.novo("", "Jorge Ben", "Samba", 180, "Boa mÃºsica", 5.0, null, null, null, "user-1");
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.save(musica);
         });
-        assertEquals("O título da música é obrigatório", exception.getMessage());
+        assertEquals("O tÃ­tulo da mÃºsica Ã© obrigatÃ³rio", exception.getMessage());
     }
 
     @Test
     public void testSaveMusicaArtistaVazio() {
-        Musica musica = Musica.novo("Mas Que Nada", "   ", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "   ", "Samba", 180, "Boa mÃºsica", 5.0, null, null, null, "user-1");
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.save(musica);
         });
-        assertEquals("O artista é obrigatório", exception.getMessage());
+        assertEquals("O artista Ã© obrigatÃ³rio", exception.getMessage());
     }
 
     @Test
     public void testSaveMusicaNotaInvalida() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 6, null, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa mÃºsica", 6.0, null, null, null, "user-1");
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             service.save(musica);
         });
@@ -81,19 +81,19 @@ public class MusicaServiceTest {
 
     @Test
     public void testSaveMusicaAlbumInexistente() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, "album-fake-id", "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa mÃºsica", 5.0, null, null, "album-fake-id", "user-1");
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.save(musica);
         });
-        assertEquals("Álbum não encontrado com id: album-fake-id", exception.getMessage());
+        assertEquals("Ãlbum nÃ£o encontrado com id: album-fake-id", exception.getMessage());
     }
 
     @Test
     public void testUpdateMusicaComSucesso() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa mÃºsica", 5.0, null, null, null, "user-1");
         service.save(musica);
 
-        Musica atualizacao = new Musica(musica.getId(), "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4, null, null, null, "user-1");
+        Musica atualizacao = new Musica(musica.getId(), "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4.0, null, null, null, "user-1");
         service.update(musica.getId(), atualizacao);
 
         Optional<Musica> alterada = service.findById(musica.getId());
@@ -106,16 +106,16 @@ public class MusicaServiceTest {
 
     @Test
     public void testUpdateMusicaNaoEncontrada() {
-        Musica atualizacao = new Musica("id-invalido", "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4, null, null, null, "user-1");
+        Musica atualizacao = new Musica("id-invalido", "Chove Chuva", "Jorge Ben", "Bossa Nova", 200, "Excelente", 4.0, null, null, null, "user-1");
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.update("id-invalido", atualizacao);
         });
-        assertEquals("Música não encontrada com id: id-invalido", exception.getMessage());
+        assertEquals("MÃºsica nÃ£o encontrada com id: id-invalido", exception.getMessage());
     }
 
     @Test
     public void testDeleteMusicaComSucesso() {
-        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa música", 5, null, null, null, "user-1");
+        Musica musica = Musica.novo("Mas Que Nada", "Jorge Ben", "Samba", 180, "Boa mÃºsica", 5.0, null, null, null, "user-1");
         service.save(musica);
 
         service.deleteById(musica.getId());
@@ -127,7 +127,7 @@ public class MusicaServiceTest {
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> {
             service.deleteById("id-invalido");
         });
-        assertEquals("Música não encontrada com id: id-invalido", exception.getMessage());
+        assertEquals("MÃºsica nÃ£o encontrada com id: id-invalido", exception.getMessage());
     }
 
     private static class FakeMusicaRepository implements MusicaRepository {
@@ -183,6 +183,13 @@ public class MusicaServiceTest {
         public boolean remover(String id) {
             return musicas.remove(id) != null;
         }
+
+        @Override
+        public List<Musica> buscar(String busca, String usuarioId) {
+            return musicas.values().stream()
+                    .filter(m -> Objects.equals(m.getUsuarioId(), usuarioId) && m.getTitulo().toLowerCase().contains(busca.toLowerCase()))
+                    .toList();
+        }
     }
 
     private static class FakeAlbumRepository implements AlbumRepository {
@@ -223,6 +230,11 @@ public class MusicaServiceTest {
         }
 
         @Override
+        public List<Album> listarTodosGlobal() {
+            return new ArrayList<>(albums.values());
+        }
+
+        @Override
         public boolean remover(String id, String usuarioId) {
             Album album = albums.get(id);
             if (album != null && Objects.equals(album.getUsuarioId(), usuarioId)) {
@@ -230,6 +242,13 @@ public class MusicaServiceTest {
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public List<Album> buscar(String termo, String usuarioId) {
+            return albums.values().stream()
+                    .filter(a -> Objects.equals(a.getUsuarioId(), usuarioId) && a.getTitulo().toLowerCase().contains(termo.toLowerCase()))
+                    .toList();
         }
     }
 }

@@ -13,10 +13,10 @@ public final class AlbumModule {
     private AlbumModule() {
     }
 
-    public static void registrar(Javalin app, ConnectionFactory connectionFactory) {
+    public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
         AlbumRepository albumRepository = new AlbumDbRepository(connectionFactory);
         AlbumService albumService = new AlbumService(albumRepository);
-        AlbumController controller = new AlbumController(albumService);
+        AlbumController controller = new AlbumController(albumService, comunidadeService);
 
         app.get("/albums", controller::listar, Role.USER);
         app.get("/albums/novo", controller::exibirCadastro, Role.USER);

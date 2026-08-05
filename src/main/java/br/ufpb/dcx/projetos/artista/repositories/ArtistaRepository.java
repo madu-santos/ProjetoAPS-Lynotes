@@ -14,6 +14,8 @@ public interface ArtistaRepository {
     Optional<Artista> buscarPorId(String id, String usuarioId);
 
     List<Artista> listarTodos(String usuarioId);
+    
+    List<Artista> listarTodosGlobal();
 
     List<Artista> buscar(String termo, String usuarioId);
 

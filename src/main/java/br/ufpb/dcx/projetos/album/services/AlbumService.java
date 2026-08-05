@@ -28,6 +28,10 @@ public class AlbumService {
     public List<Album> findAll(String usuarioId) {
         return albumRepository.listarTodos(usuarioId);
     }
+    
+    public List<Album> findAllGlobal() {
+        return albumRepository.listarTodosGlobal();
+    }
 
     public List<Album> search(String termo, String usuarioId) {
         return albumRepository.buscar(termo, usuarioId);

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Objects;
 
-public final class ArtistaService implements ArtistaUseCase {
+public class ArtistaService implements ArtistaUseCase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtistaService.class);
 
@@ -27,6 +27,10 @@ public final class ArtistaService implements ArtistaUseCase {
     public List<Artista> listar(String busca, String usuarioId) {
         String termo = Objects.toString(busca, "").trim();
         return termo.isEmpty() ? repository.listarTodos(usuarioId) : repository.buscar(termo, usuarioId);
+    }
+    
+    public List<Artista> findAllGlobal() {
+        return repository.listarTodosGlobal();
     }
 
     @Override

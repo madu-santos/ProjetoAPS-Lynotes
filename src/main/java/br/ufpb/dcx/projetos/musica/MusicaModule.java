@@ -19,7 +19,7 @@ public final class MusicaModule {
     private MusicaModule() {
     }
 
-    public static void registrar(Javalin app, ConnectionFactory connectionFactory) {
+    public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
         var albumRepository = new AlbumDbRepository(connectionFactory);
         var musicaRepository = new MusicaDbRepository(connectionFactory);
         var playlistRepository = new PlaylistDbRepository(connectionFactory);
@@ -30,7 +30,7 @@ public final class MusicaModule {
         var playlistService = new PlaylistService(playlistRepository);
         var artistaService = new ArtistaService(artistaRepository, new ArtistaValidator());
 
-        var controller = new MusicaController(musicaService, albumService, playlistService, artistaService);
+        var controller = new MusicaController(musicaService, albumService, playlistService, artistaService, comunidadeService);
         
         app.get("/", controller::exibirHomeOuLanding, Role.ANYONE);
         app.get("/musicas", controller::listar, Role.USER);

@@ -25,19 +25,21 @@ public final class AlbumController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AlbumController.class);
 
     private final AlbumService service;
+    private final br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService;
 
-    public AlbumController(AlbumService service) {
+    public AlbumController(AlbumService service, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
         this.service = service;
+        this.comunidadeService = comunidadeService;
     }
 
     @io.javalin.openapi.OpenApi(
-            summary = "Listar álbuns",
+            summary = "Listar Ã¡lbuns",
             operationId = "listarAlbums",
             path = "/albums",
             methods = io.javalin.openapi.HttpMethod.GET,
-            tags = {"Álbuns"},
+            tags = {"Ãlbuns"},
             responses = {
-                    @io.javalin.openapi.OpenApiResponse(status = "200", description = "Lista de álbuns retornada com sucesso")
+                    @io.javalin.openapi.OpenApiResponse(status = "200", description = "Lista de Ã¡lbuns retornada com sucesso")
             }
     )
     public void listar(Context ctx) {
@@ -62,14 +64,14 @@ public final class AlbumController {
     }
 
     @io.javalin.openapi.OpenApi(
-            summary = "Cadastrar novo álbum",
+            summary = "Cadastrar novo Ã¡lbum",
             operationId = "cadastrarAlbum",
             path = "/albums",
             methods = io.javalin.openapi.HttpMethod.POST,
-            tags = {"Álbuns"},
+            tags = {"Ãlbuns"},
             responses = {
                     @io.javalin.openapi.OpenApiResponse(status = "303", description = "Redireciona para a listagem"),
-                    @io.javalin.openapi.OpenApiResponse(status = "422", description = "Dados inválidos")
+                    @io.javalin.openapi.OpenApiResponse(status = "422", description = "Dados invÃ¡lidos")
             }
     )
     public void cadastrar(Context ctx) {
@@ -80,9 +82,23 @@ public final class AlbumController {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             Album album = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId);
             service.save(album, usuarioId);
+            
+            String compartilhar = ctx.formParam("compartilharComunidade");
+            String mensagem = ctx.formParam("mensagemComunidade");
+
+            if (comunidadeService != null && "on".equals(compartilhar)) {
+                String msg = "Catalogou o Ã¡lbum: **" + album.getTitulo() + "** (" + album.getArtista() + ")";
+                if (album.getNota() != null) {
+                    msg += " e avaliou com " + album.getNota() + " estrelas. â­";
+                }
+                if (mensagem != null && !mensagem.trim().isEmpty()) {
+                    msg += "\n\n\"" + mensagem.trim() + "\"";
+                }
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ALBUM", album.getId(), msg);
+            }
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("DTO de cadastro de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
+            LOGGER.warn("DTO de cadastro de Ã¡lbum invÃ¡lido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             renderizarFormulario(ctx, AlbumDTOView.cadastro(dto), e.getMessage());
         }
@@ -92,23 +108,23 @@ public final class AlbumController {
         String id = ctx.pathParam("id");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         Album album = service.findById(id, usuarioId)
-                .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Álbum não encontrado"));
+                .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Ãlbum nÃ£o encontrado"));
         renderizarFormulario(ctx, AlbumDTOView.edicao(album), null);
     }
 
     @io.javalin.openapi.OpenApi(
-            summary = "Atualizar álbum",
+            summary = "Atualizar Ã¡lbum",
             operationId = "atualizarAlbum",
             path = "/albums/{id}",
             methods = io.javalin.openapi.HttpMethod.POST,
-            tags = {"Álbuns"},
+            tags = {"Ãlbuns"},
             pathParams = {
-                    @io.javalin.openapi.OpenApiParam(name = "id", description = "ID do álbum")
+                    @io.javalin.openapi.OpenApiParam(name = "id", description = "ID do Ã¡lbum")
             },
             responses = {
                     @io.javalin.openapi.OpenApiResponse(status = "303", description = "Redireciona para a listagem"),
-                    @io.javalin.openapi.OpenApiResponse(status = "404", description = "Álbum não encontrado"),
-                    @io.javalin.openapi.OpenApiResponse(status = "422", description = "Dados inválidos")
+                    @io.javalin.openapi.OpenApiResponse(status = "404", description = "Ãlbum nÃ£o encontrado"),
+                    @io.javalin.openapi.OpenApiResponse(status = "422", description = "Dados invÃ¡lidos")
             }
     )
     public void atualizar(Context ctx) {
@@ -120,9 +136,23 @@ public final class AlbumController {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             Album albumDetails = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId);
             service.update(id, albumDetails, usuarioId);
+            
+            String compartilhar = ctx.formParam("compartilharComunidade");
+            String mensagem = ctx.formParam("mensagemComunidade");
+
+            if (comunidadeService != null && "on".equals(compartilhar)) {
+                String msg = "Atualizou o Ã¡lbum: **" + albumDetails.getTitulo() + "** (" + albumDetails.getArtista() + ")";
+                if (albumDetails.getNota() != null) {
+                    msg += " e avaliou com " + albumDetails.getNota() + " estrelas. â­";
+                }
+                if (mensagem != null && !mensagem.trim().isEmpty()) {
+                    msg += "\n\n\"" + mensagem.trim() + "\"";
+                }
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ALBUM", id, msg);
+            }
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn("DTO de edição de álbum inválido. path={} mensagem={}", ctx.path(), e.getMessage());
+            LOGGER.warn("DTO de ediÃ§Ã£o de Ã¡lbum invÃ¡lido. path={} mensagem={}", ctx.path(), e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             renderizarFormulario(ctx, AlbumDTOView.edicao(id, dto), e.getMessage());
         }
@@ -137,7 +167,7 @@ public final class AlbumController {
 
     private AlbumDTO extrairFormulario(Context ctx) {
         String notaStr = ctx.formParam("nota");
-        Integer nota = (notaStr != null && !notaStr.trim().isEmpty()) ? Integer.parseInt(notaStr.trim()) : null;
+        Double nota = (notaStr != null && !notaStr.trim().isEmpty()) ? Double.parseDouble(notaStr.trim()) : null;
         return new AlbumDTO(
                 ctx.formParam("titulo"),
                 ctx.formParam("artista"),
