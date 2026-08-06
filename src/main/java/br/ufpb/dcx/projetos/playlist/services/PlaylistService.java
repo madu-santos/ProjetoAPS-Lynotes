@@ -37,11 +37,14 @@ public class PlaylistService {
                 .toList();
     }
 
+    public List<Playlist> findAllByUsuarioId(String usuarioId) {
+        validarUsuarioId(usuarioId);
+        return playlistRepository.findByUsuarioId(usuarioId);
+    }
+
     public List<Playlist> search(String termo, String usuarioId) {
         validarUsuarioId(usuarioId);
-        return playlistRepository.buscar(termo, usuarioId).stream()
-                .filter(playlist -> !playlist.isOculta())
-                .toList();
+        return playlistRepository.buscar(termo, usuarioId);
     }
 
     public void updatePlaylist(String id, String nome, boolean oculta, String usuarioId) {
@@ -63,8 +66,8 @@ public class PlaylistService {
         if (!playlist.getUsuarioId().equals(usuarioId)) {
             throw new IllegalArgumentException("Você não tem permissão para excluir esta playlist.");
         }
-        if (playlist.isOculta() && "Músicas do seu catálogo".equalsIgnoreCase(playlist.getNome())) {
-            throw new IllegalArgumentException("Você não pode excluir a playlist oculta do catálogo principal.");
+        if (playlist.isOculta() && ("Músicas Catalogadas".equalsIgnoreCase(playlist.getNome()) || "Músicas do seu catálogo".equalsIgnoreCase(playlist.getNome()))) {
+            throw new IllegalArgumentException("Você não pode excluir a playlist oculta de Músicas Catalogadas.");
         }
         playlistRepository.delete(id);
     }
@@ -72,31 +75,33 @@ public class PlaylistService {
     public Playlist findOrCreateHiddenPlaylist(String usuarioId) {
         validarUsuarioId(usuarioId);
         return playlistRepository.findByUsuarioId(usuarioId).stream()
-                .filter(playlist -> playlist.isOculta() || "Músicas do seu catálogo".equalsIgnoreCase(playlist.getNome()))
+                .filter(playlist -> playlist.isOculta() || "Músicas Catalogadas".equalsIgnoreCase(playlist.getNome()) || "Músicas do seu catálogo".equalsIgnoreCase(playlist.getNome()))
                 .findFirst()
                 .orElseGet(() -> {
-                    Playlist playlist = Playlist.novo("Músicas do seu catálogo", usuarioId, true);
+                    Playlist playlist = Playlist.novo("Músicas Catalogadas", usuarioId, true);
                     playlistRepository.create(playlist);
                     return playlist;
                 });
     }
 
     public String extractVideoId(String url) {
-        if (url == null) {
-            throw new IllegalArgumentException("A URL do YouTube é obrigatória.");
+        if (url == null || url.isBlank()) {
+            return "yt_default";
         }
         String query = url.trim();
-        if (query.contains("youtube.com/watch?v=")) {
+        if (query.contains("v=")) {
             int begin = query.indexOf("v=") + 2;
             int end = query.indexOf('&', begin);
-            return end > 0 ? query.substring(begin, end) : query.substring(begin);
+            String id = end > 0 ? query.substring(begin, end) : query.substring(begin);
+            if (!id.isBlank()) return id;
         }
         if (query.contains("youtu.be/")) {
             int begin = query.indexOf("youtu.be/") + 9;
             int end = query.indexOf('?', begin);
-            return end > 0 ? query.substring(begin, end) : query.substring(begin);
+            String id = end > 0 ? query.substring(begin, end) : query.substring(begin);
+            if (!id.isBlank()) return id;
         }
-        throw new IllegalArgumentException("A URL precisa ser um link do YouTube válido.");
+        return "yt_" + Math.abs(query.hashCode());
     }
 
     public PlaylistWithItems findPlaylistWithItems(String playlistId, String usuarioId) {
@@ -118,7 +123,7 @@ public class PlaylistService {
                 .filter(item -> item.getVideoId().equals(videoId))
                 .findFirst();
         if (existingItem.isPresent()) {
-            return existingItem.get();
+            throw new IllegalArgumentException("Essa música já está salva nessa playlist.");
         }
 
         int ordem = playlistRepository.countItemsByPlaylistId(playlistId) + 1;
@@ -128,6 +133,14 @@ public class PlaylistService {
                 playlistId, url, videoId, titulo, ordem, java.time.Instant.now());
         playlistRepository.createItem(item);
         return item;
+    }
+
+    public String getPlaylistCapaUrl(String playlistId) {
+        List<PlaylistItem> items = playlistRepository.findItemsByPlaylistId(playlistId);
+        if (items != null && !items.isEmpty()) {
+            return "https://img.youtube.com/vi/" + items.get(0).getVideoId() + "/hqdefault.jpg";
+        }
+        return null;
     }
 
     public void removeItem(String playlistId, String itemId, String usuarioId) {
@@ -149,6 +162,19 @@ public class PlaylistService {
     }
 
     private String fetchYouTubeTitle(String url, String videoId) {
+        if (url != null && url.contains("search_query=")) {
+            try {
+                int start = url.indexOf("search_query=") + 13;
+                int end = url.indexOf('&', start);
+                String query = end > 0 ? url.substring(start, end) : url.substring(start);
+                String decoded = java.net.URLDecoder.decode(query, java.nio.charset.StandardCharsets.UTF_8);
+                if (!decoded.isBlank()) {
+                    return decoded;
+                }
+            } catch (Exception e) {
+                // fallback
+            }
+        }
         try {
             String oEmbedUrl = "https://www.youtube.com/oembed?url="
                     + java.net.URLEncoder.encode(url, java.nio.charset.StandardCharsets.UTF_8)
@@ -222,7 +248,7 @@ public class PlaylistService {
         if (url == null || url.isBlank()) {
             throw new IllegalArgumentException("A URL do YouTube é obrigatória.");
         }
-        if (!url.matches("^(https?://)?(www\\.)?(youtube\\.com|youtu\\.be)/.+$")) {
+        if (!url.toLowerCase().contains("youtube.com") && !url.toLowerCase().contains("youtu.be") && !url.toLowerCase().contains("http")) {
             throw new IllegalArgumentException("A URL precisa ser um link do YouTube válido.");
         }
     }

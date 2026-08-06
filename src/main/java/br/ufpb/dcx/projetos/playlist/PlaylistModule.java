@@ -19,6 +19,10 @@ public final class PlaylistModule {
         PlaylistController controller = new PlaylistController(playlistService);
         
         app.get("/playlists", controller::listar, Role.USER);
+        app.get("/playlists/new", controller::exibirFormularioCriacao, Role.USER);
+        app.get("/playlists/nova", controller::exibirFormularioCriacao, Role.USER);
+        app.get("/playlists/{id}/editar", controller::exibirFormularioEdicao, Role.USER);
+        app.get("/playlists/edit/{id}", controller::exibirFormularioEdicao, Role.USER);
         app.post("/playlists", controller::criarPlaylist, Role.USER);
         app.get("/playlists/{id}", controller::exibirPlaylist, Role.USER);
         app.post("/playlists/{id}/items", controller::adicionarItem, Role.USER);

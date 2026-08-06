@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+    <div th:fragment="modalYouTubeSearch">
+        <!-- Modal de Busca do YouTube -->
+        <div class="modal fade" id="modalYouTubeSearch" tabindex="-1" aria-labelledby="modalYouTubeSearchLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content bg-dark text-light border-purple shadow-lg" style="border-radius: 16px;">
+                    <div class="modal-header border-bottom border-secondary d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-youtube text-danger fs-3"></i>
+                            <h5 class="modal-title fw-bold text-light mb-0" id="modalYouTubeSearchLabel">Pesquisar no YouTube</h5>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+
+                    <div class="modal-body p-4">
+                        <!-- Abas de Categoria -->
+                        <div class="nav nav-pills nav-justified mb-3 gap-2" id="youtubeTabs" role="tablist">
+                            <button class="nav-link active bg-secondary text-white border-0 fw-semibold" id="tab-musica" type="button" onclick="setYouTubeType('MUSICA')">
+                                <i class="bi bi-music-note-beamed me-1"></i> Músicas
+                            </button>
+                            <button class="nav-link bg-secondary text-white border-0 fw-semibold" id="tab-album" type="button" onclick="setYouTubeType('ALBUM')">
+                                <i class="bi bi-disc me-1"></i> Álbuns
+                            </button>
+                            <button class="nav-link bg-secondary text-white border-0 fw-semibold" id="tab-artista" type="button" onclick="setYouTubeType('ARTISTA')">
+                                <i class="bi bi-person me-1"></i> Artistas
+                            </button>
+                        </div>
+
+                        <!-- Input de Pesquisa -->
+                        <div class="position-relative mb-4">
+                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                            <input type="text" id="ytSearchInput" class="form-control form-control-lg bg-darker text-light border-secondary ps-5 rounded-pill" placeholder="Digite o nome da música, álbum ou artista..." onkeyup="debounceYTSearch()">
+                        </div>
+
+                        <!-- Status / Spinner -->
+                        <div id="ytSearchSpinner" class="text-center py-4 d-none">
+                            <div class="spinner-border text-purple" role="status">
+                                <span class="visually-hidden">Carregando...</span>
+                            </div>
+                            <p class="text-muted small mt-2">Buscando no YouTube...</p>
+                        </div>
+
+                        <!-- Resultados -->
+                        <div id="ytSearchResults" class="d-flex flex-column gap-3 overflow-auto" style="max-height: 380px;">
+                            <div class="text-center py-5 text-muted">
+                                <i class="bi bi-search fs-1 mb-2 d-block"></i>
+                                Pesquise no YouTube para importar dados e avaliar instantaneamente.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Secundário de Avaliação Rápida -->
+        <div class="modal fade" id="modalYTAvaliar" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark text-light border-purple">
+                    <div class="modal-header border-bottom border-secondary">
+                        <h5 class="modal-title fw-bold" id="ytAvaliarTitle">Avaliar e Salvar</h5>
+                        <button type="button" class="btn-close btn-close-white" onclick="fecharModalAvaliar()"></button>
+                    </div>
+                    <form id="formYTAvaliar" method="post" action="/musicas">
+                        <div class="modal-body">
+                            <div class="d-flex gap-3 align-items-center mb-3">
+                                <img id="ytAvaliarCapa" src="" class="rounded shadow" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div>
+                                    <h6 id="ytAvaliarNome" class="fw-bold mb-1 text-light"></h6>
+                                    <span id="ytAvaliarSub" class="text-muted small"></span>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="ytAvaliarTitulo" name="titulo">
+                            <input type="hidden" id="ytAvaliarArtista" name="artista">
+                            <input type="hidden" id="ytAvaliarDuracao" name="duracaoSegundos">
+                            <input type="hidden" id="ytAvaliarAno" name="anoLancamento">
+                            <input type="hidden" id="ytAvaliarYoutubeUrl" name="youtubeUrl">
+                            <input type="hidden" id="ytAvaliarYoutubeId" name="youtubeId">
+                            <input type="hidden" id="ytAvaliarCapaUrl" name="capaUrl">
+
+                            <div class="mb-3">
+                                <label class="form-label text-purple font-monospace small uppercase fw-bold">Sua Nota (1 a 5 estrelas)</label>
+                                <select name="nota" class="form-select bg-darker text-light border-secondary">
+                                    <option value="5">⭐⭐⭐⭐⭐ (5 - Excelente)</option>
+                                    <option value="4">⭐⭐⭐⭐ (4 - Muito Bom)</option>
+                                    <option value="3">⭐⭐⭐ (3 - Bom)</option>
+                                    <option value="2">⭐⭐ (2 - Regular)</option>
+                                    <option value="1">⭐ (1 - Ruim)</option>
+                                </select>
+                            </div>
+
+                            <div id="ytAvaliarResenhaGroup" class="mb-3">
+                                <label class="form-label text-purple font-monospace small uppercase fw-bold">Sua Resenha / Opinião</label>
+                                <textarea name="resenha" class="form-control bg-darker text-light border-secondary" rows="3" placeholder="O que você achou dessa música?"></textarea>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="compartilharComunidade" id="ytShareCheck" checked>
+                                <label class="form-check-label text-light small" for="ytShareCheck">
+                                    Compartilhar avaliação na Comunidade
+                                </label>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top border-secondary">
+                            <button type="button" class="btn btn-outline-light" onclick="fecharModalAvaliar()">Cancelar</button>
+                            <button type="submit" class="btn btn-purple fw-bold px-4">Salvar na Vitrine</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let currentYTType = 'MUSICA';
+            let searchTimeout = null;
+            let currentYTResults = [];
+
+            function setYouTubeType(type) {
+                currentYTType = type;
+                document.querySelectorAll('#youtubeTabs button').forEach(btn => {
+                    btn.classList.remove('active', 'bg-purple');
+                    btn.classList.add('bg-secondary');
+                });
+                const activeBtn = document.getElementById('tab-' + type.toLowerCase());
+                if (activeBtn) {
+                    activeBtn.classList.add('active', 'bg-purple');
+                    activeBtn.classList.remove('bg-secondary');
+                }
+                ejecutarYTSearch();
+            }
+
+            function debounceYTSearch() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(ejecutarYTSearch, 400);
+            }
+
+            function ejecutarYTSearch() {
+                const query = document.getElementById('ytSearchInput').value.trim();
+                const container = document.getElementById('ytSearchResults');
+                const spinner = document.getElementById('ytSearchSpinner');
+
+                if (!query) {
+                    container.innerHTML = `
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-search fs-1 mb-2 d-block"></i>
+                            Pesquise no YouTube para importar dados e avaliar instantaneamente.
+                        </div>`;
+                    return;
+                }
+
+                spinner.classList.remove('d-none');
+                container.innerHTML = '';
+
+                fetch(`/api/youtube/search?q=${encodeURIComponent(query)}&tipo=${currentYTType}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        spinner.classList.add('d-none');
+                        currentYTResults = data;
+                        if (!data || data.length === 0) {
+                            container.innerHTML = `<div class="text-center py-4 text-muted">Nenhum resultado encontrado no YouTube.</div>`;
+                            return;
+                        }
+                        renderYTResults(data);
+                    })
+                    .catch(err => {
+                        spinner.classList.add('d-none');
+                        container.innerHTML = `<div class="text-center py-4 text-danger">Erro ao pesquisar no YouTube. Tente novamente.</div>`;
+                    });
+            }
+
+            function renderYTResults(items) {
+                const container = document.getElementById('ytSearchResults');
+                container.innerHTML = items.map((item, index) => {
+                    const dur = item.duracaoSegundos ? `${Math.floor(item.duracaoSegundos / 60)}:${(item.duracaoSegundos % 60).toString().padStart(2, '0')}` : '';
+                    return `
+                        <div class="d-flex align-items-center justify-content-between p-3 rounded bg-darker hover-bg-secondary transition border border-secondary">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="${item.capaUrl || '/public/img/default-cover.png'}" class="rounded shadow-sm" style="width: 64px; height: 64px; object-fit: cover;">
+                                <div>
+                                    <h6 class="fw-bold text-light mb-1">${escapeHtml(item.titulo)}</h6>
+                                    <div class="text-muted small">
+                                        <i class="bi bi-person me-1"></i>${escapeHtml(item.artistaOuCanal)}
+                                        ${dur ? ` • <i class="bi bi-clock me-1"></i>${dur}` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-purple btn-sm font-monospace fw-bold px-3 py-2" onclick="abrirAvaliacao(${index})">
+                                <i class="bi bi-star-fill me-1"></i> Avaliar & Salvar
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function abrirAvaliacao(index) {
+                const item = currentYTResults[index];
+                if (!item) return;
+
+                document.getElementById('ytAvaliarCapa').src = item.capaUrl || '/public/img/default-cover.png';
+                document.getElementById('ytAvaliarNome').innerText = item.titulo;
+                document.getElementById('ytAvaliarSub').innerText = item.artistaOuCanal;
+
+                document.getElementById('ytAvaliarTitulo').value = item.titulo;
+                document.getElementById('ytAvaliarArtista').value = item.artistaOuCanal;
+                document.getElementById('ytAvaliarDuracao').value = item.duracaoSegundos || '';
+                document.getElementById('ytAvaliarAno').value = item.anoLancamento || new Date().getFullYear();
+                document.getElementById('ytAvaliarYoutubeUrl').value = item.youtubeUrl || '';
+                document.getElementById('ytAvaliarYoutubeId').value = item.youtubeId || '';
+                document.getElementById('ytAvaliarCapaUrl').value = item.capaUrl || '';
+
+                const form = document.getElementById('formYTAvaliar');
+                const resenhaGroup = document.getElementById('ytAvaliarResenhaGroup');
+
+                if (currentYTType === 'MUSICA') {
+                    form.action = '/musicas';
+                    resenhaGroup.classList.remove('d-none');
+                } else if (currentYTType === 'ALBUM') {
+                    form.action = '/albums';
+                    resenhaGroup.classList.add('d-none');
+                } else if (currentYTType === 'ARTISTA') {
+                    form.action = '/artistas';
+                    resenhaGroup.classList.add('d-none');
+                    document.getElementById('ytAvaliarArtista').name = "nome";
+                }
+
+                const searchModal = bootstrap.Modal.getInstance(document.getElementById('modalYouTubeSearch'));
+                if (searchModal) searchModal.hide();
+
+                const evalModal = new bootstrap.Modal(document.getElementById('modalYTAvaliar'));
+                evalModal.show();
+            }
+
+            function fecharModalAvaliar() {
+                const evalModal = bootstrap.Modal.getInstance(document.getElementById('modalYTAvaliar'));
+                if (evalModal) evalModal.hide();
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            }
+        </script>
+    </div>
+</body>
+</html>

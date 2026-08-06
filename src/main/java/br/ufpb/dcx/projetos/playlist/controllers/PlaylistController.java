@@ -21,12 +21,43 @@ public final class PlaylistController {
     public void listar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String busca = ctx.queryParam("busca");
+        java.util.List<Playlist> playlists = service.search(busca, usuarioId);
+        
+        java.util.Map<String, String> playlistCovers = new java.util.HashMap<>();
+        for (Playlist pl : playlists) {
+            playlistCovers.put(pl.getId(), service.getPlaylistCapaUrl(pl.getId()));
+        }
+
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
-        modelo.put("playlists", service.search(busca, usuarioId));
+        modelo.put("playlists", playlists);
+        modelo.put("playlistCovers", playlistCovers);
         modelo.put("busca", busca != null ? busca : "");
         modelo.put("buscaAtiva", busca != null && !busca.trim().isEmpty());
         ctx.render("playlists/lista", modelo);
+    }
+
+    public void exibirFormularioCriacao(Context ctx) {
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("edicao", false);
+        modelo.put("acao", "/playlists");
+        modelo.put("nome", "");
+        ctx.render("playlists/formulario", modelo);
+    }
+
+    public void exibirFormularioEdicao(Context ctx) {
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        String playlistId = ctx.pathParam("id");
+        PlaylistWithItems playlist = service.findPlaylistWithItems(playlistId, usuarioId);
+
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("edicao", true);
+        modelo.put("acao", "/playlists/" + playlistId + "/editar");
+        modelo.put("playlist", playlist.getPlaylist());
+        modelo.put("nome", playlist.getPlaylist().getNome());
+        ctx.render("playlists/formulario", modelo);
     }
 
     public void criarPlaylist(Context ctx) {
@@ -40,9 +71,34 @@ public final class PlaylistController {
             Map<String, Object> modelo = new HashMap<>();
             modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
             modelo.put("erro", e.getMessage());
-            modelo.put("playlists", service.findByUsuarioId(usuarioId));
+            modelo.put("playlists", service.findAllByUsuarioId(usuarioId));
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("playlists/lista", modelo);
         }
+    }
+
+    private java.util.List<PlaylistItem> sanitizePlaylistItems(java.util.List<PlaylistItem> items) {
+        java.util.List<PlaylistItem> sanitized = new java.util.ArrayList<>();
+        for (PlaylistItem item : items) {
+            String title = item.getTitulo();
+            if (title != null && (title.startsWith("YouTube - yt_") || title.startsWith("YouTube - default"))) {
+                String url = item.getUrl();
+                if (url != null && url.contains("search_query=")) {
+                    try {
+                        int start = url.indexOf("search_query=") + 13;
+                        int end = url.indexOf('&', start);
+                        String query = end > 0 ? url.substring(start, end) : url.substring(start);
+                        String decoded = java.net.URLDecoder.decode(query, java.nio.charset.StandardCharsets.UTF_8);
+                        if (!decoded.isBlank()) {
+                            title = decoded;
+                        }
+                    } catch (Exception e) {
+                        // ignore and keep original
+                    }
+                }
+            }
+            sanitized.add(new PlaylistItem(item.getId(), item.getPlaylistId(), item.getUrl(), item.getVideoId(), title, item.getOrdem(), item.getCriadoEm()));
+        }
+        return sanitized;
     }
 
     public void exibirPlaylist(Context ctx) {
@@ -53,7 +109,7 @@ public final class PlaylistController {
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("playlist", playlist.getPlaylist());
-        modelo.put("items", playlist.getItems());
+        modelo.put("items", sanitizePlaylistItems(playlist.getItems()));
         ctx.render("playlists/detalhe", modelo);
     }
 
@@ -71,7 +127,7 @@ public final class PlaylistController {
             PlaylistWithItems playlist = service.findPlaylistWithItems(playlistId, usuarioId);
             modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
             modelo.put("playlist", playlist.getPlaylist());
-            modelo.put("items", playlist.getItems());
+            modelo.put("items", sanitizePlaylistItems(playlist.getItems()));
             modelo.put("erro", e.getMessage());
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("playlists/detalhe", modelo);
         }
@@ -92,7 +148,7 @@ public final class PlaylistController {
             ctx.json(java.util.List.of());
             return;
         }
-        ctx.json(service.findByUsuarioId(usuarioId));
+        ctx.json(service.findAllByUsuarioId(usuarioId));
     }
 
     public void criarPlaylistJson(Context ctx) {
