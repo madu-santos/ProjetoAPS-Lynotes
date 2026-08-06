@@ -12,6 +12,8 @@ public final class AlbumDTOView {
     private final String artista;
     private final String anoLancamento;
     private final Double nota;
+    private final String youtubeId;
+    private final String capaUrl;
     private final boolean edicao;
     private final String acao;
 
@@ -21,6 +23,8 @@ public final class AlbumDTOView {
             String artista,
             String anoLancamento,
             Double nota,
+            String youtubeId,
+            String capaUrl,
             boolean edicao,
             String acao
     ) {
@@ -29,6 +33,8 @@ public final class AlbumDTOView {
         this.artista = artista;
         this.anoLancamento = anoLancamento;
         this.nota = nota;
+        this.youtubeId = youtubeId;
+        this.capaUrl = capaUrl;
         this.edicao = edicao;
         this.acao = acao;
     }
@@ -40,6 +46,8 @@ public final class AlbumDTOView {
                 valor(form.artista()),
                 valor(form.anoLancamento()),
                 form.nota(),
+                valor(form.youtubeId()),
+                valor(form.capaUrl()),
                 false,
                 "/albums"
         );
@@ -52,6 +60,8 @@ public final class AlbumDTOView {
                 album.getArtista(),
                 String.valueOf(album.getAnoLancamento()),
                 album.getNota(),
+                album.getYoutubeId(),
+                album.getCapaUrl(),
                 true,
                 "/albums/" + album.getId()
         );
@@ -64,6 +74,8 @@ public final class AlbumDTOView {
                 valor(form.artista()),
                 valor(form.anoLancamento()),
                 form.nota(),
+                valor(form.youtubeId()),
+                valor(form.capaUrl()),
                 true,
                 "/albums/" + id
             );
@@ -99,5 +111,13 @@ public final class AlbumDTOView {
 
     public String getAcao() {
         return acao;
+    }
+
+    public String getYoutubeId() {
+        return youtubeId;
+    }
+
+    public String getCapaUrl() {
+        return capaUrl;
     }
 }

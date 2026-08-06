@@ -21,6 +21,8 @@ public final class ArtistaDTOView {
     private final String uf;
     private final boolean solicitarVerificacao;
     private final Double nota;
+    private final String youtubeId;
+    private final String capaUrl;
     private final boolean edicao;
     private final String acao;
 
@@ -38,6 +40,8 @@ public final class ArtistaDTOView {
             String uf,
             boolean solicitarVerificacao,
             Double nota,
+            String youtubeId,
+            String capaUrl,
             boolean edicao,
             String acao
     ) {
@@ -54,6 +58,8 @@ public final class ArtistaDTOView {
         this.uf = uf;
         this.solicitarVerificacao = solicitarVerificacao;
         this.nota = nota;
+        this.youtubeId = youtubeId;
+        this.capaUrl = capaUrl;
         this.edicao = edicao;
         this.acao = acao;
     }
@@ -73,6 +79,8 @@ public final class ArtistaDTOView {
                 valor(form.uf()),
                 Boolean.TRUE.equals(form.solicitarVerificacao()),
                 form.nota(),
+                valor(form.youtubeId()),
+                valor(form.capaUrl()),
                 false,
                 "/artistas"
         );
@@ -93,6 +101,8 @@ public final class ArtistaDTOView {
                 artista.getUf(),
                 artista.getStatusVerificacao() == br.ufpb.dcx.projetos.artista.models.StatusVerificacao.PENDENTE || artista.getStatusVerificacao() == br.ufpb.dcx.projetos.artista.models.StatusVerificacao.APROVADO,
                 artista.getNota(),
+                artista.getYoutubeId(),
+                artista.getCapaUrl(),
                 true,
                 "/artistas/" + artista.getId()
         );
@@ -113,6 +123,8 @@ public final class ArtistaDTOView {
                 valor(form.uf()),
                 Boolean.TRUE.equals(form.solicitarVerificacao()),
                 form.nota(),
+                valor(form.youtubeId()),
+                valor(form.capaUrl()),
                 true,
                 "/artistas/" + id
         );
@@ -180,5 +192,13 @@ public final class ArtistaDTOView {
 
     public String getAcao() {
         return acao;
+    }
+
+    public String getYoutubeId() {
+        return youtubeId;
+    }
+
+    public String getCapaUrl() {
+        return capaUrl;
     }
 }

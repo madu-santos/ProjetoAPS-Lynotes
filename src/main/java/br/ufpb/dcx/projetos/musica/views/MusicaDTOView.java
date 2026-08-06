@@ -21,6 +21,8 @@ public final class MusicaDTOView {
     private final String albumId;
     private final String playlistId;
     private final String novaPlaylistNome;
+    private final String youtubeId;
+    private final String capaUrl;
     private final boolean edicao;
     private final String acao;
     private final List<Album> albums;
@@ -39,6 +41,8 @@ public final class MusicaDTOView {
             String albumId,
             String playlistId,
             String novaPlaylistNome,
+            String youtubeId,
+            String capaUrl,
             boolean edicao,
             String acao,
             List<Album> albums,
@@ -56,6 +60,8 @@ public final class MusicaDTOView {
         this.albumId = albumId;
         this.playlistId = playlistId;
         this.novaPlaylistNome = novaPlaylistNome;
+        this.youtubeId = youtubeId;
+        this.capaUrl = capaUrl;
         this.edicao = edicao;
         this.acao = acao;
         this.albums = albums;
@@ -76,6 +82,8 @@ public final class MusicaDTOView {
                 valor(form.albumId()),
                 valor(form.playlistId()),
                 valor(form.novaPlaylistNome()),
+                valor(form.youtubeId()),
+                valor(form.capaUrl()),
                 false,
                 "/musicas",
                 albums,
@@ -97,6 +105,8 @@ public final class MusicaDTOView {
                 valor(form.albumId()),
                 valor(form.playlistId()),
                 valor(form.novaPlaylistNome()),
+                valor(form.youtubeId()),
+                valor(form.capaUrl()),
                 false,
                 "/musicas",
                 albums,
@@ -118,6 +128,8 @@ public final class MusicaDTOView {
                 musica.getAlbumId(),
                 null,
                 null,
+                musica.getYoutubeId(),
+                musica.getCapaUrl(),
                 true,
                 "/musicas/edit/" + musica.getId(),
                 albums,
@@ -139,6 +151,8 @@ public final class MusicaDTOView {
                 valor(form.albumId()),
                 valor(form.playlistId()),
                 valor(form.novaPlaylistNome()),
+                valor(form.youtubeId()),
+                valor(form.capaUrl()),
                 true,
                 "/musicas/edit/" + id,
                 albums,
@@ -212,5 +226,13 @@ public final class MusicaDTOView {
 
     public List<Album> getAlbums() {
         return albums;
+    }
+
+    public String getYoutubeId() {
+        return youtubeId;
+    }
+
+    public String getCapaUrl() {
+        return capaUrl;
     }
 }

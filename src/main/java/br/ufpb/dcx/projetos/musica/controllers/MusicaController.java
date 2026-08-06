@@ -144,9 +144,16 @@ public final class MusicaController {
             }
 
             Integer duracaoVal = null;
+            String videoId = null;
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
-                playlistService.extractVideoId(dto.youtubeUrl()); // throws if invalid
+                videoId = playlistService.extractVideoId(dto.youtubeUrl()); // throws if invalid
                 duracaoVal = playlistService.fetchYouTubeDuration(dto.youtubeUrl());
+            }
+
+            // Tenta criar a nova playlist primeiro. Se falhar, lança IllegalArgumentException e barra todo o processo.
+            String novaPlaylistId = null;
+            if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
+                novaPlaylistId = playlistService.createPlaylist(dto.novaPlaylistNome(), usuarioId).getId();
             }
 
             Musica musica = Musica.novo(
@@ -159,16 +166,18 @@ public final class MusicaController {
                     dto.spotifyUrl(),
                     dto.youtubeUrl(),
                     null, // albumId
-                    usuarioId);
+                    usuarioId,
+                    videoId != null ? videoId : dto.youtubeId(),
+                    dto.capaUrl());
             service.save(musica);
 
             String compartilhar = ctx.formParam("compartilharComunidade");
             String mensagem = ctx.formParam("mensagemComunidade");
 
             if (comunidadeService != null && "on".equals(compartilhar)) {
-                String msg = "Catalogou a mÃºsica: **" + musica.getTitulo() + "** (" + musica.getArtista() + ")";
+                String msg = "Catalogou a música: **" + musica.getTitulo() + "** (" + musica.getArtista() + ")";
                 if (musica.getNota() != null) {
-                    msg += " e avaliou com " + musica.getNota() + " estrelas. â­";
+                    msg += " e avaliou com " + musica.getNota() + " estrelas. ⭐ ";
                 }
                 if (mensagem != null && !mensagem.trim().isEmpty()) {
                     msg += "\n\n\"" + mensagem.trim() + "\"";
@@ -177,19 +186,30 @@ public final class MusicaController {
             }
 
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
-                String videoId = playlistService.extractVideoId(dto.youtubeUrl());
+                String redirectPlaylistId = null;
                 try {
-                    if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
-                        String playlistId = playlistService.createPlaylist(dto.novaPlaylistNome(), usuarioId).getId();
-                        playlistService.addItem(playlistId, dto.youtubeUrl(), videoId, usuarioId);
-                    } else if (dto.playlistId() != null && !dto.playlistId().isBlank()) {
+                    if (novaPlaylistId != null) {
+                        playlistService.addItem(novaPlaylistId, dto.youtubeUrl(), videoId, usuarioId);
+                        redirectPlaylistId = novaPlaylistId;
+                    } else if (dto.playlistId() != null && !dto.playlistId().isBlank() && !"NEW_TEMP".equals(dto.playlistId())) {
                         playlistService.addItem(dto.playlistId(), dto.youtubeUrl(), videoId, usuarioId);
+                        redirectPlaylistId = dto.playlistId();
                     }
-                } catch (IllegalArgumentException ignored) {}
+                } catch (Exception ignored) {
+                    LOGGER.warn("Nao foi possivel adicionar musica na playlist visivel: {}", ignored.getMessage());
+                }
+                
                 try {
                     playlistService.addItem(playlistService.findOrCreateHiddenPlaylist(usuarioId).getId(),
                             dto.youtubeUrl(), videoId, usuarioId);
-                } catch (IllegalArgumentException ignored) {}
+                } catch (Exception ignored) {
+                    LOGGER.warn("Nao foi possivel adicionar musica na playlist oculta: {}", ignored.getMessage());
+                }
+                
+                if (redirectPlaylistId != null) {
+                    ctx.redirect("/playlists/" + redirectPlaylistId, HttpStatus.SEE_OTHER);
+                    return;
+                }
             }
 
             redirecionarParaListagem(ctx);
@@ -275,7 +295,9 @@ public final class MusicaController {
                     dto.spotifyUrl(),
                     dto.youtubeUrl(),
                     musicaExistente.getAlbumId(),
-                    usuarioId);
+                    usuarioId,
+                    dto.youtubeId() != null ? dto.youtubeId() : musicaExistente.getYoutubeId(),
+                    dto.capaUrl() != null ? dto.capaUrl() : musicaExistente.getCapaUrl());
             service.update(id, musicaDetails);
 
             String compartilhar = ctx.formParam("compartilharComunidade");
@@ -365,7 +387,9 @@ public final class MusicaController {
                 ctx.formParam("spotifyUrl"),
                 ctx.formParam("youtubeUrl"),
                 ctx.formParam("playlistId"),
-                ctx.formParam("novaPlaylistNome")).normalizado();
+                ctx.formParam("novaPlaylistNome"),
+                ctx.formParam("youtubeId"),
+                ctx.formParam("capaUrl")).normalizado();
     }
 
     private void renderizarFormulario(Context ctx, MusicaDTOView view, String erro) {
@@ -379,6 +403,6 @@ public final class MusicaController {
     }
 
     private void redirecionarParaListagem(Context ctx) {
-        ctx.redirect("/", HttpStatus.SEE_OTHER);
+        ctx.redirect("/musicas", HttpStatus.SEE_OTHER);
     }
 }
