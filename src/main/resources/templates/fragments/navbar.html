@@ -7,18 +7,22 @@
         <!-- Spotify-style Sidebar -->
         <nav class="spotify-sidebar d-flex flex-column">
             <div class="d-flex align-items-center justify-content-between mb-4 mt-2 px-1">
-                <div class="d-flex align-items-center px-4">
+                <a href="/" class="d-flex align-items-center px-4 text-decoration-none" title="Ir para Meu Catálogo">
                     <i class="bi bi-music-note-beamed text-purple fs-4 me-3"></i>
                     <span class="fw-bold text-purple fs-3 sidebar-text" style="letter-spacing: -0.5px;">Lynotes</span>
-                </div>
+                </a>
             </div>
             
             <script>
                 function applySidebarState() {
                     const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
                     const sidebar = document.querySelector('.spotify-sidebar');
+                    const toggleBtn = document.getElementById('sidebar-toggle-btn');
                     if (sidebar) {
                         sidebar.classList.toggle('collapsed', isCollapsed);
+                    }
+                    if (toggleBtn) {
+                        toggleBtn.style.left = isCollapsed ? '80px' : '240px';
                     }
                     document.querySelectorAll('.spotify-main').forEach(m => m.classList.toggle('expanded', isCollapsed));
                 }
@@ -120,13 +124,8 @@
                     </div>
                     <span class="sidebar-text">Comunidade</span>
                 </a>
-                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'rankings'} ? 'active' : ''" href="/rankings">
-                    <i class="bi bi-collection-play-fill fs-5"></i>
-                    <span class="sidebar-text">Rankings da Comunidade</span>
-                </a>
                 
-                <!-- Perfil movido para baixo de Comunidade -->
-                <a class="spotify-sidebar-link" th:if="${usuarioLogado != null}" href="/usuarios/me">
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'perfil'} ? 'active' : ''" th:if="${usuarioLogado != null}" href="/usuarios/me">
                     <i class="bi bi-person-circle fs-5"></i>
                     <span class="sidebar-text text-truncate">Meu Perfil</span>
                 </a>

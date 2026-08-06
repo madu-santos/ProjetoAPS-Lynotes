@@ -12,6 +12,7 @@ html {
 
 .landing-page {
     background-color: #000000 !important;
+    background: radial-gradient(circle at 15% 25%, #2e1d38 0%, #1e1226 40%, #000000 80%) fixed !important;
     overflow-x: hidden;
 }
 
@@ -68,6 +69,48 @@ h1, h2, h3, h4, h5, h6 {
     color: #000000 !important;
 }
 
+/* Item de Resultado da Busca no YouTube com suporte a teclado (D-pad) */
+.yt-result-item {
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.yt-result-item.active-item {
+    border-color: #BB86FC !important;
+    background-color: rgba(187, 134, 252, 0.25) !important;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.5) !important;
+}
+
+/* Cards do Catálogo & Botão Play Flutuante */
+.spotify-card-hover {
+    background-color: #181818 !important;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.spotify-card-hover:hover {
+    background-color: #282828 !important;
+    transform: translateY(-4px);
+}
+
+.play-btn-overlay {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 20;
+    pointer-events: auto;
+}
+.spotify-card-hover:hover .play-btn-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+.play-btn-overlay button {
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.6) !important;
+    pointer-events: auto;
+}
+.play-btn-overlay button:hover {
+    transform: scale(1.1) !important;
+}
+
 .landing-nav {
     background: rgba(0, 0, 0, 0.82);
     backdrop-filter: blur(18px);
@@ -96,7 +139,7 @@ h1, h2, h3, h4, h5, h6 {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(187, 134, 252, 0.08), transparent 40%);
+    background: radial-gradient(ellipse 90% 70% at 20% 20%, rgba(46, 29, 56, 0.85) 0%, rgba(30, 18, 38, 0.4) 50%, transparent 85%);
     pointer-events: none;
 }
 
@@ -1101,7 +1144,8 @@ thead th {
 /* --- LAYOUT SPOTIFY NATIVO --- */
 .spotify-sidebar {
     width: 240px;
-    background-color: #000000;
+    background-color: #121212 !important;
+    border-right: 1px solid #282828 !important;
     height: 100vh;
     position: fixed;
     top: 0;
@@ -1109,7 +1153,7 @@ thead th {
     z-index: 1040;
     overflow-y: auto;
     padding-bottom: 96px;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.3s ease;
 }
 
 .spotify-sidebar-link {
@@ -1117,11 +1161,11 @@ thead th {
     align-items: center;
     gap: 16px;
     padding: 10px 16px;
-    color: #dedede;
+    color: #b3b3b3;
     text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 8px;
     margin: 4px 12px;
     transition: color 0.2s ease, background-color 0.2s ease;
 }
@@ -1134,6 +1178,7 @@ thead th {
     text-decoration: none !important;
 }
 .spotify-sidebar-link.active {
+    background-color: rgba(187, 134, 252, 0.12) !important;
     color: #BB86FC !important;
 }
 .spotify-sidebar-link.active i {
@@ -1142,9 +1187,12 @@ thead th {
 
 .spotify-main {
     margin-left: 240px;
-    padding-bottom: 120px; /* espaco para o player */
+    width: calc(100% - 240px);
+    padding: 2.5rem 3rem 120px 3rem !important;
     min-height: 100vh;
     background-color: #000000;
+    box-sizing: border-box;
+    transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
 .spotify-player {
@@ -1189,31 +1237,34 @@ thead th {
 .sidebar-toggle-tab {
     position: fixed;
     top: 50%;
-    left: 0 !important;
+    left: 240px;
     transform: translateY(-50%);
-    z-index: 1050;
-    width: 24px;
-    height: 110px;
-    background: #1a1a2e;
-    border: 1px solid #3a3a5c;
+    z-index: 1045;
+    width: 22px;
+    height: 64px;
+    background: #181818;
+    border: 1px solid #282828;
     border-left: none;
-    border-radius: 0 6px 6px 0;
-    color: #a78bfa;
+    border-radius: 0 8px 8px 0;
+    color: #BB86FC;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 3px 0 8px rgba(0,0,0,0.4);
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s, color 0.2s;
+    box-shadow: 4px 0 12px rgba(0,0,0,0.5);
+    transition: left 0.3s ease, background-color 0.2s ease, color 0.2s ease;
     cursor: pointer;
     padding: 0;
 }
 .sidebar-toggle-tab:hover {
-    background: #2d2d4e;
-    color: #c4b5fd;
+    background: #282828;
+    color: #ffffff;
 }
 .sidebar-toggle-icon {
     font-size: 0.75rem;
     transition: transform 0.35s ease;
+}
+.spotify-sidebar.collapsed ~ .sidebar-toggle-tab {
+    left: 80px;
 }
 .spotify-sidebar.collapsed ~ .sidebar-toggle-tab .sidebar-toggle-icon {
     transform: rotate(180deg);
@@ -1223,15 +1274,9 @@ thead th {
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
     gap: 1.5rem;
 }
-.spotify-main {
-    margin-left: 240px;
-    width: calc(100% - 240px);
-    animation: smoothFadeIn 0.5s ease-out forwards;
-}
 
 .spotify-main.player-open {
-    margin-right: 280px;
-    width: calc(100% - 240px - 280px);
+    /* Mantém a tela preta ocupando 100% sem encolher, removendo o fundo roxo */
 }
 .spotify-main.expanded {
     margin-left: 80px;
@@ -1283,4 +1328,264 @@ thead th {
     margin-left: 5px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+/* === Lynotes Music Library Redesign (Vivid Nocturne / Cyberpunk Purple) === */
+.library-bg {
+    background-color: #0F0F1A !important;
+    min-height: 100vh;
+}
+
+.glowing-title-library {
+    font-size: 2.25rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #8A2BE2 0%, #4CA1AF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
+    letter-spacing: -0.5px;
+}
+
+.btn-add-music-glow {
+    background: linear-gradient(135deg, #8A2BE2 0%, #A020F0 100%);
+    color: #ffffff !important;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.5);
+    transition: all 0.25s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-add-music-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(160, 32, 240, 0.7);
+    color: #ffffff !important;
+}
+
+.glass-search-box {
+    background: rgba(26, 26, 46, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(138, 43, 226, 0.35);
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(138, 43, 226, 0.2);
+    transition: all 0.3s ease;
+}
+.glass-search-box:focus-within {
+    border-color: #8A2BE2;
+    box-shadow: 0 0 25px rgba(138, 43, 226, 0.6);
+}
+
+.glass-search-input {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+.glass-search-input:focus {
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    color: #ffffff;
+}
+
+.glass-search-btn {
+    background: rgba(138, 43, 226, 0.3);
+    border: 1px solid rgba(138, 43, 226, 0.5);
+    color: #ffffff;
+    border-radius: 10px;
+    padding: 6px 18px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+.glass-search-btn:hover {
+    background: #8A2BE2;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(138, 43, 226, 0.6);
+}
+
+/* Card de Música da Biblioteca */
+.music-card-cyber {
+    background: #1A1A2E !important;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: visible;
+}
+.music-card-cyber:hover {
+    transform: translateY(-6px);
+    border-color: rgba(138, 43, 226, 0.6);
+    box-shadow: 0 10px 30px rgba(138, 43, 226, 0.35);
+}
+
+.music-card-cover-container {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+.music-card-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.music-card-cyber:hover .music-card-cover {
+    transform: scale(1.05);
+}
+
+/* Hover Actions Overlay nos Cards de Música */
+.music-card-actions-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 15, 26, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.music-card-cyber:hover .music-card-actions-overlay {
+    opacity: 1;
+}
+
+.btn-quick-play {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #8A2BE2;
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.6);
+    transition: all 0.2s ease;
+}
+.btn-quick-play:hover {
+    transform: scale(1.15);
+    background: #A020F0;
+    color: #ffffff;
+}
+
+.btn-quick-play-visible {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #8A2BE2;
+    color: #ffffff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.6);
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+.btn-quick-play-visible:hover {
+    transform: scale(1.15);
+    background: #A020F0;
+    color: #ffffff;
+}
+
+.btn-add-playlist-card {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+.btn-add-playlist-card:hover {
+    transform: scale(1.1);
+    background: rgba(138, 43, 226, 0.4);
+    border-color: #8A2BE2;
+    color: #ffffff;
+}
+
+/* Badge de Nota com Borda de Gradiente Roxo/Ciano */
+.score-badge-circle {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 6px;
+    border-radius: 50px;
+    background: #13131F;
+    border: 2px solid transparent;
+    background-image: linear-gradient(#13131F, #13131F), linear-gradient(135deg, #8A2BE2, #4CA1AF);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(138, 43, 226, 0.35);
+}
+
+/* Card Horizontal de Playlist */
+.playlist-card-horizontal {
+    background: #1A1A2E;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 16px;
+    padding-right: 60px !important; /* Espaço garantido para o botão */
+    transition: all 0.25s ease;
+    text-decoration: none;
+    color: #ffffff;
+    position: relative;
+}
+.playlist-card-horizontal:hover {
+    background: #23233D;
+    transform: translateY(-3px);
+    border-color: rgba(138, 43, 226, 0.5);
+    box-shadow: 0 6px 20px rgba(138, 43, 226, 0.25);
+    color: #ffffff;
+}
+
+.playlist-cover-mini {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #0F0F1A;
+}
+
+.playlist-play-btn-mini {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #8A2BE2;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+.playlist-card-horizontal:hover .playlist-play-btn-mini {
+    transform: translateY(-50%) scale(1.1);
+    background: #A020F0;
 }

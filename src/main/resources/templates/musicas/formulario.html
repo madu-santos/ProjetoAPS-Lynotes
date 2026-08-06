@@ -3,140 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${form.edicao ? 'Editar mÃƒÂºsica - Lynotes' : 'Catalogar mÃƒÂºsica - Lynotes'}">
-        MÃƒÂºsica - Lynotes
-    </title>
+    <title th:text="${form.edicao ? 'Editar Música - Lynotes' : 'Catalogar Música - Lynotes'}">Música - Lynotes</title>
+    <!-- Fonte Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
-<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
 
     <div th:insert="~{fragments/navbar :: navbar('musicas')}"></div>
 
     <main class="spotify-main container py-5">
         <div class="row justify-content-center">
-            <div class="col-lg-7">
-                <div class="mb-4">
-                    <a class="text-decoration-none" href="/">&larr; Voltar para o catÃƒÂ¡logo</a>
-                    <h1 class="mt-2 fw-bold" th:text="${form.edicao ? 'Editar mÃƒÂºsica' : 'Catalogar mÃƒÂºsica'}"></h1>
-                </div>
+            <div class="col-lg-8">
+                
+                <!-- Card Cyberpunk do Formulário -->
+                <div class="music-card-cyber p-4 p-md-5">
+                    <div class="mb-4">
+                        <h2 class="glowing-title-library mb-1" th:text="${form.edicao ? 'Editar Música' : 'Catalogar Música'}">Catalogar Música</h2>
+                        <p class="text-secondary mb-0">Pesquise no YouTube ou preencha as informações para adicionar ao seu acervo.</p>
+                    </div>
 
-                <div class="card shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
+                    <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
 
-                        <form method="post" th:action="${form.acao}">
-                            <div class="mb-3">
-                                <label class="form-label" for="titulo">Nome da mÃƒÂºsica</label>
-                                <input class="form-control"
-                                       id="titulo"
-                                       name="titulo"
-                                       maxlength="150"
-                                       th:value="${form.titulo}"
-                                       required
-                                       autofocus
-                                       placeholder="Ex: Chove Chuva">
+                    <form method="post" th:action="${form.acao}" id="formMusica" hx-boost="false">
+
+                        <!-- Pesquisa no YouTube (Criar) -->
+                        <div th:if="${!form.edicao}" class="mb-4 p-4 rounded-4 border border-purple bg-darker shadow">
+                            <label class="form-label text-purple font-monospace small uppercase fw-bold mb-2" for="ytQuery">
+                                <i class="bi bi-youtube text-danger me-1"></i> Pesquisar Música no YouTube
+                            </label>
+                            <div class="position-relative">
+                                <input type="text" id="ytQuery" class="form-control glass-search-input bg-dark text-white border-secondary pe-5" placeholder="Digite o nome da música ou cole a URL do YouTube..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="window.debounceSearchYT('MUSICA')" onkeydown="window.handleKeyNav(event, 'MUSICA')">
+                                <button type="button" class="btn text-purple position-absolute top-50 end-0 translate-middle-y me-2 p-1 border-0" onclick="window.buscarYT('MUSICA')" title="Buscar no YouTube">
+                                    <i class="bi bi-search fs-5 text-purple"></i>
+                                </button>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label" for="artista">Artista</label>
-                                <input class="form-control"
-                                       id="artista"
-                                       name="artista"
-                                       maxlength="150"
-                                       th:value="${form.artista}"
-                                       required
-                                       placeholder="Ex: Jorge Ben">
+                            <!-- Spinner -->
+                            <div id="ytSpinner" class="text-center py-3 d-none">
+                                <div class="spinner-border spinner-border-sm text-purple" role="status"></div>
+                                <span class="text-secondary small ms-2">Buscando no YouTube...</span>
                             </div>
 
+                            <!-- Resultados -->
+                            <div id="ytResults" class="d-flex flex-column gap-2 mt-3 overflow-auto" style="max-height: 250px;"></div>
+                        </div>
 
-
-
-
-                            <div class="mb-3">
-                                <label class="form-label" for="youtubeUrl">URL do YouTube (Opcional)</label>
-                                <input class="form-control"
-                                       id="youtubeUrl"
-                                       name="youtubeUrl"
-                                       type="url"
-                                       th:value="${form.youtubeUrl}"
-                                       placeholder="https://www.youtube.com/watch?v=...">
+                        <!-- Card Preview da Mídia Selecionada -->
+                        <div id="mediaPreview" class="d-none mb-4 p-3 rounded-4 bg-darker border border-purple align-items-center gap-3 shadow">
+                            <img id="previewCapa" src="" class="rounded-3 shadow" style="width: 72px; height: 72px; object-fit: cover;">
+                            <div>
+                                <h6 id="previewTitulo" class="fw-bold text-white mb-1"></h6>
+                                <p id="previewArtista" class="text-secondary small mb-0"></p>
                             </div>
+                        </div>
 
+                        <!-- CAMPOS OCULTOS -->
+                        <input type="hidden" id="titulo" name="titulo" th:value="${form.titulo}">
+                        <input type="hidden" id="artista" name="artista" th:value="${form.artista}">
+                        <input type="hidden" id="duracaoSegundos" name="duracaoSegundos">
+                        <input type="hidden" id="youtubeUrl" name="youtubeUrl" th:value="${form.youtubeUrl}">
+                        <input type="hidden" id="youtubeId" name="youtubeId">
+                        <input type="hidden" id="capaUrl" name="capaUrl">
+
+                        <!-- EDIÇÃO: MOSTRAR NOME E ARTISTA -->
+                        <div th:if="${form.edicao}" class="mb-4">
+                            <label class="form-label text-purple font-monospace small uppercase fw-bold">Música / Artista</label>
+                            <input class="form-control glass-search-input bg-dark text-white border-secondary p-3" th:value="${form.titulo + ' - ' + form.artista}" readonly>
+                        </div>
+
+                        <!-- OPINIÃO E RESENHA -->
+                        <div class="mb-4 p-4 rounded-4 bg-darker border border-secondary border-opacity-20">
+                            <h5 class="fw-bold text-purple mb-3"><i class="bi bi-chat-left-quote me-2"></i> Sua Opinião & Avaliação</h5>
+                            
                             <div class="mb-3">
-                                <label class="form-label" for="playlistId">Salvar em playlist existente</label>
+                                <label class="form-label d-block text-white fw-bold">Sua nota (1 a 5 estrelas)</label>
                                 <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
-                                    <i class="bi bi-star star-btn" data-index="1"></i>
-                                    <i class="bi bi-star star-btn" data-index="2"></i>
-                                    <i class="bi bi-star star-btn" data-index="3"></i>
-                                    <i class="bi bi-star star-btn" data-index="4"></i>
-                                    <i class="bi bi-star star-btn" data-index="5"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="1"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="2"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="3"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="4"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="5"></i>
                                 </div>
                                 <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label" for="novaPlaylistNome">Criar nova playlist</label>
-                                <input class="form-control"
-                                       id="novaPlaylistNome"
-                                       name="novaPlaylistNome"
-                                       type="text"
-                                       th:value="${form.novaPlaylistNome}"
-                                       placeholder="Nome da nova playlist">
-                                <div class="form-text">Se estiver preenchendo a URL do YouTube, ela serÃƒÂ¡ adicionada automaticamente ÃƒÂ  playlist criada.</div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label d-block">Nota (AvaliaÃƒÂ§ÃƒÂ£o)</label>
-                                <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
-                                    <i class="bi bi-star star-btn" data-index="1"></i>
-                                    <i class="bi bi-star star-btn" data-index="2"></i>
-                                    <i class="bi bi-star star-btn" data-index="3"></i>
-                                    <i class="bi bi-star star-btn" data-index="4"></i>
-                                    <i class="bi bi-star star-btn" data-index="5"></i>
-                                </div>
-                                <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label" for="resenha">Resenha Pessoal (Privada)</label>
-                                <textarea class="form-control"
+                            <div class="mb-2">
+                                <label class="form-label text-secondary small fw-bold" for="resenha">Sua Resenha / Anotações</label>
+                                <textarea class="form-control glass-search-input bg-dark text-white border-secondary p-3"
                                           id="resenha"
                                           name="resenha"
                                           rows="4"
                                           th:text="${form.resenha}"
-                                          placeholder="AnotaÃƒÂ§ÃƒÂµes para vocÃƒÂª mesmo..."></textarea>
+                                          placeholder="O que você achou desta música? Deixe sua análise detalhada..."></textarea>
                             </div>
+                        </div>
 
-                            <div class="mb-4 p-3 rounded" style="background-color: #282828;">
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" type="checkbox" id="compartilharComunidade" name="compartilharComunidade" onchange="document.getElementById('twitterBox').classList.toggle('d-none', !this.checked)" checked>
-                                    <label class="form-check-label fw-bold text-white" for="compartilharComunidade">Tweetar na Comunidade <i class="bi bi-chat-text ms-1"></i></label>
-                                </div>
-                                <div id="twitterBox" class="mt-2">
-                                    <textarea class="form-control bg-dark text-white border-secondary" name="mensagemComunidade" maxlength="280" rows="3" placeholder="O que vocÃƒÂª achou dessa mÃƒÂºsica? Compartilhe com a galera..." oninput="document.getElementById('charCount').textContent = this.value.length"></textarea>
-                                    <div class="form-text text-end text-secondary mt-1"><span id="charCount">0</span>/280</div>
-                                </div>
-                            </div>
+                        <!-- PLAYLIST OPCIONAL -->
+                        <div class="mb-4">
+                            <label class="form-label text-purple font-monospace small uppercase fw-bold" for="playlistId">Salvar em</label>
+                            <select class="form-select glass-search-input bg-dark text-white border-secondary p-3" id="playlistId" name="playlistId" onchange="if(this.value === 'NEW'){ this.value=''; abrirModalNovaPlaylist(); }">
+                                <option value="">Nenhuma playlist selecionada</option>
+                                <option th:each="pl : ${form.playlists}" th:value="${pl.id}" th:text="${pl.nome}"></option>
+                                <option value="NEW" class="text-purple fw-bold">+ Nova playlist</option>
+                            </select>
+                        </div>
 
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-primary" type="submit"
-                                        th:text="${form.edicao ? 'Salvar alteraÃƒÂ§ÃƒÂµes' : 'Catalogar mÃƒÂºsica'}">
-                                </button>
-                                <a class="btn btn-outline-secondary" href="/">Cancelar</a>
+                        <!-- COMPARTILHAR NA COMUNIDADE -->
+                        <div class="mb-5 p-3 rounded-4 bg-darker border border-secondary border-opacity-20">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input bg-dark border-secondary" type="checkbox" id="compartilharComunidade" name="compartilharComunidade" checked>
+                                <label class="form-check-label fw-bold text-white" for="compartilharComunidade">
+                                    Exibir esta resenha na comunidade pública?
+                                </label>
+                                <div class="form-text text-secondary mt-1">
+                                    Se marcado, sua resenha aparecerá no feed público da Comunidade.
+                                </div>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">
+                            <a class="btn btn-outline-secondary rounded-pill px-4" href="/musicas">Cancelar</a>
+                            <button class="btn-add-music-glow px-4" type="submit">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                <span th:text="${form.edicao ? 'Salvar Alterações' : 'Salvar no Catálogo'}">Salvar</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
+
             </div>
         </div>
+
+        <script>
+            (function() {
+                let searchTimer = null;
+                let itemsList = [];
+                let activeIndex = -1;
+
+                window.debounceSearchYT = function(tipo) {
+                    clearTimeout(searchTimer);
+                    searchTimer = setTimeout(() => window.buscarYT(tipo), 250);
+                };
+
+                window.handleKeyNav = function(e, tipo) {
+                    const resultsDiv = document.getElementById('ytResults');
+                    if (!resultsDiv || itemsList.length === 0) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            window.buscarYT(tipo);
+                        }
+                        return;
+                    }
+
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        activeIndex = (activeIndex + 1) % itemsList.length;
+                        updateHighlight();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        activeIndex = (activeIndex - 1 + itemsList.length) % itemsList.length;
+                        updateHighlight();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (activeIndex >= 0 && activeIndex < itemsList.length) {
+                            window.selecionarItem(activeIndex);
+                        } else {
+                            window.buscarYT(tipo);
+                        }
+                    }
+                };
+
+                function updateHighlight() {
+                    const resultsDiv = document.getElementById('ytResults');
+                    if (!resultsDiv) return;
+                    const children = resultsDiv.querySelectorAll('.yt-result-item');
+                    children.forEach((child, idx) => {
+                        if (idx === activeIndex) {
+                            child.classList.add('active-item');
+                            child.scrollIntoView({ block: 'nearest' });
+                        } else {
+                            child.classList.remove('active-item');
+                        }
+                    });
+                }
+
+                window.buscarYT = function(tipo) {
+                    const queryInput = document.getElementById('ytQuery');
+                    if (!queryInput) return;
+                    const query = queryInput.value.trim();
+                    const resultsDiv = document.getElementById('ytResults');
+                    const spinner = document.getElementById('ytSpinner');
+
+                    if (!query) {
+                        if (resultsDiv) resultsDiv.innerHTML = '';
+                        activeIndex = -1;
+                        return;
+                    }
+
+                    if (spinner) spinner.classList.remove('d-none');
+                    if (resultsDiv) resultsDiv.innerHTML = '';
+                    activeIndex = -1;
+
+                    fetch('/api/youtube/search?q=' + encodeURIComponent(query) + '&tipo=' + tipo)
+                        .then(r => r.json())
+                        .then(data => {
+                            if (spinner) spinner.classList.add('d-none');
+                            itemsList = data || [];
+                            activeIndex = -1;
+                            if (!resultsDiv) return;
+                            if (itemsList.length === 0) {
+                                resultsDiv.innerHTML = '<div class="text-secondary small p-2">Nenhum resultado encontrado.</div>';
+                                return;
+                            }
+                            resultsDiv.innerHTML = itemsList.map((item, idx) => `
+                                <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark border border-secondary cursor-pointer yt-result-item" data-index="${idx}" onclick="window.selecionarItem(${idx})">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="${item.capaUrl || '/public/img/default-cover.png'}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
+                                        <div>
+                                            <div class="fw-bold text-white small">${escapeHtml(item.titulo)}</div>
+                                            <div class="text-secondary extra-small">${escapeHtml(item.artistaOuCanal)}</div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-purple">Selecionar</button>
+                                </div>
+                            `).join('');
+                        })
+                        .catch(() => {
+                            if (spinner) spinner.classList.add('d-none');
+                            if (resultsDiv) resultsDiv.innerHTML = '<div class="text-danger small p-2">Erro ao realizar a busca.</div>';
+                        });
+                };
+
+                function escapeHtml(text) {
+                    return (text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+                }
+
+                window.selecionarItem = function(idx) {
+                    const item = itemsList[idx];
+                    if (!item) return;
+
+                    document.getElementById('titulo').value = item.titulo;
+                    document.getElementById('artista').value = item.artistaOuCanal;
+                    if (document.getElementById('duracaoSegundos')) document.getElementById('duracaoSegundos').value = item.duracaoSegundos || '';
+                    if (document.getElementById('youtubeUrl')) document.getElementById('youtubeUrl').value = item.youtubeUrl || '';
+                    if (document.getElementById('youtubeId')) document.getElementById('youtubeId').value = item.youtubeId || '';
+                    if (document.getElementById('capaUrl')) document.getElementById('capaUrl').value = item.capaUrl || '';
+
+                    if (document.getElementById('previewCapa')) document.getElementById('previewCapa').src = item.capaUrl || '/public/img/default-cover.png';
+                    if (document.getElementById('previewTitulo')) document.getElementById('previewTitulo').innerText = item.titulo;
+                    if (document.getElementById('previewArtista')) document.getElementById('previewArtista').innerText = item.artistaOuCanal;
+
+                    const preview = document.getElementById('mediaPreview');
+                    if (preview) {
+                        preview.classList.remove('d-none');
+                        preview.classList.add('d-flex');
+                    }
+                    document.getElementById('ytResults').innerHTML = '';
+                    document.getElementById('ytQuery').value = item.titulo + " - " + item.artistaOuCanal;
+                    activeIndex = -1;
+                };
+            })();
+        </script>
     </main>
 
 </div>
+
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-    
+<script src="/js/player.js" defer></script>
 </body>
 </html>

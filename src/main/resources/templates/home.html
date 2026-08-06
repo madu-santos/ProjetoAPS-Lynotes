@@ -3,82 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Lynotes</title>
+    <title>Meu Catálogo - Lynotes</title>
+    <!-- Fonte Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
-<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
 
     <div th:insert="~{fragments/navbar :: navbar('catalogo')}"></div>
 
     <main class="spotify-main container py-5">
-        <div class="mb-5 text-center">
-            <h1 class="display-5 fw-bold text-purple mb-1">Meu Catálogo</h1>
-            <p class="text-secondary lead">Gerencie suas músicas, artistas e álbuns favoritos em um só acervo.</p>
+        <!-- Top Bar Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <h1 class="glowing-title-library mb-1">Meu Catálogo</h1>
+                <p class="text-secondary mb-0">Seu acervo pessoal unificado de músicas, artistas e álbuns favoritos.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a class="btn-add-music-glow" href="/musicas/new">
+                    <i class="bi bi-plus-circle-fill fs-5"></i> Nova Música
+                </a>
+            </div>
         </div>
 
-        <!-- ABA MÚSICAS -->
+        <!-- Glassmorphism Search Bar -->
+        <form class="glass-search-box p-2 mb-5 d-flex align-items-center gap-2" method="get" action="/">
+            <i class="bi bi-search text-purple fs-5 ms-3"></i>
+            <input class="form-control glass-search-input pe-3"
+                   name="busca"
+                   placeholder="Pesquisar em todo o catálogo por título, artista, gênero..."
+                   th:value="${busca}"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false">
+            <a th:if="${buscaAtiva}" class="text-secondary small me-2 text-decoration-none" href="/">Limpar</a>
+            <button class="glass-search-btn" type="submit">Buscar</button>
+        </form>
+
+        <!-- SEÇÃO MINHAS MÚSICAS -->
         <div class="mb-5 pb-4">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-                <h3 class="fw-bold mb-0">Minhas Músicas (<span th:text="${musicas.size()}">0</span>)</h3>
-                <div class="d-flex align-items-center gap-3">
-                    <form class="discrete-search-form" method="get" action="/">
-                        <input class="discrete-search-input" name="busca" placeholder="Pesquisar no catálogo..." th:value="${busca}">
-                        <a th:if="${buscaAtiva}" class="discrete-search-clear text-decoration-none" href="/">✕</a>
-                        <button class="discrete-search-btn" type="submit">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                            </svg>
-                        </button>
-                    </form>
-                    <a class="btn btn-primary btn-sm px-3" href="/musicas/new">Adicionar Música</a>
-                </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-white fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-disc text-purple"></i> Minhas Músicas
+                </h3>
+                <a href="/musicas" class="btn btn-outline-purple btn-sm rounded-pill px-3">Ver Todas (&rarr;)</a>
             </div>
 
             <!-- Estado Vazio -->
-            <div class="text-center py-5 card shadow-sm p-5" th:if="${semMusicas}">
-                <div class="mb-4 text-purple">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-music-note-beamed" viewBox="0 0 16 16">
-                        <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13s1.12-2 2.5-2 2.5.895 2.5 2m9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2"/>
-                        <path fill-rule="evenodd" d="M14 11V2h1v9zM6 3v10H5V3z"/>
-                        <path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4z"/>
-                    </svg>
-                </div>
-                <h3 class="fw-bold mb-2">Sem músicas catalogadas</h3>
-                <p class="text-secondary mb-4">Comece a catalogar suas músicas favoritas, adicione notas e resenhas!</p>
-                <a class="btn btn-primary btn-lg px-4" href="/musicas/new">Catalogar primeira música</a>
+            <div class="alert alert-dark border-purple text-purple text-center p-4 rounded-4" th:if="${semMusicas}">
+                <i class="bi bi-music-note-beamed fs-2 mb-2 d-block"></i>
+                Nenhuma música cadastrada no seu catálogo ainda. Clique em <strong>Nova Música</strong> acima!
             </div>
 
             <!-- Grade de Músicas -->
-            <div class="spotify-grid" th:unless="${semMusicas}">
-                <div class="col" th:each="musica : ${musicas}" data-reveal>
-                    <div class="card h-100 spotify-card-hover p-3 border-0">
-                        <div class="position-relative mb-3">
-                            <div class="w-100 rounded shadow" style="aspect-ratio: 1; background-color: #282828;"></div>
-                            <div class="play-btn-overlay position-absolute bottom-0 end-0 m-2">
-                                <button class="btn btn-primary bg-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center border-0" style="width: 48px; height: 48px; color: #000;">
-                                    <i class="bi bi-play-fill fs-3" style="margin-left: 4px;"></i>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3" th:unless="${semMusicas}">
+                <div class="col" th:each="musica : ${musicas}">
+                    <div class="music-card-cyber h-100 d-flex flex-column justify-content-between position-relative">
+
+
+                        <div>
+                            <!-- Capa e Ações -->
+                            <div class="music-card-cover-container mb-3 position-relative">
+                                <img th:if="${musica.capaUrl != null and !musica.capaUrl.isBlank()}" th:src="${musica.capaUrl}" class="music-card-cover" alt="Capa da Música">
+                                <div th:unless="${musica.capaUrl != null and !musica.capaUrl.isBlank()}" class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-secondary">
+                                    <i class="bi bi-music-note fs-1"></i>
+                                </div>
+                                <button type="button" 
+                                        class="btn-quick-play-visible" 
+                                        title="Reproduzir no Miniplayer"
+                                        th:data-url="${musica.youtubeUrl}"
+                                        th:data-titulo="${musica.titulo}"
+                                        th:data-artista="${musica.artista}"
+                                        th:data-capa="${musica.capaUrl}"
+                                        th:data-ytid="${musica.youtubeId}"
+                                        onclick="if(typeof playerTocar === 'function') playerTocar(this.getAttribute('data-url'), this.getAttribute('data-titulo'), this.getAttribute('data-artista'), this.getAttribute('data-capa'), this.getAttribute('data-ytid'));">
+                                    <i class="bi bi-play-fill fs-3"></i>
                                 </button>
                             </div>
+                            <h5 class="fw-bold text-white mb-1 text-truncate" th:text="${musica.titulo}"></h5>
+                            <p class="text-secondary small mb-2 text-truncate" th:text="${musica.artista}"></p>
                         </div>
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div style="max-width: 85%; overflow: hidden;">
-                                <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${musica.titulo}"></h6>
-                                <p class="text-secondary small mb-0 text-truncate" th:text="${musica.artista}"></p>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-link text-secondary p-0 border-0 text-decoration-none" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow">
-                                    <li><a class="dropdown-item" th:href="${'/musicas/edit/' + musica.id}">Editar</a></li>
-                                    <li>
-                                        <form method="post" th:action="${'/musicas/delete/' + musica.id}" onsubmit="return confirm('Tem certeza?');">
-                                            <button class="dropdown-item text-danger" type="submit">Excluir</button>
-                                        </form>
-                                    </li>
-                                </ul>
+                        <div class="d-flex align-items-center justify-content-between pt-2 border-top border-secondary border-opacity-10 mt-2">
+                            <span class="text-secondary small font-monospace text-truncate" th:text="${musica.duracaoSegundos != null ? musica.duracaoSegundos + 's' : (musica.genero != null ? musica.genero : 'Música')}"></span>
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                <div th:if="${musica.nota != null}" class="score-badge-circle" title="Sua Avaliação">
+                                    <span th:text="${musica.nota != null ? musica.nota + ' ★' : ''}">5 ★</span>
+                                </div>
+                                
+                                <div class="dropend">
+                                    <button class="btn btn-link text-secondary p-0 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções">
+                                        <i class="bi bi-three-dots fs-5"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
+                                        <li><a class="dropdown-item text-white" th:href="${'/musicas/edit/' + musica.id}"><i class="bi bi-pencil me-2 text-purple"></i>Editar</a></li>
+                                        <li>
+                                            <form th:action="@{/musicas/{id}/delete(id=${musica.id})}" method="post" onsubmit="return confirm('Tem certeza que deseja excluir esta música?');">
+                                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
+                                            </form>
+                                        </li>
+                                        <li><hr class="dropdown-divider border-secondary"></li>
+                                        <li><h6 class="dropdown-header text-purple">Salvar em...</h6></li>
+                                        <li th:each="pl : ${playlists}">
+                                            <form th:action="@{/playlists/{pid}/items(pid=${pl.id})}" method="post">
+                                                <input type="hidden" name="url" th:value="${musica.youtubeUrl != null ? musica.youtubeUrl : ''}">
+                                                <button type="submit" class="dropdown-item text-white"><i class="bi bi-music-note-list me-2 text-secondary"></i><span th:text="${pl.nome}"></span></button>
+                                            </form>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item text-purple fw-bold" th:data-url="${musica.youtubeUrl}" onclick="abrirModalNovaPlaylist(this.getAttribute('data-url'))">
+                                                <i class="bi bi-plus-circle me-2"></i>Nova playlist
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -86,140 +132,136 @@
             </div>
         </div>
 
-        <!-- ABA ARTISTAS -->
+        <!-- SEÇÃO MEUS ARTISTAS -->
         <div class="mb-5 pb-4">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-                <h3 class="fw-bold mb-0">Meus Artistas (<span th:text="${artistas.size()}">0</span>)</h3>
-                <a class="btn btn-primary btn-sm px-3" href="/artistas/novo">Adicionar Artista</a>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-white fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-mic-fill text-purple"></i> Meus Artistas
+                </h3>
+                <a href="/artistas" class="btn btn-outline-purple btn-sm rounded-pill px-3">Ver Todos (&rarr;)</a>
             </div>
 
-            <!-- Estado Vazio -->
-            <div class="text-center py-5 card shadow-sm p-5" th:if="${semArtistas}">
-                <div class="mb-4 text-purple">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
-                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
-                        <path d="M5 4a3 3 0 0 1 6 0v4a3 3 0 0 1-6 0z"/>
-                    </svg>
-                </div>
-                <h3 class="fw-bold mb-2">Sem artistas no catálogo</h3>
-                <p class="text-secondary mb-4">Adicione os artistas que você acompanha!</p>
-                <a class="btn btn-primary btn-lg px-4" href="/artistas/novo">Adicionar primeiro artista</a>
+            <div class="alert alert-dark border-purple text-secondary text-center p-4 rounded-4" th:if="${semArtistas}">
+                Nenhum artista catalogado ainda.
             </div>
 
-            <!-- Grade de Artistas -->
-            <div class="spotify-grid" th:unless="${semArtistas}">
-                <div class="col" th:each="artista : ${artistas}" data-reveal>
-                    <div class="card h-100 spotify-card-hover p-3 border-0">
-                        <div class="position-relative mb-3">
-                            <div class="w-100 rounded-circle shadow" style="aspect-ratio: 1; background-color: #282828;"></div>
-                            <div class="play-btn-overlay position-absolute bottom-0 end-0 m-2">
-                                <button class="btn btn-primary bg-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center border-0" style="width: 48px; height: 48px; color: #000;">
-                                    <i class="bi bi-play-fill fs-3" style="margin-left: 4px;"></i>
-                                </button>
-                            </div>
+            <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4" th:unless="${semArtistas}">
+                <div class="col" th:each="artista : ${artistas}">
+                    <div class="music-card-cyber text-center p-3 h-100">
+                        <img th:if="${artista.capaUrl != null and !artista.capaUrl.isBlank()}" th:src="${artista.capaUrl}" class="rounded-circle mb-3 shadow" style="width: 100px; height: 100px; object-fit: cover;">
+                        <div th:unless="${artista.capaUrl != null and !artista.capaUrl.isBlank()}" class="rounded-circle mb-3 shadow mx-auto d-flex align-items-center justify-content-center bg-dark text-secondary" style="width: 100px; height: 100px;">
+                            <i class="bi bi-person fs-1"></i>
                         </div>
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div style="max-width: 85%; overflow: hidden;">
-                                <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${artista.nome}"></h6>
-                                <p class="text-secondary small mb-0 text-truncate" th:text="${artista.generoMusical != null ? artista.generoMusical : 'Artista'}"></p>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-link text-secondary p-0 border-0 text-decoration-none" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow">
-                                    <li><a class="dropdown-item" th:href="${'/artistas/' + artista.id + '/editar'}">Editar</a></li>
-                                    <li>
-                                        <form method="post" th:action="${'/artistas/' + artista.id + '/excluir'}" onsubmit="return confirm('Tem certeza?');">
-                                            <button class="dropdown-item text-danger" type="submit">Excluir</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${artista.nome}"></h6>
+                        <p class="text-secondary small mb-0 text-truncate" th:text="${artista.generoMusical != null ? artista.generoMusical : 'Artista'}"></p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ABA ÁLBUNS -->
-        <div class="mb-5 pb-4">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-                <h3 class="fw-bold mb-0">Meus Álbuns (<span th:text="${albums.size()}">0</span>)</h3>
-                <a class="btn btn-primary btn-sm px-3" href="/albums/novo">Adicionar Álbum</a>
+        <!-- SEÇÃO MEUS ÁLBUNS -->
+        <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-white fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-disc-fill text-purple"></i> Meus Álbuns
+                </h3>
+                <a href="/albums" class="btn btn-outline-purple btn-sm rounded-pill px-3">Ver Todos (&rarr;)</a>
             </div>
 
-            <!-- Estado Vazio -->
-            <div class="text-center py-5 card shadow-sm p-5" th:if="${semAlbums}">
-                <div class="mb-4 text-purple">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-disc" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                        <path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8"/>
-                    </svg>
-                </div>
-                <h3 class="fw-bold mb-2">Sem álbuns catalogados</h3>
-                <p class="text-secondary mb-4">Adicione os álbuns mais marcantes da sua coleção!</p>
-                <a class="btn btn-primary btn-lg px-4" href="/albums/novo">Adicionar primeiro álbum</a>
+            <div class="alert alert-dark border-purple text-secondary text-center p-4 rounded-4" th:if="${semAlbums}">
+                Nenhum álbum catalogado ainda.
             </div>
 
-            <!-- Grade de Álbuns -->
-            <div class="spotify-grid" th:unless="${semAlbums}">
-                <div class="col" th:each="album : ${albums}" data-reveal>
-                    <div class="card h-100 spotify-card-hover p-3 border-0">
-                        <div class="position-relative mb-3">
-                            <div class="w-100 rounded shadow" style="aspect-ratio: 1; background-color: #282828;"></div>
-                            <div class="play-btn-overlay position-absolute bottom-0 end-0 m-2">
-                                <button class="btn btn-primary bg-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center border-0" style="width: 48px; height: 48px; color: #000;">
-                                    <i class="bi bi-play-fill fs-3" style="margin-left: 4px;"></i>
-                                </button>
-                            </div>
+            <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4" th:unless="${semAlbums}">
+                <div class="col" th:each="album : ${albums}">
+                    <div class="music-card-cyber p-3 h-100">
+                        <img th:if="${album.capaUrl != null and !album.capaUrl.isBlank()}" th:src="${album.capaUrl}" class="w-100 rounded-3 mb-3 shadow" style="aspect-ratio: 1; object-fit: cover;">
+                        <div th:unless="${album.capaUrl != null and !album.capaUrl.isBlank()}" class="w-100 rounded-3 mb-3 shadow d-flex align-items-center justify-content-center bg-dark text-secondary" style="aspect-ratio: 1;">
+                            <i class="bi bi-disc fs-1"></i>
                         </div>
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div style="max-width: 85%; overflow: hidden;">
-                                <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${album.titulo}"></h6>
-                                <p class="text-secondary small mb-0 text-truncate" th:text="${album.anoLancamento}"></p>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-link text-secondary p-0 border-0 text-decoration-none" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow">
-                                    <li><a class="dropdown-item" th:href="${'/albums/' + album.id + '/editar'}">Editar</a></li>
-                                    <li>
-                                        <form method="post" th:action="${'/albums/' + album.id + '/excluir'}" onsubmit="return confirm('Tem certeza?');">
-                                            <button class="dropdown-item text-danger" type="submit">Excluir</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${album.titulo}"></h6>
+                        <p class="text-secondary small mb-0 text-truncate" th:text="${album.artista}"></p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bootstrap JS Bundle dentro do app-content para correto funcionamento dos pills -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </main>
 
 </div>
+
 <div th:insert="~{fragments/player :: bottom-player}"></div>
 
+<!-- Modal Nova Playlist -->
+<div class="modal fade" id="modalNovaPlaylist" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-darker border-secondary">
+      <div class="modal-header border-bottom border-secondary border-opacity-25">
+        <h5 class="modal-title text-white fw-bold"><i class="bi bi-plus-circle text-purple me-2"></i>Nova Playlist</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formNovaPlaylist" method="post" action="/playlists">
+          <input type="hidden" id="novaPlaylistMusicaUrl" name="musicaUrl">
+          <div class="mb-3">
+            <label class="form-label text-secondary small font-monospace text-uppercase" for="nomeNovaPlaylist">Nome da Playlist</label>
+            <input type="text" class="form-control glass-search-input bg-dark text-white border-secondary p-3" id="nomeNovaPlaylist" name="nome" required>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn-add-music-glow px-4">Criar e Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-    // Animações de Rolagem integradas com HTMX
-    function initScrollAnimations() {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        
-        document.querySelectorAll('[data-reveal]:not(.is-visible)').forEach((el) => {
-            observer.observe(el);
-        });
-    }
-    document.addEventListener("DOMContentLoaded", initScrollAnimations);
-    document.body.addEventListener("htmx:afterSettle", initScrollAnimations);
-</script>
+function abrirModalNovaPlaylist(url) {
+    document.getElementById('novaPlaylistMusicaUrl').value = url || '';
+    new bootstrap.Modal(document.getElementById('modalNovaPlaylist')).show();
     
+    document.getElementById('formNovaPlaylist').onsubmit = async function(e) {
+        e.preventDefault();
+        const btnSubmit = this.querySelector('button[type="submit"]');
+        const btnOriginalText = btnSubmit.innerHTML;
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Criando...';
+        
+        const nome = document.getElementById('nomeNovaPlaylist').value;
+        const res = await fetch('/api/playlists', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({nome: nome})
+        });
+        if(res.ok) {
+            const playlist = await res.json();
+            const musicaUrl = document.getElementById('novaPlaylistMusicaUrl').value;
+            if(musicaUrl && musicaUrl.trim() !== '') {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/playlists/' + playlist.id + '/items';
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'url';
+                input.value = musicaUrl;
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                window.location.reload();
+            }
+        } else {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = btnOriginalText;
+            alert('Erro ao criar playlist. Verifique se o nome é válido.');
+        }
+    };
+}
+</script>
+
+<script src="/js/player.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

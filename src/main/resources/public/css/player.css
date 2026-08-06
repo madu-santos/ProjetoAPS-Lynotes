@@ -10,40 +10,50 @@
     z-index: 1050;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* quando collapsed, empurra tudo para fora — só a aba (18 px) fica visível */
+/* quando collapsed, empurra tudo para fora — só a aba (22 px) fica visível */
 #mini-player.collapsed {
-    transform: translateY(-50%) translateX(calc(100% - 18px));
+    transform: translateY(-50%) translateX(calc(100% - 22px));
 }
 
 /* === Toggle Tab (aba lateral) === */
 .player-toggle-tab {
-    background: #1a1a2e;
-    border: 1px solid #3a3a5c;
+    background: #181818;
+    border: 1px solid #282828;
     border-right: none;
-    border-radius: 6px 0 0 6px;
-    color: #a78bfa;
+    border-radius: 8px 0 0 8px;
+    color: #BB86FC;
     cursor: pointer;
     padding: 0;
     display: flex;
-    flex-direction: column-reverse;
     align-items: center;
     justify-content: center;
     margin-top: auto;
     margin-bottom: auto;
-    box-shadow: -3px 0 8px rgba(0,0,0,0.4);
-    transition: background 0.2s, color 0.2s;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.5);
+    transition: background-color 0.2s ease, color 0.2s ease;
     flex-shrink: 0;
-    width: 24px;
-    height: 110px;
+    width: 22px;
+    height: 64px;
+    outline: none !important;
 }
 .player-toggle-tab:hover {
-    background: #2d2d4e;
-    color: #c4b5fd;
+    background: #282828;
+    color: #ffffff;
+}
+.player-toggle-tab:focus, .player-toggle-tab:active {
+    outline: none !important;
+    box-shadow: none !important;
 }
 .player-toggle-icon {
     font-size: 0.75rem;
-    display: block;
-    writing-mode: initial;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
     transition: transform 0.35s ease;
 }
 /* seta aponta para esquerda (fechar) quando aberto; direita quando recolhido */
@@ -56,14 +66,14 @@
     width: 280px;
     max-width: calc(100vw - 50px);
     background: linear-gradient(160deg, #1a1a2e 0%, #12122a 100%);
-    border: 1px solid #3a3a5c;
-    border-right: none;
+    border: none;
     border-radius: 12px 0 0 12px;
     padding: 1.5rem 1rem 1.5rem;
     box-shadow: -8px 0 32px rgba(0,0,0,0.5);
     color: #f8f9fa;
     overflow: hidden;
     overflow-y: auto;
+    outline: none !important;
 }
 
 /* === Header === */

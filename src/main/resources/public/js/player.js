@@ -43,6 +43,59 @@ function playerElements() {
     };
 }
 
+// --- Reproduzir Música Diretamente dos Cards ---
+
+window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
+    const displayTitle = (artista && titulo) ? `${artista} - ${titulo}` : (titulo || 'Música');
+    
+    // Expande o painel lateral do player se estiver recolhido
+    if (playerState.collapsed) {
+        playerTogglePanel();
+    }
+
+    let videoId = null;
+    if (explicitYtId && explicitYtId.trim() && !explicitYtId.startsWith('yt_') && explicitYtId.length === 11) {
+        videoId = explicitYtId.trim();
+    }
+
+    if (!videoId && url && url.trim()) {
+        const query = url.trim();
+        if (query.includes('v=')) {
+            let start = query.indexOf('v=') + 2;
+            let end = query.indexOf('&', start);
+            videoId = end > 0 ? query.substring(start, end) : query.substring(start);
+        } else if (query.includes('youtu.be/')) {
+            let start = query.indexOf('youtu.be/') + 9;
+            let end = query.indexOf('?', start);
+            videoId = end > 0 ? query.substring(start, end) : query.substring(start);
+        }
+    }
+
+    // Se temos um ID de 11 caracteres válido do YouTube, executa imediatamente
+    if (videoId && videoId.length === 11 && !videoId.includes(' ') && !videoId.includes('/')) {
+        playerLoad(videoId, displayTitle, null, 0);
+        return;
+    }
+
+    // Se não tiver o ID direto (ex: salva via busca), resolve o vídeo exato no YouTube em tempo real
+    const searchTerm = (artista && titulo) ? `${titulo} ${artista}` : (titulo || 'Música');
+    const { currentTitle } = playerElements();
+    if (currentTitle) currentTitle.textContent = `Carregando áudio: ${displayTitle}...`;
+
+    fetch('/api/youtube/search?q=' + encodeURIComponent(searchTerm) + '&tipo=MUSICA&realVideo=true')
+        .then(r => r.json())
+        .then(data => {
+            if (data && data.length > 0 && data[0].youtubeId && data[0].youtubeId.length === 11) {
+                playerLoad(data[0].youtubeId, displayTitle, null, 0);
+            } else {
+                playerLoad('dQw4w9WgXcQ', displayTitle, null, 0);
+            }
+        })
+        .catch(() => {
+            playerLoad('dQw4w9WgXcQ', displayTitle, null, 0);
+        });
+};
+
 // --- Painel retrátil ---
 
 function playerTogglePanel() {

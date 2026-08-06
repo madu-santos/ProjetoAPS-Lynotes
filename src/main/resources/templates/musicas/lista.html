@@ -3,84 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Músicas - Lynotes</title>
+    <title>Músicas & Playlists - Lynotes</title>
+    <!-- Fonte Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
-<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="bg-light">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
 
     <div th:insert="~{fragments/navbar :: navbar('musicas')}"></div>
 
     <main class="spotify-main container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Top Bar Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
             <div>
-                <h1 class="display-5 fw-bold text-purple mb-1">Músicas</h1>
-                <p class="text-secondary mb-0">Cadastre e gerencie as músicas do catálogo.</p>
+                <h1 class="glowing-title-library mb-1">Suas Músicas</h1>
+                <p class="text-secondary mb-0">Explore e reproduza suas músicas e playlists salvas.</p>
             </div>
-            <a class="btn btn-primary" href="/musicas/new">Nova música</a>
+            <a class="btn-add-music-glow" href="/musicas/new">
+                <i class="bi bi-plus-circle-fill fs-5"></i> Adicionar Nova
+            </a>
         </div>
 
-        <form class="premium-search-form" method="get" action="/musicas">
-            <input class="premium-search-input"
+        <!-- Glassmorphism Search Bar -->
+        <form class="glass-search-box p-2 mb-5 d-flex align-items-center gap-2" method="get" action="/musicas">
+            <i class="bi bi-search text-purple fs-5 ms-3"></i>
+            <input class="form-control glass-search-input pe-3"
                    name="busca"
                    placeholder="Buscar músicas por título, artista, gênero..."
-                   th:value="${busca}">
-            <a th:if="${buscaAtiva}" class="premium-search-clear" href="/musicas">Limpar</a>
-            <button class="premium-search-btn" type="submit">Buscar</button>
+                   th:value="${busca}"
+                   autocomplete="off"
+                   autocorrect="off"
+                   autocapitalize="off"
+                   spellcheck="false">
+            <a th:if="${buscaAtiva}" class="text-secondary small me-2 text-decoration-none" href="/musicas">Limpar</a>
+            <button class="glass-search-btn" type="submit">Buscar</button>
         </form>
 
-        <div class="alert alert-secondary" th:if="${semMusicas and not buscaAtiva}">
-            Nenhuma música cadastrada.
+        <!-- Mensagens Vazia -->
+        <div class="alert alert-dark border-purple text-purple text-center p-4 rounded-4 mb-5" th:if="${semMusicas and not buscaAtiva}">
+            <i class="bi bi-music-note-beamed fs-2 mb-2 d-block"></i>
+            Nenhuma música cadastrada no seu catálogo ainda. Clique em <strong>Adicionar Nova</strong> acima!
         </div>
-        <div class="alert alert-info" th:if="${semMusicas and buscaAtiva}">
+        <div class="alert alert-dark border-secondary text-secondary text-center p-4 rounded-4 mb-5" th:if="${semMusicas and buscaAtiva}">
+            <i class="bi bi-search fs-2 mb-2 d-block"></i>
             Nenhuma música encontrada para o termo pesquisado.
         </div>
 
-        <div class="card shadow-sm" th:unless="${semMusicas}">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Título</th>
-                            <th>Gênero</th>
-                            <th>Duração (segundos)</th>
-                            <th>Artista</th>
-                            <th class="text-end">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="musica : ${musicas}">
-                            <td class="fw-semibold" th:text="${musica.titulo}"></td>
-                            <td th:text="${musica.genero}"></td>
-                            <td th:text="${musica.duracaoSegundos != null ? musica.duracaoSegundos + ' s' : '-'}"></td>
-                            <td th:text="${musica.artista}"></td>
-                            <td class="text-end text-nowrap">
-                                <a class="btn btn-outline-primary btn-sm"
-                                   th:href="${'/musicas/edit/' + musica.id}">
-                                    Editar
-                                </a>
-                                <form class="d-inline"
-                                      method="post"
-                                      th:action="${'/musicas/delete/' + musica.id}">
-                                    <button class="btn btn-outline-danger btn-sm"
-                                            type="submit"
-                                            onclick="return confirm('Excluir esta música?')">
-                                        Excluir
+        <!-- Seção de Grid de Músicas -->
+        <div th:unless="${semMusicas}" class="mb-5">
+            <h3 class="text-white fw-bold mb-4 d-flex align-items-center gap-2">
+                <i class="bi bi-disc text-purple"></i> Suas Músicas Catalogadas
+            </h3>
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+                <div class="col" th:each="musica : ${musicas}">
+                    <div class="music-card-cyber h-100 d-flex flex-column justify-content-between position-relative">
+
+
+                        <div>
+                            <!-- Capa e Ações -->
+                            <div class="music-card-cover-container mb-3 position-relative">
+                                <img th:if="${musica.capaUrl != null and !musica.capaUrl.isBlank()}" th:src="${musica.capaUrl}" class="music-card-cover" alt="Capa da Música">
+                                <div th:unless="${musica.capaUrl != null and !musica.capaUrl.isBlank()}" class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-secondary">
+                                    <i class="bi bi-music-note fs-1"></i>
+                                </div>
+                                <button type="button" 
+                                        class="btn-quick-play-visible" 
+                                        title="Reproduzir no Miniplayer"
+                                        th:data-url="${musica.youtubeUrl}"
+                                        th:data-titulo="${musica.titulo}"
+                                        th:data-artista="${musica.artista}"
+                                        th:data-capa="${musica.capaUrl}"
+                                        th:data-ytid="${musica.youtubeId}"
+                                        onclick="if(typeof playerTocar === 'function') playerTocar(this.getAttribute('data-url'), this.getAttribute('data-titulo'), this.getAttribute('data-artista'), this.getAttribute('data-capa'), this.getAttribute('data-ytid'));">
+                                    <i class="bi bi-play-fill fs-3"></i>
+                                </button>
+                            </div>
+
+                            <!-- Informações da Música -->
+                            <h5 class="fw-bold text-white mb-1 text-truncate" th:text="${musica.titulo}"></h5>
+                            <p class="text-secondary small mb-2 text-truncate" th:text="${musica.artista}"></p>
+                        </div>
+
+                        <!-- Metadados de Baixo (Duração e Badge de Nota) -->
+                        <div class="d-flex align-items-center justify-content-between pt-2 border-top border-secondary border-opacity-10 mt-2">
+                            <span class="text-secondary small font-monospace text-truncate" th:text="${musica.duracaoSegundos != null ? musica.duracaoSegundos + 's' : (musica.genero != null ? musica.genero : 'Música')}"></span>
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Badge de Nota -->
+                                <div th:if="${musica.nota != null}" class="score-badge-circle" title="Sua Avaliação">
+                                    <span th:text="${musica.nota != null ? musica.nota + ' ★' : ''}">5 ★</span>
+                                </div>
+                                
+                                <!-- Dropdown 3 dots horizontal -->
+                                <div class="dropend">
+                                    <button class="btn btn-link text-secondary p-0 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções">
+                                        <i class="bi bi-three-dots fs-5"></i>
                                     </button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                    <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
+                                        <li><a class="dropdown-item text-white" th:href="${'/musicas/edit/' + musica.id}"><i class="bi bi-pencil me-2 text-purple"></i>Editar</a></li>
+                                        <li>
+                                            <form th:action="@{/musicas/{id}/delete(id=${musica.id})}" method="post" onsubmit="return confirm('Tem certeza que deseja excluir esta música?');">
+                                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
+                                            </form>
+                                        </li>
+                                        <li><hr class="dropdown-divider border-secondary"></li>
+                                        <li><h6 class="dropdown-header text-purple">Salvar em...</h6></li>
+                                        <li th:each="pl : ${playlists}">
+                                            <form th:action="@{/playlists/{pid}/items(pid=${pl.id})}" method="post">
+                                                <input type="hidden" name="url" th:value="${musica.youtubeUrl != null ? musica.youtubeUrl : ''}">
+                                                <button type="submit" class="dropdown-item text-white"><i class="bi bi-music-note-list me-2 text-secondary"></i><span th:text="${pl.nome}"></span></button>
+                                            </form>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item text-purple fw-bold" th:data-url="${musica.youtubeUrl}" onclick="abrirModalNovaPlaylist(this.getAttribute('data-url'))">
+                                                <i class="bi bi-plus-circle me-2"></i>Nova playlist
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Seção de Playlists ("Suas Playlists") -->
+        <div class="mt-5 pt-3">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-white fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-collection-play-fill text-purple"></i> Suas Playlists
+                </h3>
+                <a href="/playlists/new" hx-boost="false" class="btn btn-outline-purple btn-sm rounded-pill px-3">
+                    <i class="bi bi-plus-lg me-1"></i> Nova Playlist
+                </a>
+            </div>
+
+            <div class="alert alert-dark border-purple text-secondary text-center p-4 rounded-4" th:if="${semPlaylists}">
+                Nenhuma playlist personalizada criada ainda. Crie uma para organizar suas músicas!
+            </div>
+
+            <div th:unless="${semPlaylists}" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+                <div class="col" th:each="playlist : ${playlists}">
+                    <a th:href="${'/playlists/' + playlist.id}" class="playlist-card-horizontal d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <!-- Playlist Cover -->
+                            <img th:if="${playlistCovers != null and playlistCovers.get(playlist.id) != null}" 
+                                 th:src="${playlistCovers.get(playlist.id)}" 
+                                 class="playlist-cover-mini" 
+                                 alt="Capa da Playlist">
+                            <div th:unless="${playlistCovers != null and playlistCovers.get(playlist.id) != null}" 
+                                 class="playlist-cover-mini d-flex align-items-center justify-content-center bg-darker text-purple">
+                                <i class="bi bi-music-album fs-4"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold text-white mb-0 text-truncate" style="max-width: 140px;" th:text="${playlist.nome}"></h6>
+                                <span class="text-secondary small">Playlist</span>
+                            </div>
+                        </div>
+                        <button type="button" 
+                                class="playlist-play-btn-mini" 
+                                title="Carregar Playlist no Miniplayer"
+                                th:data-plid="${playlist.id}"
+                                onclick="event.preventDefault(); event.stopPropagation(); if(typeof playerFetchPlaylist === 'function') playerFetchPlaylist(this.getAttribute('data-plid'), true);">
+                            <i class="bi bi-play-fill fs-5"></i>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </main>
-    
+
 </div>
+
 <div th:insert="~{fragments/player :: bottom-player}"></div>
+
+<!-- Modal Nova Playlist -->
+<div class="modal fade" id="modalNovaPlaylist" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-darker border-secondary">
+      <div class="modal-header border-bottom border-secondary border-opacity-25">
+        <h5 class="modal-title text-white fw-bold"><i class="bi bi-plus-circle text-purple me-2"></i>Nova Playlist</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formNovaPlaylist" method="post" action="/playlists">
+          <input type="hidden" id="novaPlaylistMusicaUrl" name="musicaUrl">
+          <div class="mb-3">
+            <label class="form-label text-secondary small font-monospace text-uppercase" for="nomeNovaPlaylist">Nome da Playlist</label>
+            <input type="text" class="form-control glass-search-input bg-dark text-white border-secondary p-3" id="nomeNovaPlaylist" name="nome" required>
+          </div>
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn-add-music-glow px-4">Criar e Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function abrirModalNovaPlaylist(url) {
+    document.getElementById('novaPlaylistMusicaUrl').value = url || '';
+    new bootstrap.Modal(document.getElementById('modalNovaPlaylist')).show();
     
+    document.getElementById('formNovaPlaylist').onsubmit = async function(e) {
+        e.preventDefault();
+        const btnSubmit = this.querySelector('button[type="submit"]');
+        const btnOriginalText = btnSubmit.innerHTML;
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Criando...';
+        
+        const nome = document.getElementById('nomeNovaPlaylist').value;
+        const res = await fetch('/api/playlists', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({nome: nome})
+        });
+        if(res.ok) {
+            const playlist = await res.json();
+            const musicaUrl = document.getElementById('novaPlaylistMusicaUrl').value;
+            if(musicaUrl && musicaUrl.trim() !== '') {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/playlists/' + playlist.id + '/items';
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'url';
+                input.value = musicaUrl;
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                window.location.reload();
+            }
+        } else {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = btnOriginalText;
+            alert('Erro ao criar playlist. Verifique se o nome é válido.');
+        }
+    };
+}
+</script>
+
+<script src="/js/player.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
