@@ -12,8 +12,14 @@ public record MusicaDTO(
         String spotifyUrl,
         String youtubeUrl,
         String playlistId,
-        String novaPlaylistNome
+        String novaPlaylistNome,
+        String youtubeId,
+        String capaUrl
 ) {
+
+    public MusicaDTO(String titulo, String artista, String duracaoSegundos, String albumId, String nota, String resenha, String spotifyUrl, String youtubeUrl, String playlistId, String novaPlaylistNome) {
+        this(titulo, artista, duracaoSegundos, albumId, nota, resenha, spotifyUrl, youtubeUrl, playlistId, novaPlaylistNome, null, null);
+    }
 
     public MusicaDTO normalizado() {
         return new MusicaDTO(
@@ -26,7 +32,9 @@ public record MusicaDTO(
                 normalizarOpcional(spotifyUrl),
                 normalizarOpcional(youtubeUrl),
                 normalizarOpcional(playlistId),
-                normalizarOpcional(novaPlaylistNome)
+                normalizarOpcional(novaPlaylistNome),
+                normalizarOpcional(youtubeId),
+                normalizarOpcional(capaUrl)
         );
     }
 

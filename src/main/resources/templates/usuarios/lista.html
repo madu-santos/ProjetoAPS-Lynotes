@@ -1,73 +1,74 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comunidade - Lynotes</title>
+    <title>Membros da Comunidade - Lynotes</title>
+    <!-- Fonte Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
-<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
 
     <div th:insert="~{fragments/navbar :: navbar('comunidade')}"></div>
 
     <main class="spotify-main container py-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- Header Top Bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
             <div>
-                <h1 class="text-purple">Comunidade</h1>
-                <p class="text-secondary mb-0">Descubra novos perfis e o que as pessoas estão ouvindo.</p>
+                <h1 class="glowing-title-library mb-1">Membros da Comunidade</h1>
+                <p class="text-secondary mb-0">Explore os perfis dos membros e descubra novos gostos musicais.</p>
             </div>
-            <a class="btn btn-primary" href="/usuarios/novo">Participar da Comunidade</a>
         </div>
 
-        <div class="alert alert-secondary" th:if="${semUsuarios}">
-            <span th:if="${q == null or q.isEmpty()}">Nenhum usuário cadastrado no momento.</span>
-            <span th:unless="${q == null or q.isEmpty()}" th:text="'Nenhum usuário encontrado para a busca: ' + ${q}"></span>
-            <a th:unless="${q == null or q.isEmpty()}" href="/usuarios" class="alert-link ms-2">Limpar busca</a>
-        </div>
+        <!-- Glassmorphism Search Bar -->
+        <form class="glass-search-box p-2 mb-5 d-flex align-items-center gap-2" method="get" action="/usuarios">
+            <i class="bi bi-search text-purple fs-5 ms-3"></i>
+            <input class="form-control glass-search-input pe-3"
+                   name="q"
+                   placeholder="Buscar membros por nome ou username..."
+                   th:value="${q}"
+                   autocomplete="off">
+            <a th:if="${q != null and !q.isEmpty()}" class="text-secondary small me-2 text-decoration-none" href="/usuarios">Limpar</a>
+            <button class="glass-search-btn" type="submit">Buscar</button>
+        </form>
 
-        <div class="mb-4" th:if="${q != null and !q.isEmpty() and !semUsuarios}">
-            <h4 class="text-white">Resultados da busca por "<span th:text="${q}" class="text-purple"></span>"</h4>
-            <a href="/usuarios" class="btn btn-sm btn-outline-secondary mt-2">Limpar busca</a>
+        <div class="alert alert-dark border-purple text-purple text-center p-4 rounded-4 mb-5" th:if="${semUsuarios}">
+            <i class="bi bi-people fs-2 mb-2 d-block"></i>
+            Nenhum usuário encontrado.
         </div>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semUsuarios}">
             <div class="col" th:each="usuario : ${listaUsuarios}">
-                <div class="card h-100 shadow-sm border-0 bg-dark text-white card-hover">
-                    <div class="card-body p-4 d-flex flex-column">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="rounded-circle bg-purple p-3 me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                <span class="fw-bold fs-4" th:text="${#strings.substring(usuario.nome, 0, 1).toUpperCase()}">U</span>
+                <div class="music-card-cyber p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="rounded-circle bg-purple text-white fw-bold d-flex align-items-center justify-content-center shadow" style="width: 50px; height: 50px; min-width: 50px;" th:text="${#strings.substring(usuario.nome, 0, 1).toUpperCase()}">U</div>
+                            <div class="overflow-hidden">
+                                <h5 class="fw-bold text-white mb-0 text-truncate" th:text="${usuario.nome}"></h5>
+                                <span class="text-purple font-monospace small">@<span th:text="${usuario.username}">username</span></span>
                             </div>
-                            <h5 class="card-title mb-0 text-truncate">
-                                <span th:text="${usuario.nome}">Nome do Usuário</span>
-                                <span class="text-secondary small d-block">@<span th:text="${usuario.username}">username</span></span>
-                            </h5>
                         </div>
 
-                        <p class="card-text text-secondary small mb-4 flex-grow-1">
+                        <p class="text-secondary small mb-4 text-truncate-2">
                             <span th:if="${usuario.bio != null and !usuario.bio.isEmpty()}"
                                   th:text="${usuario.bio.length() > 100 ? #strings.substring(usuario.bio, 0, 100) + '...' : usuario.bio}">
                             </span>
-                            <i th:if="${usuario.bio == null or usuario.bio.isEmpty()}">Sem biografia disponível.</i>
+                            <i th:if="${usuario.bio == null or usuario.bio.isEmpty()}">Sem biografia informada.</i>
                         </p>
+                    </div>
 
-                        <div class="mt-auto pt-3 border-top border-secondary d-flex justify-content-between align-items-center">
-                            <a class="btn btn-purple btn-sm w-100 fw-bold py-2"
-                               th:href="${'/usuarios/' + usuario.id}">
-                                Ver Perfil
-                            </a>
-
-                            <!-- Ações administrativas escondidas para o público -->
-                            <div th:if="${usuarioLogadoId == usuario.id}" class="ms-2 d-flex gap-1">
-                                <a class="btn btn-outline-secondary btn-sm" th:href="${'/usuarios/' + usuario.id + '/editar'}" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </div>
-                        </div>
+                    <div class="pt-3 border-top border-secondary border-opacity-10 mt-auto">
+                        <a class="btn btn-outline-purple btn-sm w-100 rounded-pill py-2" th:href="${'/usuarios/' + usuario.id}">
+                            <i class="bi bi-person-badge me-1"></i> Ver Perfil Público
+                        </a>
                     </div>
                 </div>
             </div>
@@ -75,8 +76,8 @@
     </main>
 
 </div>
+
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="/js/player.js" defer></script>
 </body>
 </html>

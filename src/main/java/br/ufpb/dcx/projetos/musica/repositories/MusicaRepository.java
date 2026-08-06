@@ -21,5 +21,7 @@ public interface MusicaRepository {
 
     List<Musica> buscar(String termo, String usuarioId);
 
+    Optional<Musica> buscarPorYouTubeId(String youtubeId);
+
     boolean remover(String id);
 }

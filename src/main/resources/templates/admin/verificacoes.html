@@ -1,70 +1,77 @@
-﻿<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Administrador - Verificações</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/style.css">
+    <title>Painel do Administrador - Verificações - Lynotes</title>
+    <!-- Fonte Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="/css/index.css" rel="stylesheet">
+    <link href="/css/player.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body>
-    <div class="sidebar">
-        <h2><i class="fas fa-music me-2"></i>Lynotes Admin</h2>
-        <a href="/artistas" class="btn btn-outline-light w-100 mb-3"><i class="fas fa-home"></i> Voltar ao App</a>
-        <form action="/logout" method="post">
-            <button type="submit" class="btn btn-danger w-100"><i class="fas fa-sign-out-alt"></i> Sair</button>
-        </form>
-    </div>
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
+<div id="app-content">
 
-    <div class="main-content">
-        <div class="header d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 m-0 text-light"><i class="fas fa-check-circle"></i> Aprovação de Artistas Verificados</h1>
+    <div th:insert="~{fragments/navbar :: navbar('')}"></div>
+
+    <main class="spotify-main container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <h1 class="glowing-title-library mb-1">Painel do Administrador</h1>
+                <p class="text-secondary mb-0">Gerencie solicitações de aprovação e verificação de artistas.</p>
+            </div>
         </div>
 
-        <div class="card bg-dark text-light border-secondary">
-            <div class="card-body">
-                <div th:if="${artistas.isEmpty()}" class="alert alert-info text-center" role="alert">
-                    <i class="fas fa-info-circle fa-2x mb-2"></i><br>
-                    Nenhuma solicitação de verificação pendente no momento.
-                </div>
+        <div class="music-card-cyber p-4">
+            <div th:if="${artistas.isEmpty()}" class="alert alert-dark border-purple text-purple text-center p-5 rounded-4 mb-0">
+                <i class="bi bi-check-circle-fill fs-2 mb-2 d-block text-purple"></i>
+                Nenhuma solicitação de verificação pendente no momento.
+            </div>
 
-                <table class="table table-dark table-hover align-middle" th:unless="${artistas.isEmpty()}">
+            <div class="table-responsive" th:unless="${artistas.isEmpty()}">
+                <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
                     <thead>
-                        <tr>
-                            <th scope="col">Artista</th>
-                            <th scope="col">Gênero</th>
-                            <th scope="col">CPF / Nascimento</th>
-                            <th scope="col">Endereço Completo</th>
-                            <th scope="col" class="text-center">Ação</th>
+                        <tr class="border-bottom border-purple">
+                            <th>Artista</th>
+                            <th>Gênero</th>
+                            <th>CPF / Nascimento</th>
+                            <th>Endereço Completo</th>
+                            <th class="text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="artista : ${artistas}">
                             <td>
-                                <strong th:text="${artista.nome}"></strong><br>
-                                <small class="text-muted" th:text="${artista.biografia}"></small>
-                            </td>
-                            <td th:text="${artista.generoMusical}"></td>
-                            <td>
-                                <div><i class="fas fa-id-card"></i> <span th:text="${artista.cpf}"></span></div>
-                                <div><i class="fas fa-calendar-alt"></i> <span th:text="${#temporals.format(artista.dataNascimento, 'dd/MM/yyyy')}"></span></div>
+                                <strong class="text-white fs-6" th:text="${artista.nome}"></strong><br>
+                                <span class="text-secondary small" th:text="${artista.biografia}"></span>
                             </td>
                             <td>
+                                <span class="badge bg-purple rounded-pill px-3 py-1" th:text="${artista.generoMusical}"></span>
+                            </td>
+                            <td>
+                                <div class="small font-monospace"><i class="bi bi-card-text me-1 text-purple"></i> <span th:text="${artista.cpf}"></span></div>
+                                <div class="small font-monospace text-secondary"><i class="bi bi-calendar me-1"></i> <span th:text="${#temporals.format(artista.dataNascimento, 'dd/MM/yyyy')}"></span></div>
+                            </td>
+                            <td class="small text-secondary">
                                 <div><span th:text="${artista.logradouro}"></span>, <span th:text="${artista.numero}"></span></div>
                                 <div><span th:text="${artista.bairro}"></span> - <span th:text="${artista.cidade}"></span>/<span th:text="${artista.uf}"></span></div>
-                                <div>CEP: <span th:text="${artista.cep}"></span></div>
+                                <div class="font-monospace">CEP: <span th:text="${artista.cep}"></span></div>
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <form th:action="@{/admin/verificacoes/{id}/aprovar(id=${artista.id})}" method="post">
-                                        <button type="submit" class="btn btn-success btn-sm" title="Aprovar">
-                                            <i class="fas fa-check"></i> Aprovar
+                                    <form th:action="@{/admin/verificacoes/{id}/aprovar(id=${artista.id})}" method="post" hx-boost="false" class="m-0">
+                                        <button type="submit" class="btn btn-outline-success btn-sm rounded-pill px-3" title="Aprovar">
+                                            <i class="bi bi-check-lg me-1"></i> Aprovar
                                         </button>
                                     </form>
-                                    <form th:action="@{/admin/verificacoes/{id}/rejeitar(id=${artista.id})}" method="post">
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Rejeitar">
-                                            <i class="fas fa-times"></i> Rejeitar
+                                    <form th:action="@{/admin/verificacoes/{id}/rejeitar(id=${artista.id})}" method="post" hx-boost="false" class="m-0">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Rejeitar">
+                                            <i class="bi bi-x-lg me-1"></i> Rejeitar
                                         </button>
                                     </form>
                                 </div>
@@ -74,8 +81,11 @@
                 </table>
             </div>
         </div>
-    </div>
+    </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+<div th:insert="~{fragments/player :: bottom-player}"></div>
+<script src="/js/player.js" defer></script>
 </body>
 </html>

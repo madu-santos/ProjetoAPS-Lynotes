@@ -21,8 +21,10 @@ public final class Artista {
     private final StatusVerificacao statusVerificacao;
     private final Double nota;
     private final String usuarioId;
+    private final String youtubeId;
+    private final String capaUrl;
 
-    public Artista(String id, String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, Double nota, String usuarioId) {
+    public Artista(String id, String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, Double nota, String usuarioId, String youtubeId, String capaUrl) {
         this.id = Objects.requireNonNull(id);
         this.nome = nome;
         this.generoMusical = generoMusical;
@@ -38,26 +40,36 @@ public final class Artista {
         this.statusVerificacao = statusVerificacao;
         this.nota = nota;
         this.usuarioId = usuarioId;
+        this.youtubeId = youtubeId;
+        this.capaUrl = capaUrl;
+    }
+
+    public Artista(String id, String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, Double nota, String usuarioId) {
+        this(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId, null, null);
     }
 
     public Artista(String id, String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, String usuarioId) {
-        this(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, null, usuarioId);
+        this(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, null, usuarioId, null, null);
     }
 
     public static Artista novo(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, String usuarioId) {
-        return new Artista(UUID.randomUUID().toString(), nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, null, usuarioId);
+        return new Artista(UUID.randomUUID().toString(), nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, null, usuarioId, null, null);
     }
 
     public static Artista novo(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, Double nota, String usuarioId) {
-        return new Artista(UUID.randomUUID().toString(), nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId);
+        return new Artista(UUID.randomUUID().toString(), nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId, null, null);
+    }
+
+    public static Artista novo(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, Double nota, String usuarioId, String youtubeId, String capaUrl) {
+        return new Artista(UUID.randomUUID().toString(), nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId, youtubeId, capaUrl);
     }
 
     public Artista comDados(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao) {
-        return new Artista(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId);
+        return new Artista(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId, youtubeId, capaUrl);
     }
 
     public Artista comDados(String nome, String generoMusical, String biografia, String cpf, LocalDate dataNascimento, String cep, String logradouro, String numero, String bairro, String cidade, String uf, StatusVerificacao statusVerificacao, Double nota) {
-        return new Artista(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId);
+        return new Artista(id, nome, generoMusical, biografia, cpf, dataNascimento, cep, logradouro, numero, bairro, cidade, uf, statusVerificacao, nota, usuarioId, youtubeId, capaUrl);
     }
 
     public String getId() {
@@ -118,6 +130,14 @@ public final class Artista {
 
     public String getUsuarioId() {
         return usuarioId;
+    }
+
+    public String getYoutubeId() {
+        return youtubeId;
+    }
+
+    public String getCapaUrl() {
+        return capaUrl;
     }
 }
 

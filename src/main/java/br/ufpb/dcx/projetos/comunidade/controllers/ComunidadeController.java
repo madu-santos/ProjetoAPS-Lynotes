@@ -14,10 +14,24 @@ public class ComunidadeController {
 
     private final ComunidadeService service;
     private final br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService;
+    private final br.ufpb.dcx.projetos.musica.services.MusicaService musicaService;
+    private final br.ufpb.dcx.projetos.album.services.AlbumService albumService;
+    private final br.ufpb.dcx.projetos.artista.services.ArtistaService artistaService;
 
-    public ComunidadeController(ComunidadeService service, br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService) {
+    public ComunidadeController(ComunidadeService service, 
+                                br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService,
+                                br.ufpb.dcx.projetos.musica.services.MusicaService musicaService,
+                                br.ufpb.dcx.projetos.album.services.AlbumService albumService,
+                                br.ufpb.dcx.projetos.artista.services.ArtistaService artistaService) {
         this.service = service;
         this.usuarioService = usuarioService;
+        this.musicaService = musicaService;
+        this.albumService = albumService;
+        this.artistaService = artistaService;
+    }
+
+    public ComunidadeController(ComunidadeService service, br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService) {
+        this(service, usuarioService, null, null, null);
     }
 
     public void registrarRotas(Javalin app) {
@@ -54,12 +68,25 @@ public class ComunidadeController {
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("usuarioLogadoId", usuarioLogadoId);
+        modelo.put("paginaAtiva", "comunidade");
         modelo.put("posts", posts);
         modelo.put("amigos", amigos);
         modelo.put("pedidos", pedidos);
         modelo.put("usuarios", usuarioService.listarTodos());
         modelo.put("comentarios", comentarios);
         modelo.put("erro", ctx.sessionAttribute("erroComunidade")); // flash message
+
+        // Carrega os rankings integrados para a aba de Rankings da Comunidade
+        if (musicaService != null && albumService != null && artistaService != null) {
+            var rankingController = new br.ufpb.dcx.projetos.rankings.RankingController(musicaService, albumService, artistaService);
+            var todasMusicas = musicaService.findAll();
+            var todosAlbuns = albumService.findAllGlobal();
+            var todosArtistas = artistaService.findAllGlobal();
+            modelo.put("topMusicas", todasMusicas);
+            modelo.put("topAlbuns", todosAlbuns);
+            modelo.put("topArtistas", todosArtistas);
+        }
+
         ctx.sessionAttribute("erroComunidade", null); // limpa a msg
         
         ctx.render("comunidade/feed", modelo);

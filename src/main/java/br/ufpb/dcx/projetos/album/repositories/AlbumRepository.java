@@ -19,5 +19,7 @@ public interface AlbumRepository {
 
     List<Album> buscar(String termo, String usuarioId);
 
+    Optional<Album> buscarPorYouTubeId(String youtubeId);
+
     boolean remover(String id, String usuarioId);
 }

@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import br.ufpb.dcx.projetos.artista.services.ArtistaService;
 import br.ufpb.dcx.projetos.album.services.AlbumService;
+import br.ufpb.dcx.projetos.artista.models.Artista;
+import br.ufpb.dcx.projetos.album.models.Album;
 import java.util.Map;
 import java.util.Optional;
 
@@ -92,6 +94,9 @@ public final class UsuarioController {
             usuario.setBio(dto.bio());
             usuario.setFotoUrl(dto.fotoUrl());
             service.cadastrarUsuario(usuario);
+            if (playlistService != null) {
+                playlistService.findOrCreateHiddenPlaylist(usuario.getId());
+            }
             if (ctx.sessionAttribute("usuarioLogado") != null) {
                 ctx.redirect("/usuarios");
             } else {
@@ -131,7 +136,7 @@ public final class UsuarioController {
         List<Musica> musicas = musicaService.findByUsuarioId(id);
         List<br.ufpb.dcx.projetos.artista.models.Artista> artistas = artistaService.listar("", id);
         List<br.ufpb.dcx.projetos.album.models.Album> albums = albumService.findAll(id);
-        List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(id);
+        List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findAllByUsuarioId(id);
         
         List<br.ufpb.dcx.projetos.comunidade.views.PostViewDTO> userPosts = comunidadeService.listarFeed(logadoId, id);
 
@@ -286,14 +291,25 @@ public final class UsuarioController {
         }
 
         Usuario usuario = usuarioOpt.get();
+        
+        List<Musica> minhasMusicas = musicaService != null ? musicaService.findByUsuarioId(idLogado) : List.of();
+        List<Artista> meusArtistas = artistaService != null ? artistaService.listar(null, idLogado) : List.of();
+        List<Album> meusAlbums = albumService != null ? albumService.findAll(idLogado) : List.of();
+        List<br.ufpb.dcx.projetos.playlist.models.Playlist> minhasPlaylists = playlistService != null ? playlistService.findAllByUsuarioId(idLogado) : List.of();
+
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("paginaAtiva", "perfil");
         modelo.put("nome", usuario.getNome());
         modelo.put("username", usuario.getUsername());
         modelo.put("email", usuario.getEmail());
         modelo.put("bio", usuario.getBio());
         modelo.put("fotoUrl", usuario.getFotoUrl() != null ? usuario.getFotoUrl() : "");
         modelo.put("sucesso", ctx.queryParam("sucesso") != null);
+        modelo.put("minhasMusicas", minhasMusicas);
+        modelo.put("meusArtistas", meusArtistas);
+        modelo.put("meusAlbums", meusAlbums);
+        modelo.put("minhasPlaylists", minhasPlaylists);
         ctx.render("usuarios/me", modelo);
     }
 

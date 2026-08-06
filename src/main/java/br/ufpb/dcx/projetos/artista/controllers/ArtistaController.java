@@ -189,8 +189,10 @@ public final class ArtistaController {
                 ctx.formParam("cidade"),
                 ctx.formParam("uf"),
                 solicitarVerificacao,
-                nota
-        );
+                nota,
+                ctx.formParam("youtubeId"),
+                ctx.formParam("capaUrl")
+        ).normalizado();
     }
 
     private ArtistaDTOView viewFormulario(String id, ArtistaDTO dto) {

@@ -1,260 +1,122 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="'Catálogo de ' + ${perfilNome} + ' - Lynotes'">Catálogo - Lynotes</title>
+    <title th:text="'Perfil de ' + ${perfilNome} + ' - Lynotes'">Perfil - Lynotes</title>
+    <!-- Fonte Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
-<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
 
     <div th:insert="~{fragments/navbar :: navbar('comunidade')}"></div>
 
     <main class="spotify-main container py-5">
-        <div class="mb-5 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <div class="profile-avatar-preview shadow-sm" style="width: 80px; height: 80px; font-size: 1.8rem; border-width: 2px;">
+        
+        <!-- Hero de Perfil Público -->
+        <div class="music-card-cyber p-4 p-md-5 mb-5">
+            <div class="d-flex align-items-center gap-4 flex-wrap flex-md-nowrap">
+                <!-- Avatar Circular -->
+                <div class="position-relative" style="width: 110px; height: 110px; min-width: 110px;">
                     <img th:if="${perfilFotoUrl != null and !perfilFotoUrl.isEmpty()}" 
                          th:src="${perfilFotoUrl}" 
-                         class="w-100 h-100 rounded-circle object-fit-cover">
-                    <span th:if="${perfilFotoUrl == null or perfilFotoUrl.isEmpty()}" th:text="${#strings.substring(perfilNome, 0, 1).toUpperCase()}">U</span>
-                </div>
-                <div>
-                    <a class="text-decoration-none" href="/usuarios">&larr; Voltar para usuários</a>
-                    <h1 class="fw-bold mt-2 mb-1">
-                        <span th:text="'Catálogo de ' + ${perfilNome}"></span>
-                        <span class="text-secondary fs-4">(@<span th:text="${perfilUsername}">username</span>)</span>
-                    </h1>
-                    <p class="text-muted mb-0">Confira as músicas catalogadas e as avaliações deste usuário.</p>
-                </div>
-            </div>
-            <div th:if="${usuarioLogadoId != null and usuarioLogadoId == perfilId}">
-                <a href="/usuarios/me" class="btn btn-outline-primary">✏️ Editar Perfil</a>
-            </div>
-        </div>
-
-        <!-- SEÇÃO POSTS -->
-        <div class="mb-5 pb-4">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-                <h3 class="fw-bold mb-0 text-white">Posts na Comunidade</h3>
-            </div>
-
-            <!-- Estado Vazio -->
-            <div class="text-center py-5 card shadow-sm p-5" th:if="${semPosts}">
-                <div class="mb-4 text-purple">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-chat-text" viewBox="0 0 16 16">
-                        <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
-                        <path d="M4 5.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8m0 2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5"/>
-                    </svg>
-                </div>
-                <h3 class="fw-bold mb-2">Nenhum post</h3>
-                <p class="text-secondary mb-0">Este usuário ainda não postou nada na comunidade.</p>
-            </div>
-
-            <!-- Lista de Posts (Apenas Leitura/Interação básica) -->
-            <div th:unless="${semPosts}">
-                <div class="card shadow-sm mb-3" th:each="post : ${userPosts}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <span class="fw-bold text-dark fs-5" th:text="${post.usuarioNome}"></span>
-                                <span class="text-muted small ms-2" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></span>
-                            </div>
-                        </div>
-                        <p class="card-text mb-3" th:text="${post.conteudo}"></p>
-                        
-                        <div class="d-flex gap-3">
-                            <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" hx-boost="false">
-                                <button type="submit" class="btn btn-sm d-flex align-items-center gap-1" th:classappend="${post.estreladoPorMim} ? 'btn-warning text-dark fw-bold' : 'btn-outline-secondary'">
-                                    <span th:text="${post.estreladoPorMim} ? '★' : '☆'"></span>
-                                    <span th:text="${post.qtdEstrelas}"></span>
-                                </button>
-                            </form>
-                            <a th:href="@{'/comunidade/post/' + ${post.id}}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-chat-text" viewBox="0 0 16 16">
-                                    <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
-                                    <path d="M4 5.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8m0 2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5"/>
-                                </svg>
-                                <span th:text="${post.qtdComentarios}"></span>
-                            </a>
-                        </div>
+                         class="w-100 h-100 rounded-circle object-fit-cover shadow border border-purple border-3">
+                    <div th:unless="${perfilFotoUrl != null and !perfilFotoUrl.isEmpty()}" 
+                         class="w-100 h-100 rounded-circle bg-darker border border-purple border-3 d-flex align-items-center justify-content-center text-purple fw-bold fs-1 shadow">
+                        <span th:text="${#strings.substring(perfilNome, 0, 1).toUpperCase()}">U</span>
                     </div>
                 </div>
+
+                <!-- Detalhes do Perfil Público -->
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h2 class="glowing-title-library mb-0 fs-2" th:text="${perfilNome}">Nome do Usuário</h2>
+                        <span class="badge bg-purple rounded-pill px-3 py-1">Catálogo Público</span>
+                    </div>
+                    <p class="text-purple font-monospace mb-2">@<span th:text="${perfilUsername}">username</span></p>
+
+                    <!-- Pílulas de Estatísticas -->
+                    <div class="d-flex gap-2 flex-wrap">
+                        <span class="badge bg-darker border border-secondary border-opacity-20 px-3 py-2 text-white font-monospace">
+                            <i class="bi bi-music-note text-purple me-1"></i> <strong th:text="${musicas != null ? musicas.size() : 0}">0</strong> Músicas
+                        </span>
+                        <span class="badge bg-darker border border-secondary border-opacity-20 px-3 py-2 text-white font-monospace">
+                            <i class="bi bi-mic text-purple me-1"></i> <strong th:text="${artistas != null ? artistas.size() : 0}">0</strong> Artistas
+                        </span>
+                        <span class="badge bg-darker border border-secondary border-opacity-20 px-3 py-2 text-white font-monospace">
+                            <i class="bi bi-disc text-purple me-1"></i> <strong th:text="${albums != null ? albums.size() : 0}">0</strong> Álbuns
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Ação / Voltar -->
+                <div>
+                    <a class="btn btn-outline-secondary rounded-pill px-4" href="/comunidade">&larr; Voltar</a>
+                </div>
             </div>
         </div>
 
-        <!-- SEÇÃO MÚSICAS -->
-        <div class="mb-5 pb-4">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-                <h3 class="fw-bold mb-0 text-white">Músicas</h3>
+        <!-- MÚSICAS CATALOGADAS DO USUÁRIO -->
+        <div class="mb-5">
+            <h4 class="text-white fw-bold mb-4 d-flex align-items-center gap-2">
+                <i class="bi bi-music-note-beamed text-purple"></i> Músicas Catalogadas
+            </h4>
+
+            <div class="alert alert-dark border-purple text-secondary text-center p-4 rounded-4" th:if="${semMusicas}">
+                Este usuário ainda não catalogou músicas.
             </div>
 
-            <!-- Estado Vazio -->
-            <div class="text-center py-5 card shadow-sm p-5" th:if="${semMusicas}">
-                <div class="mb-4 text-purple">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-music-note-beamed" viewBox="0 0 16 16">
-                        <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13s1.12-2 2.5-2 2.5.895 2.5 2m9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2"/>
-                        <path fill-rule="evenodd" d="M14 11V2h1v9zM6 3v10H5V3z"/>
-                        <path d="M5 2.905a1 1 0 0 1 .9-.995l8-.8a1 1 0 0 1 1.1.995V3L5 4z"/>
-                    </svg>
-                </div>
-                <h3 class="fw-bold mb-2">Este catálogo está vazio</h3>
-                <p class="text-secondary mb-0">Este usuário ainda não adicionou músicas à sua coleção.</p>
-            </div>
-
-            <!-- Grade de Músicas (Apenas Leitura) -->
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semMusicas}">
                 <div class="col" th:each="musica : ${musicas}">
-                    <div class="card shadow-sm music-card py-2 px-1">
-                        <div class="card-body d-flex flex-column justify-content-between p-3" style="min-height: 190px;">
-                            <div>
-                                <div class="mb-1">
-                                    <h5 class="card-title fw-bold mb-0 text-white text-truncate" th:text="${musica.titulo}" th:title="${musica.titulo}"></h5>
-                                    <h6 class="text-purple small mb-1 text-truncate" th:text="${musica.artista}"></h6>
+                    <div class="music-card-cyber h-100 d-flex flex-column justify-content-between p-4">
+                        <div>
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <img th:if="${musica.capaUrl != null and !musica.capaUrl.isBlank()}" th:src="${musica.capaUrl}" class="rounded-3 shadow" style="width: 60px; height: 60px; object-fit: cover;">
+                                <div th:unless="${musica.capaUrl != null and !musica.capaUrl.isBlank()}" class="rounded-3 shadow d-flex align-items-center justify-content-center bg-dark text-secondary" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-music-note fs-3"></i>
                                 </div>
-                                
-                                <div class="stars-display mb-2 text-warning" th:if="${musica.nota != null}">
-                                    <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= musica.nota ? '★' : '☆'}"></span>
-                                </div>
-                                
-                                <p class="card-text text-secondary small mb-3 text-truncate-2" th:text="${musica.resenha}"></p>
-                            </div>
-                            
-                            <div class="d-flex align-items-center gap-2 mt-2 pt-2 border-top border-secondary" th:if="${musica.youtubeUrl != null && !musica.youtubeUrl.isEmpty()}">
-                                <button type="button" class="btn btn-outline-success btn-sm"
-                                        th:data-url="${musica.youtubeUrl}"
-                                        th:data-titulo="${musica.titulo}"
-                                        onclick="try { playerLoad(playerExtractVideoId(this.getAttribute('data-url')), this.getAttribute('data-titulo'), null); } catch(e) { alert(e.message); }">
-                                    ▶ Play
-                                </button>
-                                <a th:href="${musica.youtubeUrl}" target="_blank" class="btn btn-sm btn-outline-danger" title="Abrir no YouTube">
-                                    YouTube ↗
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SEÇÃO ARTISTAS -->
-        <div class="mb-5 pb-4">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-                <h3 class="fw-bold mb-0 text-white">Artistas</h3>
-            </div>
-
-            <!-- Estado Vazio -->
-            <div class="text-center py-5 card shadow-sm p-5" th:if="${semArtistas}">
-                <div class="mb-4 text-purple">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
-                        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
-                        <path d="M5 4a3 3 0 0 1 6 0v4a3 3 0 0 1-6 0z"/>
-                    </svg>
-                </div>
-                <h3 class="fw-bold mb-2">Sem artistas no catálogo</h3>
-                <p class="text-secondary mb-0">Este usuário ainda não adicionou artistas à sua coleção.</p>
-            </div>
-
-            <!-- Grade de Artistas (Apenas Leitura) -->
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semArtistas}">
-                <div class="col" th:each="artista : ${artistas}">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column p-4">
-                            <h5 class="card-title fw-bold mb-1 text-white" th:text="${artista.nome}"></h5>
-                            <h6 class="text-purple small mb-2" th:text="${artista.generoMusical != null ? artista.generoMusical : 'Sem gênero'}"></h6>
-                            <div class="stars-display mb-3 text-warning" th:if="${artista.nota != null}">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= artista.nota ? '★' : '☆'}"></span>
-                            </div>
-                            <p class="card-text text-secondary small flex-grow-1" th:text="${artista.biografia != null and !artista.biografia.isEmpty() ? (artista.biografia.length() > 100 ? #strings.substring(artista.biografia, 0, 100) + '...' : artista.biografia) : 'Sem biografia disponível.'}"></p>
-                            
-                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
-                                <div>
-                                    <span class="badge bg-success" th:if="${artista.statusVerificacao.name() == 'APROVADO'}">Verificado</span>
-                                    <span class="badge bg-warning text-dark" th:if="${artista.statusVerificacao.name() == 'PENDENTE'}">Pendente</span>
-                                    <span class="badge bg-danger" th:if="${artista.statusVerificacao.name() == 'REJEITADO'}">Rejeitado</span>
+                                <div class="overflow-hidden">
+                                    <h6 class="fw-bold text-white mb-0 text-truncate" th:text="${musica.titulo}"></h6>
+                                    <p class="text-secondary small mb-0 text-truncate" th:text="${musica.artista}"></p>
                                 </div>
                             </div>
+                            <p class="text-light small fst-italic mb-3" style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;" th:if="${musica.resenha != null and !musica.resenha.isBlank()}" th:text="${'« ' + musica.resenha + ' »'}"></p>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- SEÇÃO ÁLBUNS -->
-        <div class="mb-5 pb-4">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-                <h3 class="fw-bold mb-0 text-white">Álbuns</h3>
-            </div>
+                        <div class="d-flex align-items-center justify-content-between pt-2 border-top border-secondary border-opacity-10">
+                            <button type="button" 
+                                    class="btn btn-outline-purple btn-sm rounded-pill px-3" 
+                                    th:data-url="${musica.youtubeUrl}"
+                                    th:data-titulo="${musica.titulo}"
+                                    th:data-artista="${musica.artista}"
+                                    th:data-capa="${musica.capaUrl}"
+                                    th:data-ytid="${musica.youtubeId}"
+                                    onclick="if(typeof playerTocar === 'function') playerTocar(this.getAttribute('data-url'), this.getAttribute('data-titulo'), this.getAttribute('data-artista'), this.getAttribute('data-capa'), this.getAttribute('data-ytid'));">
+                                <i class="bi bi-play-fill me-1"></i> Ouvir
+                            </button>
 
-            <!-- Estado Vazio -->
-            <div class="text-center py-5 card shadow-sm p-5" th:if="${semAlbums}">
-                <div class="mb-4 text-purple">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-disc" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                        <path d="M10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0M8 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8"/>
-                    </svg>
-                </div>
-                <h3 class="fw-bold mb-2">Sem álbuns catalogados</h3>
-                <p class="text-secondary mb-0">Este usuário ainda não adicionou álbuns à sua coleção.</p>
-            </div>
-
-            <!-- Grade de Álbuns (Apenas Leitura) -->
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semAlbums}">
-                <div class="col" th:each="album : ${albums}">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column p-4">
-                            <h5 class="card-title fw-bold mb-1 text-white" th:text="${album.titulo}"></h5>
-                            <h6 class="text-purple small mb-2" th:text="${'De ' + album.artista}"></h6>
-                            <div class="stars-display mb-3 text-warning" th:if="${album.nota != null}">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= album.nota ? '★' : '☆'}"></span>
-                            </div>
-                            <p class="card-text text-secondary small flex-grow-1" th:text="${'Ano de Lançamento: ' + album.anoLancamento}"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- SEÇÃO PLAYLISTS -->
-        <div class="mb-5 pb-4">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
-                <h3 class="fw-bold mb-0 text-white">Playlists</h3>
-            </div>
-
-            <!-- Estado Vazio -->
-            <div class="text-center py-5 card shadow-sm p-5" th:if="${semPlaylists}">
-                <div class="mb-4">
-                    <span class="fs-1">🎶</span>
-                </div>
-                <h3 class="fw-bold mb-2">Sem playlists</h3>
-                <p class="text-secondary mb-0">Este usuário ainda não criou nenhuma playlist pública.</p>
-            </div>
-
-            <!-- Grade de Playlists (Apenas Leitura) -->
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" th:unless="${semPlaylists}">
-                <div class="col" th:each="playlist : ${playlists}">
-                    <div class="card h-100 shadow-sm music-card">
-                        <div class="card-body d-flex flex-column p-4">
-                            <h5 class="card-title fw-bold mb-2 text-white" th:text="${playlist.nome}"></h5>
-                            <p class="card-text text-secondary small flex-grow-1">Playlist criada na plataforma.</p>
-                            
-                            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-secondary">
-                                <a th:href="@{'/playlists/' + ${playlist.id}}" class="btn btn-sm btn-outline-primary">
-                                    Ver Músicas
-                                </a>
+                            <div th:if="${musica.nota != null}" class="score-badge-circle">
+                                <span th:text="${musica.nota != null ? musica.nota + ' ★' : ''}">5 ★</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </main>
 
 </div>
+
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-    
+<script src="/js/player.js" defer></script>
 </body>
 </html>

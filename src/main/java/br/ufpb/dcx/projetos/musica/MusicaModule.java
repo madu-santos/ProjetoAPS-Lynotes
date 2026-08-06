@@ -38,6 +38,6 @@ public final class MusicaModule {
         app.post("/musicas", controller::cadastrar, Role.USER);
         app.get("/musicas/edit/{id}", controller::exibirEdicao, Role.USER);
         app.post("/musicas/edit/{id}", controller::atualizar, Role.USER);
-        app.post("/musicas/delete/{id}", controller::excluir, Role.USER);
+        app.post("/musicas/{id}/delete", controller::excluir, Role.USER);
     }
 }

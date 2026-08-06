@@ -7,14 +7,14 @@
         Usuário - Lynotes
     </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
 <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" th:classappend="${usuarioLogado == null} ? 'd-flex flex-column align-items-center justify-content-center' : ''" th:style="${usuarioLogado == null} ? 'min-height: 100vh;' : ''">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" th:classappend="${usuarioLogado == null} ? 'd-flex flex-column align-items-center justify-content-center' : ''" th:style="${usuarioLogado == null} ? 'min-height: 100vh; background-color: #000000;' : ''">
 <div id="app-content" class="w-100">
 
-    
     <!-- Navbar (Apenas se logado) -->
     <div th:insert="~{fragments/navbar :: navbar('comunidade')}" th:if="${usuarioLogado != null}"></div>
 
@@ -22,47 +22,64 @@
     <div class="container w-100" th:if="${usuarioLogado == null}">
         <div class="row justify-content-center">
             <div class="col-md-5">
-                <div class="card shadow-sm p-4">
+                <div class="card shadow-sm p-4 border-0" style="background-color: #121212; border: 1px solid #282828;">
                     <div class="card-body">
                         <div class="text-center mb-4">
                             <h1 class="h3 fw-bold text-purple mb-1">Criar Conta</h1>
-                            <p class="text-muted small">Crie seu perfil no Lynotes para catalogar músicas</p>
+                            <p class="text-secondary small">Crie seu perfil no Lynotes para catalogar músicas</p>
                         </div>
 
                         <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
 
                         <form method="post" action="/usuarios" hx-boost="false">
                             <div class="mb-3">
-                                <label class="form-label" for="nome">Nome</label>
-                                <input class="form-control" id="nome" name="nome" th:value="${nome}" required autofocus placeholder="Seu nome">
+                                <label class="form-label text-white" for="nome">Nome</label>
+                                <div class="position-relative">
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary">
+                                        <i class="bi bi-person fs-5"></i>
+                                    </span>
+                                    <input class="form-control bg-dark text-light border-secondary ps-5" id="nome" name="nome" th:value="${nome}" required autofocus placeholder="Seu nome">
+                                </div>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label" for="username">Username</label>
-                                <input class="form-control" id="username" name="username" th:value="${username}" required placeholder="ex: m4iz44">
+                                <label class="form-label text-white" for="username">Username</label>
+                                <div class="position-relative">
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary">
+                                        <i class="bi bi-at fs-5"></i>
+                                    </span>
+                                    <input class="form-control bg-dark text-light border-secondary ps-5" id="username" name="username" th:value="${username}" required placeholder="ex: m4iz44">
+                                </div>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label" for="email">E-mail</label>
-                                <input class="form-control" id="email" name="email" type="email" th:value="${email}" required placeholder="nome@email.com">
+                                <label class="form-label text-white" for="email">E-mail</label>
+                                <div class="position-relative">
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary">
+                                        <i class="bi bi-envelope fs-5"></i>
+                                    </span>
+                                    <input class="form-control bg-dark text-light border-secondary ps-5" id="email" name="email" type="email" th:value="${email}" required placeholder="nome@email.com">
+                                </div>
                             </div>
-
-                            <!-- Apenas exibe 'Sobre mim' se for edição de conta na visão do painel (não na tela de Criar Conta principal).
-                                 Como este é o formulário de cadastro principal, removemos a bio. -->
 
                             <div class="mb-4">
-                                <label class="form-label" for="senha">Senha</label>
-                                <input class="form-control" id="senha" name="senha" type="password" required placeholder="Mínimo de 6 caracteres">
+                                <label class="form-label text-white" for="senha">Senha</label>
+                                <div class="position-relative">
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ms-3 text-secondary">
+                                        <i class="bi bi-lock fs-5"></i>
+                                    </span>
+                                    <input class="form-control bg-dark text-light border-secondary ps-5" id="senha" name="senha" type="password" required placeholder="Mínimo de 6 caracteres">
+                                </div>
                             </div>
 
-                            <button class="btn btn-primary w-100 btn-lg mb-3" type="submit">Cadastrar</button>
+                            <button class="btn btn-purple w-100 btn-lg mb-3 fw-bold" type="submit">Cadastrar</button>
                         </form>
                         <div class="text-center mt-2 mb-3">
                             <span class="text-secondary small">Já possui uma conta?</span>
-                            <a href="/login" hx-boost="false" class="text-purple small fw-bold ms-1">Entrar na conta</a>
+                            <a href="/login" hx-boost="false" class="text-purple small fw-bold ms-1 text-decoration-none">Entrar na conta</a>
                         </div>
                         <div class="text-center">
-                            <a href="/" hx-boost="false" class="text-purple small">← Voltar para a tela inicial</a>
+                            <a href="/" hx-boost="false" class="text-secondary small text-decoration-none">&larr; Voltar para a tela inicial</a>
                         </div>
                     </div>
                 </div>
@@ -71,7 +88,7 @@
     </div>
 
     <!-- Main Container para usuários logados (Administração) -->
-    <main class="container py-5 mt-5" th:if="${usuarioLogado != null}">
+    <main class="spotify-main container py-5" th:if="${usuarioLogado != null}">
         <div class="row justify-content-center">
             <div class="col-lg-7">
                 <div class="mb-4">
@@ -118,7 +135,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label" for="bio_admin">Sobre mim</label>
-                                <textarea class="form-control" id="bio_admin" name="bio" rows="3" maxlength="500" placeholder="Conte um pouco sobre vocêê..." th:text="${bio}"></textarea>
+                                <textarea class="form-control" id="bio_admin" name="bio" rows="3" maxlength="500" placeholder="Conte um pouco sobre você..." th:text="${bio}"></textarea>
                                 <div class="form-text">Máximo de 500 caracteres.</div>
                             </div>
 
@@ -146,7 +163,7 @@
             </div>
         </div>
     </main>
-    
+
 </div>
 <div th:insert="~{fragments/player :: bottom-player}"></div>
     <script src="/js/player.js" defer th:if="${usuarioLogado != null}"></script>

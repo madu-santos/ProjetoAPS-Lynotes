@@ -20,7 +20,7 @@ public final class ArtistaDbRepository implements ArtistaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtistaDbRepository.class);
 
-    private static final String COLUNAS = "id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, nota, usuario_id";
+    private static final String COLUNAS = "id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, nota, usuario_id, youtube_id, capa_url";
 
     private final ConnectionFactory connectionFactory;
 
@@ -31,8 +31,8 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     @Override
     public void criar(Artista artista) {
         String sql = """
-                INSERT INTO artista (id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, nota, usuario_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO artista (id, nome, genero_musical, biografia, cpf, data_nascimento, cep, logradouro, numero, bairro, cidade, uf, status_verificacao, nota, usuario_id, youtube_id, capa_url)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> preencherArtista(statement, artista, true));
@@ -43,14 +43,14 @@ public final class ArtistaDbRepository implements ArtistaRepository {
     public boolean atualizar(Artista artista) {
         String sql = """
                 UPDATE artista
-                SET nome = ?, genero_musical = ?, biografia = ?, cpf = ?, data_nascimento = ?, cep = ?, logradouro = ?, numero = ?, bairro = ?, cidade = ?, uf = ?, status_verificacao = ?, nota = ?
+                SET nome = ?, genero_musical = ?, biografia = ?, cpf = ?, data_nascimento = ?, cep = ?, logradouro = ?, numero = ?, bairro = ?, cidade = ?, uf = ?, status_verificacao = ?, nota = ?, youtube_id = ?, capa_url = ?
                 WHERE id = ? AND usuario_id = ?
                 """;
 
         int alterados = executarAtualizacao(sql, statement -> {
             preencherArtista(statement, artista, false);
-            statement.setString(14, artista.getId());
-            statement.setString(15, artista.getUsuarioId());
+            statement.setString(16, artista.getId());
+            statement.setString(17, artista.getUsuarioId());
         });
         return alterados == 1;
     }
@@ -68,6 +68,22 @@ public final class ArtistaDbRepository implements ArtistaRepository {
             }
         } catch (SQLException e) {
             throw erroPersistencia("buscar artista por ID", e);
+        }
+    }
+
+    @Override
+    public Optional<Artista> buscarPorYouTubeId(String youtubeId) {
+        if (youtubeId == null || youtubeId.isBlank()) return Optional.empty();
+        String sql = "SELECT " + COLUNAS + " FROM artista WHERE youtube_id = ? LIMIT 1";
+
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, youtubeId);
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next() ? Optional.of(mapear(result)) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw erroPersistencia("buscar artista por ID do YouTube", e);
         }
     }
 
@@ -185,6 +201,8 @@ public final class ArtistaDbRepository implements ArtistaRepository {
                 statement.setNull(14, java.sql.Types.DOUBLE);
             }
             statement.setString(15, artista.getUsuarioId());
+            statement.setString(16, artista.getYoutubeId());
+            statement.setString(17, artista.getCapaUrl());
         } else {
             statement.setString(1, artista.getNome());
             statement.setString(2, artista.getGeneroMusical());
@@ -203,6 +221,8 @@ public final class ArtistaDbRepository implements ArtistaRepository {
             } else {
                 statement.setNull(13, java.sql.Types.DOUBLE);
             }
+            statement.setString(14, artista.getYoutubeId());
+            statement.setString(15, artista.getCapaUrl());
         }
     }
 
@@ -240,7 +260,9 @@ public final class ArtistaDbRepository implements ArtistaRepository {
                 result.getString("uf"),
                 br.ufpb.dcx.projetos.artista.models.StatusVerificacao.valueOf(result.getString("status_verificacao")),
                 nota,
-                result.getString("usuario_id")
+                result.getString("usuario_id"),
+                result.getString("youtube_id"),
+                result.getString("capa_url")
         );
     }
 

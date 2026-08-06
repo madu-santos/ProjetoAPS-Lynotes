@@ -4,164 +4,232 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comunidade - Lynotes</title>
+    <!-- Fonte Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
-<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
 
     <div th:insert="~{fragments/navbar :: navbar('comunidade')}"></div>
 
     <main class="spotify-main container py-5">
         
-        <div class="row">
-            <!-- Feed de Posts (Centro) -->
-            <div class="col-lg-8">
-                <div class="mb-4">
-                    <h1 class="display-5 fw-bold text-purple mb-1">Comunidade</h1>
-                    
-                    <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
-                    
-                    <!-- Nova Postagem -->
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body">
+        <!-- Header Top Bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div>
+                <h1 class="glowing-title-library mb-1">Comunidade</h1>
+                <p class="text-secondary mb-0">Explore resenhas públicas compartilhadas pelos membros e os rankings oficiais.</p>
+            </div>
+        </div>
+
+        <!-- Balões de Navegação (Resenhas / Rankings da comunidade) -->
+        <ul class="nav nav-pills mb-4 gap-3" id="comunidadeTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active px-4 py-2.5 rounded-pill fw-bold fs-6 shadow" id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed-pane" type="button" role="tab">
+                    <i class="bi bi-chat-square-text-fill me-2"></i> Resenhas
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4 py-2.5 rounded-pill fw-bold fs-6 shadow" id="rankings-tab" data-bs-toggle="tab" data-bs-target="#rankings-pane" type="button" role="tab">
+                    <i class="bi bi-trophy-fill me-2"></i> Rankings da comunidade
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="comunidadeTabsContent">
+            
+            <!-- BALÃO 1: RESENHAS -->
+            <div class="tab-pane fade show active" id="feed-pane" role="tabpanel">
+                <div class="row">
+                    <!-- Coluna Principal (Feed & Publicar) -->
+                    <div class="col-lg-8">
+                        <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
+                        
+                        <!-- Caixa de Nova Publicação/Resenha -->
+                        <div class="music-card-cyber p-4 mb-4">
+                            <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-pencil-square text-purple"></i> Criar Publicação / Resenha Pública
+                            </h5>
                             <form action="/comunidade/post" method="post" hx-boost="false">
                                 <div class="mb-3">
-                                    <textarea class="form-control post-textarea" name="conteudo" rows="3" placeholder="No que vocêê está pensando ou ouvindo hoje?" required maxlength="500"></textarea>
+                                    <textarea class="form-control glass-search-input bg-dark border-secondary p-3 text-white" name="conteudo" rows="3" placeholder="No que você está pensando ou ouvindo hoje? Escreva sua resenha pública..." required maxlength="500"></textarea>
                                 </div>
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary rounded-pill px-4">Publicar</button>
+                                    <button type="submit" class="btn-add-music-glow px-4 py-2">
+                                        <i class="bi bi-send-fill me-1"></i> Publicar
+                                    </button>
                                 </div>
                             </form>
                         </div>
-                    </div>
-                    
-                    <!-- Lista de Posts -->
-                    <div th:if="${posts.isEmpty()}" class="text-center py-5 text-muted">
-                        <h4>Ainda não há posts por aqui.</h4>
-                        <p>Seja o primeiro a publicar algo!</p>
-                    </div>
-                    
-                    <div class="card community-post-card shadow-sm mb-3" th:each="post : ${posts}" data-reveal="fade-up">
-                        <div class="card-body p-4">
+                        
+                        <!-- Lista de Posts / Resenhas Destacadas -->
+                        <div th:if="${posts.isEmpty()}" class="alert alert-dark border-purple text-secondary text-center p-5 rounded-4">
+                            <h4>Ainda não há resenhas públicas por aqui.</h4>
+                            <p>Ao salvar uma música e marcar a opção de compartilhar, sua resenha aparecerá nesta aba!</p>
+                        </div>
+                        
+                        <div class="music-card-cyber p-4 mb-3" th:each="post : ${posts}">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-circle me-3" th:text="${#strings.substring(post.usuarioNome, 0, 1).toUpperCase()}">U</div>
+                                    <div class="rounded-circle bg-purple text-white fw-bold d-flex align-items-center justify-content-center me-3 shadow" style="width: 44px; height: 44px;" th:text="${#strings.substring(post.usuarioNome, 0, 1).toUpperCase()}">U</div>
                                     <div>
-                                        <a th:href="@{'/usuarios/' + ${post.usuarioId}}" class="text-decoration-none fw-bold post-user-link fs-5" th:text="${post.usuarioNome}"></a>
-                                        <div class="text-muted small" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
+                                        <a th:href="@{'/usuarios/' + ${post.usuarioId}}" class="text-decoration-none fw-bold text-white fs-5 hover-purple" th:text="${post.usuarioNome}"></a>
+                                        <div class="text-secondary small" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
                                     </div>
                                 </div>
-                                 <div class="d-flex gap-1" th:if="${usuarioLogadoId == post.usuarioId}">
-                                     <button th:if="${post.qtdComentarios == 0}" class="btn btn-sm btn-outline-secondary border-0 text-white-50" type="button" data-bs-toggle="collapse" th:data-bs-target="'#editPost' + ${post.id}" title="Editar post">
-                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                         </svg>
-                                     </button>
-                                     <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirm('Tem certeza que deseja excluir este post?');">
-                                         <button type="submit" class="btn btn-sm btn-outline-danger border-0 text-danger" title="Excluir post">
-                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                 <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                                                 <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                                             </svg>
-                                         </button>
-                                     </form>
-                                 </div>
-                            </div>
-                            <p class="card-text text-break mt-2 mb-3" style="white-space: pre-wrap; font-size: 1.05rem; color: #e1e1e1;" th:text="${post.conteudo}"></p>
-                            
-                            <div class="collapse mt-3 mb-3" th:id="'editPost' + ${post.id}">
-                                <div class="card card-body bg-dark border-secondary">
-                                    <form th:action="@{'/comunidade/post/' + ${post.id} + '/editar'}" method="post" hx-boost="false">
-                                        <textarea class="form-control post-textarea mb-2" name="conteudo" rows="3" required maxlength="500" th:text="${post.conteudo}"></textarea>
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" th:data-bs-target="'#editPost' + ${post.id}">Cancelar</button>
-                                            <button type="submit" class="btn btn-sm btn-primary">Salvar</button>
-                                        </div>
+                                <div class="d-flex gap-1" th:if="${usuarioLogadoId == post.usuarioId}">
+                                    <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirm('Excluir este post?');">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Excluir">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </form>
                                 </div>
                             </div>
-                            
-                            <div class="d-flex gap-3 border-top border-secondary pt-3 mt-2">
-                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" hx-boost="false">
-                                    <button type="submit" class="btn btn-sm d-flex align-items-center gap-1 btn-outline-secondary" th:classappend="${post.estreladoPorMim} ? 'btn-warning text-dark fw-bold' : ''">
-                                        <span th:text="${post.estreladoPorMim} ? '★' : '☆'"></span>
+
+                            <p class="card-text text-break mb-3 text-light" style="white-space: pre-wrap; font-size: 1.05rem;" th:text="${post.conteudo}"></p>
+
+                            <!-- Interações (Estrelar) -->
+                            <div class="d-flex align-items-center gap-3 pt-3 border-top border-secondary border-opacity-10">
+                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" hx-boost="false" class="m-0">
+                                    <button type="submit" class="btn btn-sm rounded-pill px-3 d-flex align-items-center gap-1 btn-outline-purple" th:classappend="${post.estreladoPorMim} ? 'bg-purple text-white fw-bold' : ''">
+                                        <i class="bi" th:classappend="${post.estreladoPorMim} ? 'bi-star-fill' : 'bi-star'"></i>
                                         <span th:text="${post.qtdEstrelas}"></span>
                                     </button>
                                 </form>
-                                <a th:href="@{'/comunidade/post/' + ${post.id}}" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-chat-text" viewBox="0 0 16 16">
-                                        <path d="M2.678 11.894a1 1 0 0 1 .287.801 11 11 0 0 1-.398 2c1.395-.323 2.247-.697 2.634-.893a1 1 0 0 1 .71-.074A8 8 0 0 0 8 14c3.996 0 7-2.807 7-6s-3.004-6-7-6-7 2.808-7 6c0 1.468.617 2.83 1.678 3.894m-.493 3.905a21.682 21.682 0 0 1-.713.129c-.2.032-.352-.176-.273-.362a10 10 0 0 0 .244-.637l.003-.01c.248-.72.45-1.548.524-2.319C.743 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7-3.582 7-8 7a9 9 0 0 1-2.347-.306c-.52.263-1.639.742-3.468 1.105z"/>
-                                        <path d="M4 5.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8m0 2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5"/>
-                                    </svg>
-                                    <span th:text="${post.qtdComentarios}"></span>
-                                </a>
                             </div>
                         </div>
                     </div>
-                    
-                </div>
-            </div>
-            
-            <!-- Barra Lateral (Busca e Usuários Ativos) -->
-            <div class="col-lg-4">
-                <button type="button" class="btn btn-primary bg-purple w-100 fw-bold py-2 mb-4 rounded-pill border-0 text-dark" data-bs-toggle="modal" data-bs-target="#usuariosModal">
-                    Ver Usuários Ativos
-                </button>
 
-                <!-- Modal Flutuante de Usuários -->
-                <div class="modal fade" id="usuariosModal" tabindex="-1" aria-labelledby="usuariosModalLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                    <div class="modal-content border-secondary" style="background-color: #1a1a1a;">
-                      <div class="modal-header border-secondary">
-                        <h1 class="modal-title fs-5 fw-bold" id="usuariosModalLabel">Usuários Ativos no Lynotes</h1>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body p-0">
-                         <div class="list-group list-group-flush" th:if="${usuarios != null and not usuarios.isEmpty()}">
-                            <a th:each="u : ${usuarios}" 
-                               th:href="@{'/usuarios/' + ${u.id}}" 
-                               class="list-group-item list-group-item-action d-flex align-items-center gap-3 border-secondary px-4 py-3" style="background-color: transparent; color: white;">
-                                <div class="rounded-circle bg-purple text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 48px; height: 48px; font-size: 1.1rem;" th:text="${#strings.substring(u.nome, 0, 1).toUpperCase()}">U</div>
-                                <div class="flex-grow-1">
-                                    <h5 class="mb-0 fw-bold" th:text="${u.nome}"></h5>
+                    <!-- Lateral Direita (Membros da Comunidade) -->
+                    <div class="col-lg-4 mt-4 mt-lg-0">
+                        <div class="music-card-cyber p-4 mb-4">
+                            <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                                <i class="bi bi-people text-purple"></i> Membros da Comunidade
+                            </h5>
+                            <div class="d-flex flex-column gap-3">
+                                <div class="d-flex align-items-center justify-content-between" th:each="user : ${usuarios}" th:if="${user.id != usuarioLogadoId}">
+                                    <div class="d-flex align-items-center gap-2 overflow-hidden me-2">
+                                        <div class="rounded-circle bg-darker text-purple border border-purple d-flex align-items-center justify-content-center font-monospace" style="width: 36px; height: 36px; min-width: 36px;" th:text="${#strings.substring(user.nome, 0, 1).toUpperCase()}">U</div>
+                                        <div class="overflow-hidden">
+                                            <h6 class="fw-bold text-white mb-0 text-truncate small" th:text="${user.nome}"></h6>
+                                            <span class="text-secondary font-monospace" style="font-size: 0.75rem;" th:text="${'@' + user.username}">@user</span>
+                                        </div>
+                                    </div>
+                                    <form th:action="@{'/comunidade/seguir/' + ${user.id}}" method="post" hx-boost="false" class="m-0">
+                                        <button class="btn btn-outline-purple btn-sm rounded-pill px-3 py-1" type="submit">Seguir</button>
+                                    </form>
                                 </div>
-                                <div class="btn btn-sm btn-outline-light rounded-pill px-3">Ver Perfil</div>
-                            </a>
-                         </div>
-                         <div th:if="${usuarios == null or usuarios.isEmpty()}" class="p-5 text-center text-secondary">
-                            Nenhum usuário encontrado.
-                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Procurar Pessoas</h5>
-                        <form action="/usuarios" method="get" class="d-flex mt-3" hx-boost="false">
-                            <input class="form-control me-2" type="search" name="q" placeholder="Buscar por nome..." aria-label="Search">
-                            <button class="btn btn-outline-primary" type="submit">Buscar</button>
-                        </form>
-                    </div>
-                </div>
-                
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title fw-bold">Sobre a Comunidade</h5>
-                        <p class="text-muted small mt-2">Este é o espaço para os usuários do Lynotes compartilharem recomendações, avaliações e opiniões sobre o mundo da música.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- BALÃO 2: RANKINGS DA COMUNIDADE (Separado por Músicas, Álbuns e Artistas) -->
+            <div class="tab-pane fade" id="rankings-pane" role="tabpanel">
+                
+                <!-- Sub-Balões de Filtro de Rankings -->
+                <ul class="nav nav-pills mb-4 gap-2 border-bottom border-secondary border-opacity-20 pb-3" id="rankCategoryTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active px-3 py-1.5 rounded-pill btn-sm" id="rank-musicas-tab" data-bs-toggle="tab" data-bs-target="#rank-musicas-pane" type="button" role="tab">
+                            <i class="bi bi-disc me-1"></i> Músicas
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link px-3 py-1.5 rounded-pill btn-sm" id="rank-albums-tab" data-bs-toggle="tab" data-bs-target="#rank-albums-pane" type="button" role="tab">
+                            <i class="bi bi-disc-fill me-1"></i> Álbuns
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link px-3 py-1.5 rounded-pill btn-sm" id="rank-artistas-tab" data-bs-toggle="tab" data-bs-target="#rank-artistas-pane" type="button" role="tab">
+                            <i class="bi bi-mic-fill me-1"></i> Artistas
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="rankCategoryContent">
+                    
+                    <!-- CATEGORIA: MÚSICAS -->
+                    <div class="tab-pane fade show active" id="rank-musicas-pane" role="tabpanel">
+                        <div class="music-card-cyber p-4">
+                            <h4 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
+                                <i class="bi bi-trophy-fill text-warning"></i> Ranking de Músicas Mais Bem Avaliadas
+                            </h4>
+                            <div class="d-flex flex-column gap-3">
+                                <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-darker border border-secondary border-opacity-10" th:each="musica, iter : ${topMusicas}">
+                                    <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                        <span class="fw-bold text-purple fs-4 font-monospace ms-2" th:text="${iter.count + 'º'}">1º</span>
+                                        <div class="overflow-hidden">
+                                            <h6 class="fw-bold text-white mb-0 text-truncate fs-5" th:text="${musica.titulo}"></h6>
+                                            <span class="text-secondary small text-truncate d-block" th:text="${musica.artista}"></span>
+                                        </div>
+                                    </div>
+                                    <div class="score-badge-circle" th:if="${musica.nota != null}">
+                                        <span th:text="${musica.nota != null ? musica.nota + ' ★' : ''}">5 ★</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORIA: ÁLBUNS -->
+                    <div class="tab-pane fade" id="rank-albums-pane" role="tabpanel">
+                        <div class="music-card-cyber p-4">
+                            <h4 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
+                                <i class="bi bi-disc-fill text-purple"></i> Ranking de Álbuns
+                            </h4>
+                            <div class="d-flex flex-column gap-3">
+                                <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-darker border border-secondary border-opacity-10" th:each="album, iter : ${topAlbuns}">
+                                    <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                        <span class="fw-bold text-purple fs-4 font-monospace ms-2" th:text="${iter.count + 'º'}">1º</span>
+                                        <div class="overflow-hidden">
+                                            <h6 class="fw-bold text-white mb-0 text-truncate fs-5" th:text="${album.titulo}"></h6>
+                                            <span class="text-secondary small text-truncate d-block" th:text="${album.artista}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORIA: ARTISTAS -->
+                    <div class="tab-pane fade" id="rank-artistas-pane" role="tabpanel">
+                        <div class="music-card-cyber p-4">
+                            <h4 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
+                                <i class="bi bi-mic-fill text-info"></i> Ranking de Artistas
+                            </h4>
+                            <div class="d-flex flex-column gap-3">
+                                <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-darker border border-secondary border-opacity-10" th:each="artista, iter : ${topArtistas}">
+                                    <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                        <span class="fw-bold text-purple fs-4 font-monospace ms-2" th:text="${iter.count + 'º'}">1º</span>
+                                        <div class="overflow-hidden">
+                                            <h6 class="fw-bold text-white mb-0 text-truncate fs-5" th:text="${artista.nome}"></h6>
+                                            <span class="text-secondary small text-truncate d-block" th:text="${artista.generoMusical != null ? artista.generoMusical : 'Artista'}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
-        
+
     </main>
 
 </div>
+
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-    
+<script src="/js/player.js" defer></script>
 </body>
 </html>

@@ -45,6 +45,34 @@ public class ArtistaService implements ArtistaUseCase {
         ArtistaDTO dados = validator.validar(formulario);
         StatusVerificacao status = Boolean.TRUE.equals(dados.solicitarVerificacao()) ? StatusVerificacao.PENDENTE : StatusVerificacao.NAO_SOLICITADO;
 
+        if (dados.youtubeId() != null && !dados.youtubeId().isBlank()) {
+            var existente = repository.buscarPorYouTubeId(dados.youtubeId());
+            if (existente.isPresent() && existente.get().getUsuarioId().equals(usuarioId)) {
+                Artista a = existente.get();
+                Artista atualizado = new Artista(
+                        a.getId(),
+                        dados.nome(),
+                        dados.generoMusical(),
+                        dados.biografia(),
+                        dados.cpf(),
+                        dados.dataNascimento(),
+                        dados.cep(),
+                        dados.logradouro(),
+                        dados.numero(),
+                        dados.bairro(),
+                        dados.cidade(),
+                        dados.uf(),
+                        status,
+                        dados.nota(),
+                        usuarioId,
+                        dados.youtubeId(),
+                        dados.capaUrl()
+                );
+                repository.atualizar(atualizado);
+                return atualizado;
+            }
+        }
+
         Artista artista = Artista.novo(
                 dados.nome(),
                 dados.generoMusical(),
@@ -59,7 +87,9 @@ public class ArtistaService implements ArtistaUseCase {
                 dados.uf(),
                 status,
                 dados.nota(),
-                usuarioId
+                usuarioId,
+                dados.youtubeId(),
+                dados.capaUrl()
         );
         repository.criar(artista);
         LOGGER.info("Artista cadastrado. id={} nome={} usuarioId={}", artista.getId(), artista.getNome(), usuarioId);
@@ -79,6 +109,9 @@ public class ArtistaService implements ArtistaUseCase {
             status = StatusVerificacao.PENDENTE;
         }
 
+        String yid = dados.youtubeId() != null ? dados.youtubeId() : artistaOriginal.getYoutubeId();
+        String capa = dados.capaUrl() != null ? dados.capaUrl() : artistaOriginal.getCapaUrl();
+
         Artista artista = new Artista(
                 idValidado,
                 dados.nome(),
@@ -94,7 +127,9 @@ public class ArtistaService implements ArtistaUseCase {
                 dados.uf(),
                 status,
                 dados.nota(),
-                usuarioId
+                usuarioId,
+                yid,
+                capa
         );
 
         if (!repository.atualizar(artista)) {

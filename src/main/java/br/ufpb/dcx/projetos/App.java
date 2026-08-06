@@ -130,6 +130,10 @@ public final class App {
         var rankingController = new br.ufpb.dcx.projetos.rankings.RankingController(musicaService, albumService, artistaService);
         app.get("/rankings", rankingController::index, Role.USER);
         
+        var youtubeService = new br.ufpb.dcx.projetos.infra.youtube.YouTubeService();
+        var youtubeController = new br.ufpb.dcx.projetos.infra.youtube.controllers.YouTubeController(youtubeService);
+        app.get("/api/youtube/search", youtubeController::buscar, Role.USER);
+
         new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service, musicaService, artistaService, albumService, comunidadeService, playlistService).registrarRotas(app);
 
         registrarLogHttp(app);

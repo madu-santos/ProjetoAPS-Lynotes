@@ -61,6 +61,12 @@ public final class MusicaController {
             List<Musica> musicas = service.findByUsuarioId(usuarioId);
             List<Artista> artistas = artistaService.listar(null, usuarioId);
             List<Album> albums = albumService.findAll(usuarioId);
+            List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
+
+            Map<String, String> playlistCovers = new HashMap<>();
+            for (br.ufpb.dcx.projetos.playlist.models.Playlist pl : playlists) {
+                playlistCovers.put(pl.getId(), playlistService.getPlaylistCapaUrl(pl.getId()));
+            }
 
             Map<String, Object> modelo = new HashMap<>();
             modelo.put("usuarioLogado", usuarioLogado);
@@ -70,6 +76,8 @@ public final class MusicaController {
             modelo.put("semArtistas", artistas.isEmpty());
             modelo.put("albums", albums);
             modelo.put("semAlbums", albums.isEmpty());
+            modelo.put("playlists", playlists);
+            modelo.put("playlistCovers", playlistCovers);
             ctx.render("home", modelo);
         } else {
             ctx.render("index", Map.of());
@@ -80,11 +88,19 @@ public final class MusicaController {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String busca = ctx.queryParam("busca");
         List<Musica> musicas = service.search(busca, usuarioId);
+        List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
+
+        Map<String, String> playlistCovers = new HashMap<>();
+        for (br.ufpb.dcx.projetos.playlist.models.Playlist pl : playlists) {
+            playlistCovers.put(pl.getId(), playlistService.getPlaylistCapaUrl(pl.getId()));
+        }
 
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("musicas", musicas);
         modelo.put("semMusicas", musicas.isEmpty() && (busca == null || busca.trim().isEmpty()));
+        modelo.put("playlists", playlists);
+        modelo.put("playlistCovers", playlistCovers);
         modelo.put("busca", busca != null ? busca : "");
         modelo.put("buscaAtiva", busca != null && !busca.trim().isEmpty());
         ctx.render("musicas/lista", modelo);
@@ -162,14 +178,18 @@ public final class MusicaController {
 
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
                 String videoId = playlistService.extractVideoId(dto.youtubeUrl());
-                if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
-                    String playlistId = playlistService.createPlaylist(dto.novaPlaylistNome(), usuarioId).getId();
-                    playlistService.addItem(playlistId, dto.youtubeUrl(), videoId, usuarioId);
-                } else if (dto.playlistId() != null && !dto.playlistId().isBlank()) {
-                    playlistService.addItem(dto.playlistId(), dto.youtubeUrl(), videoId, usuarioId);
-                }
-                playlistService.addItem(playlistService.findOrCreateHiddenPlaylist(usuarioId).getId(),
-                        dto.youtubeUrl(), videoId, usuarioId);
+                try {
+                    if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
+                        String playlistId = playlistService.createPlaylist(dto.novaPlaylistNome(), usuarioId).getId();
+                        playlistService.addItem(playlistId, dto.youtubeUrl(), videoId, usuarioId);
+                    } else if (dto.playlistId() != null && !dto.playlistId().isBlank()) {
+                        playlistService.addItem(dto.playlistId(), dto.youtubeUrl(), videoId, usuarioId);
+                    }
+                } catch (IllegalArgumentException ignored) {}
+                try {
+                    playlistService.addItem(playlistService.findOrCreateHiddenPlaylist(usuarioId).getId(),
+                            dto.youtubeUrl(), videoId, usuarioId);
+                } catch (IllegalArgumentException ignored) {}
             }
 
             redirecionarParaListagem(ctx);
@@ -274,14 +294,18 @@ public final class MusicaController {
 
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
                 String videoId = playlistService.extractVideoId(dto.youtubeUrl());
-                if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
-                    String playlistId = playlistService.createPlaylist(dto.novaPlaylistNome(), usuarioId).getId();
-                    playlistService.addItem(playlistId, dto.youtubeUrl(), videoId, usuarioId);
-                } else if (dto.playlistId() != null && !dto.playlistId().isBlank()) {
-                    playlistService.addItem(dto.playlistId(), dto.youtubeUrl(), videoId, usuarioId);
-                }
-                playlistService.addItem(playlistService.findOrCreateHiddenPlaylist(usuarioId).getId(),
-                        dto.youtubeUrl(), videoId, usuarioId);
+                try {
+                    if (dto.novaPlaylistNome() != null && !dto.novaPlaylistNome().isBlank()) {
+                        String playlistId = playlistService.createPlaylist(dto.novaPlaylistNome(), usuarioId).getId();
+                        playlistService.addItem(playlistId, dto.youtubeUrl(), videoId, usuarioId);
+                    } else if (dto.playlistId() != null && !dto.playlistId().isBlank()) {
+                        playlistService.addItem(dto.playlistId(), dto.youtubeUrl(), videoId, usuarioId);
+                    }
+                } catch (IllegalArgumentException ignored) {}
+                try {
+                    playlistService.addItem(playlistService.findOrCreateHiddenPlaylist(usuarioId).getId(),
+                            dto.youtubeUrl(), videoId, usuarioId);
+                } catch (IllegalArgumentException ignored) {}
             }
 
             redirecionarParaListagem(ctx);

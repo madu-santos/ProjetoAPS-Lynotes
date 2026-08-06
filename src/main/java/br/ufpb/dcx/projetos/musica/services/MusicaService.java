@@ -27,12 +27,41 @@ public class MusicaService {
                     .orElseThrow(() -> new ResourceNotFoundException("Álbum não encontrado com id: " + musica.getAlbumId()));
         }
 
+        // Deduplicação: se já existir música do mesmo usuário com este youtubeId, reaproveita ou atualiza
+        if (musica.getYoutubeId() != null && !musica.getYoutubeId().isBlank()) {
+            Optional<Musica> existente = musicaRepository.buscarPorYouTubeId(musica.getYoutubeId());
+            if (existente.isPresent() && existente.get().getUsuarioId().equals(musica.getUsuarioId())) {
+                Musica m = existente.get();
+                Musica atualizada = new Musica(
+                        m.getId(),
+                        musica.getTitulo(),
+                        musica.getArtista(),
+                        musica.getGenero(),
+                        musica.getDuracaoSegundos(),
+                        musica.getResenha(),
+                        musica.getNota(),
+                        musica.getSpotifyUrl(),
+                        musica.getYoutubeUrl(),
+                        musica.getAlbumId(),
+                        musica.getUsuarioId(),
+                        musica.getYoutubeId(),
+                        musica.getCapaUrl()
+                );
+                musicaRepository.atualizar(atualizada);
+                return atualizada;
+            }
+        }
+
         if (musicaRepository.buscarPorId(musica.getId()).isPresent()) {
             musicaRepository.atualizar(musica);
         } else {
             musicaRepository.criar(musica);
         }
         return musica;
+    }
+
+    public Optional<Musica> findByYouTubeId(String youtubeId) {
+        return musicaRepository.buscarPorYouTubeId(youtubeId);
     }
 
     public List<Musica> findAll() {
@@ -74,7 +103,9 @@ public class MusicaService {
                 musicaDetails.getSpotifyUrl(),
                 musicaDetails.getYoutubeUrl(),
                 musicaDetails.getAlbumId(),
-                musicaDetails.getUsuarioId()
+                musicaDetails.getUsuarioId(),
+                musicaDetails.getYoutubeId() != null ? musicaDetails.getYoutubeId() : musica.getYoutubeId(),
+                musicaDetails.getCapaUrl() != null ? musicaDetails.getCapaUrl() : musica.getCapaUrl()
         );
         musicaRepository.atualizar(musicaAtualizada);
         return musicaAtualizada;

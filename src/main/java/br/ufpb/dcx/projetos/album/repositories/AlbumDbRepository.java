@@ -19,7 +19,7 @@ public final class AlbumDbRepository implements AlbumRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AlbumDbRepository.class);
 
-    private static final String COLUNAS = "id, titulo, artista, ano_lancamento, nota, usuario_id";
+    private static final String COLUNAS = "id, titulo, artista, ano_lancamento, nota, usuario_id, youtube_id, capa_url";
 
     private final ConnectionFactory connectionFactory;
 
@@ -30,8 +30,8 @@ public final class AlbumDbRepository implements AlbumRepository {
     @Override
     public void criar(Album album) {
         String sql = """
-                INSERT INTO album (id, titulo, artista, ano_lancamento, nota, usuario_id)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO album (id, titulo, artista, ano_lancamento, nota, usuario_id, youtube_id, capa_url)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> {
@@ -45,15 +45,17 @@ public final class AlbumDbRepository implements AlbumRepository {
                 statement.setNull(5, java.sql.Types.DOUBLE);
             }
             statement.setString(6, album.getUsuarioId());
+            statement.setString(7, album.getYoutubeId());
+            statement.setString(8, album.getCapaUrl());
         });
-        LOGGER.debug("ÃƒÂ lbum persistido. id={}", album.getId());
+        LOGGER.debug("Álbum persistido. id={}", album.getId());
     }
 
     @Override
     public boolean atualizar(Album album) {
         String sql = """
                 UPDATE album
-                SET titulo = ?, artista = ?, ano_lancamento = ?, nota = ?
+                SET titulo = ?, artista = ?, ano_lancamento = ?, nota = ?, youtube_id = ?, capa_url = ?
                 WHERE id = ? AND usuario_id = ?
                 """;
 
@@ -66,8 +68,10 @@ public final class AlbumDbRepository implements AlbumRepository {
             } else {
                 statement.setNull(4, java.sql.Types.DOUBLE);
             }
-            statement.setString(5, album.getId());
-            statement.setString(6, album.getUsuarioId());
+            statement.setString(5, album.getYoutubeId());
+            statement.setString(6, album.getCapaUrl());
+            statement.setString(7, album.getId());
+            statement.setString(8, album.getUsuarioId());
         });
         return alterados == 1;
     }
@@ -84,7 +88,23 @@ public final class AlbumDbRepository implements AlbumRepository {
                 return result.next() ? Optional.of(mapear(result)) : Optional.empty();
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar ÃƒÂ¡lbum por ID", e);
+            throw erroPersistencia("buscar álbum por ID", e);
+        }
+    }
+
+    @Override
+    public Optional<Album> buscarPorYouTubeId(String youtubeId) {
+        if (youtubeId == null || youtubeId.isBlank()) return Optional.empty();
+        String sql = "SELECT " + COLUNAS + " FROM album WHERE youtube_id = ? LIMIT 1";
+
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, youtubeId);
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next() ? Optional.of(mapear(result)) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw erroPersistencia("buscar álbum por ID do YouTube", e);
         }
     }
 
@@ -99,7 +119,7 @@ public final class AlbumDbRepository implements AlbumRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("listar ÃƒÂ¡lbuns", e);
+            throw erroPersistencia("listar álbuns", e);
         }
     }
 
@@ -129,7 +149,7 @@ public final class AlbumDbRepository implements AlbumRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return listarTodos(usuarioId);
         }
-        String sql = "SELECT id, titulo, artista, ano_lancamento, nota, usuario_id FROM album WHERE (titulo ILIKE ? OR artista ILIKE ?) AND usuario_id = ?;";
+        String sql = "SELECT " + COLUNAS + " FROM album WHERE (titulo ILIKE ? OR artista ILIKE ?) AND usuario_id = ?;";
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             String wildcard = "%" + termo.trim() + "%";
@@ -140,7 +160,7 @@ public final class AlbumDbRepository implements AlbumRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar ÃƒÂ¡lbuns com filtro", e);
+            throw erroPersistencia("buscar álbuns com filtro", e);
         }
     }
 
@@ -150,7 +170,7 @@ public final class AlbumDbRepository implements AlbumRepository {
             binder.bind(statement);
             return statement.executeUpdate();
         } catch (SQLException e) {
-            throw erroPersistencia("alterar dados de ÃƒÂ¡lbum", e);
+            throw erroPersistencia("alterar dados de álbum", e);
         }
     }
 
@@ -170,7 +190,9 @@ public final class AlbumDbRepository implements AlbumRepository {
                 result.getString("artista"),
                 result.getInt("ano_lancamento"),
                 nota,
-                result.getString("usuario_id")
+                result.getString("usuario_id"),
+                result.getString("youtube_id"),
+                result.getString("capa_url")
         );
     }
 

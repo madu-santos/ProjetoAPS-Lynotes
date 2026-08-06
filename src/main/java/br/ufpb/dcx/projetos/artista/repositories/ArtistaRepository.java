@@ -19,6 +19,8 @@ public interface ArtistaRepository {
 
     List<Artista> buscar(String termo, String usuarioId);
 
+    Optional<Artista> buscarPorYouTubeId(String youtubeId);
+
     List<Artista> listarPendentes();
 
     boolean atualizarStatusVerificacao(String id, br.ufpb.dcx.projetos.artista.models.StatusVerificacao status);

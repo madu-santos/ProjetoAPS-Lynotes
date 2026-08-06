@@ -20,7 +20,7 @@ public final class MusicaDbRepository implements MusicaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MusicaDbRepository.class);
 
-    private static final String COLUNAS = "id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id";
+    private static final String COLUNAS = "id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id, youtube_id, capa_url";
 
     private final ConnectionFactory connectionFactory;
 
@@ -31,8 +31,8 @@ public final class MusicaDbRepository implements MusicaRepository {
     @Override
     public void criar(Musica musica) {
         String sql = """
-                INSERT INTO musica (id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO musica (id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id, youtube_id, capa_url)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> {
@@ -44,7 +44,7 @@ public final class MusicaDbRepository implements MusicaRepository {
             if (musica.getDuracaoSegundos() != null) {
                 statement.setInt(5, musica.getDuracaoSegundos());
             } else {
-                statement.setNull(5, Types.DOUBLE);
+                statement.setNull(5, Types.INTEGER);
             }
             
             statement.setString(6, musica.getResenha());
@@ -69,15 +69,18 @@ public final class MusicaDbRepository implements MusicaRepository {
             } else {
                 statement.setNull(11, Types.VARCHAR);
             }
+
+            statement.setString(12, musica.getYoutubeId());
+            statement.setString(13, musica.getCapaUrl());
         });
-        LOGGER.debug("MÃºsica persistida no catÃ¡logo. id={}", musica.getId());
+        LOGGER.debug("Música persistida no catálogo. id={}", musica.getId());
     }
 
     @Override
     public boolean atualizar(Musica musica) {
         String sql = """
                 UPDATE musica
-                SET titulo = ?, artista = ?, genero = ?, duracao_segundos = ?, resenha = ?, nota = ?, spotify_url = ?, youtube_url = ?, album_id = ?, usuario_id = ?
+                SET titulo = ?, artista = ?, genero = ?, duracao_segundos = ?, resenha = ?, nota = ?, spotify_url = ?, youtube_url = ?, album_id = ?, usuario_id = ?, youtube_id = ?, capa_url = ?
                 WHERE id = ?
                 """;
 
@@ -89,7 +92,7 @@ public final class MusicaDbRepository implements MusicaRepository {
             if (musica.getDuracaoSegundos() != null) {
                 statement.setInt(4, musica.getDuracaoSegundos());
             } else {
-                statement.setNull(4, Types.DOUBLE);
+                statement.setNull(4, Types.INTEGER);
             }
             
             statement.setString(5, musica.getResenha());
@@ -114,8 +117,10 @@ public final class MusicaDbRepository implements MusicaRepository {
             } else {
                 statement.setNull(10, Types.VARCHAR);
             }
-            
-            statement.setString(11, musica.getId());
+
+            statement.setString(11, musica.getYoutubeId());
+            statement.setString(12, musica.getCapaUrl());
+            statement.setString(13, musica.getId());
         });
         return alterados == 1;
     }
@@ -131,7 +136,23 @@ public final class MusicaDbRepository implements MusicaRepository {
                 return result.next() ? Optional.of(mapear(result)) : Optional.empty();
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar mÃºsica por ID", e);
+            throw erroPersistencia("buscar música por ID", e);
+        }
+    }
+
+    @Override
+    public Optional<Musica> buscarPorYouTubeId(String youtubeId) {
+        if (youtubeId == null || youtubeId.isBlank()) return Optional.empty();
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE youtube_id = ? LIMIT 1";
+
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, youtubeId);
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next() ? Optional.of(mapear(result)) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw erroPersistencia("buscar música por ID do YouTube", e);
         }
     }
 
@@ -236,7 +257,9 @@ public final class MusicaDbRepository implements MusicaRepository {
                 result.getString("spotify_url"),
                 result.getString("youtube_url"),
                 result.getString("album_id"),
-                result.getString("usuario_id")
+                result.getString("usuario_id"),
+                result.getString("youtube_id"),
+                result.getString("capa_url")
         );
     }
 

@@ -80,7 +80,7 @@ public final class AlbumController {
             dto.validar();
             int ano = Integer.parseInt(dto.anoLancamento().trim());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-            Album album = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId);
+            Album album = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId, dto.youtubeId(), dto.capaUrl());
             service.save(album, usuarioId);
             
             String compartilhar = ctx.formParam("compartilharComunidade");
@@ -134,7 +134,7 @@ public final class AlbumController {
             dto.validar();
             int ano = Integer.parseInt(dto.anoLancamento().trim());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-            Album albumDetails = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId);
+            Album albumDetails = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId, dto.youtubeId(), dto.capaUrl());
             service.update(id, albumDetails, usuarioId);
             
             String compartilhar = ctx.formParam("compartilharComunidade");
@@ -172,8 +172,10 @@ public final class AlbumController {
                 ctx.formParam("titulo"),
                 ctx.formParam("artista"),
                 ctx.formParam("anoLancamento"),
-                nota
-        );
+                nota,
+                ctx.formParam("youtubeId"),
+                ctx.formParam("capaUrl")
+        ).normalizado();
     }
 
     private void renderizarFormulario(Context ctx, AlbumDTOView view, String erro) {

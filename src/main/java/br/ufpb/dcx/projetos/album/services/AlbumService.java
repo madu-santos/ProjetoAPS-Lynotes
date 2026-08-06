@@ -17,6 +17,17 @@ public class AlbumService {
 
     public Album save(Album album, String usuarioId) {
         validar(album.getTitulo(), album.getArtista(), album.getAnoLancamento());
+
+        if (album.getYoutubeId() != null && !album.getYoutubeId().isBlank()) {
+            Optional<Album> existente = albumRepository.buscarPorYouTubeId(album.getYoutubeId());
+            if (existente.isPresent() && existente.get().getUsuarioId().equals(usuarioId)) {
+                Album a = existente.get();
+                Album atualizado = new Album(a.getId(), album.getTitulo(), album.getArtista(), album.getAnoLancamento(), album.getNota(), usuarioId, album.getYoutubeId(), album.getCapaUrl());
+                albumRepository.atualizar(atualizado);
+                return atualizado;
+            }
+        }
+
         if (albumRepository.buscarPorId(album.getId(), usuarioId).isPresent()) {
             albumRepository.atualizar(album);
         } else {
@@ -47,7 +58,10 @@ public class AlbumService {
 
         validar(albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento());
 
-        Album albumAtualizado = new Album(album.getId(), albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento(), albumDetails.getNota(), usuarioId);
+        String yid = albumDetails.getYoutubeId() != null ? albumDetails.getYoutubeId() : album.getYoutubeId();
+        String capa = albumDetails.getCapaUrl() != null ? albumDetails.getCapaUrl() : album.getCapaUrl();
+
+        Album albumAtualizado = new Album(album.getId(), albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento(), albumDetails.getNota(), usuarioId, yid, capa);
         albumRepository.atualizar(albumAtualizado);
         return albumAtualizado;
     }

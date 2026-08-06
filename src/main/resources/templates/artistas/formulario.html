@@ -3,214 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${form.edicao ? 'Editar artista - Lynotes' : 'Novo artista - Lynotes'}">
-        Artista - Lynotes
-    </title>
+    <title th:text="${edicao ? 'Editar Artista - Lynotes' : 'Novo Artista - Lynotes'}">Artista - Lynotes</title>
+    <!-- Fonte Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
-<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
-<body hx-boost="true" hx-select="#app-content" hx-target="#app-content">
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
 
     <div th:insert="~{fragments/navbar :: navbar('artistas')}"></div>
 
     <main class="spotify-main container py-5">
         <div class="row justify-content-center">
-            <div class="col-lg-7">
-                <div class="mb-4">
-                    <a class="text-decoration-none" href="/artistas">&larr; Voltar para artistas</a>
-                    <h1 class="mt-2" th:text="${form.edicao ? 'Editar artista' : 'Novo artista'}"></h1>
-                </div>
-
-                <div class="card shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
-
-                        <form method="post" th:action="${form.acao}">
-                            <div class="mb-3">
-                                <label class="form-label" for="nome">Nome</label>
-                                <input class="form-control"
-                                       id="nome"
-                                       name="nome"
-                                       maxlength="150"
-                                       th:value="${form.nome}"
-                                       required
-                                       autofocus>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label" for="generoMusical">GÃƒÂªnero musical</label>
-                                <input class="form-control"
-                                       id="generoMusical"
-                                       name="generoMusical"
-                                       maxlength="100"
-                                       th:value="${form.generoMusical}">
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label" for="biografia">Biografia</label>
-                                <textarea class="form-control"
-                                          id="biografia"
-                                          name="biografia"
-                                          rows="6"
-                                          th:text="${form.biografia}"></textarea>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label d-block text-white">Nota (AvaliaÃƒÂ§ÃƒÂ£o)</label>
-                                <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
-                                    <i class="bi bi-star star-btn" data-index="1"></i>
-                                    <i class="bi bi-star star-btn" data-index="2"></i>
-                                    <i class="bi bi-star star-btn" data-index="3"></i>
-                                    <i class="bi bi-star star-btn" data-index="4"></i>
-                                    <i class="bi bi-star star-btn" data-index="5"></i>
-                                </div>
-                                <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
-                            </div>
-
-                            <hr class="my-4">
-                            
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" 
-                                       type="checkbox" 
-                                       role="switch" 
-                                       id="solicitarVerificacao" 
-                                       name="solicitarVerificacao" 
-                                       th:checked="${form.solicitarVerificacao}">
-                                <label class="form-check-label fw-bold" for="solicitarVerificacao">Solicitar selo de artista verificado</label>
-                            </div>
-
-                            <div id="dadosVerificacao" style="display: none;">
-                                <h5 class="mb-3 text-primary">Dados de VerificaÃƒÂ§ÃƒÂ£o (Exigidos para selo)</h5>
-
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label" for="cpf">CPF (Apenas nÃƒÂºmeros)</label>
-                                        <input class="form-control"
-                                               id="cpf"
-                                               name="cpf"
-                                               maxlength="14"
-                                               placeholder="00011122233"
-                                               th:value="${form.cpf}">
-                                    </div>
-
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label" for="dataNascimento">Data de Nascimento / FundaÃƒÂ§ÃƒÂ£o</label>
-                                        <input class="form-control"
-                                               type="date"
-                                               id="dataNascimento"
-                                               name="dataNascimento"
-                                               th:value="${form.dataNascimento}">
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label" for="cep">CEP</label>
-                                        <input class="form-control" id="cep" name="cep" maxlength="10" th:value="${form.cep}" placeholder="00000-000">
-                                    </div>
-                                    <div class="col-md-8 mb-3">
-                                        <label class="form-label" for="logradouro">Logradouro</label>
-                                        <input class="form-control" id="logradouro" name="logradouro" maxlength="200" th:value="${form.logradouro}" placeholder="Rua, Avenida...">
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-3 mb-3">
-                                        <label class="form-label" for="numero">NÃƒÂºmero</label>
-                                        <input class="form-control" id="numero" name="numero" maxlength="20" th:value="${form.numero}">
-                                    </div>
-                                    <div class="col-md-9 mb-3">
-                                        <label class="form-label" for="bairro">Bairro</label>
-                                        <input class="form-control" id="bairro" name="bairro" maxlength="100" th:value="${form.bairro}">
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-9 mb-3">
-                                        <label class="form-label" for="cidade">Cidade</label>
-                                        <input class="form-control" id="cidade" name="cidade" maxlength="100" th:value="${form.cidade}">
-                                    </div>
-                                    <div class="col-md-3 mb-3">
-                                        <label class="form-label" for="uf">UF</label>
-                                        <input class="form-control" id="uf" name="uf" maxlength="2" th:value="${form.uf}" placeholder="SP">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <script>
-                                (function() {
-                                    const checkbox = document.getElementById('solicitarVerificacao');
-                                    const container = document.getElementById('dadosVerificacao');
-                                    
-                                    if (!checkbox || !container) return;
-                                    
-                                    const inputs = container.querySelectorAll('input, textarea');
-                                    
-                                    function toggleCampos() {
-                                        if (checkbox.checked) {
-                                            container.style.display = 'block';
-                                            inputs.forEach(el => el.setAttribute('required', 'required'));
-                                        } else {
-                                            container.style.display = 'none';
-                                            inputs.forEach(el => el.removeAttribute('required'));
-                                        }
-                                    }
-                                    
-                                    function apenasNumeros(e) {
-                                        if (/\D/.test(e.target.value)) {
-                                            e.target.value = e.target.value.replace(/\D/g, '');
-                                            e.target.setCustomValidity("Somente nÃƒÂºmeros sÃƒÂ£o aceitos.");
-                                            e.target.reportValidity();
-                                            setTimeout(() => {
-                                                e.target.setCustomValidity("");
-                                                e.target.reportValidity();
-                                            }, 2000);
-                                        } else {
-                                            e.target.setCustomValidity("");
-                                        }
-                                    }
-                                    
-                                    const cpfInput = document.getElementById('cpf');
-                                    const cepInput = document.getElementById('cep');
-                                    if (cpfInput) cpfInput.addEventListener('input', apenasNumeros);
-                                    if (cepInput) cepInput.addEventListener('input', apenasNumeros);
-                                    
-                                    checkbox.addEventListener('change', toggleCampos);
-                                    
-                                    // Chamar no carregamento da pÃƒÂ¡gina para inicializar corretamente o estado de ediÃƒÂ§ÃƒÂ£o
-                                    toggleCampos();
-                                })();
-                            </script>
-
-                            <div class="mb-4 p-3 rounded" style="background-color: #282828;">
-                                <div class="form-check form-switch mb-2">
-                                    <input class="form-check-input" type="checkbox" id="compartilharComunidade" name="compartilharComunidade" onchange="document.getElementById('twitterBox').classList.toggle('d-none', !this.checked)" checked>
-                                    <label class="form-check-label fw-bold text-white" for="compartilharComunidade">Tweetar na Comunidade <i class="bi bi-chat-text ms-1"></i></label>
-                                </div>
-                                <div id="twitterBox" class="mt-2">
-                                    <textarea class="form-control bg-dark text-white border-secondary" name="mensagemComunidade" maxlength="280" rows="3" placeholder="O que vocÃƒÂª acha deste artista? Compartilhe com a galera..." oninput="document.getElementById('charCount').textContent = this.value.length"></textarea>
-                                    <div class="form-text text-end text-secondary mt-1"><span id="charCount">0</span>/280</div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex gap-2">
-                                <button class="btn btn-primary" type="submit"
-                                        th:text="${form.edicao ? 'Salvar alteraÃƒÂ§ÃƒÂµes' : 'Cadastrar artista'}">
-                                </button>
-                                <a class="btn btn-outline-secondary" href="/artistas">Cancelar</a>
-                            </div>
-                        </form>
+            <div class="col-lg-8">
+                
+                <!-- Card Cyberpunk do Formulário -->
+                <div class="music-card-cyber p-4 p-md-5">
+                    <div class="mb-4">
+                        <h2 class="glowing-title-library mb-1" th:text="${edicao ? 'Editar Artista' : 'Novo Artista'}">Novo Artista</h2>
+                        <p class="text-secondary mb-0">Cadastre ou atualize as informações do artista no seu acervo.</p>
                     </div>
+
+                    <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
+
+                    <form method="post" th:action="${acao}" hx-boost="false">
+                        <!-- Nome -->
+                        <div class="mb-4">
+                            <label class="form-label text-purple font-monospace small uppercase fw-bold" for="nome">Nome do Artista</label>
+                            <input class="form-control glass-search-input bg-dark text-white border-secondary p-3"
+                                   id="nome"
+                                   name="nome"
+                                   th:value="${nome}"
+                                   placeholder="Ex: Daft Punk, Arctic Monkeys..."
+                                   required
+                                   maxlength="100"
+                                   autocomplete="off">
+                        </div>
+
+                        <!-- Gênero Musical -->
+                        <div class="mb-4">
+                            <label class="form-label text-purple font-monospace small uppercase fw-bold" for="generoMusical">Gênero Musical</label>
+                            <input class="form-control glass-search-input bg-dark text-white border-secondary p-3"
+                                   id="generoMusical"
+                                   name="generoMusical"
+                                   th:value="${generoMusical}"
+                                   placeholder="Ex: Synthwave, Indie Rock, MPB..."
+                                   maxlength="50"
+                                   autocomplete="off">
+                        </div>
+
+                        <!-- URL da Foto de Capa -->
+                        <div class="mb-4">
+                            <label class="form-label text-purple font-monospace small uppercase fw-bold" for="capaUrl">URL da Foto / Imagem</label>
+                            <input class="form-control glass-search-input bg-dark text-white border-secondary p-3"
+                                   id="capaUrl"
+                                   name="capaUrl"
+                                   type="url"
+                                   th:value="${capaUrl}"
+                                   placeholder="https://exemplo.com/foto-artista.jpg"
+                                   autocomplete="off">
+                        </div>
+
+                        <!-- Biografia -->
+                        <div class="mb-5">
+                            <label class="form-label text-purple font-monospace small uppercase fw-bold" for="biografia">Biografia / Descrição</label>
+                            <textarea class="form-control glass-search-input bg-dark text-white border-secondary p-3"
+                                      id="biografia"
+                                      name="biografia"
+                                      rows="4"
+                                      th:text="${biografia}"
+                                      placeholder="Escreva um resumo da carreira e conquistas deste artista..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">
+                            <a class="btn btn-outline-secondary rounded-pill px-4" href="/artistas">Cancelar</a>
+                            <button class="btn-add-music-glow px-4" type="submit">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                <span th:text="${edicao ? 'Salvar Alterações' : 'Cadastrar Artista'}">Cadastrar</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
+
             </div>
         </div>
     </main>
 
 </div>
+
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-    
+<script src="/js/player.js" defer></script>
 </body>
 </html>
