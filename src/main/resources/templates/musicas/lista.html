@@ -139,8 +139,11 @@
         <!-- Seção de Playlists ("Suas Playlists") -->
         <div class="mt-5 pt-3">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="text-white fw-bold mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-collection-play-fill text-purple"></i> Suas Playlists
+                <h3 class="fw-bold mb-0">
+                    <a href="/playlists" class="text-white text-decoration-none d-flex align-items-center gap-2 title-clickable" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.classList.replace('text-white', 'text-purple')" onmouseout="this.classList.replace('text-purple', 'text-white')">
+                        <i class="bi bi-collection-play-fill text-purple"></i> Suas Playlists
+                        <i class="bi bi-box-arrow-up-right ms-2 text-secondary" style="font-size: 0.9rem;"></i>
+                    </a>
                 </h3>
                 <a href="/playlists/new" hx-boost="false" class="btn btn-outline-purple btn-sm rounded-pill px-3">
                     <i class="bi bi-plus-lg me-1"></i> Nova Playlist
@@ -256,7 +259,7 @@ function abrirModalNovaPlaylist(url) {
 }
 </script>
 
-<script src="/js/player.js" defer></script>
+<script src="/js/player.js?v=3" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

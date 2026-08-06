@@ -30,8 +30,6 @@
                         <p class="text-secondary mb-0">Pesquise no YouTube ou preencha as informações para adicionar ao seu acervo.</p>
                     </div>
 
-                    <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
-
                     <form method="post" th:action="${form.acao}" id="formMusica" hx-boost="false">
 
                         <!-- Pesquisa no YouTube (Criar) -->
@@ -68,10 +66,11 @@
                         <!-- CAMPOS OCULTOS -->
                         <input type="hidden" id="titulo" name="titulo" th:value="${form.titulo}">
                         <input type="hidden" id="artista" name="artista" th:value="${form.artista}">
-                        <input type="hidden" id="duracaoSegundos" name="duracaoSegundos">
+                        <input type="hidden" id="duracaoSegundos" name="duracaoSegundos" th:value="${form.duracaoSegundos}">
                         <input type="hidden" id="youtubeUrl" name="youtubeUrl" th:value="${form.youtubeUrl}">
-                        <input type="hidden" id="youtubeId" name="youtubeId">
-                        <input type="hidden" id="capaUrl" name="capaUrl">
+                        <input type="hidden" id="youtubeId" name="youtubeId" th:value="${form.youtubeId}">
+                        <input type="hidden" id="capaUrl" name="capaUrl" th:value="${form.capaUrl}">
+                        <input type="hidden" id="novaPlaylistNome" name="novaPlaylistNome" th:value="${form.novaPlaylistNome}">
 
                         <!-- EDIÇÃO: MOSTRAR NOME E ARTISTA -->
                         <div th:if="${form.edicao}" class="mb-4">
@@ -111,7 +110,8 @@
                             <label class="form-label text-purple font-monospace small uppercase fw-bold" for="playlistId">Salvar em</label>
                             <select class="form-select glass-search-input bg-dark text-white border-secondary p-3" id="playlistId" name="playlistId" onchange="if(this.value === 'NEW'){ this.value=''; abrirModalNovaPlaylist(); }">
                                 <option value="">Nenhuma playlist selecionada</option>
-                                <option th:each="pl : ${form.playlists}" th:value="${pl.id}" th:text="${pl.nome}"></option>
+                                <option th:each="pl : ${form.playlists}" th:value="${pl.id}" th:text="${pl.nome}" th:selected="${form.playlistId == pl.id}"></option>
+                                <option th:if="${form.playlistId == 'NEW_TEMP'}" value="NEW_TEMP" class="text-purple fw-bold" selected th:text="${'[Nova] ' + form.novaPlaylistNome}"></option>
                                 <option value="NEW" class="text-purple fw-bold">+ Nova playlist</option>
                             </select>
                         </div>
@@ -129,11 +129,13 @@
                             </div>
                         </div>
 
+                        <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
+                        
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">
                             <a class="btn btn-outline-secondary rounded-pill px-4" href="/musicas">Cancelar</a>
                             <button class="btn-add-music-glow px-4" type="submit">
                                 <i class="bi bi-check-circle-fill me-1"></i>
-                                <span th:text="${form.edicao ? 'Salvar Alterações' : 'Salvar no Catálogo'}">Salvar</span>
+                                <span th:text="${form.edicao ? 'Salvar Alterações' : 'Finalizar e Salvar Música'}">Salvar</span>
                             </button>
                         </div>
                     </form>
@@ -271,12 +273,76 @@
                     activeIndex = -1;
                 };
             })();
+            
+            // Lógica para criação de Nova Playlist diretamente do dropdown
+            function abrirModalNovaPlaylist() {
+                const modalEl = document.getElementById('modalNovaPlaylistForm');
+                if(modalEl) {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                }
+            }
+
+            function confirmarNovaPlaylist() {
+                const nomeInput = document.getElementById('nomeNovaPlaylistModal');
+                const nome = nomeInput.value.trim();
+                
+                if (!nome) return;
+
+                // Salva o nome no campo oculto do formulário principal
+                document.getElementById('novaPlaylistNome').value = nome;
+                
+                // Adiciona uma opção visual no select e seleciona ela
+                const select = document.getElementById('playlistId');
+                
+                // Remove a opção temporária anterior se existir
+                const tempOption = select.querySelector('option[value="NEW_TEMP"]');
+                if (tempOption) tempOption.remove();
+                
+                const option = document.createElement('option');
+                option.value = 'NEW_TEMP';
+                option.text = `[Nova] ${nome}`;
+                option.className = "text-purple fw-bold";
+                
+                select.insertBefore(option, select.querySelector('option[value="NEW"]'));
+                select.value = 'NEW_TEMP';
+                
+                // Fecha o modal
+                const modalEl = document.getElementById('modalNovaPlaylistForm');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if(modal) modal.hide();
+                
+                nomeInput.value = '';
+            }
         </script>
+        
+        <!-- Modal Nova Playlist Exclusivo do Formulário -->
+        <div class="modal fade" id="modalNovaPlaylistForm" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-darker border-secondary">
+              <div class="modal-header border-bottom border-secondary border-opacity-25">
+                <h5 class="modal-title text-white fw-bold"><i class="bi bi-plus-circle text-purple me-2"></i>Nova Playlist</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="formNovaPlaylistModal" onsubmit="event.preventDefault(); confirmarNovaPlaylist();">
+                  <div class="mb-3">
+                    <label class="form-label text-secondary small font-monospace text-uppercase" for="nomeNovaPlaylistModal">Nome da Playlist</label>
+                    <input type="text" class="form-control glass-search-input bg-dark text-white border-secondary p-3" id="nomeNovaPlaylistModal" required>
+                  </div>
+                  <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal" onclick="document.getElementById('playlistId').value = '';">Cancelar</button>
+                    <button type="submit" class="btn-add-music-glow px-4" id="btnSalvarPlaylistModal">Criar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
     </main>
 
 </div>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-<script src="/js/player.js" defer></script>
+<script src="/js/player.js?v=3" defer></script>
 </body>
 </html>
