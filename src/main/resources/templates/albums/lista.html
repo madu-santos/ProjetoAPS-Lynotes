@@ -60,12 +60,23 @@
         <div th:unless="${semAlbums}" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
             <div class="col" th:each="album : ${albums}">
                 <div class="music-card-cyber h-100 d-flex flex-column justify-content-between p-3">
-                    <div>
+                    <div class="position-relative" style="group">
                         <!-- Capa do Álbum -->
-                        <div class="music-card-cover-container mb-3">
+                        <div class="music-card-cover-container mb-3 position-relative">
                             <img th:if="${album.capaUrl != null and !album.capaUrl.isBlank()}" th:src="${album.capaUrl}" class="music-card-cover" alt="Capa do Álbum">
                             <div th:unless="${album.capaUrl != null and !album.capaUrl.isBlank()}" class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-secondary">
                                 <i class="bi bi-disc fs-1"></i>
+                            </div>
+                            <!-- Botão de Play Overlay -->
+                            <div class="music-card-play-overlay">
+                                <button class="btn btn-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center"
+                                        style="width: 48px; height: 48px;"
+                                        th:data-id="${album.id}"
+                                        th:data-titulo="${album.titulo}"
+                                        th:data-capa="${album.capaUrl}"
+                                        onclick="if(typeof playerTocarAlbum === 'function') { event.preventDefault(); playerTocarAlbum(this.getAttribute('data-id'), this.getAttribute('data-titulo'), this.getAttribute('data-capa')); }">
+                                    <i class="bi bi-play-fill fs-3"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -99,6 +110,6 @@
 </div>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-<script src="/js/player.js" defer></script>
+<script src="/js/player.js?v=3" defer></script>
 </body>
 </html>

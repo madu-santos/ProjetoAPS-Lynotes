@@ -45,7 +45,8 @@ public class MusicaService {
                         musica.getAlbumId(),
                         musica.getUsuarioId(),
                         musica.getYoutubeId(),
-                        musica.getCapaUrl()
+                        musica.getCapaUrl(),
+                        musica.isOcultaDaBiblioteca()
                 );
                 musicaRepository.atualizar(atualizada);
                 return atualizada;
@@ -74,6 +75,55 @@ public class MusicaService {
 
     public List<Musica> search(String termo, String usuarioId) {
         return musicaRepository.buscar(termo, usuarioId);
+    }
+
+    public List<Musica> findByAlbumId(String albumId) {
+        return musicaRepository.buscarPorAlbumId(albumId);
+    }
+
+    public void importarFaixasAlbumItunes(String collectionId, String albumId, String usuarioId, String capaUrl) {
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                String url = "https://itunes.apple.com/lookup?id=" + collectionId + "&entity=song";
+                java.net.http.HttpClient httpClient = java.net.http.HttpClient.newHttpClient();
+                java.net.http.HttpRequest req = java.net.http.HttpRequest.newBuilder()
+                        .uri(java.net.URI.create(url))
+                        .timeout(java.time.Duration.ofSeconds(10))
+                        .GET()
+                        .build();
+                java.net.http.HttpResponse<String> res = httpClient.send(req, java.net.http.HttpResponse.BodyHandlers.ofString());
+                if (res.statusCode() == 200) {
+                    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                    com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(res.body());
+                    com.fasterxml.jackson.databind.JsonNode results = root.path("results");
+                    for (com.fasterxml.jackson.databind.JsonNode item : results) {
+                        if ("track".equals(item.path("wrapperType").asText(""))) {
+                            int trackTimeMillis = item.path("trackTimeMillis").asInt(0);
+                            int duracaoSegundos = trackTimeMillis / 1000;
+                            String trackId = item.path("trackId").asText("");
+                            
+                            Musica faixa = Musica.novoOculto(
+                                item.path("trackName").asText(""),
+                                item.path("artistName").asText(""),
+                                item.path("primaryGenreName").asText(""),
+                                duracaoSegundos > 0 ? duracaoSegundos : null,
+                                "",
+                                null,
+                                null,
+                                null,
+                                albumId,
+                                usuarioId,
+                                "itunes_track_" + trackId,
+                                capaUrl
+                            );
+                            save(faixa);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore erros de importação para não travar o log
+            }
+        });
     }
 
     public Optional<Musica> findById(String id) {
@@ -105,7 +155,8 @@ public class MusicaService {
                 musicaDetails.getAlbumId(),
                 musicaDetails.getUsuarioId(),
                 musicaDetails.getYoutubeId() != null ? musicaDetails.getYoutubeId() : musica.getYoutubeId(),
-                musicaDetails.getCapaUrl() != null ? musicaDetails.getCapaUrl() : musica.getCapaUrl()
+                musicaDetails.getCapaUrl() != null ? musicaDetails.getCapaUrl() : musica.getCapaUrl(),
+                musicaDetails.isOcultaDaBiblioteca()
         );
         musicaRepository.atualizar(musicaAtualizada);
         return musicaAtualizada;

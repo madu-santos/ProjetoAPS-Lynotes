@@ -17,12 +17,13 @@ public final class Musica {
     private final String albumId; // Nullable
     private final String usuarioId; // Nullable
     private final String youtubeId; // Nullable
-    private final String capaUrl; // Nullable
+    private final String capaUrl;
+    private final boolean ocultaDaBiblioteca; // Nullable
 
-    public Musica(String id, String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Double nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId, String youtubeId, String capaUrl) {
+    public Musica(String id, String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Double nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId, String youtubeId, String capaUrl, boolean ocultaDaBiblioteca) {
         this.id = Objects.requireNonNull(id);
-        this.titulo = Objects.requireNonNull(titulo);
-        this.artista = Objects.requireNonNull(artista);
+        this.titulo = titulo;
+        this.artista = artista;
         this.genero = genero;
         this.duracaoSegundos = duracaoSegundos;
         this.resenha = resenha;
@@ -33,6 +34,11 @@ public final class Musica {
         this.usuarioId = usuarioId;
         this.youtubeId = youtubeId;
         this.capaUrl = capaUrl;
+        this.ocultaDaBiblioteca = ocultaDaBiblioteca;
+    }
+
+    public Musica(String id, String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Double nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId, String youtubeId, String capaUrl) {
+        this(id, titulo, artista, genero, duracaoSegundos, resenha, nota, spotifyUrl, youtubeUrl, albumId, usuarioId, youtubeId, capaUrl, false);
     }
 
     public Musica(String id, String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Double nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId) {
@@ -44,7 +50,11 @@ public final class Musica {
     }
 
     public static Musica novo(String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Double nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId, String youtubeId, String capaUrl) {
-        return new Musica(UUID.randomUUID().toString(), titulo, artista, genero, duracaoSegundos, resenha, nota, spotifyUrl, youtubeUrl, albumId, usuarioId, youtubeId, capaUrl);
+        return new Musica(UUID.randomUUID().toString(), titulo, artista, genero, duracaoSegundos, resenha, nota, spotifyUrl, youtubeUrl, albumId, usuarioId, youtubeId, capaUrl, false);
+    }
+
+    public static Musica novoOculto(String titulo, String artista, String genero, Integer duracaoSegundos, String resenha, Double nota, String spotifyUrl, String youtubeUrl, String albumId, String usuarioId, String youtubeId, String capaUrl) {
+        return new Musica(UUID.randomUUID().toString(), titulo, artista, genero, duracaoSegundos, resenha, nota, spotifyUrl, youtubeUrl, albumId, usuarioId, youtubeId, capaUrl, true);
     }
 
     public String getId() {
@@ -99,17 +109,21 @@ public final class Musica {
         return capaUrl;
     }
 
+    public boolean isOcultaDaBiblioteca() {
+        return ocultaDaBiblioteca;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Musica musica = (Musica) o;
-        return Objects.equals(id, musica.id) && Objects.equals(titulo, musica.titulo) && Objects.equals(artista, musica.artista) && Objects.equals(genero, musica.genero) && Objects.equals(duracaoSegundos, musica.duracaoSegundos) && Objects.equals(resenha, musica.resenha) && Objects.equals(nota, musica.nota) && Objects.equals(spotifyUrl, musica.spotifyUrl) && Objects.equals(albumId, musica.albumId) && Objects.equals(usuarioId, musica.usuarioId) && Objects.equals(youtubeId, musica.youtubeId) && Objects.equals(capaUrl, musica.capaUrl);
+        return ocultaDaBiblioteca == musica.ocultaDaBiblioteca && Objects.equals(id, musica.id) && Objects.equals(titulo, musica.titulo) && Objects.equals(artista, musica.artista) && Objects.equals(genero, musica.genero) && Objects.equals(duracaoSegundos, musica.duracaoSegundos) && Objects.equals(resenha, musica.resenha) && Objects.equals(nota, musica.nota) && Objects.equals(spotifyUrl, musica.spotifyUrl) && Objects.equals(albumId, musica.albumId) && Objects.equals(usuarioId, musica.usuarioId) && Objects.equals(youtubeId, musica.youtubeId) && Objects.equals(capaUrl, musica.capaUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, titulo, artista, genero, duracaoSegundos, resenha, nota, spotifyUrl, albumId, usuarioId, youtubeId, capaUrl);
+        return Objects.hash(id, titulo, artista, genero, duracaoSegundos, resenha, nota, spotifyUrl, albumId, usuarioId, youtubeId, capaUrl, ocultaDaBiblioteca);
     }
 
     @Override
@@ -127,6 +141,7 @@ public final class Musica {
                ", usuarioId='" + usuarioId + '\'' +
                ", youtubeId='" + youtubeId + '\'' +
                ", capaUrl='" + capaUrl + '\'' +
+               ", ocultaDaBiblioteca=" + ocultaDaBiblioteca +
                '}';
     }
 }

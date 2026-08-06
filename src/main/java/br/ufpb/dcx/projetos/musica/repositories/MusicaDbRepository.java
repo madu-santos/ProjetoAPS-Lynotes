@@ -20,7 +20,7 @@ public final class MusicaDbRepository implements MusicaRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MusicaDbRepository.class);
 
-    private static final String COLUNAS = "id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id, youtube_id, capa_url";
+    private static final String COLUNAS = "id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id, youtube_id, capa_url, oculta_da_biblioteca";
 
     private final ConnectionFactory connectionFactory;
 
@@ -31,8 +31,8 @@ public final class MusicaDbRepository implements MusicaRepository {
     @Override
     public void criar(Musica musica) {
         String sql = """
-                INSERT INTO musica (id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id, youtube_id, capa_url)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO musica (id, titulo, artista, genero, duracao_segundos, resenha, nota, spotify_url, youtube_url, album_id, usuario_id, youtube_id, capa_url, oculta_da_biblioteca)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> {
@@ -72,6 +72,7 @@ public final class MusicaDbRepository implements MusicaRepository {
 
             statement.setString(12, musica.getYoutubeId());
             statement.setString(13, musica.getCapaUrl());
+            statement.setBoolean(14, musica.isOcultaDaBiblioteca());
         });
         LOGGER.debug("Música persistida no catálogo. id={}", musica.getId());
     }
@@ -80,7 +81,7 @@ public final class MusicaDbRepository implements MusicaRepository {
     public boolean atualizar(Musica musica) {
         String sql = """
                 UPDATE musica
-                SET titulo = ?, artista = ?, genero = ?, duracao_segundos = ?, resenha = ?, nota = ?, spotify_url = ?, youtube_url = ?, album_id = ?, usuario_id = ?, youtube_id = ?, capa_url = ?
+                SET titulo = ?, artista = ?, genero = ?, duracao_segundos = ?, resenha = ?, nota = ?, spotify_url = ?, youtube_url = ?, album_id = ?, usuario_id = ?, youtube_id = ?, capa_url = ?, oculta_da_biblioteca = ?
                 WHERE id = ?
                 """;
 
@@ -120,7 +121,8 @@ public final class MusicaDbRepository implements MusicaRepository {
 
             statement.setString(11, musica.getYoutubeId());
             statement.setString(12, musica.getCapaUrl());
-            statement.setString(13, musica.getId());
+            statement.setBoolean(13, musica.isOcultaDaBiblioteca());
+            statement.setString(14, musica.getId());
         });
         return alterados == 1;
     }
@@ -186,7 +188,7 @@ public final class MusicaDbRepository implements MusicaRepository {
 
     @Override
     public List<Musica> buscarPorUsuarioId(String usuarioId) {
-        String sql = "SELECT " + COLUNAS + " FROM musica WHERE usuario_id = ? ORDER BY titulo, id";
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE usuario_id = ? AND oculta_da_biblioteca = FALSE ORDER BY titulo, id";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -204,7 +206,7 @@ public final class MusicaDbRepository implements MusicaRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return buscarPorUsuarioId(usuarioId);
         }
-        String sql = "SELECT " + COLUNAS + " FROM musica WHERE (titulo ILIKE ? OR artista ILIKE ? OR genero ILIKE ? OR resenha ILIKE ?) AND usuario_id = ?;";
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE (titulo ILIKE ? OR artista ILIKE ? OR genero ILIKE ? OR resenha ILIKE ?) AND usuario_id = ? AND oculta_da_biblioteca = FALSE;";
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             String wildcard = "%" + termo.trim() + "%";
@@ -259,7 +261,8 @@ public final class MusicaDbRepository implements MusicaRepository {
                 result.getString("album_id"),
                 result.getString("usuario_id"),
                 result.getString("youtube_id"),
-                result.getString("capa_url")
+                result.getString("capa_url"),
+                result.getBoolean("oculta_da_biblioteca")
         );
     }
 

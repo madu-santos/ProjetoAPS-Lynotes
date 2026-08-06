@@ -110,13 +110,7 @@ public final class App {
             }
         });
 
-        ArtistaModule.registrar(app, connectionFactory, comunidadeService);
-        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, connectionFactory, comunidadeService);
-        MusicaModule.registrar(app, connectionFactory, comunidadeService);
-        br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, connectionFactory);
-        br.ufpb.dcx.projetos.comunidade.ComunidadeModule.registrar(app, connectionFactory, service);
-
-        // Registrar UsuarioController explicitamente se não estiver em nenhum módulo
+        // Inicializar repositórios e serviços de música e álbum antes dos módulos que dependem deles
         var musicaRepo = new br.ufpb.dcx.projetos.musica.repositories.MusicaDbRepository(connectionFactory);
         var albumRepo = new br.ufpb.dcx.projetos.album.repositories.AlbumDbRepository(connectionFactory);
         var musicaService = new br.ufpb.dcx.projetos.musica.services.MusicaService(musicaRepo, albumRepo);
@@ -126,7 +120,13 @@ public final class App {
         
         var playlistRepo = new br.ufpb.dcx.projetos.playlist.repositories.PlaylistDbRepository(connectionFactory);
         var playlistService = new br.ufpb.dcx.projetos.playlist.services.PlaylistService(playlistRepo);
-        
+
+        ArtistaModule.registrar(app, connectionFactory, comunidadeService);
+        br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, connectionFactory, comunidadeService, musicaService);
+        MusicaModule.registrar(app, connectionFactory, comunidadeService);
+        br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, connectionFactory);
+        br.ufpb.dcx.projetos.comunidade.ComunidadeModule.registrar(app, connectionFactory, service);
+
         var rankingController = new br.ufpb.dcx.projetos.rankings.RankingController(musicaService, albumService, artistaService);
         app.get("/rankings", rankingController::index, Role.USER);
         

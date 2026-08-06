@@ -43,8 +43,6 @@ function playerElements() {
     };
 }
 
-// --- Reproduzir Música Diretamente dos Cards ---
-
 window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
     const displayTitle = (artista && titulo) ? `${artista} - ${titulo}` : (titulo || 'Música');
     
@@ -53,47 +51,114 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
         playerTogglePanel();
     }
 
+    // 1. Tentar ID explícito do YouTube (vindo do banco de dados)
     let videoId = null;
-    if (explicitYtId && explicitYtId.trim() && !explicitYtId.startsWith('yt_') && explicitYtId.length === 11) {
+    if (explicitYtId && explicitYtId.trim() && !explicitYtId.startsWith('yt_') && (explicitYtId.length === 11 || explicitYtId.length > 11)) {
         videoId = explicitYtId.trim();
     }
 
+    // 2. Tentar extrair ID da URL direta do YouTube (youtube.com/watch?v= ou youtu.be/ ou playlist?list=)
     if (!videoId && url && url.trim()) {
         const query = url.trim();
         if (query.includes('v=')) {
             let start = query.indexOf('v=') + 2;
             let end = query.indexOf('&', start);
-            videoId = end > 0 ? query.substring(start, end) : query.substring(start);
+            let extracted = end > 0 ? query.substring(start, end) : query.substring(start);
+            if (extracted.length === 11 && !extracted.includes(' ') && !extracted.includes('/')) {
+                videoId = extracted;
+            }
         } else if (query.includes('youtu.be/')) {
             let start = query.indexOf('youtu.be/') + 9;
             let end = query.indexOf('?', start);
-            videoId = end > 0 ? query.substring(start, end) : query.substring(start);
+            let extracted = end > 0 ? query.substring(start, end) : query.substring(start);
+            if (extracted.length === 11 && !extracted.includes(' ') && !extracted.includes('/')) {
+                videoId = extracted;
+            }
         }
     }
 
     // Se temos um ID de 11 caracteres válido do YouTube, executa imediatamente
-    if (videoId && videoId.length === 11 && !videoId.includes(' ') && !videoId.includes('/')) {
+    if (videoId) {
         playerLoad(videoId, displayTitle, null, 0);
         return;
     }
 
-    // Se não tiver o ID direto (ex: salva via busca), resolve o vídeo exato no YouTube em tempo real
-    const searchTerm = (artista && titulo) ? `${titulo} ${artista}` : (titulo || 'Música');
-    const { currentTitle } = playerElements();
-    if (currentTitle) currentTitle.textContent = `Carregando áudio: ${displayTitle}...`;
+    // 3. Se a URL é uma busca do YouTube (youtube.com/results?search_query=...), extrair o termo
+    let searchTerm = null;
+    if (url && url.includes('search_query=')) {
+        try {
+            const urlObj = new URL(url);
+            searchTerm = urlObj.searchParams.get('search_query');
+        } catch(e) {
+            // parse manual
+            let start = url.indexOf('search_query=') + 13;
+            let end = url.indexOf('&', start);
+            let raw = end > 0 ? url.substring(start, end) : url.substring(start);
+            searchTerm = decodeURIComponent(raw.replace(/\+/g, ' '));
+        }
+    }
+    
+    // Se não extraiu da URL, montar a partir do título e artista
+    if (!searchTerm) {
+        searchTerm = (artista && titulo) ? `${titulo} ${artista}` : (titulo || 'Música');
+    }
 
+    const { currentTitle } = playerElements();
+    if (currentTitle) currentTitle.textContent = `Buscando: ${displayTitle}...`;
+
+    // Agora o backend usa um scraper nativo infalível em vez do Piped API
     fetch('/api/youtube/search?q=' + encodeURIComponent(searchTerm) + '&tipo=MUSICA&realVideo=true')
         .then(r => r.json())
         .then(data => {
-            if (data && data.length > 0 && data[0].youtubeId && data[0].youtubeId.length === 11) {
+            if (data && data.length > 0 && data[0].youtubeId && data[0].youtubeId.length === 11 && !data[0].youtubeId.startsWith('yt_')) {
                 playerLoad(data[0].youtubeId, displayTitle, null, 0);
             } else {
-                playerLoad('dQw4w9WgXcQ', displayTitle, null, 0);
+                if (currentTitle) currentTitle.textContent = 'Não foi possível encontrar o vídeo real no YouTube.';
             }
         })
         .catch(() => {
-            playerLoad('dQw4w9WgXcQ', displayTitle, null, 0);
+            if (currentTitle) currentTitle.textContent = 'Erro ao conectar com o servidor para buscar o vídeo.';
         });
+};
+
+window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa) {
+    if (playerState.collapsed) {
+        playerTogglePanel();
+    }
+    
+    const { currentTitle } = playerElements();
+    if (currentTitle) currentTitle.textContent = `Carregando álbum: ${albumTitulo}...`;
+
+    try {
+        const res = await fetch(`/api/albums/${albumId}/faixas`);
+        if (!res.ok) throw new Error('Falha ao buscar faixas do álbum');
+        
+        const faixas = await res.json();
+        if (!faixas || faixas.length === 0) {
+            if (currentTitle) currentTitle.textContent = 'Este álbum ainda não possui faixas importadas.';
+            return;
+        }
+
+        // Converte as faixas no formato do player (similar ao formato de itens de playlist)
+        playerState.playlistItems = faixas.map((f, index) => ({
+            id: f.id,
+            titulo: `${f.artista} - ${f.titulo}`,
+            videoId: f.youtubeId || `yt_search_${f.artista}_${f.titulo}`,
+            playlistId: albumId
+        }));
+        
+        playerState.currentPlaylistId = albumId;
+        playerState.currentIndex = 0;
+        playerRenderTracks();
+        playerSaveState();
+        
+        // Toca a primeira faixa
+        playerLoadTrack(playerState.playlistItems[0]);
+
+    } catch (e) {
+        if (currentTitle) currentTitle.textContent = 'Erro ao carregar faixas do álbum.';
+        console.error(e);
+    }
 };
 
 // --- Painel retrátil ---
@@ -190,6 +255,14 @@ function playerRestoreState() {
             localStorage.removeItem(PLAYER_STORAGE_KEY);
             return null;
         }
+        
+        // Anti-Rickroll: Limpa o estado se o cache estiver preso no Rickroll
+        if (data.currentVideoId === 'dQw4w9WgXcQ' || 
+            (data.playlistItems && data.playlistItems.some(i => i.videoId === 'dQw4w9WgXcQ'))) {
+            localStorage.removeItem(PLAYER_STORAGE_KEY);
+            return null;
+        }
+
         return data;
     } catch {
         return null;
@@ -332,7 +405,13 @@ function playerLoad(videoId, title, playlistId, startSeconds) {
     const { currentTitle } = playerElements();
     if (currentTitle) currentTitle.textContent = playerState.currentTitle;
 
-    ytPlayer.loadVideoById({ videoId, startSeconds: startSeconds || 0 });
+    // Se o ID for uma playlist do YouTube (como um álbum), carrega a playlist inteira
+    if (videoId.length > 11 && (videoId.startsWith('PL') || videoId.startsWith('OL') || videoId.startsWith('RD'))) {
+        ytPlayer.loadPlaylist({ list: videoId, index: 0, startSeconds: startSeconds || 0 });
+    } else {
+        ytPlayer.loadVideoById({ videoId, startSeconds: startSeconds || 0 });
+    }
+    
     playerSetMessage('');
     playerRenderTracks();
     playerSaveState();
@@ -397,7 +476,34 @@ function playerLoadTrack(item) {
     if (!item) return;
     const idx = playerState.playlistItems.findIndex(t => t.id === item.id);
     playerState.currentIndex = idx === -1 ? 0 : idx;
-    playerLoad(item.videoId, item.titulo, item.playlistId, 0);
+    
+    // Se o videoId não for um ID válido do YouTube (ex: começa com itunes_track_), busca na API
+    if (item.videoId && (item.videoId.startsWith('itunes_') || item.videoId.startsWith('yt_search_'))) {
+        const { currentTitle } = playerElements();
+        if (currentTitle) currentTitle.textContent = `Buscando faixa: ${item.titulo}...`;
+        
+        const searchTerm = encodeURIComponent(item.titulo);
+        fetch('/api/youtube/search?q=' + searchTerm + '&tipo=MUSICA&realVideo=true')
+            .then(r => r.json())
+            .then(data => {
+                if (data && data.length > 0 && data[0].youtubeId && data[0].youtubeId.length === 11 && !data[0].youtubeId.startsWith('yt_')) {
+                    // Atualiza o item para futuras reproduções não precisarem buscar de novo
+                    item.videoId = data[0].youtubeId;
+                    playerSaveState();
+                    playerLoad(item.videoId, item.titulo, item.playlistId, 0);
+                } else {
+                    if (currentTitle) currentTitle.textContent = 'Faixa não encontrada no YouTube.';
+                    // Avança para a próxima faixa automaticamente após 3 segundos se falhar
+                    setTimeout(playerNext, 3000);
+                }
+            })
+            .catch(() => {
+                if (currentTitle) currentTitle.textContent = 'Erro ao buscar faixa.';
+                setTimeout(playerNext, 3000);
+            });
+    } else {
+        playerLoad(item.videoId, item.titulo, item.playlistId, 0);
+    }
 }
 
 function playerPlayUrlNow() {

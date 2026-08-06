@@ -1,0 +1,1 @@
+ALTER TABLE musica ADD COLUMN oculta_da_biblioteca BOOLEAN DEFAULT FALSE;

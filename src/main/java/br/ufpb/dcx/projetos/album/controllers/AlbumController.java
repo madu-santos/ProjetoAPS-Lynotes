@@ -4,6 +4,7 @@ import br.ufpb.dcx.projetos.album.dto.AlbumDTO;
 import br.ufpb.dcx.projetos.album.models.Album;
 import br.ufpb.dcx.projetos.album.services.AlbumService;
 import br.ufpb.dcx.projetos.album.views.AlbumDTOView;
+import br.ufpb.dcx.projetos.musica.services.MusicaService;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import org.slf4j.Logger;
@@ -26,10 +27,12 @@ public final class AlbumController {
 
     private final AlbumService service;
     private final br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService;
+    private final MusicaService musicaService;
 
-    public AlbumController(AlbumService service, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
+    public AlbumController(AlbumService service, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService, MusicaService musicaService) {
         this.service = service;
         this.comunidadeService = comunidadeService;
+        this.musicaService = musicaService;
     }
 
     @io.javalin.openapi.OpenApi(
@@ -82,6 +85,11 @@ public final class AlbumController {
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
             Album album = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId, dto.youtubeId(), dto.capaUrl());
             service.save(album, usuarioId);
+            
+            if (dto.youtubeId() != null && dto.youtubeId().startsWith("itunes_album_")) {
+                String collectionId = dto.youtubeId().replace("itunes_album_", "");
+                musicaService.importarFaixasAlbumItunes(collectionId, album.getId(), usuarioId, album.getCapaUrl());
+            }
             
             String compartilhar = ctx.formParam("compartilharComunidade");
             String mensagem = ctx.formParam("mensagemComunidade");
@@ -163,6 +171,11 @@ public final class AlbumController {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         service.deleteById(id, usuarioId);
         redirecionarParaListagem(ctx);
+    }
+
+    public void listarFaixasApi(Context ctx) {
+        String id = ctx.pathParam("id");
+        ctx.json(musicaService.findByAlbumId(id));
     }
 
     private AlbumDTO extrairFormulario(Context ctx) {

@@ -13,10 +13,10 @@ public final class AlbumModule {
     private AlbumModule() {
     }
 
-    public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
+    public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService, br.ufpb.dcx.projetos.musica.services.MusicaService musicaService) {
         AlbumRepository albumRepository = new AlbumDbRepository(connectionFactory);
         AlbumService albumService = new AlbumService(albumRepository);
-        AlbumController controller = new AlbumController(albumService, comunidadeService);
+        AlbumController controller = new AlbumController(albumService, comunidadeService, musicaService);
 
         app.get("/albums", controller::listar, Role.USER);
         app.get("/albums/novo", controller::exibirCadastro, Role.USER);
@@ -24,5 +24,6 @@ public final class AlbumModule {
         app.get("/albums/{id}/editar", controller::exibirEdicao, Role.USER);
         app.post("/albums/{id}", controller::atualizar, Role.USER);
         app.post("/albums/{id}/excluir", controller::excluir, Role.USER);
+        app.get("/api/albums/{id}/faixas", controller::listarFaixasApi);
     }
 }
