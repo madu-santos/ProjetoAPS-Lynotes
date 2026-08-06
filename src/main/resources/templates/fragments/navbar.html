@@ -146,6 +146,140 @@
         <button class="sidebar-toggle-tab" id="sidebar-toggle-btn" type="button" onclick="toggleSidebar()" title="Ocultar/Mostrar Menu">
             <span class="sidebar-toggle-icon">&#9664;</span>
         </button>
+
+        <!-- Custom Cyber Confirmation Modal -->
+        <div class="modal fade" id="customConfirmModal" tabindex="-1" aria-hidden="true" style="z-index: 1065;">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-darker border-secondary shadow-lg" style="border-radius: 20px; box-shadow: 0 0 30px rgba(138, 43, 226, 0.25);">
+              <div class="modal-header border-bottom border-secondary border-opacity-25 py-3">
+                <h5 class="modal-title text-white fw-bold d-flex align-items-center gap-2" id="customConfirmTitle">
+                  <i class="bi bi-exclamation-triangle text-purple fs-4"></i> Confirmar Ação
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body text-light py-4" id="customConfirmMessage" style="font-size: 1.05rem;">
+                Tem certeza que deseja prosseguir?
+              </div>
+              <div class="modal-footer border-top border-secondary border-opacity-25 py-3" id="customConfirmFooter">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" id="customConfirmBtn">Confirmar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toast Notifications Container -->
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;" id="toastContainer"></div>
+
+        <script>
+            // Global Toast Notification System
+            window.exibirToast = function(mensagem, tipo = 'success') {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
+                
+                const toast = document.createElement('div');
+                toast.className = `toast align-items-center text-white border-0 shadow-lg show mb-2`;
+                toast.style.background = tipo === 'success' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                toast.style.borderRadius = '14px';
+                toast.style.backdropFilter = 'blur(10px)';
+                
+                toast.innerHTML = `
+                  <div class="d-flex p-3 align-items-center">
+                    <div class="toast-body fw-bold d-flex align-items-center gap-2">
+                      <i class="bi ${tipo === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} fs-5"></i>
+                      ${mensagem}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white m-auto me-2" data-bs-dismiss="toast" aria-label="Close"></button>
+                  </div>
+                `;
+                
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            };
+
+            // Custom Confirmation Modal Helper
+            window.confirmarExclusaoCustom = function(formElement, titulo, mensagem, opacaoApagarCatalogo = false) {
+                const modalEl = document.getElementById('customConfirmModal');
+                if (!modalEl) {
+                    return confirm(mensagem);
+                }
+                
+                const titleEl = document.getElementById('customConfirmTitle');
+                const msgEl = document.getElementById('customConfirmMessage');
+                const footerEl = document.getElementById('customConfirmFooter');
+                
+                titleEl.innerHTML = `<i class="bi bi-exclamation-triangle text-purple fs-4"></i> ${titulo}`;
+                msgEl.innerHTML = mensagem;
+                
+                const bootstrapModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                
+                if (opacaoApagarCatalogo) {
+                    footerEl.innerHTML = `
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-outline-purple rounded-pill px-3" id="btnApenasRemover">Apenas remover da playlist</button>
+                        <button type="button" class="btn btn-danger rounded-pill px-3 fw-bold" id="btnApagarTudo">Apagar de Tudo (Catálogo e Playlist)</button>
+                    `;
+                    
+                    document.getElementById('btnApenasRemover').onclick = function() {
+                        formElement.action = formElement.action.split('?')[0] + "?apagarMusica=false";
+                        bootstrapModal.hide();
+                        if (typeof formElement.requestSubmit === 'function') {
+                            formElement.requestSubmit();
+                        } else {
+                            formElement.submit();
+                        }
+                    };
+                    
+                    document.getElementById('btnApagarTudo').onclick = function() {
+                        bootstrapModal.hide();
+                        window.confirmarExclusaoCustom(formElement, "Excluir Música permanentemente?", "Tem certeza absoluta que deseja excluir esta música do seu catálogo permanentemente? Esta ação é definitiva.", false);
+                    };
+                } else {
+                    footerEl.innerHTML = `
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" id="customConfirmBtn">Confirmar</button>
+                    `;
+                    
+                    document.getElementById('customConfirmBtn').onclick = function() {
+                        bootstrapModal.hide();
+                        if (typeof formElement.requestSubmit === 'function') {
+                            formElement.requestSubmit();
+                        } else {
+                            formElement.submit();
+                        }
+                    };
+                }
+                
+                bootstrapModal.show();
+                return false;
+            };
+
+            // URL Parameters success/error automatic toast notifications
+            window.addEventListener('DOMContentLoaded', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('sucesso')) {
+                    const msg = urlParams.get('sucesso');
+                    window.exibirToast(msg ? decodeURIComponent(msg) : "Operação realizada com sucesso!", "success");
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+                if (urlParams.has('erro')) {
+                    const msg = urlParams.get('erro');
+                    window.exibirToast(msg ? decodeURIComponent(msg) : "Ocorreu um erro.", "danger");
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+                if (urlParams.has('excluido')) {
+                    window.exibirToast("Conta excluída com sucesso.", "success");
+                    const newUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, newUrl);
+                }
+            });
+        </script>
     </div>
 </body>
 </html>

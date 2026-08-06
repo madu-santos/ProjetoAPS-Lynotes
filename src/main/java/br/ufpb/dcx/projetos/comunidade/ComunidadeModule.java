@@ -8,7 +8,10 @@ import io.javalin.Javalin;
 
 public class ComunidadeModule {
 
-    public static void registrar(Javalin app, ConnectionFactory factory, br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService) {
+    public static void registrar(Javalin app, ConnectionFactory factory, br.ufpb.dcx.projetos.login.services.UsuarioService usuarioService,
+                                 br.ufpb.dcx.projetos.musica.services.MusicaService musicaService,
+                                 br.ufpb.dcx.projetos.album.services.AlbumService albumService,
+                                 br.ufpb.dcx.projetos.artista.services.ArtistaService artistaService) {
         var repo = new ComunidadeDbRepository(factory);
         var service = new ComunidadeService(repo);
 
@@ -26,7 +29,7 @@ public class ComunidadeModule {
             }
         });
 
-        var controller = new ComunidadeController(service, usuarioService);
+        var controller = new ComunidadeController(service, usuarioService, musicaService, albumService, artistaService);
         controller.registrarRotas(app);
     }
 }

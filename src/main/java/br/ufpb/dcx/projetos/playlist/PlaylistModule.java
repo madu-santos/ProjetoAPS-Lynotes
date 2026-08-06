@@ -13,10 +13,10 @@ public final class PlaylistModule {
     private PlaylistModule() {
     }
 
-    public static void registrar(Javalin app, ConnectionFactory connectionFactory) {
+    public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.musica.services.MusicaService musicaService) {
         PlaylistRepository playlistRepository = new PlaylistDbRepository(connectionFactory);
         PlaylistService playlistService = new PlaylistService(playlistRepository);
-        PlaylistController controller = new PlaylistController(playlistService);
+        PlaylistController controller = new PlaylistController(playlistService, musicaService);
         
         app.get("/playlists", controller::listar, Role.USER);
         app.get("/playlists/new", controller::exibirFormularioCriacao, Role.USER);

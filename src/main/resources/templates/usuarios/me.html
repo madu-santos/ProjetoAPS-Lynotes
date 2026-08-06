@@ -72,11 +72,16 @@
         </div>
         <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
 
-        <!-- Abas de Navegação (Meu Acervo / Editar Perfil) -->
+        <!-- Abas de Navegação (Meu Acervo / Minhas Publicações / Editar Perfil) -->
         <ul class="nav nav-pills mb-4 gap-2" id="perfilTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active px-4 py-2 rounded-pill fw-bold" id="acervo-tab" data-bs-toggle="tab" data-bs-target="#acervo-pane" type="button" role="tab">
                     <i class="bi bi-person-badge-fill me-2"></i> Visualizar Perfil & Resenhas
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-4 py-2 rounded-pill fw-bold" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts-pane" type="button" role="tab">
+                    <i class="bi bi-chat-square-text-fill me-2"></i> Minhas Publicações
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -138,7 +143,51 @@
                 </div>
             </div>
 
-            <!-- ABA 2: EDITAR PERFIL -->
+            <!-- ABA 2: MINHAS PUBLICAÇÕES -->
+            <div class="tab-pane fade" id="posts-pane" role="tabpanel">
+                <div class="mb-5">
+                    <h4 class="text-white fw-bold mb-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-chat-square-text-fill text-purple"></i> Suas Publicações na Comunidade
+                    </h4>
+
+                    <div class="alert alert-dark border-purple text-secondary text-center p-4 rounded-4" th:if="${meusPosts == null or meusPosts.isEmpty()}">
+                        Você ainda não fez nenhuma publicação ou postagem.
+                    </div>
+
+                    <div class="music-card-cyber p-4 mb-3" th:each="post : ${meusPosts}" th:unless="${meusPosts == null or meusPosts.isEmpty()}">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-purple text-white fw-bold d-flex align-items-center justify-content-center me-3 shadow" style="width: 44px; height: 44px;" th:text="${#strings.substring(post.usuarioNome, 0, 1).toUpperCase()}">U</div>
+                                <div>
+                                    <span class="fw-bold text-white fs-5" th:text="${post.usuarioNome}"></span>
+                                    <div class="text-secondary small" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Post?', 'Tem certeza que deseja excluir esta publicação?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <p class="card-text text-break mb-3 text-light" style="white-space: pre-wrap; font-size: 1.05rem;" th:text="${post.conteudo}"></p>
+
+                        <!-- Interações (Estrelar) -->
+                        <div class="d-flex align-items-center gap-3 pt-3 border-top border-secondary border-opacity-10">
+                            <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" hx-boost="false" class="m-0">
+                                <button type="submit" class="btn btn-sm rounded-pill px-3 d-flex align-items-center gap-1 btn-outline-purple" th:classappend="${post.estreladoPorMim} ? 'bg-purple text-white fw-bold' : ''">
+                                    <i class="bi" th:classappend="${post.estreladoPorMim} ? 'bi-star-fill' : 'bi-star'"></i>
+                                    <span th:text="${post.qtdEstrelas}"></span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 3: EDITAR PERFIL -->
             <div class="tab-pane fade" id="editar-pane" role="tabpanel">
                 <div class="music-card-cyber p-4 p-md-5">
                     <h4 class="text-white fw-bold mb-4">Atualizar Dados do Perfil</h4>
@@ -225,7 +274,7 @@
                 <div class="music-card-cyber border border-danger border-opacity-50 p-4 mt-5">
                     <h5 class="fw-bold text-danger mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i> Excluir Conta</h5>
                     <p class="text-secondary small mb-3">Sua conta e todas as resenhas salvas serão apagadas permanentemente.</p>
-                    <form method="post" action="/usuarios/me/excluir" hx-boost="false" onsubmit="return confirm('Tem certeza absoluta que deseja excluir a sua conta? Esta ação é definitiva.');">
+                    <form method="post" action="/usuarios/me/excluir" hx-boost="false" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Conta?', 'Tem certeza absoluta que deseja excluir a sua conta? Esta ação é definitiva e irreversível.');">
                         <button class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-bold" type="submit">
                             Excluir Minha Conta
                         </button>

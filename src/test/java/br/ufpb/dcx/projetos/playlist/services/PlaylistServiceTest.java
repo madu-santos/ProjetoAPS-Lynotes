@@ -82,7 +82,7 @@ class PlaylistServiceTest {
 
     @Test
     void naoDeveExcluirPlaylistOcultaPrincipal() {
-        Playlist playlist = Playlist.novo("Músicas do seu catálogo", "user123", true);
+        Playlist playlist = Playlist.novo("Músicas Catalogadas", "user123", true);
         when(playlistRepository.findById(playlist.getId())).thenReturn(Optional.of(playlist));
 
         assertThrows(IllegalArgumentException.class, () -> {

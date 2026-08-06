@@ -34,10 +34,15 @@ public final class MusicaModule {
         
         app.get("/", controller::exibirHomeOuLanding, Role.ANYONE);
         app.get("/musicas", controller::listar, Role.USER);
+        app.get("/musicas/novo", controller::exibirCadastro, Role.USER);
         app.get("/musicas/new", controller::exibirCadastro, Role.USER);
         app.post("/musicas", controller::cadastrar, Role.USER);
         app.get("/musicas/edit/{id}", controller::exibirEdicao, Role.USER);
+        app.get("/musicas/{id}/editar", controller::exibirEdicao, Role.USER);
         app.post("/musicas/edit/{id}", controller::atualizar, Role.USER);
+        app.post("/musicas/{id}", controller::atualizar, Role.USER);
         app.post("/musicas/{id}/delete", controller::excluir, Role.USER);
+        app.post("/musicas/{id}/excluir", controller::excluir, Role.USER);
+        app.post("/api/musicas/{id}/youtube-id", controller::atualizarYoutubeId, Role.USER);
     }
 }

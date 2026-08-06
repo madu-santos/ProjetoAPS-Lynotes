@@ -178,8 +178,9 @@ class UsuarioControllerTest {
             try (var resposta = client.get("/usuarios/" + usuario.getId())) {
                 assertEquals(200, resposta.code());
                 String html = resposta.body().string();
-                assertTrue(html.contains("Catálogo de Maria"));
-                assertTrue(html.contains("Este catálogo está vazio"));
+                assertTrue(html.contains("Maria"));
+                assertTrue(html.contains("Catálogo"));
+                assertTrue(html.contains("Este usuário ainda não catalogou músicas"));
             }
         });
     }

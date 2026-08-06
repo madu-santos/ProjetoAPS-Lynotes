@@ -29,6 +29,10 @@ public final class AlbumController {
     private final br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService;
     private final MusicaService musicaService;
 
+    public AlbumController(AlbumService service, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
+        this(service, comunidadeService, null);
+    }
+
     public AlbumController(AlbumService service, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService, MusicaService musicaService) {
         this.service = service;
         this.comunidadeService = comunidadeService;
@@ -110,6 +114,20 @@ public final class AlbumController {
             ctx.status(HttpStatus.UNPROCESSABLE_CONTENT);
             renderizarFormulario(ctx, AlbumDTOView.cadastro(dto), e.getMessage());
         }
+    }
+
+    public void exibirDetalhes(Context ctx) {
+        String id = ctx.pathParam("id");
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        Album album = service.findById(id, usuarioId)
+                .orElseThrow(() -> new io.javalin.http.NotFoundResponse("Álbum não encontrado"));
+        List<br.ufpb.dcx.projetos.musica.models.Musica> faixas = musicaService != null ? musicaService.findByAlbumId(id) : java.util.Collections.emptyList();
+
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("album", album);
+        modelo.put("faixas", faixas);
+        ctx.render("albums/detalhes", modelo);
     }
 
     public void exibirEdicao(Context ctx) {

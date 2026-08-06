@@ -40,7 +40,7 @@
                             </div>
                         </div>
                         <div class="d-flex gap-1" th:if="${usuarioLogadoId == post.usuarioId}">
-                            <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirm('Tem certeza que deseja excluir este post?');">
+                            <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Post?', 'Tem certeza que deseja excluir esta publicação?');">
                                 <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Excluir post">
                                     <i class="bi bi-trash"></i>
                                 </button>
@@ -99,7 +99,7 @@
                             </div>
                         </div>
                         <div th:if="${usuarioLogadoId == comentario.usuarioId}">
-                            <form th:action="@{'/comunidade/comentario/' + ${comentario.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirm('Excluir este comentário?');" class="m-0">
+                            <form th:action="@{'/comunidade/comentario/' + ${comentario.id} + '/excluir'}" method="post" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Comentário?', 'Tem certeza que deseja excluir este comentário?');" class="m-0">
                                 <input type="hidden" name="postId" th:value="${post.id}" />
                                 <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Excluir comentário">
                                     <i class="bi bi-trash"></i>

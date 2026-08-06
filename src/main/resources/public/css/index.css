@@ -1332,7 +1332,7 @@ thead th {
 
 /* === Lynotes Music Library Redesign (Vivid Nocturne / Cyberpunk Purple) === */
 .library-bg {
-    background-color: #0F0F1A !important;
+    background-color: #000000 !important;
     min-height: 100vh;
 }
 
@@ -1358,6 +1358,7 @@ thead th {
     text-decoration: none;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
 }
 .btn-add-music-glow:hover {
@@ -1417,6 +1418,11 @@ thead th {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: relative;
     overflow: visible;
+}
+.music-card-cyber:hover,
+.music-card-cyber:focus-within,
+.music-card-cyber:has(.show) {
+    z-index: 10;
 }
 .music-card-cyber:hover {
     transform: translateY(-6px);
@@ -1547,11 +1553,17 @@ thead th {
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 12px 16px;
-    padding-right: 60px !important; /* Espaço garantido para o botão */
+    padding-right: 100px !important; /* Espaço garantido para os botões */
     transition: all 0.25s ease;
     text-decoration: none;
     color: #ffffff;
     position: relative;
+    overflow: visible;
+}
+.playlist-card-horizontal:hover,
+.playlist-card-horizontal:focus-within,
+.playlist-card-horizontal:has(.show) {
+    z-index: 10;
 }
 .playlist-card-horizontal:hover {
     background: #23233D;
@@ -1585,7 +1597,94 @@ thead th {
     transform: translateY(-50%);
     transition: transform 0.2s ease, background 0.2s ease;
 }
+.playlist-dropdown-btn-mini {
+    position: absolute;
+    right: 56px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
 .playlist-card-horizontal:hover .playlist-play-btn-mini {
     transform: translateY(-50%) scale(1.1);
     background: #A020F0;
 }
+
+/* --- ESTILO ESTÉTICO DE LOGIN E CADASTRO --- */
+.auth-container {
+    min-height: 100vh;
+    background: radial-gradient(circle at 50% 50%, #150b24 0%, #000000 100%) fixed !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+.auth-container::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(138, 43, 226, 0.15) 0%, rgba(138, 43, 226, 0) 70%);
+    top: 15%;
+    left: 20%;
+    z-index: 1;
+}
+.auth-container::after {
+    content: '';
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(76, 161, 175, 0.1) 0%, rgba(76, 161, 175, 0) 70%);
+    bottom: 15%;
+    right: 20%;
+    z-index: 1;
+}
+.auth-card {
+    background: rgba(26, 26, 46, 0.45) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(138, 43, 226, 0.18) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(138, 43, 226, 0.12) !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    z-index: 5;
+}
+.auth-card:hover {
+    border-color: rgba(138, 43, 226, 0.35) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 35px rgba(138, 43, 226, 0.22) !important;
+}
+.auth-input-group {
+    position: relative;
+}
+.auth-input-group .form-control {
+    background: rgba(15, 15, 26, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    border-radius: 14px !important;
+    padding: 12px 16px 12px 48px !important;
+    transition: all 0.25s ease !important;
+}
+.auth-input-group .form-control:focus {
+    border-color: #8A2BE2 !important;
+    box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.25) !important;
+    background: rgba(15, 15, 26, 0.75) !important;
+}
+.auth-icon {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    color: #8A2BE2;
+    font-size: 1.15rem;
+    z-index: 10;
+    pointer-events: none;
+}
+.auth-title {
+    background: linear-gradient(135deg, #a78bfa 0%, #4ca1af 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+}
+

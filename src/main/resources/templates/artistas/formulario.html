@@ -32,7 +32,7 @@
 
                     <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
 
-                    <form method="post" th:action="${form.acao}" hx-boost="false">
+                    <form method="post" th:action="${form.acao}">
                         
                         <!-- Pesquisa no YouTube (Criar) -->
                         <div th:if="${!form.edicao}" class="mb-4 p-4 rounded-4 border border-purple bg-darker shadow">

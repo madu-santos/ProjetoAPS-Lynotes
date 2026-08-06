@@ -24,53 +24,87 @@
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 
-                <!-- Playlist Header Hero Card -->
-                <div class="music-card-cyber p-4 p-md-5 mb-4">
-                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
-                        <div>
-                            <div class="d-flex align-items-center gap-3 mb-2">
-                                <h1 class="glowing-title-library mb-0" th:text="${playlist.nome}">Nome da Playlist</h1>
-                                <span class="badge bg-purple rounded-pill px-3 py-1" th:if="${playlist.oculta}">Oculta</span>
+                <!-- Back link -->
+                <div class="mb-3">
+                    <a href="/musicas" class="text-secondary text-decoration-none hover-purple small">&larr; Voltar para Músicas</a>
+                </div>
+
+                <!-- Playlist Header Hero Card (Delicate and Sleek) -->
+                <div class="music-card-cyber p-3 rounded-4 mb-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3 overflow-hidden">
+                            <div class="shadow d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; min-width: 56px; background-color: #B57CFF; color: #000000; border-radius: 12px !important;">
+                                <i class="bi bi-collection-play fs-3"></i>
                             </div>
-                            <p class="text-secondary mb-0">Adicione e ouça faixas do YouTube diretamente no mini-player.</p>
+                            <div class="overflow-hidden">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <h2 class="fw-bold text-white mb-0 fs-4 text-truncate" th:text="${playlist.nome}">Nome da Playlist</h2>
+                                    <span class="badge bg-purple rounded-pill px-2 py-0.5 small" th:if="${playlist.oculta}" style="font-size: 0.75rem;">Oculta</span>
+                                </div>
+                                <p class="text-secondary small mb-0 mt-1">Adicione e ouça faixas do YouTube diretamente no mini-player.</p>
+                            </div>
                         </div>
 
-                        <div class="d-flex gap-2">
-                            <a class="btn btn-outline-purple btn-sm rounded-pill px-3" th:href="${'/playlists/' + playlist.id + '/editar'}" th:if="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
-                                <i class="bi bi-pencil-fill me-1"></i> Editar
-                            </a>
-                            <form method="post" th:action="${'/playlists/' + playlist.id + '/excluir'}" th:if="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}" onsubmit="return confirm('Excluir esta playlist?');" class="m-0">
-                                <button class="btn btn-outline-danger btn-sm rounded-pill px-3" type="submit">
-                                    <i class="bi bi-trash-fill me-1"></i> Excluir
-                                </button>
-                            </form>
-                            <a class="btn btn-outline-secondary btn-sm rounded-pill px-3" href="/musicas">Voltar</a>
+                        <!-- Dropdown 3 dots for Playlist Actions -->
+                        <div class="dropdown" th:if="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
+                            <button class="btn btn-link text-secondary p-2 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções da Playlist">
+                                <i class="bi bi-three-dots-vertical fs-5"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
+                                <li>
+                                    <a class="dropdown-item text-white" th:href="${'/playlists/' + playlist.id + '/editar'}">
+                                        <i class="bi bi-pencil me-2 text-purple"></i>Editar
+                                    </a>
+                                </li>
+                                <li>
+                                    <form method="post" 
+                                          th:action="${'/playlists/' + playlist.id + '/excluir'}" 
+                                          th:data-nome="${playlist.nome}"
+                                          onsubmit="return confirmarExclusaoCustom(this, 'Excluir Playlist?', 'Tem certeza que deseja excluir a playlist &quot;' + this.getAttribute('data-nome') + '&quot;?');" 
+                                          class="m-0">
+                                        <button class="dropdown-item text-danger" type="submit">
+                                            <i class="bi bi-trash me-2"></i>Excluir
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <!-- Formulário: Adicionar Faixa por Link -->
+                <!-- Formulário: Adicionar Faixa por Pesquisa do YouTube -->
                 <div class="music-card-cyber p-4 mb-4">
                     <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
-                        <i class="bi bi-plus-circle-fill text-purple"></i> Adicionar Faixa por Link do YouTube
+                        <i class="bi bi-youtube text-danger fs-4"></i> Adicionar Faixa do YouTube
                     </h5>
                     <div class="alert alert-danger rounded-4 mb-3" th:if="${erro}" th:text="${erro}"></div>
-                    <form method="post" th:action="${'/playlists/' + playlist.id + '/items'}" hx-boost="false" class="row g-2 align-items-center">
-                        <div class="col-md-9">
-                            <input class="form-control glass-search-input bg-dark border-secondary p-3 text-white" 
-                                   type="url" 
-                                   name="url" 
-                                   placeholder="https://www.youtube.com/watch?v=..." 
-                                   required
-                                   autocomplete="off">
-                        </div>
-                        <div class="col-md-3">
-                            <button class="btn-add-music-glow w-100 py-3" type="submit">
-                                <i class="bi bi-plus-lg me-1"></i> Adicionar
-                            </button>
-                        </div>
-                    </form>
+                    
+                    <div class="position-relative">
+                        <input type="text" id="ytQuery" class="form-control glass-search-input bg-dark text-white border-secondary pe-5 p-3" placeholder="Pesquise o título da música ou artista..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="window.debounceSearchYT('MUSICA')" onkeydown="window.handleKeyNav(event, 'MUSICA')">
+                        <button type="button" class="btn text-purple position-absolute top-50 end-0 translate-middle-y me-2 p-1 border-0" onclick="window.buscarYT('MUSICA')" title="Buscar no YouTube">
+                            <i class="bi bi-search fs-5 text-purple"></i>
+                        </button>
+                    </div>
+
+                    <!-- Spinner -->
+                    <div id="ytSpinner" class="text-center py-3 d-none">
+                        <div class="spinner-border spinner-border-sm text-purple" role="status"></div>
+                        <span class="text-secondary small ms-2">Buscando no YouTube...</span>
+                    </div>
+
+                    <!-- Resultados -->
+                    <div id="ytResults" class="d-flex flex-column gap-2 mt-3 overflow-auto" style="max-height: 250px;"></div>
                 </div>
+
+                <!-- Formulário Oculto para Envio -->
+                <form id="formAdicionarItem" method="post" th:action="${'/playlists/' + playlist.id + '/items'}" hx-boost="false" style="display:none;">
+                    <input type="hidden" id="titulo" name="titulo">
+                    <input type="hidden" id="artista" name="artista">
+                    <input type="hidden" id="duracaoSegundos" name="duracaoSegundos">
+                    <input type="hidden" id="youtubeUrl" name="youtubeUrl">
+                    <input type="hidden" id="youtubeId" name="youtubeId">
+                    <input type="hidden" id="capaUrl" name="capaUrl">
+                </form>
 
                 <!-- Lista de Faixas / Itens da Playlist -->
                 <div class="music-card-cyber p-4">
@@ -79,7 +113,7 @@
                     </h5>
 
                     <div class="alert alert-dark border-purple text-secondary text-center p-4 rounded-4" th:if="${items == null or items.isEmpty()}">
-                        Nenhuma faixa adicionada nesta playlist ainda. Insira uma URL acima!
+                        Nenhuma faixa adicionada nesta playlist ainda. Pesquise e adicione faixas acima!
                     </div>
 
                     <div class="d-flex flex-column gap-3" th:unless="${items == null or items.isEmpty()}">
@@ -105,8 +139,13 @@
                                     <i class="bi bi-play-fill me-1"></i> Tocar
                                 </button>
                                 
-                                <form method="post" th:action="${'/playlists/' + playlist.id + '/items/' + item.id + '/remover'}" hx-boost="false" class="m-0">
-                                    <button class="btn btn-outline-danger btn-sm rounded-pill px-3" type="submit">
+                                <form method="post" 
+                                      th:action="${'/playlists/' + playlist.id + '/items/' + item.id + '/remover'}" 
+                                      th:data-playlist-nome="${playlist.nome}"
+                                      onsubmit="return confirmarRemocaoItem(this.getAttribute('data-playlist-nome'), this);"
+                                      hx-boost="false" 
+                                      class="m-0">
+                                    <button class="btn btn-outline-danger btn-sm rounded-pill px-3" type="submit" title="Remover Música">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -120,6 +159,130 @@
     </main>
 
 </div>
+
+<script>
+    function confirmarRemocaoItem(playlistNome, formElement) {
+        if (playlistNome === 'Músicas Catalogadas' || playlistNome === 'Músicas do seu catálogo') {
+            return confirmarExclusaoCustom(formElement, "Remover Música?", "Esta música pertence ao seu catálogo de <strong>Músicas Catalogadas</strong>. Escolha como deseja prosseguir:", true);
+        } else {
+            return confirmarExclusaoCustom(formElement, "Remover da Playlist?", "Deseja remover esta música da playlist?", false);
+        }
+    }
+
+    (function() {
+        let searchTimer = null;
+        let itemsList = [];
+        let activeIndex = -1;
+
+        window.debounceSearchYT = function(tipo) {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => window.buscarYT(tipo), 250);
+        };
+
+        window.handleKeyNav = function(e, tipo) {
+            const resultsDiv = document.getElementById('ytResults');
+            if (!resultsDiv || itemsList.length === 0) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    window.buscarYT(tipo);
+                }
+                return;
+            }
+
+            const items = resultsDiv.getElementsByClassName('yt-result-item');
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (activeIndex < items.length - 1) {
+                    if (activeIndex >= 0) items[activeIndex].classList.remove('border-purple');
+                    activeIndex++;
+                    items[activeIndex].classList.add('border-purple');
+                    items[activeIndex].scrollIntoView({ block: 'nearest' });
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (activeIndex > 0) {
+                    items[activeIndex].classList.remove('border-purple');
+                    activeIndex--;
+                    items[activeIndex].classList.add('border-purple');
+                    items[activeIndex].scrollIntoView({ block: 'nearest' });
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (activeIndex >= 0 && activeIndex < items.length) {
+                    window.selecionarItem(activeIndex);
+                } else {
+                    window.buscarYT(tipo);
+                }
+            }
+        };
+
+        window.buscarYT = function(tipo) {
+            const queryInput = document.getElementById('ytQuery');
+            if (!queryInput) return;
+            const query = queryInput.value.trim();
+            const resultsDiv = document.getElementById('ytResults');
+            const spinner = document.getElementById('ytSpinner');
+
+            if (!query) {
+                if (resultsDiv) resultsDiv.innerHTML = '';
+                activeIndex = -1;
+                return;
+            }
+
+            if (spinner) spinner.classList.remove('d-none');
+            if (resultsDiv) resultsDiv.innerHTML = '';
+            activeIndex = -1;
+
+            fetch('/api/youtube/search?q=' + encodeURIComponent(query) + '&tipo=' + tipo)
+                .then(r => r.json())
+                .then(data => {
+                    if (spinner) spinner.classList.add('d-none');
+                    itemsList = data || [];
+                    activeIndex = -1;
+                    if (!resultsDiv) return;
+                    if (itemsList.length === 0) {
+                        resultsDiv.innerHTML = '<div class="text-secondary small p-2">Nenhum resultado encontrado.</div>';
+                        return;
+                    }
+                    resultsDiv.innerHTML = itemsList.map((item, idx) => `
+                        <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark border border-secondary cursor-pointer yt-result-item mb-2" data-index="${idx}" onclick="window.selecionarItem(${idx})">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="${item.capaUrl || '/public/img/default-cover.png'}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
+                                <div>
+                                    <div class="fw-bold text-white small">${escapeHtml(item.titulo)}</div>
+                                    <div class="text-secondary extra-small">${escapeHtml(item.artistaOuCanal)}</div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-purple">Selecionar</button>
+                        </div>
+                    `).join('');
+                })
+                .catch(() => {
+                    if (spinner) spinner.classList.add('d-none');
+                    if (resultsDiv) resultsDiv.innerHTML = '<div class="text-danger small p-2">Erro ao realizar a busca.</div>';
+                });
+        };
+
+        function escapeHtml(text) {
+            return (text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        window.selecionarItem = function(idx) {
+            const item = itemsList[idx];
+            if (!item) return;
+
+            document.getElementById('titulo').value = item.titulo;
+            document.getElementById('artista').value = item.artistaOuCanal;
+            document.getElementById('duracaoSegundos').value = item.duracaoSegundos || '';
+            document.getElementById('youtubeUrl').value = item.youtubeUrl || '';
+            document.getElementById('youtubeId').value = item.youtubeId || '';
+            document.getElementById('capaUrl').value = item.capaUrl || '';
+
+            // Submit form
+            document.getElementById('formAdicionarItem').submit();
+        };
+    })();
+</script>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>
 <script src="/js/player.js?v=3" defer></script>

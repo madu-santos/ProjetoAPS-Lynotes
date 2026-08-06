@@ -19,7 +19,9 @@ public interface ArtistaRepository {
 
     List<Artista> buscar(String termo, String usuarioId);
 
-    Optional<Artista> buscarPorYouTubeId(String youtubeId);
+    default Optional<Artista> buscarPorYouTubeId(String youtubeId) {
+        return Optional.empty();
+    }
 
     List<Artista> listarPendentes();
 

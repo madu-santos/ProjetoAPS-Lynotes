@@ -8,7 +8,9 @@ import br.ufpb.dcx.projetos.infra.database.ConnectionFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class ComunidadeDbRepository {
@@ -250,6 +252,53 @@ public class ComunidadeDbRepository {
         return comentarios;
     }
 
+    public Map<String, List<ComentarioViewDTO>> listarComentariosParaPosts(List<String> postIds) {
+        Map<String, List<ComentarioViewDTO>> resultado = new HashMap<>();
+        if (postIds == null || postIds.isEmpty()) {
+            return resultado;
+        }
+        for (String id : postIds) {
+            resultado.put(id, new ArrayList<>());
+        }
+        
+        StringBuilder sql = new StringBuilder(
+            "SELECT c.id, c.post_id, c.usuario_id, u.nome AS usuario_nome, c.conteudo, c.data_criacao " +
+            "FROM comentario c " +
+            "JOIN usuario u ON c.usuario_id = u.id " +
+            "WHERE c.post_id IN ("
+        );
+        for (int i = 0; i < postIds.size(); i++) {
+            sql.append("?");
+            if (i < postIds.size() - 1) {
+                sql.append(",");
+            }
+        }
+        sql.append(") ORDER BY c.data_criacao ASC");
+
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < postIds.size(); i++) {
+                ps.setString(i + 1, postIds.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String postId = rs.getString("post_id");
+                    resultado.get(postId).add(new ComentarioViewDTO(
+                            rs.getString("id"),
+                            postId,
+                            rs.getString("usuario_id"),
+                            rs.getString("usuario_nome"),
+                            rs.getString("conteudo"),
+                            rs.getTimestamp("data_criacao").toLocalDateTime()
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar comentarios em lote: " + e.getMessage(), e);
+        }
+        return resultado;
+    }
+
 
     public Optional<Comentario> buscarComentarioPorId(String comentarioId) {
         String sql = "SELECT id, post_id, usuario_id, conteudo, data_criacao FROM comentario WHERE id = ?";
@@ -429,6 +478,37 @@ public class ComunidadeDbRepository {
             throw new RuntimeException("Erro ao listar amigos: " + e.getMessage(), e);
         }
         return lista;
+    }
+
+    public List<PostViewDTO> listarFeedPublico(String usuarioLogadoId) {
+        List<PostViewDTO> feed = new ArrayList<>();
+        String sql = "SELECT p.id, p.usuario_id, u.nome AS usuario_nome, u.username AS usuario_username, u.foto_url AS usuario_foto_url, " +
+            "p.conteudo, p.data_criacao, p.tipo, p.musica_id, p.album_id, p.artista_id, " +
+            "(SELECT COUNT(*) FROM post_estrela pe WHERE pe.post_id = p.id) AS qtd_estrelas, " +
+            "(SELECT COUNT(*) FROM comentario c WHERE c.post_id = p.id) AS qtd_comentarios, " +
+            "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim, " +
+            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, " +
+            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, " +
+            "ar.nome AS artista_nome " +
+            "FROM post p " +
+            "JOIN usuario u ON p.usuario_id = u.id " +
+            "LEFT JOIN musica m ON p.musica_id = m.id " +
+            "LEFT JOIN album al ON p.album_id = al.id " +
+            "LEFT JOIN artista ar ON p.artista_id = ar.id " +
+            "ORDER BY p.data_criacao DESC LIMIT 30";
+
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuarioLogadoId != null ? usuarioLogadoId : "");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    feed.add(mapPostView(rs));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar feed público: " + e.getMessage(), e);
+        }
+        return feed;
     }
 
     public boolean temNovosPosts(String usuarioId, java.time.LocalDateTime desde) {

@@ -104,9 +104,9 @@
                                         <i class="bi bi-three-dots fs-5"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
-                                        <li><a class="dropdown-item text-white" th:href="${'/musicas/edit/' + musica.id}"><i class="bi bi-pencil me-2 text-purple"></i>Editar</a></li>
+                                        <li><a class="dropdown-item text-white" th:href="${'/musicas/' + musica.id + '/editar'}"><i class="bi bi-pencil me-2 text-purple"></i>Editar</a></li>
                                         <li>
-                                            <form th:action="@{/musicas/{id}/delete(id=${musica.id})}" method="post" onsubmit="return confirm('Tem certeza que deseja excluir esta música?');">
+                                            <form th:action="${'/musicas/' + musica.id + '/excluir'}" method="post" th:data-titulo="${musica.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Música?', 'Tem certeza que deseja excluir a música &quot;' + this.getAttribute('data-titulo') + '&quot;?');">
                                                 <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
                                             </form>
                                         </li>

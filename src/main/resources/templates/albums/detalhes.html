@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${album.titulo + ' - Álbuns - Lynotes'}">Álbum - Lynotes</title>
+    <!-- Fonte Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="/css/index.css" rel="stylesheet">
+    <link href="/css/player.css" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.11"></script>
+</head>
+<body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
+<div id="app-content">
+
+    <div th:insert="~{fragments/navbar :: navbar('albums')}"></div>
+
+    <main class="spotify-main container py-5">
+        <!-- Botão Voltar -->
+        <div class="mb-4">
+            <a href="/albums" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Voltar para Álbuns
+            </a>
+        </div>
+
+        <!-- Banner / Header do Álbum -->
+        <div class="glass-card p-4 rounded-4 mb-5 shadow-lg position-relative overflow-hidden">
+            <div class="row align-items-center g-4">
+                <div class="col-12 col-md-auto text-center text-md-start">
+                    <div class="music-card-cover-container rounded-4 shadow-lg mx-auto" style="width: 180px; height: 180px;">
+                        <img th:if="${album.capaUrl != null and !album.capaUrl.isBlank()}" th:src="${album.capaUrl}" class="w-100 h-100 object-fit-cover rounded-4" alt="Capa do Álbum">
+                        <div th:unless="${album.capaUrl != null and !album.capaUrl.isBlank()}" class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-secondary rounded-4">
+                            <i class="bi bi-disc fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md">
+                    <span class="badge bg-purple text-white mb-2 px-3 py-1 uppercase tracking-wider small fw-semibold">Álbum</span>
+                    <h1 class="glowing-title-library mb-2 fs-2 fw-bold" th:text="${album.titulo}"></h1>
+                    <p class="text-secondary fs-5 mb-2 fw-medium" th:text="${album.artista}"></p>
+                    
+                    <div class="d-flex flex-wrap align-items-center gap-3 text-secondary small font-monospace mb-4">
+                        <span th:if="${album.anoLancamento != null}"><i class="bi bi-calendar3 me-1"></i> <span th:text="${album.anoLancamento}"></span></span>
+                        <span th:if="${album.nota != null}"><i class="bi bi-star-fill text-warning me-1"></i> <span th:text="${album.nota}"></span> / 5.0</span>
+                        <span><i class="bi bi-music-note-beamed me-1"></i> <span th:text="${#lists.size(faixas)}"></span> faixas</span>
+                    </div>
+
+                    <!-- Ações de Reprodução Principal -->
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <button type="button"
+                                class="btn btn-purple rounded-pill px-4 py-2 d-flex align-items-center gap-2 shadow-lg fw-bold"
+                                th:data-id="${album.id}"
+                                th:data-titulo="${album.titulo}"
+                                onclick="if(typeof playerTocarAlbum === 'function') playerTocarAlbum(this.getAttribute('data-id'), this.getAttribute('data-titulo'));">
+                            <i class="bi bi-play-fill fs-4"></i> Tocar Álbum
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-purple rounded-pill px-4 py-2 d-flex align-items-center gap-2 fw-semibold"
+                                th:data-id="${album.id}"
+                                th:data-titulo="${album.titulo}"
+                                onclick="if(typeof playerTocarAlbumEmOrdemAleatoria === 'function') playerTocarAlbumEmOrdemAleatoria(this.getAttribute('data-id'), this.getAttribute('data-titulo'));">
+                            <i class="bi bi-shuffle fs-5"></i> Ordem Aleatória
+                        </button>
+                        <div class="ms-auto d-flex align-items-center gap-2">
+                            <a class="btn btn-outline-purple btn-sm px-3 rounded-pill" th:href="${'/albums/' + album.id + '/editar'}">
+                                <i class="bi bi-pencil-fill me-1"></i> Editar
+                            </a>
+                            <form method="post" th:action="${'/albums/' + album.id + '/excluir'}" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?');" class="m-0">
+                                <button class="btn btn-outline-danger btn-sm px-3 rounded-pill" type="submit">
+                                    <i class="bi bi-trash-fill me-1"></i> Excluir
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Faixas do Álbum -->
+        <div class="glass-card p-4 rounded-4 shadow-lg">
+            <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                <i class="bi bi-music-note-list text-purple"></i> Músicas do Álbum
+            </h4>
+
+            <div th:if="${#lists.isEmpty(faixas)}" class="alert alert-dark border-secondary text-secondary text-center p-4 rounded-4 mb-0">
+                <i class="bi bi-disc fs-2 mb-2 d-block"></i>
+                Nenhuma faixa encontrada para este álbum ainda.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(faixas)}" class="table-responsive">
+                <table class="table table-dark table-hover align-middle bg-transparent mb-0">
+                    <thead>
+                        <tr class="border-secondary text-secondary small uppercase">
+                            <th scope="col" style="width: 50px;" class="text-center">#</th>
+                            <th scope="col">Título</th>
+                            <th scope="col">Artista</th>
+                            <th scope="col">Gênero</th>
+                            <th scope="col" class="text-center">Duração</th>
+                            <th scope="col" class="text-end" style="width: 140px;">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="faixa, iterStat : ${faixas}" class="border-secondary border-opacity-10">
+                            <td class="text-center font-monospace text-secondary" th:text="${iterStat.count}">1</td>
+                            <td class="fw-semibold text-white" th:text="${faixa.titulo}">Título da Faixa</td>
+                            <td class="text-secondary small" th:text="${faixa.artista}">Artista</td>
+                            <td class="text-secondary small">
+                                <span th:if="${faixa.genero != null and !faixa.genero.isBlank()}" class="badge bg-dark border border-secondary text-secondary rounded-pill px-2 py-1" th:text="${faixa.genero}"></span>
+                            </td>
+                            <td class="text-center font-monospace text-secondary small" th:text="${faixa.duracaoSegundos != null ? (faixa.duracaoSegundos / 60 + ':' + (faixa.duracaoSegundos % 60 < 10 ? '0' : '') + (faixa.duracaoSegundos % 60)) : '--:--'}">0:00</td>
+                            <td class="text-end">
+                                <button type="button"
+                                        class="btn btn-purple btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm"
+                                        style="width: 32px; height: 32px;"
+                                        title="Tocar a partir desta faixa"
+                                        th:data-albid="${album.id}"
+                                        th:data-albtit="${album.titulo}"
+                                        th:data-faixaid="${faixa.id}"
+                                        onclick="if(typeof playerTocarAlbumApartirDe === 'function') playerTocarAlbumApartirDe(this.getAttribute('data-albid'), this.getAttribute('data-albtit'), this.getAttribute('data-faixaid'));">
+                                    <i class="bi bi-play-fill text-white fs-5"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+</div>
+
+<div th:insert="~{fragments/player :: bottom-player}"></div>
+<script src="/js/player.js?v=4" defer></script>
+</body>
+</html>

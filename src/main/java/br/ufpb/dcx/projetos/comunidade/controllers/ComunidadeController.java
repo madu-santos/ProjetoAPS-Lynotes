@@ -56,14 +56,12 @@ public class ComunidadeController {
         ctx.sessionAttribute("comunidadeLastVisited", java.time.LocalDateTime.now());
         ctx.sessionAttribute("novidadesComunidade", false);
 
-        var posts = service.listarFeed(usuarioLogadoId, "seguindo");
+        var posts = service.listarFeedPublico(usuarioLogadoId);
         var amigos = service.listarAmigos(usuarioLogadoId);
         var pedidos = service.listarPedidosRecebidos(usuarioLogadoId);
         
-        var comentarios = new java.util.HashMap<String, java.util.List<br.ufpb.dcx.projetos.comunidade.views.ComentarioViewDTO>>();
-        for (var p : posts) {
-            comentarios.put(p.id(), service.listarComentarios(p.id()));
-        }
+        var postIds = posts.stream().map(PostViewDTO::id).toList();
+        var comentarios = service.listarComentariosParaPosts(postIds);
         
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
@@ -79,12 +77,9 @@ public class ComunidadeController {
         // Carrega os rankings integrados para a aba de Rankings da Comunidade
         if (musicaService != null && albumService != null && artistaService != null) {
             var rankingController = new br.ufpb.dcx.projetos.rankings.RankingController(musicaService, albumService, artistaService);
-            var todasMusicas = musicaService.findAll();
-            var todosAlbuns = albumService.findAllGlobal();
-            var todosArtistas = artistaService.findAllGlobal();
-            modelo.put("topMusicas", todasMusicas);
-            modelo.put("topAlbuns", todosAlbuns);
-            modelo.put("topArtistas", todosArtistas);
+            modelo.put("topMusicas", rankingController.getTopMusicas().stream().limit(10).toList());
+            modelo.put("topAlbuns", rankingController.getTopAlbuns().stream().limit(10).toList());
+            modelo.put("topArtistas", rankingController.getTopArtistas().stream().limit(10).toList());
         }
 
         ctx.sessionAttribute("erroComunidade", null); // limpa a msg

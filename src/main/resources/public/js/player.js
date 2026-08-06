@@ -121,7 +121,7 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
         });
 };
 
-window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa) {
+window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa, startTrackId = null, shuffle = false) {
     if (playerState.collapsed) {
         playerTogglePanel();
     }
@@ -139,26 +139,51 @@ window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa) {
             return;
         }
 
-        // Converte as faixas no formato do player (similar ao formato de itens de playlist)
-        playerState.playlistItems = faixas.map((f, index) => ({
+        // Converte as faixas no formato do player
+        let items = faixas.map((f) => ({
             id: f.id,
             titulo: `${f.artista} - ${f.titulo}`,
             videoId: f.youtubeId || `yt_search_${f.artista}_${f.titulo}`,
             playlistId: albumId
         }));
-        
+
+        if (shuffle) {
+            for (let i = items.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [items[i], items[j]] = [items[j], items[i]];
+            }
+        }
+
+        playerState.playlistItems = items;
         playerState.currentPlaylistId = albumId;
-        playerState.currentIndex = 0;
+
+        let startIdx = 0;
+        if (startTrackId) {
+            const foundIdx = items.findIndex(item => item.id === startTrackId);
+            if (foundIdx !== -1) {
+                startIdx = foundIdx;
+            }
+        }
+        playerState.currentIndex = startIdx;
+
         playerRenderTracks();
         playerSaveState();
         
-        // Toca a primeira faixa
-        playerLoadTrack(playerState.playlistItems[0]);
+        // Toca a faixa selecionada/primeira
+        playerLoadTrack(playerState.playlistItems[startIdx]);
 
     } catch (e) {
         if (currentTitle) currentTitle.textContent = 'Erro ao carregar faixas do álbum.';
         console.error(e);
     }
+};
+
+window.playerTocarAlbumEmOrdemAleatoria = function(albumId, albumTitulo, albumCapa) {
+    return window.playerTocarAlbum(albumId, albumTitulo, albumCapa, null, true);
+};
+
+window.playerTocarAlbumApartirDe = function(albumId, albumTitulo, startTrackId, albumCapa) {
+    return window.playerTocarAlbum(albumId, albumTitulo, albumCapa, startTrackId, false);
 };
 
 // --- Painel retrátil ---
@@ -306,7 +331,7 @@ function playerSeek(event) {
 function onYouTubeIframeAPIReady() {
     ytReady = true;
     const el = document.getElementById('youtube-player');
-    if (!el) return;
+    if (!el || ytPlayer) return;
 
     ytPlayer = new YT.Player('youtube-player', {
         height: '1',
@@ -483,14 +508,21 @@ function playerLoadTrack(item) {
         if (currentTitle) currentTitle.textContent = `Buscando faixa: ${item.titulo}...`;
         
         const searchTerm = encodeURIComponent(item.titulo);
-        fetch('/api/youtube/search?q=' + searchTerm + '&tipo=MUSICA&realVideo=true')
+        fetch('/api/youtube/search?q=' + searchTerm + '&tipo=MUSICA')
             .then(r => r.json())
             .then(data => {
-                if (data && data.length > 0 && data[0].youtubeId && data[0].youtubeId.length === 11 && !data[0].youtubeId.startsWith('yt_')) {
-                    // Atualiza o item para futuras reproduções não precisarem buscar de novo
-                    item.videoId = data[0].youtubeId;
-                    playerSaveState();
-                    playerLoad(item.videoId, item.titulo, item.playlistId, 0);
+                if (data && data.length > 0) {
+                    const resolvedId = data[0].youtubeId;
+                    item.videoId = resolvedId;
+                    playerLoad(resolvedId, item.titulo, item.playlistId, 0);
+                    
+                    if (item.id) {
+                        fetch(`/api/musicas/${item.id}/youtube-id`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ youtubeId: resolvedId })
+                        }).catch(e => console.error('Erro ao salvar youtubeId no banco:', e));
+                    }
                 } else {
                     if (currentTitle) currentTitle.textContent = 'Faixa não encontrada no YouTube.';
                     // Avança para a próxima faixa automaticamente após 3 segundos se falhar
@@ -584,6 +616,28 @@ async function playerFetchPlaylist(playlistId, autoplay) {
     playerSaveState();
 }
 
+async function playerFetchAlbum(albumId, autoplay) {
+    const res = await fetch(`/api/albums/${albumId}/faixas`);
+    if (!res.ok) { playerSetMessage('Falha ao carregar álbum.'); return; }
+
+    const faixas = await res.json();
+    playerState.currentPlaylistId = 'album_' + albumId;
+    playerState.playlistItems     = faixas.map(f => ({
+        id: f.id,
+        videoId: f.youtubeId || `yt_search_${f.artista}_${f.titulo}`,
+        url: f.youtubeUrl || '',
+        titulo: f.titulo,
+        playlistId: 'album_' + albumId
+    }));
+    playerState.currentIndex      = 0;
+    playerRenderTracks();
+
+    if (autoplay && playerState.playlistItems.length) {
+        playerLoadTrack(playerState.playlistItems[0]);
+    }
+    playerSaveState();
+}
+
 async function playerCreatePlaylist(nome) {
     const res = await fetch('/api/playlists', {
         method: 'POST',
@@ -633,6 +687,11 @@ function playerRenderTracks() {
 async function initPlayerModule() {
     const { playlistSelect, container } = playerElements();
     if (!playlistSelect) return;
+
+    if (window.playerModuleInitialized && ytPlayer) {
+        return;
+    }
+    window.playerModuleInitialized = true;
 
     // Restaurar estado do painel (retraído ou não)
     const saved = playerRestoreState();

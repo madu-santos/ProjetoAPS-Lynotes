@@ -13,9 +13,16 @@ import java.util.Map;
 public final class PlaylistController {
 
     private final PlaylistService service;
+    private final br.ufpb.dcx.projetos.musica.services.MusicaService musicaService;
 
     public PlaylistController(PlaylistService service) {
         this.service = service;
+        this.musicaService = null;
+    }
+
+    public PlaylistController(PlaylistService service, br.ufpb.dcx.projetos.musica.services.MusicaService musicaService) {
+        this.service = service;
+        this.musicaService = musicaService;
     }
 
     public void listar(Context ctx) {
@@ -80,21 +87,10 @@ public final class PlaylistController {
         java.util.List<PlaylistItem> sanitized = new java.util.ArrayList<>();
         for (PlaylistItem item : items) {
             String title = item.getTitulo();
-            if (title != null && (title.startsWith("YouTube - yt_") || title.startsWith("YouTube - default"))) {
-                String url = item.getUrl();
-                if (url != null && url.contains("search_query=")) {
-                    try {
-                        int start = url.indexOf("search_query=") + 13;
-                        int end = url.indexOf('&', start);
-                        String query = end > 0 ? url.substring(start, end) : url.substring(start);
-                        String decoded = java.net.URLDecoder.decode(query, java.nio.charset.StandardCharsets.UTF_8);
-                        if (!decoded.isBlank()) {
-                            title = decoded;
-                        }
-                    } catch (Exception e) {
-                        // ignore and keep original
-                    }
-                }
+            if (title == null || title.isBlank()) {
+                title = "Música Sem Título";
+            } else if (title.startsWith("YouTube - ")) {
+                title = title.replace("YouTube - ", "");
             }
             sanitized.add(new PlaylistItem(item.getId(), item.getPlaylistId(), item.getUrl(), item.getVideoId(), title, item.getOrdem(), item.getCriadoEm()));
         }
@@ -116,11 +112,60 @@ public final class PlaylistController {
     public void adicionarItem(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
-        String url = ctx.formParam("url");
+
+        String titulo = ctx.formParam("titulo");
+        String artista = ctx.formParam("artista");
+        String duracaoStr = ctx.formParam("duracaoSegundos");
+        String youtubeUrl = ctx.formParam("youtubeUrl");
+        String youtubeId = ctx.formParam("youtubeId");
+        String capaUrl = ctx.formParam("capaUrl");
 
         try {
-            String videoId = service.extractVideoId(url);
-            service.addItem(playlistId, url, videoId, usuarioId);
+            if (youtubeId != null && !youtubeId.isBlank() && musicaService != null) {
+                // Deduplicate: check if already cataloged
+                boolean jaExiste = musicaService.findByUsuarioId(usuarioId).stream()
+                        .anyMatch(m -> youtubeId.equals(m.getYoutubeId()));
+                if (!jaExiste) {
+                    String musicaId = java.util.UUID.randomUUID().toString();
+                    Integer duracao = null;
+                    if (duracaoStr != null && !duracaoStr.isBlank()) {
+                        try {
+                            duracao = Integer.parseInt(duracaoStr);
+                        } catch (Exception e) {}
+                    }
+                    br.ufpb.dcx.projetos.musica.models.Musica novaMusica = new br.ufpb.dcx.projetos.musica.models.Musica(
+                        musicaId,
+                        titulo,
+                        artista,
+                        "Outros", // Default genre
+                        duracao,
+                        null, // Resenha
+                        null, // Nota
+                        null, // SpotifyUrl
+                        youtubeUrl,
+                        null, // AlbumId
+                        usuarioId,
+                        youtubeId,
+                        capaUrl,
+                        false
+                    );
+                    musicaService.save(novaMusica);
+                }
+
+                // Add to default playlist "Músicas Catalogadas"
+                String defaultPlaylistId = service.findOrCreateHiddenPlaylist(usuarioId).getId();
+                try {
+                    service.addItem(defaultPlaylistId, youtubeUrl, youtubeId, usuarioId);
+                } catch (Exception ignored) {}
+
+                // Add to the current playlist (unless it is already the default playlist)
+                if (!playlistId.equals(defaultPlaylistId)) {
+                    service.addItem(playlistId, youtubeUrl, youtubeId, usuarioId);
+                }
+            } else {
+                throw new IllegalArgumentException("Informações da música incompletas.");
+            }
+
             ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
         } catch (IllegalArgumentException e) {
             Map<String, Object> modelo = new HashMap<>();
@@ -137,8 +182,9 @@ public final class PlaylistController {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
         String itemId = ctx.pathParam("itemId");
+        boolean apagarMusica = "true".equalsIgnoreCase(ctx.queryParam("apagarMusica"));
 
-        service.removeItem(playlistId, itemId, usuarioId);
+        service.removeItem(playlistId, itemId, usuarioId, apagarMusica, musicaService);
         ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
     }
 

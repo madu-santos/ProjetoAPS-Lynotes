@@ -7,6 +7,7 @@ import br.ufpb.dcx.projetos.comunidade.views.ComentarioViewDTO;
 import br.ufpb.dcx.projetos.comunidade.views.PostViewDTO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class ComunidadeService {
@@ -122,12 +123,20 @@ public class ComunidadeService {
         return repository.listarFeed(usuarioLogadoId, filtroUsuarioId);
     }
 
+    public List<PostViewDTO> listarFeedPublico(String usuarioLogadoId) {
+        return repository.listarFeedPublico(usuarioLogadoId);
+    }
+
     public Optional<PostViewDTO> buscarPostView(String postId, String usuarioLogadoId) {
         return repository.buscarPostView(postId, usuarioLogadoId);
     }
     
     public List<ComentarioViewDTO> listarComentarios(String postId) {
         return repository.listarComentarios(postId);
+    }
+
+    public Map<String, List<ComentarioViewDTO>> listarComentariosParaPosts(List<String> postIds) {
+        return repository.listarComentariosParaPosts(postIds);
     }
 
     public void deletarPost(String postId, String usuarioId) {

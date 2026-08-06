@@ -87,6 +87,14 @@
                                 <div class="w-100 rounded shadow d-flex align-items-center justify-content-center" style="aspect-ratio: 1; background-color: #282828; color: #555;">
                                     <i class="bi bi-music-note-beamed fs-1"></i>
                                 </div>
+                                <button type="button" 
+                                        class="btn btn-purple rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm position-absolute" 
+                                        style="width: 40px; height: 40px; right: 10px; bottom: 10px; z-index: 5;"
+                                        title="Tocar Música no Miniplayer"
+                                        th:data-ytid="${item.id}"
+                                        onclick="if(typeof playerLoad === 'function') playerLoad(this.getAttribute('data-ytid'), 'Música', null, 0);">
+                                    <i class="bi bi-play-fill text-white fs-4"></i>
+                                </button>
                             </div>
                             <div class="d-flex flex-column align-items-center text-center">
                                 <h6 class="fw-bold text-white mb-1 w-100 text-truncate" th:text="${item.titulo}"></h6>
@@ -114,6 +122,14 @@
                                 <div class="w-100 rounded shadow d-flex align-items-center justify-content-center" style="aspect-ratio: 1; background-color: #282828; color: #555;">
                                     <i class="bi bi-disc-fill fs-1"></i>
                                 </div>
+                                <button type="button" 
+                                        class="btn btn-purple rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm position-absolute" 
+                                        style="width: 40px; height: 40px; right: 10px; bottom: 10px; z-index: 5;"
+                                        title="Tocar Álbum no Miniplayer"
+                                        th:data-albid="${item.id}"
+                                        onclick="if(typeof playerFetchAlbum === 'function') playerFetchAlbum(this.getAttribute('data-albid'), true);">
+                                    <i class="bi bi-play-fill text-white fs-4"></i>
+                                </button>
                             </div>
                             <div class="d-flex flex-column align-items-center text-center">
                                 <h6 class="fw-bold text-white mb-1 w-100 text-truncate" th:text="${item.titulo}"></h6>

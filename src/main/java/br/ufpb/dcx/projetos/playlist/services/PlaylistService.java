@@ -33,7 +33,7 @@ public class PlaylistService {
     public List<Playlist> findByUsuarioId(String usuarioId) {
         validarUsuarioId(usuarioId);
         return playlistRepository.findByUsuarioId(usuarioId).stream()
-                .filter(playlist -> !playlist.isOculta())
+                .filter(playlist -> !playlist.isOculta() || "Músicas Catalogadas".equalsIgnoreCase(playlist.getNome()) || "Músicas do seu catálogo".equalsIgnoreCase(playlist.getNome()))
                 .toList();
     }
 
@@ -144,6 +144,10 @@ public class PlaylistService {
     }
 
     public void removeItem(String playlistId, String itemId, String usuarioId) {
+        removeItem(playlistId, itemId, usuarioId, false, null);
+    }
+
+    public void removeItem(String playlistId, String itemId, String usuarioId, boolean deleteFromCatalog, br.ufpb.dcx.projetos.musica.services.MusicaService musicaService) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .filter(p -> p.getUsuarioId().equals(usuarioId))
                 .orElseThrow(() -> new ResourceNotFoundException("Playlist não encontrada."));
@@ -154,6 +158,13 @@ public class PlaylistService {
 
         if (!playlistRepository.deleteItem(itemId)) {
             throw new ResourceNotFoundException("Falha ao remover item da playlist.");
+        }
+
+        if (deleteFromCatalog && musicaService != null && item.getVideoId() != null) {
+            musicaService.findByUsuarioId(usuarioId).stream()
+                    .filter(m -> item.getVideoId().equals(m.getYoutubeId()))
+                    .findFirst()
+                    .ifPresent(m -> musicaService.deleteById(m.getId()));
         }
     }
 

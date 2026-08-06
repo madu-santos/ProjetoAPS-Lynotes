@@ -64,12 +64,12 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
-                                    <form th:action="@{/admin/verificacoes/{id}/aprovar(id=${artista.id})}" method="post" hx-boost="false" class="m-0">
+                                    <form th:action="@{/admin/verificacoes/{id}/aprovar(id=${artista.id})}" method="post" class="m-0">
                                         <button type="submit" class="btn btn-outline-success btn-sm rounded-pill px-3" title="Aprovar">
                                             <i class="bi bi-check-lg me-1"></i> Aprovar
                                         </button>
                                     </form>
-                                    <form th:action="@{/admin/verificacoes/{id}/rejeitar(id=${artista.id})}" method="post" hx-boost="false" class="m-0">
+                                    <form th:action="@{/admin/verificacoes/{id}/rejeitar(id=${artista.id})}" method="post" class="m-0">
                                         <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Rejeitar">
                                             <i class="bi bi-x-lg me-1"></i> Rejeitar
                                         </button>

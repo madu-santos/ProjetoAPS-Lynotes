@@ -62,26 +62,28 @@
                 <div class="music-card-cyber h-100 d-flex flex-column justify-content-between p-3">
                     <div class="position-relative" style="group">
                         <!-- Capa do Álbum -->
-                        <div class="music-card-cover-container mb-3 position-relative">
-                            <img th:if="${album.capaUrl != null and !album.capaUrl.isBlank()}" th:src="${album.capaUrl}" class="music-card-cover" alt="Capa do Álbum">
-                            <div th:unless="${album.capaUrl != null and !album.capaUrl.isBlank()}" class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-secondary">
-                                <i class="bi bi-disc fs-1"></i>
+                        <a th:href="${'/albums/' + album.id}" class="text-decoration-none text-white d-block">
+                            <div class="music-card-cover-container mb-3 position-relative">
+                                <img th:if="${album.capaUrl != null and !album.capaUrl.isBlank()}" th:src="${album.capaUrl}" class="music-card-cover" alt="Capa do Álbum">
+                                <div th:unless="${album.capaUrl != null and !album.capaUrl.isBlank()}" class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-secondary">
+                                    <i class="bi bi-disc fs-1"></i>
+                                </div>
+                                <!-- Botão de Play Overlay -->
+                                <div class="music-card-play-overlay">
+                                    <button class="btn btn-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center"
+                                            style="width: 48px; height: 48px;"
+                                            th:data-id="${album.id}"
+                                            th:data-titulo="${album.titulo}"
+                                            th:data-capa="${album.capaUrl}"
+                                            onclick="if(typeof playerTocarAlbum === 'function') { event.preventDefault(); event.stopPropagation(); playerTocarAlbum(this.getAttribute('data-id'), this.getAttribute('data-titulo'), this.getAttribute('data-capa')); }">
+                                        <i class="bi bi-play-fill fs-3"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <!-- Botão de Play Overlay -->
-                            <div class="music-card-play-overlay">
-                                <button class="btn btn-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center"
-                                        style="width: 48px; height: 48px;"
-                                        th:data-id="${album.id}"
-                                        th:data-titulo="${album.titulo}"
-                                        th:data-capa="${album.capaUrl}"
-                                        onclick="if(typeof playerTocarAlbum === 'function') { event.preventDefault(); playerTocarAlbum(this.getAttribute('data-id'), this.getAttribute('data-titulo'), this.getAttribute('data-capa')); }">
-                                    <i class="bi bi-play-fill fs-3"></i>
-                                </button>
-                            </div>
-                        </div>
 
-                        <!-- Informações do Álbum -->
-                        <h5 class="fw-bold text-white mb-1 text-truncate" th:text="${album.titulo}"></h5>
+                            <!-- Informações do Álbum -->
+                            <h5 class="fw-bold text-white mb-1 text-truncate" th:text="${album.titulo}"></h5>
+                        </a>
                         <p class="text-secondary small mb-2 text-truncate" th:text="${album.artista}"></p>
                     </div>
 
@@ -90,11 +92,19 @@
                         <div class="d-flex align-items-center justify-content-between pt-2 border-top border-secondary border-opacity-10 mt-2 mb-3">
                             <span class="text-secondary small font-monospace" th:text="${album.anoLancamento != null ? 'Ano: ' + album.anoLancamento : 'Álbum'}"></span>
                         </div>
-                        <div class="d-flex justify-content-center gap-2">
-                            <a class="btn btn-outline-purple btn-sm px-3 rounded-pill" th:href="${'/albums/edit/' + album.id}">
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <button type="button" 
+                                    class="btn btn-purple btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm" 
+                                    style="width: 32px; height: 32px; min-width: 32px;"
+                                    title="Tocar Álbum no Miniplayer"
+                                    th:data-albid="${album.id}"
+                                    onclick="if(typeof playerFetchAlbum === 'function') playerFetchAlbum(this.getAttribute('data-albid'), true);">
+                                <i class="bi bi-play-fill text-white fs-5"></i>
+                            </button>
+                            <a class="btn btn-outline-purple btn-sm px-3 rounded-pill" th:href="${'/albums/' + album.id + '/editar'}">
                                 <i class="bi bi-pencil-fill me-1"></i> Editar
                             </a>
-                            <form method="post" th:action="${'/albums/' + album.id + '/excluir'}" onsubmit="return confirm('Excluir este álbum?');" class="m-0">
+                            <form method="post" th:action="${'/albums/' + album.id + '/excluir'}" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?');" class="m-0">
                                 <button class="btn btn-outline-danger btn-sm px-3 rounded-pill" type="submit">
                                     <i class="bi bi-trash-fill me-1"></i> Excluir
                                 </button>

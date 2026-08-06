@@ -108,9 +108,9 @@
                                         <i class="bi bi-three-dots fs-5"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
-                                        <li><a class="dropdown-item text-white" th:href="${'/musicas/edit/' + musica.id}"><i class="bi bi-pencil me-2 text-purple"></i>Editar</a></li>
+                                        <li><a class="dropdown-item text-white" th:href="${'/musicas/' + musica.id + '/editar'}"><i class="bi bi-pencil me-2 text-purple"></i>Editar</a></li>
                                         <li>
-                                            <form th:action="@{/musicas/{id}/delete(id=${musica.id})}" method="post" onsubmit="return confirm('Tem certeza que deseja excluir esta música?');">
+                                            <form th:action="${'/musicas/' + musica.id + '/excluir'}" method="post" th:data-titulo="${musica.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Música?', 'Tem certeza que deseja excluir a música &quot;' + this.getAttribute('data-titulo') + '&quot;?');">
                                                 <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
                                             </form>
                                         </li>
@@ -159,19 +159,52 @@
                     <a th:href="${'/playlists/' + playlist.id}" class="playlist-card-horizontal d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center gap-3">
                             <!-- Playlist Cover -->
-                            <img th:if="${playlistCovers != null and playlistCovers.get(playlist.id) != null}" 
-                                 th:src="${playlistCovers.get(playlist.id)}" 
-                                 class="playlist-cover-mini" 
-                                 alt="Capa da Playlist">
-                            <div th:unless="${playlistCovers != null and playlistCovers.get(playlist.id) != null}" 
-                                 class="playlist-cover-mini d-flex align-items-center justify-content-center bg-darker text-purple">
-                                <i class="bi bi-music-album fs-4"></i>
+                            <div class="shadow d-flex align-items-center justify-content-center" 
+                                 style="width: 48px; height: 48px; min-width: 48px; background-color: #B57CFF; color: #000000; border-radius: 10px !important;">
+                                <i class="bi bi-collection-play fs-4"></i>
                             </div>
                             <div>
                                 <h6 class="fw-bold text-white mb-0 text-truncate" style="max-width: 140px;" th:text="${playlist.nome}"></h6>
                                 <span class="text-secondary small">Playlist</span>
                             </div>
                         </div>
+                        <!-- Dropdown 3 dots horizontal -->
+                        <div class="dropend playlist-dropdown-btn-mini" onclick="event.stopPropagation();">
+                            <button class="btn btn-link text-secondary p-0 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções" onclick="event.stopPropagation();">
+                                <i class="bi bi-three-dots fs-5"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow" onclick="event.stopPropagation();">
+                                <li th:if="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
+                                    <a class="dropdown-item text-white" th:href="${'/playlists/' + playlist.id + '/editar'}">
+                                        <i class="bi bi-pencil me-2 text-purple"></i>Editar
+                                    </a>
+                                </li>
+                                <li th:unless="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
+                                    <span class="dropdown-item text-secondary disabled" title="Playlist padrão não pode ser editada.">
+                                        <i class="bi bi-pencil me-2"></i>Editar (Fixa)
+                                    </span>
+                                </li>
+                                <li th:if="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
+                                    <form method="post" 
+                                          th:action="${'/playlists/' + playlist.id + '/excluir'}" 
+                                          th:data-nome="${playlist.nome}"
+                                          onsubmit="return confirmarExclusaoCustom(this, 'Excluir Playlist?', 'Tem certeza que deseja excluir a playlist &quot;' + this.getAttribute('data-nome') + '&quot;?');"
+                                          hx-boost="false" 
+                                          class="m-0"
+                                          onclick="event.stopPropagation();">
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-trash me-2"></i>Excluir
+                                        </button>
+                                    </form>
+                                </li>
+                                <li th:unless="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
+                                    <span class="dropdown-item text-secondary disabled" title="Playlist padrão não pode ser excluída.">
+                                        <i class="bi bi-trash me-2"></i>Excluir (Fixa)
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+
                         <button type="button" 
                                 class="playlist-play-btn-mini" 
                                 title="Carregar Playlist no Miniplayer"

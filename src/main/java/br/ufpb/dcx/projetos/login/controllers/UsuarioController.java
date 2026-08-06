@@ -296,9 +296,18 @@ public final class UsuarioController {
         List<Artista> meusArtistas = artistaService != null ? artistaService.listar(null, idLogado) : List.of();
         List<Album> meusAlbums = albumService != null ? albumService.findAll(idLogado) : List.of();
         List<br.ufpb.dcx.projetos.playlist.models.Playlist> minhasPlaylists = playlistService != null ? playlistService.findAllByUsuarioId(idLogado) : List.of();
+        List<br.ufpb.dcx.projetos.comunidade.views.PostViewDTO> meusPosts = comunidadeService != null ? comunidadeService.listarFeed(idLogado, idLogado) : List.of();
+
+        var comentariosPosts = new java.util.HashMap<String, java.util.List<br.ufpb.dcx.projetos.comunidade.views.ComentarioViewDTO>>();
+        if (comunidadeService != null) {
+            for (var p : meusPosts) {
+                comentariosPosts.put(p.id(), comunidadeService.listarComentarios(p.id()));
+            }
+        }
 
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("usuarioLogadoId", idLogado);
         modelo.put("paginaAtiva", "perfil");
         modelo.put("nome", usuario.getNome());
         modelo.put("username", usuario.getUsername());
@@ -310,6 +319,8 @@ public final class UsuarioController {
         modelo.put("meusArtistas", meusArtistas);
         modelo.put("meusAlbums", meusAlbums);
         modelo.put("minhasPlaylists", minhasPlaylists);
+        modelo.put("meusPosts", meusPosts);
+        modelo.put("comentariosPosts", comentariosPosts);
         ctx.render("usuarios/me", modelo);
     }
 

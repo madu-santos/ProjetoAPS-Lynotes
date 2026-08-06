@@ -20,6 +20,7 @@ public final class AlbumModule {
 
         app.get("/albums", controller::listar, Role.USER);
         app.get("/albums/novo", controller::exibirCadastro, Role.USER);
+        app.get("/albums/{id}", controller::exibirDetalhes, Role.USER);
         app.post("/albums", controller::cadastrar, Role.USER);
         app.get("/albums/{id}/editar", controller::exibirEdicao, Role.USER);
         app.post("/albums/{id}", controller::atualizar, Role.USER);

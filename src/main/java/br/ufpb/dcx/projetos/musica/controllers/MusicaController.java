@@ -171,17 +171,9 @@ public final class MusicaController {
                     dto.capaUrl());
             service.save(musica);
 
-            String compartilhar = ctx.formParam("compartilharComunidade");
-            String mensagem = ctx.formParam("mensagemComunidade");
-
-            if (comunidadeService != null && "on".equals(compartilhar)) {
-                String msg = "Catalogou a música: **" + musica.getTitulo() + "** (" + musica.getArtista() + ")";
-                if (musica.getNota() != null) {
-                    msg += " e avaliou com " + musica.getNota() + " estrelas. ⭐ ";
-                }
-                if (mensagem != null && !mensagem.trim().isEmpty()) {
-                    msg += "\n\n\"" + mensagem.trim() + "\"";
-                }
+            // Publica automaticamente na comunidade se houver resenha
+            if (comunidadeService != null && musica.getResenha() != null && !musica.getResenha().trim().isEmpty()) {
+                String msg = musica.getResenha().trim();
                 comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", musica.getId(), msg);
             }
 
@@ -300,17 +292,9 @@ public final class MusicaController {
                     dto.capaUrl() != null ? dto.capaUrl() : musicaExistente.getCapaUrl());
             service.update(id, musicaDetails);
 
-            String compartilhar = ctx.formParam("compartilharComunidade");
-            String mensagem = ctx.formParam("mensagemComunidade");
-
-            if (comunidadeService != null && "on".equals(compartilhar)) {
-                String msg = "Atualizou a mÃºsica: **" + musicaDetails.getTitulo() + "** (" + musicaDetails.getArtista() + ")";
-                if (musicaDetails.getNota() != null) {
-                    msg += " e avaliou com " + musicaDetails.getNota() + " estrelas. â­";
-                }
-                if (mensagem != null && !mensagem.trim().isEmpty()) {
-                    msg += "\n\n\"" + mensagem.trim() + "\"";
-                }
+            // Publica automaticamente na comunidade se houver resenha
+            if (comunidadeService != null && musicaDetails.getResenha() != null && !musicaDetails.getResenha().trim().isEmpty()) {
+                String msg = musicaDetails.getResenha().trim();
                 comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", id, msg);
             }
 
@@ -400,6 +384,43 @@ public final class MusicaController {
             modelo.put("erro", erro);
         }
         ctx.render("musicas/formulario", modelo);
+    }
+
+    public void atualizarYoutubeId(Context ctx) {
+        String id = ctx.pathParam("id");
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, String> body = ctx.bodyAsClass(HashMap.class);
+            String youtubeId = body.get("youtubeId");
+            if (youtubeId != null && !youtubeId.isBlank()) {
+                service.findById(id).filter(m -> m.getUsuarioId().equals(usuarioId)).ifPresent(m -> {
+                    br.ufpb.dcx.projetos.musica.models.Musica atualizada = new br.ufpb.dcx.projetos.musica.models.Musica(
+                        m.getId(),
+                        m.getTitulo(),
+                        m.getArtista(),
+                        m.getGenero(),
+                        m.getDuracaoSegundos(),
+                        m.getResenha(),
+                        m.getNota(),
+                        m.getSpotifyUrl(),
+                        m.getYoutubeUrl(),
+                        m.getAlbumId(),
+                        m.getUsuarioId(),
+                        youtubeId,
+                        m.getCapaUrl(),
+                        m.isOcultaDaBiblioteca()
+                    );
+                    service.save(atualizada);
+                });
+                ctx.status(HttpStatus.OK).json(Map.of("status", "success"));
+            } else {
+                ctx.status(HttpStatus.BAD_REQUEST).json(Map.of("error", "youtubeId required"));
+            }
+        } catch (Exception e) {
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR).json(Map.of("error", e.getMessage()));
+        }
     }
 
     private void redirecionarParaListagem(Context ctx) {

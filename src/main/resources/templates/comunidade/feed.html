@@ -58,7 +58,7 @@
                             <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
                                 <i class="bi bi-pencil-square text-purple"></i> Criar Publicação / Resenha Pública
                             </h5>
-                            <form action="/comunidade/post" method="post" hx-boost="false">
+                            <form action="/comunidade/post" method="post">
                                 <div class="mb-3">
                                     <textarea class="form-control glass-search-input bg-dark border-secondary p-3 text-white" name="conteudo" rows="3" placeholder="No que você está pensando ou ouvindo hoje? Escreva sua resenha pública..." required maxlength="500"></textarea>
                                 </div>
@@ -86,7 +86,7 @@
                                     </div>
                                 </div>
                                 <div class="d-flex gap-1" th:if="${usuarioLogadoId == post.usuarioId}">
-                                    <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirm('Excluir este post?');">
+                                    <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Post?', 'Tem certeza que deseja excluir esta publicação?');">
                                         <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Excluir">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -98,7 +98,7 @@
 
                             <!-- Interações (Estrelar) -->
                             <div class="d-flex align-items-center gap-3 pt-3 border-top border-secondary border-opacity-10">
-                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" hx-boost="false" class="m-0">
+                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" class="m-0">
                                     <button type="submit" class="btn btn-sm rounded-pill px-3 d-flex align-items-center gap-1 btn-outline-purple" th:classappend="${post.estreladoPorMim} ? 'bg-purple text-white fw-bold' : ''">
                                         <i class="bi" th:classappend="${post.estreladoPorMim} ? 'bi-star-fill' : 'bi-star'"></i>
                                         <span th:text="${post.qtdEstrelas}"></span>
@@ -169,11 +169,11 @@
                                         <span class="fw-bold text-purple fs-4 font-monospace ms-2" th:text="${iter.count + 'º'}">1º</span>
                                         <div class="overflow-hidden">
                                             <h6 class="fw-bold text-white mb-0 text-truncate fs-5" th:text="${musica.titulo}"></h6>
-                                            <span class="text-secondary small text-truncate d-block" th:text="${musica.artista}"></span>
+                                            <span class="text-secondary small text-truncate d-block" th:text="${musica.subtitulo}"></span>
                                         </div>
                                     </div>
-                                    <div class="score-badge-circle" th:if="${musica.nota != null}">
-                                        <span th:text="${musica.nota != null ? musica.nota + ' ★' : ''}">5 ★</span>
+                                    <div class="score-badge-circle" th:if="${musica.notaFormatada != null}">
+                                        <span th:text="${musica.notaFormatada + ' ★'}">5 ★</span>
                                     </div>
                                 </div>
                             </div>
@@ -192,8 +192,11 @@
                                         <span class="fw-bold text-purple fs-4 font-monospace ms-2" th:text="${iter.count + 'º'}">1º</span>
                                         <div class="overflow-hidden">
                                             <h6 class="fw-bold text-white mb-0 text-truncate fs-5" th:text="${album.titulo}"></h6>
-                                            <span class="text-secondary small text-truncate d-block" th:text="${album.artista}"></span>
+                                            <span class="text-secondary small text-truncate d-block" th:text="${album.subtitulo}"></span>
                                         </div>
+                                    </div>
+                                    <div class="score-badge-circle" th:if="${album.notaFormatada != null}">
+                                        <span th:text="${album.notaFormatada + ' ★'}">5 ★</span>
                                     </div>
                                 </div>
                             </div>
@@ -211,9 +214,12 @@
                                     <div class="d-flex align-items-center gap-3 overflow-hidden">
                                         <span class="fw-bold text-purple fs-4 font-monospace ms-2" th:text="${iter.count + 'º'}">1º</span>
                                         <div class="overflow-hidden">
-                                            <h6 class="fw-bold text-white mb-0 text-truncate fs-5" th:text="${artista.nome}"></h6>
-                                            <span class="text-secondary small text-truncate d-block" th:text="${artista.generoMusical != null ? artista.generoMusical : 'Artista'}"></span>
+                                            <h6 class="fw-bold text-white mb-0 text-truncate fs-5" th:text="${artista.titulo}"></h6>
+                                            <span class="text-secondary small text-truncate d-block" th:text="${artista.subtitulo != null ? artista.subtitulo : 'Artista'}"></span>
                                         </div>
+                                    </div>
+                                    <div class="score-badge-circle" th:if="${artista.notaFormatada != null}">
+                                        <span th:text="${artista.notaFormatada + ' ★'}">5 ★</span>
                                     </div>
                                 </div>
                             </div>

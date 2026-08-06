@@ -51,7 +51,7 @@ class ComunidadeControllerTest {
 
     @Test
     void deveExibirFeedDaComunidade() {
-        when(comunidadeService.listarFeed(anyString(), eq("seguindo"))).thenReturn(Collections.emptyList());
+        when(comunidadeService.listarFeedPublico(anyString())).thenReturn(Collections.emptyList());
         when(comunidadeService.listarAmigos(anyString())).thenReturn(Collections.emptyList());
         when(comunidadeService.listarPedidosRecebidos(anyString())).thenReturn(Collections.emptyList());
 
