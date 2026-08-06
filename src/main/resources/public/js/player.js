@@ -737,6 +737,101 @@ async function initPlayerModule() {
     }
 }
 
+// --- UX Improvements (Drag and Drop & Resize) ---
+function initPlayerUX() {
+    const player = document.getElementById('mini-player');
+    const panel = document.querySelector('.player-panel');
+    const dragHandle = document.getElementById('player-drag-handle');
+    if (!player || !panel || !dragHandle) return;
+
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let initialLeft = 0;
+    let initialTop = 0;
+
+    dragHandle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        
+        // Detach player from sidebar if not already floating
+        if (!player.classList.contains('player-floating')) {
+            const rect = player.getBoundingClientRect();
+            player.style.right = 'auto';
+            player.style.left = rect.left + 'px';
+            player.style.top = rect.top + 'px';
+            player.classList.add('player-floating');
+        }
+        
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        initialLeft = player.getBoundingClientRect().left;
+        initialTop = player.getBoundingClientRect().top;
+        
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            player.style.left = (initialLeft + dx) + 'px';
+            player.style.top = (initialTop + dy) + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) isDragging = false;
+    });
+
+    // Resize Logic (Edge Handles)
+    const resizeEdges = document.querySelectorAll('[data-resize]');
+    let isResizing = false;
+    let initialDistance = 0;
+    let initialScale = 1;
+    let centerX = 0;
+    let centerY = 0;
+    let originalHeight = 0;
+
+    resizeEdges.forEach(edge => {
+        edge.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            initialScale = parseFloat(panel.style.getPropertyValue('--player-scale') || 1);
+            
+            const rect = player.getBoundingClientRect();
+            // Since zoom changes rect, we can calculate original dimensions
+            originalHeight = rect.height / initialScale; 
+            centerX = rect.left + (rect.width / 2);
+            centerY = rect.top + (rect.height / 2);
+            
+            initialDistance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+            
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isResizing) {
+            const newDistance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+            let newScale = initialScale * (newDistance / initialDistance);
+            newScale = Math.max(0.4, Math.min(newScale, 1.0));
+            
+            panel.style.setProperty('--player-scale', newScale);
+            
+            // Adjust position to keep center fixed for a smooth resizing experience from any edge
+            const newWidth = 280 * newScale;
+            const currentScaledHeight = originalHeight * newScale;
+            player.style.left = (centerX - (newWidth / 2)) + 'px';
+            player.style.top = (centerY - (currentScaledHeight / 2)) + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isResizing) isResizing = false;
+    });
+}
+
 window.addEventListener('beforeunload', playerSaveState);
 window.addEventListener('DOMContentLoaded', initPlayerModule);
+window.addEventListener('DOMContentLoaded', initPlayerUX);
 
