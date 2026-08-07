@@ -7,5 +7,6 @@ public record RankingItemDTO(
     Double notaMedia,
     int totalAvaliacoes,
     String tipo,
-    String notaFormatada
+    String notaFormatada,
+    String capaUrl
 ) {}

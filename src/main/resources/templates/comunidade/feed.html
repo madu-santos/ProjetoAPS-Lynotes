@@ -150,7 +150,7 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link px-3 py-1.5 rounded-pill btn-sm" id="rank-artistas-tab" data-bs-toggle="tab" data-bs-target="#rank-artistas-pane" type="button" role="tab">
-                            <i class="bi bi-mic-fill me-1"></i> Artistas
+                            <i class="bi bi-people-fill me-1"></i> Artistas Mais Ouvidos
                         </button>
                     </li>
                 </ul>
@@ -203,23 +203,23 @@
                         </div>
                     </div>
 
-                    <!-- CATEGORIA: ARTISTAS -->
+                    <!-- CATEGORIA: ARTISTAS MAIS OUVIDOS -->
                     <div class="tab-pane fade" id="rank-artistas-pane" role="tabpanel">
                         <div class="music-card-cyber p-4">
                             <h4 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
-                                <i class="bi bi-mic-fill text-info"></i> Ranking de Artistas
+                                <i class="bi bi-people-fill text-info"></i> Artistas Mais Ouvidos
                             </h4>
-                            <div class="d-flex flex-column gap-3">
-                                <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-darker border border-secondary border-opacity-10" th:each="artista, iter : ${topArtistas}">
-                                    <div class="d-flex align-items-center gap-3 overflow-hidden">
-                                        <span class="fw-bold text-purple fs-4 font-monospace ms-2" th:text="${iter.count + 'º'}">1º</span>
-                                        <div class="overflow-hidden">
-                                            <h6 class="fw-bold text-white mb-0 text-truncate fs-5" th:text="${artista.titulo}"></h6>
-                                            <span class="text-secondary small text-truncate d-block" th:text="${artista.subtitulo != null ? artista.subtitulo : 'Artista'}"></span>
+                            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+                                <div class="col" th:each="artista, iter : ${topArtistas}">
+                                    <div class="card h-100 bg-darker border-secondary border-opacity-10 p-3 rounded-4 text-center">
+                                        <div class="position-relative mb-2 mx-auto" style="max-width: 100px;">
+                                            <img th:if="${artista.capaUrl != null and !artista.capaUrl.isBlank()}" th:src="${artista.capaUrl}" class="w-100 rounded-circle shadow object-fit-cover" style="aspect-ratio: 1;" alt="Foto do Artista">
+                                            <div th:unless="${artista.capaUrl != null and !artista.capaUrl.isBlank()}" class="w-100 rounded-circle shadow bg-dark border border-secondary d-flex align-items-center justify-content-center" style="aspect-ratio: 1; color: #555;">
+                                                <i class="bi bi-mic-fill fs-3"></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="score-badge-circle" th:if="${artista.notaFormatada != null}">
-                                        <span th:text="${artista.notaFormatada + ' ★'}">5 ★</span>
+                                        <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${artista.titulo}"></h6>
+                                        <span class="badge bg-purple rounded-pill text-dark fw-bold px-2 py-1 mt-1 small" th:text="${artista.subtitulo}">Top #1</span>
                                     </div>
                                 </div>
                             </div>
