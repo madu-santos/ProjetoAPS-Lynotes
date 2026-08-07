@@ -130,6 +130,14 @@
                             <input type="hidden" id="youtubeId" name="youtubeId">
                         </div>
 
+                        <!-- Compartilhar na Comunidade Checkbox -->
+                        <div class="form-check form-switch mb-4" th:if="${!form.edicao}">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" id="compartilharNaComunidade" name="compartilharNaComunidade" checked>
+                            <label class="form-check-label text-secondary small" for="compartilharNaComunidade">
+                                Compartilhar na comunidade (criar postagem automática)
+                            </label>
+                        </div>
+
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">
                             <a class="btn btn-outline-secondary rounded-pill px-4" href="/artistas">Cancelar</a>
                             <button class="btn-add-music-glow px-4" type="submit">

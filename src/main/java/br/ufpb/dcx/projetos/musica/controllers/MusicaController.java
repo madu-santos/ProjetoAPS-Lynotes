@@ -203,9 +203,17 @@ public final class MusicaController {
                     dto.capaUrl());
             service.save(musica);
 
-            // Publica automaticamente na comunidade se houver resenha
-            if (comunidadeService != null && musica.getResenha() != null && !musica.getResenha().trim().isEmpty()) {
-                String msg = musica.getResenha().trim();
+            // Publica automaticamente na comunidade se solicitado pelo checkbox
+            String compartilhar = ctx.formParam("compartilharNaComunidade");
+            if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
+                String msg = "Catalogou a música: **" + musica.getTitulo() + "** (" + musica.getArtista() + ")";
+                if (musica.getNota() != null) {
+                    msg += " e avaliou com " + musica.getNota() + " estrelas. ⭐";
+                }
+                String mensagem = ctx.formParam("mensagemComunidade");
+                if (mensagem != null && !mensagem.trim().isEmpty()) {
+                    msg += "\n\n\"" + mensagem.trim() + "\"";
+                }
                 comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", musica.getId(), msg);
             }
 

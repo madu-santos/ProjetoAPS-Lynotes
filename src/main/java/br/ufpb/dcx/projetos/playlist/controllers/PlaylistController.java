@@ -14,15 +14,24 @@ public final class PlaylistController {
 
     private final PlaylistService service;
     private final br.ufpb.dcx.projetos.musica.services.MusicaService musicaService;
+    private final br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService;
 
     public PlaylistController(PlaylistService service) {
         this.service = service;
         this.musicaService = null;
+        this.comunidadeService = null;
     }
 
     public PlaylistController(PlaylistService service, br.ufpb.dcx.projetos.musica.services.MusicaService musicaService) {
         this.service = service;
         this.musicaService = musicaService;
+        this.comunidadeService = null;
+    }
+
+    public PlaylistController(PlaylistService service, br.ufpb.dcx.projetos.musica.services.MusicaService musicaService, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
+        this.service = service;
+        this.musicaService = musicaService;
+        this.comunidadeService = comunidadeService;
     }
 
     public void listar(Context ctx) {
@@ -90,7 +99,12 @@ public final class PlaylistController {
         String nome = ctx.formParam("nome");
 
         try {
-            service.createPlaylist(nome, usuarioId);
+            Playlist playlist = service.createPlaylist(nome, usuarioId);
+            String compartilhar = ctx.formParam("compartilharNaComunidade");
+            if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
+                String msg = "Criou a playlist: **" + playlist.getNome() + "**";
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_PLAYLIST", playlist.getId(), msg);
+            }
             ctx.redirect("/playlists", HttpStatus.SEE_OTHER);
         } catch (IllegalArgumentException e) {
             Map<String, Object> modelo = new HashMap<>();

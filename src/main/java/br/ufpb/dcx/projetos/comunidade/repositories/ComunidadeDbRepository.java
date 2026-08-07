@@ -133,12 +133,15 @@ public class ComunidadeDbRepository {
                 rs.getString("musica_artista"),
                 rs.getObject("musica_nota") != null ? rs.getDouble("musica_nota") : null,
                 rs.getString("musica_youtube_url"),
+                rs.getString("musica_capa_url"),
                 rs.getString("album_id"),
                 rs.getString("album_titulo"),
                 rs.getString("album_artista"),
                 rs.getObject("album_nota") != null ? rs.getDouble("album_nota") : null,
+                rs.getString("album_capa_url"),
                 rs.getString("artista_id"),
-                rs.getString("artista_nome")
+                rs.getString("artista_nome"),
+                rs.getString("artista_capa_url")
         );
     }
 
@@ -150,9 +153,9 @@ public class ComunidadeDbRepository {
             "(SELECT COUNT(*) FROM post_estrela pe WHERE pe.post_id = p.id) AS qtd_estrelas, " +
             "(SELECT COUNT(*) FROM comentario c WHERE c.post_id = p.id) AS qtd_comentarios, " +
             "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim, " +
-            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, " +
-            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, " +
-            "ar.nome AS artista_nome " +
+            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, m.capa_url AS musica_capa_url, " +
+            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, al.capa_url AS album_capa_url, " +
+            "ar.nome AS artista_nome, ar.capa_url AS artista_capa_url " +
             "FROM post p " +
             "JOIN usuario u ON p.usuario_id = u.id " +
             "LEFT JOIN musica m ON p.musica_id = m.id " +
@@ -197,9 +200,9 @@ public class ComunidadeDbRepository {
             "(SELECT COUNT(*) FROM post_estrela pe WHERE pe.post_id = p.id) AS qtd_estrelas, " +
             "(SELECT COUNT(*) FROM comentario c WHERE c.post_id = p.id) AS qtd_comentarios, " +
             "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim, " +
-            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, " +
-            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, " +
-            "ar.nome AS artista_nome " +
+            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, m.capa_url AS musica_capa_url, " +
+            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, al.capa_url AS album_capa_url, " +
+            "ar.nome AS artista_nome, ar.capa_url AS artista_capa_url " +
             "FROM post p " +
             "JOIN usuario u ON p.usuario_id = u.id " +
             "LEFT JOIN musica m ON p.musica_id = m.id " +
@@ -487,9 +490,9 @@ public class ComunidadeDbRepository {
             "(SELECT COUNT(*) FROM post_estrela pe WHERE pe.post_id = p.id) AS qtd_estrelas, " +
             "(SELECT COUNT(*) FROM comentario c WHERE c.post_id = p.id) AS qtd_comentarios, " +
             "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim, " +
-            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, " +
-            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, " +
-            "ar.nome AS artista_nome " +
+            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, m.capa_url AS musica_capa_url, " +
+            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, al.capa_url AS album_capa_url, " +
+            "ar.nome AS artista_nome, ar.capa_url AS artista_capa_url " +
             "FROM post p " +
             "JOIN usuario u ON p.usuario_id = u.id " +
             "LEFT JOIN musica m ON p.musica_id = m.id " +
