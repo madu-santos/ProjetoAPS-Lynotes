@@ -95,14 +95,13 @@ public final class AlbumController {
                 musicaService.importarFaixasAlbumItunes(collectionId, album.getId(), usuarioId, album.getCapaUrl());
             }
             
-            String compartilhar = ctx.formParam("compartilharComunidade");
-            String mensagem = ctx.formParam("mensagemComunidade");
-
-            if (comunidadeService != null && "on".equals(compartilhar)) {
-                String msg = "Catalogou o Ã¡lbum: **" + album.getTitulo() + "** (" + album.getArtista() + ")";
+            String compartilhar = ctx.formParam("compartilharNaComunidade");
+            if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
+                String msg = "Catalogou o álbum: **" + album.getTitulo() + "** (" + album.getArtista() + ")";
                 if (album.getNota() != null) {
-                    msg += " e avaliou com " + album.getNota() + " estrelas. â­";
+                    msg += " e avaliou com " + album.getNota() + " estrelas. ⭐";
                 }
+                String mensagem = ctx.formParam("mensagemComunidade");
                 if (mensagem != null && !mensagem.trim().isEmpty()) {
                     msg += "\n\n\"" + mensagem.trim() + "\"";
                 }

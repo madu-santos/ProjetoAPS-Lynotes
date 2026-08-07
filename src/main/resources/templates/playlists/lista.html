@@ -57,41 +57,74 @@
         </div>
 
         <!-- Grid de Cards de Playlists -->
-        <div th:unless="${#lists.isEmpty(playlists)}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div th:unless="${#lists.isEmpty(playlists)}" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
             <div class="col" th:each="playlist : ${playlists}">
-                <div class="music-card-cyber p-4 h-100 d-flex flex-column justify-content-between">
+                <div class="music-card-cyber p-3 h-100 d-flex flex-column justify-content-between">
                     <div>
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <!-- Playlist Cover -->
-                            <div class="shadow d-flex align-items-center justify-content-center" 
-                                 style="width: 54px; height: 54px; min-width: 54px; background-color: #B57CFF; color: #000000; border-radius: 12px !important;">
-                                <i class="bi bi-collection-play fs-3"></i>
-                            </div>
-                            <div class="overflow-hidden">
-                                <h5 class="fw-bold text-white mb-0 text-truncate" th:text="${playlist.nome}"></h5>
-                                <span class="badge bg-purple rounded-pill px-2 py-0.5 mt-1" th:if="${playlist.oculta}">Oculta</span>
+                        <!-- Capa da Playlist (Grid 2x2 ou Nota Musical se vazia) -->
+                        <div class="playlist-cover-grid ratio ratio-1x1 mb-3 rounded-3 overflow-hidden shadow-sm bg-darker position-relative">
+                            <div class="d-grid" style="grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); width: 100%; height: 100%;">
+                                <!-- Capa 1 -->
+                                <div class="w-100 h-100 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
+                                     th:style="${playlistCovers[playlist.id] != null and playlistCovers[playlist.id].size() > 0 ? 'background-image: url(' + playlistCovers[playlist.id][0] + '); background-size: cover; background-position: center;' : ''}">
+                                    <i th:if="${playlistCovers[playlist.id] == null or playlistCovers[playlist.id].size() == 0}" class="bi bi-music-note text-secondary opacity-30 fs-5"></i>
+                                </div>
+                                <!-- Capa 2 -->
+                                <div class="w-100 h-100 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
+                                     th:style="${playlistCovers[playlist.id] != null and playlistCovers[playlist.id].size() > 1 ? 'background-image: url(' + playlistCovers[playlist.id][1] + '); background-size: cover; background-position: center;' : ''}">
+                                    <i th:if="${playlistCovers[playlist.id] == null or playlistCovers[playlist.id].size() <= 1}" class="bi bi-music-note text-secondary opacity-30 fs-5"></i>
+                                </div>
+                                <!-- Capa 3 -->
+                                <div class="w-100 h-100 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
+                                     th:style="${playlistCovers[playlist.id] != null and playlistCovers[playlist.id].size() > 2 ? 'background-image: url(' + playlistCovers[playlist.id][2] + '); background-size: cover; background-position: center;' : ''}">
+                                    <i th:if="${playlistCovers[playlist.id] == null or playlistCovers[playlist.id].size() <= 2}" class="bi bi-music-note text-secondary opacity-30 fs-5"></i>
+                                </div>
+                                <!-- Capa 4 -->
+                                <div class="w-100 h-100 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center"
+                                     th:style="${playlistCovers[playlist.id] != null and playlistCovers[playlist.id].size() > 3 ? 'background-image: url(' + playlistCovers[playlist.id][3] + '); background-size: cover; background-position: center;' : ''}">
+                                    <i th:if="${playlistCovers[playlist.id] == null or playlistCovers[playlist.id].size() <= 3}" class="bi bi-music-note text-secondary opacity-30 fs-5"></i>
+                                </div>
                             </div>
                         </div>
+                        
+                        <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${playlist.nome}"></h6>
+                        <span class="badge bg-purple rounded-pill px-2 py-0.5 mb-2" style="font-size: 0.65rem;" th:if="${playlist.oculta}">Oculta</span>
                     </div>
 
-                    <div class="d-flex align-items-center justify-content-between pt-3 border-top border-secondary border-opacity-10 mt-3">
-                        <span class="text-secondary small font-monospace" th:text="${'Criada em ' + playlist.criadoEmFormatado}"></span>
+                    <div class="pt-2 border-top border-secondary border-opacity-10 mt-2">
+                        <!-- Linha superior: Play (esquerda) e Link Abrir (direita) -->
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <!-- Play -->
+                            <button type="button" 
+                                    class="btn btn-purple rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm" 
+                                    style="width: 32px; height: 32px; min-width: 32px;"
+                                    title="Carregar Playlist no Miniplayer"
+                                    th:data-plid="${playlist.id}"
+                                    onclick="if(typeof playerFetchPlaylist === 'function') playerFetchPlaylist(this.getAttribute('data-plid'), true);">
+                                <i class="bi bi-play-fill text-white fs-5"></i>
+                            </button>
+                            
+                            <!-- Link Abrir -->
+                            <a class="btn btn-outline-purple btn-sm rounded-pill px-3 py-1" style="font-size: 0.75rem;" th:href="${'/playlists/' + playlist.id}">
+                                Abrir <i class="bi bi-arrow-right ms-0.5"></i>
+                            </a>
+                        </div>
                         
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- Dropdown 3 dots horizontal -->
+                        <!-- Linha inferior: Três pontos (esquerda) e Data de criação (direita) -->
+                        <div class="d-flex align-items-center justify-content-between">
                             <div class="dropend">
-                                <button class="btn btn-link text-secondary p-0 shadow-none me-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções">
+                                <button class="btn btn-link text-secondary p-0 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções">
                                     <i class="bi bi-three-dots fs-5"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
                                     <li th:if="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
-                                        <a class="dropdown-item text-white" th:href="${'/playlists/' + playlist.id + '/editar'}">
-                                            <i class="bi bi-pencil me-2 text-purple"></i>Editar
+                                        <a class="dropdown-item text-purple fw-bold" th:href="${'/playlists/' + playlist.id + '/editar'}">
+                                            <i class="bi bi-pencil me-2"></i>Editar
                                         </a>
                                     </li>
                                     <li th:unless="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
                                         <span class="dropdown-item text-secondary disabled" title="Playlist padrão não pode ser editada.">
-                                            <i class="bi bi-pencil me-2"></i>Editar (Fixa)
+                                            <i class="bi bi-lock me-2"></i>Editar (Fixa)
                                         </span>
                                     </li>
                                     <li th:if="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
@@ -113,22 +146,12 @@
                                     </li>
                                 </ul>
                             </div>
-
-                            <button type="button" 
-                                    class="btn btn-purple btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm me-1" 
-                                    style="width: 32px; height: 32px; min-width: 32px;"
-                                    title="Carregar Playlist no Miniplayer"
-                                    th:data-plid="${playlist.id}"
-                                    onclick="if(typeof playerFetchPlaylist === 'function') playerFetchPlaylist(this.getAttribute('data-plid'), true);">
-                                <i class="bi bi-play-fill text-white fs-5"></i>
-                            </button>
-
-                            <a class="btn btn-outline-purple btn-sm rounded-pill px-3" th:href="${'/playlists/' + playlist.id}">
-                                Abrir <i class="bi bi-arrow-right me-1"></i>
-                            </a>
+                            <span class="text-secondary small font-monospace text-truncate" style="font-size: 0.7rem;" th:text="${playlist.criadoEmFormatado != null ? playlist.criadoEmFormatado : 'Playlist'}"></span>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
             </div>
         </div>
 
@@ -137,6 +160,5 @@
 </div>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-<script src="/js/player.js?v=3" defer></script>
 </body>
 </html>

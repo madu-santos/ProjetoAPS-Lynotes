@@ -46,6 +46,11 @@ function playerElements() {
 window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
     const displayTitle = (artista && titulo) ? `${artista} - ${titulo}` : (titulo || 'Música');
     
+    // Reseta fila para apenas uma música
+    playerState.playlistItems = [];
+    playerState.currentPlaylistId = null;
+    playerState.currentIndex = 0;
+
     // Expande o painel lateral do player se estiver recolhido
     if (playerState.collapsed) {
         playerTogglePanel();
@@ -79,6 +84,12 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
 
     // Se temos um ID de 11 caracteres válido do YouTube, executa imediatamente
     if (videoId) {
+        playerState.playlistItems = [{
+            id: 'single_' + videoId,
+            titulo: displayTitle,
+            videoId: videoId,
+            playlistId: null
+        }];
         playerLoad(videoId, displayTitle, null, 0);
         return;
     }
@@ -111,7 +122,14 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
         .then(r => r.json())
         .then(data => {
             if (data && data.length > 0 && data[0].youtubeId && data[0].youtubeId.length === 11 && !data[0].youtubeId.startsWith('yt_')) {
-                playerLoad(data[0].youtubeId, displayTitle, null, 0);
+                const resolvedId = data[0].youtubeId;
+                playerState.playlistItems = [{
+                    id: 'single_' + resolvedId,
+                    titulo: displayTitle,
+                    videoId: resolvedId,
+                    playlistId: null
+                }];
+                playerLoad(resolvedId, displayTitle, null, 0);
             } else {
                 if (currentTitle) currentTitle.textContent = 'Não foi possível encontrar o vídeo real no YouTube.';
             }
@@ -423,7 +441,7 @@ function playerLoad(videoId, title, playlistId, startSeconds) {
 
     playerState.currentVideoId    = videoId;
     playerState.currentTitle      = playerCleanTitle(title, videoId);
-    playerState.currentPlaylistId = playlistId || playerState.currentPlaylistId;
+    playerState.currentPlaylistId = playlistId || null;
     playerState.playing           = true;
     playerState.currentTime       = startSeconds || 0;
 
@@ -668,18 +686,35 @@ function playerRenderTracks() {
     const { trackList } = playerElements();
     if (!trackList) return;
 
-    trackList.innerHTML = '';
-    playerState.playlistItems.forEach((item, index) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'player-track-button';
-        if (index === playerState.currentIndex && playerState.playing) {
-            btn.classList.add('active');
+    const toggleBtn = document.getElementById('player-toggle-tracklist-btn');
+    const isAlbumOrPlaylist = playerState.currentPlaylistId !== null;
+
+    if (toggleBtn) {
+        if (isAlbumOrPlaylist && playerState.playlistItems && playerState.playlistItems.length > 0) {
+            toggleBtn.classList.remove('d-none');
+        } else {
+            toggleBtn.classList.add('d-none');
+            // Força a esconder a lista
+            if (window.playerToggleTrackList) {
+                window.playerToggleTrackList(true);
+            }
         }
-        btn.textContent = playerCleanTitle(item.titulo, item.videoId);
-        btn.addEventListener('click', () => playerLoadTrack(item));
-        trackList.appendChild(btn);
-    });
+    }
+
+    trackList.innerHTML = '';
+    if (isAlbumOrPlaylist) {
+        playerState.playlistItems.forEach((item, index) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'player-track-button';
+            if (index === playerState.currentIndex && playerState.playing) {
+                btn.classList.add('active');
+            }
+            btn.textContent = playerCleanTitle(item.titulo, item.videoId);
+            btn.addEventListener('click', () => playerLoadTrack(item));
+            trackList.appendChild(btn);
+        });
+    }
 }
 
 // --- Inicialização ---
@@ -694,11 +729,12 @@ async function initPlayerModule() {
     window.playerModuleInitialized = true;
 
     // Restaurar estado do painel (retraído ou não)
+    // Força o painel a iniciar fechado sempre, independente do estado salvo
+    playerState.collapsed = true;
+    if (container) container.classList.add('collapsed');
+
     const saved = playerRestoreState();
     if (saved) {
-        playerState.collapsed = !!saved.collapsed;
-        if (container) container.classList.toggle('collapsed', playerState.collapsed);
-
         if (saved.currentPlaylistId) {
             await playerLoadPlaylists(saved.currentPlaylistId).catch(() =>
                 playerSetMessage('Falha ao carregar playlists.')
@@ -737,6 +773,154 @@ async function initPlayerModule() {
     }
 }
 
+window.playerToggleTrackList = function(forceHide) {
+    const trackList = document.getElementById('player-track-list');
+    const toggleBtn = document.getElementById('player-toggle-tracklist-btn');
+    if (!trackList || !toggleBtn) return;
+
+    if (forceHide === true || !trackList.classList.contains('hidden')) {
+        trackList.classList.add('hidden');
+        toggleBtn.innerHTML = 'Faixas &#9660;';
+    } else {
+        trackList.classList.remove('hidden');
+        toggleBtn.innerHTML = 'Faixas &#9650;';
+    }
+};
+
+window.playerResetPosition = function() {
+    const player = document.getElementById('mini-player');
+    const panel = document.querySelector('.player-panel');
+    const resetBtn = document.getElementById('player-reset-pos-btn');
+    if (!player || !panel) return;
+    
+    // Desativa transições temporariamente para que o retorno à lateral seja instantâneo (teleporte)
+    player.style.transition = 'none';
+    
+    player.classList.remove('player-floating');
+    player.style.top = '';
+    player.style.left = '';
+    player.style.right = '';
+    
+    panel.style.setProperty('--player-scale', 1);
+    
+    if (resetBtn) resetBtn.classList.add('d-none');
+    
+    // Força reflow para renderizar a remoção de classes e estilos instantaneamente
+    player.offsetHeight;
+    
+    // Reativa a transição suave logo em seguida
+    setTimeout(() => {
+        player.style.transition = '';
+    }, 50);
+};
+
+// --- UX Improvements (Drag and Drop & Resize) ---
+function initPlayerUX() {
+    const player = document.getElementById('mini-player');
+    const panel = document.querySelector('.player-panel');
+    const dragHandle = document.getElementById('player-drag-handle');
+    if (!player || !panel || !dragHandle) return;
+
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let initialLeft = 0;
+    let initialTop = 0;
+
+    dragHandle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        
+        // Detach player from sidebar if not already floating
+        if (!player.classList.contains('player-floating')) {
+            const rect = player.getBoundingClientRect();
+            player.style.right = 'auto';
+            player.style.left = rect.left + 'px';
+            player.style.top = rect.top + 'px';
+            player.classList.add('player-floating');
+            const resetBtn = document.getElementById('player-reset-pos-btn');
+            if (resetBtn) resetBtn.classList.remove('d-none');
+        }
+        
+        if (window.playerToggleTrackList) {
+            window.playerToggleTrackList(true);
+        }
+        
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        initialLeft = player.getBoundingClientRect().left;
+        initialTop = player.getBoundingClientRect().top;
+        
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            player.style.left = (initialLeft + dx) + 'px';
+            player.style.top = (initialTop + dy) + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) isDragging = false;
+    });
+
+    // Resize Logic (Edge Handles)
+    const resizeEdges = document.querySelectorAll('[data-resize]');
+    let isResizing = false;
+    let initialDistance = 0;
+    let initialScale = 1;
+    let centerX = 0;
+    let centerY = 0;
+    let originalHeight = 0;
+
+    resizeEdges.forEach(edge => {
+        edge.addEventListener('mousedown', (e) => {
+            isResizing = true;
+            initialScale = parseFloat(panel.style.getPropertyValue('--player-scale') || 1);
+            
+            const rect = player.getBoundingClientRect();
+            // Since zoom changes rect, we can calculate original dimensions
+            originalHeight = rect.height / initialScale; 
+            centerX = rect.left + (rect.width / 2);
+            centerY = rect.top + (rect.height / 2);
+            
+            initialDistance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+            
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isResizing) {
+            const newDistance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+            let newScale = initialScale * (newDistance / initialDistance);
+            newScale = Math.max(0.4, Math.min(newScale, 1.0));
+            
+            panel.style.setProperty('--player-scale', newScale);
+            
+            // Adjust position to keep center fixed for a smooth resizing experience from any edge
+            const newWidth = 280 * newScale;
+            const currentScaledHeight = originalHeight * newScale;
+            player.style.left = (centerX - (newWidth / 2)) + 'px';
+            player.style.top = (centerY - (currentScaledHeight / 2)) + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isResizing) isResizing = false;
+    });
+    
+    // Mostra o botão reset se o player estiver flutuando ao recarregar a página
+    if (player.classList.contains('player-floating')) {
+        const resetBtn = document.getElementById('player-reset-pos-btn');
+        if (resetBtn) resetBtn.classList.remove('d-none');
+    }
+}
+
 window.addEventListener('beforeunload', playerSaveState);
 window.addEventListener('DOMContentLoaded', initPlayerModule);
+window.addEventListener('DOMContentLoaded', initPlayerUX);
 

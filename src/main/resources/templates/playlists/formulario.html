@@ -57,6 +57,14 @@
                             <label class="form-check-label text-secondary small" for="oculta">Ocultar esta playlist do seu perfil público</label>
                         </div>
 
+                        <!-- Compartilhar na Comunidade Checkbox -->
+                        <div class="form-check form-switch mb-4" th:if="${!edicao}">
+                            <input class="form-check-input bg-dark border-secondary" type="checkbox" id="compartilharNaComunidade" name="compartilharNaComunidade" checked>
+                            <label class="form-check-label text-secondary small" for="compartilharNaComunidade">
+                                Compartilhar na comunidade (criar postagem automática)
+                            </label>
+                        </div>
+
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">
                             <a class="btn btn-outline-secondary rounded-pill px-4" href="/musicas">Cancelar</a>
                             <button class="btn-add-music-glow px-4" type="submit">
@@ -74,6 +82,5 @@
 </div>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-<script src="/js/player.js?v=3" defer></script>
 </body>
 </html>

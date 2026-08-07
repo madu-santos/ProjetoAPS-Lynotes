@@ -229,11 +229,10 @@ public class ComunidadeService {
         if (deId == null || paraId == null || deId.equals(paraId)) {
             throw new IllegalArgumentException("Operação inválida.");
         }
-        if (repository.isPedidoPendente(paraId, deId)) {
-            aceitarSolicitacao(paraId, deId);
-        } else {
-            repository.criarPedidoSeguir(deId, paraId);
-        }
+        // A segue B imediatamente (unidirecional)
+        repository.seguir(deId, paraId);
+        // Cria uma notificação (pedido de seguir) para B saber que A o está seguindo
+        repository.criarPedidoSeguir(deId, paraId);
     }
 
     public void aceitarSolicitacao(String deId, String paraId) {
@@ -278,5 +277,15 @@ public class ComunidadeService {
     public boolean temNovosPosts(String usuarioId, java.time.LocalDateTime desde) {
         if (usuarioId == null || desde == null) return false;
         return repository.temNovosPosts(usuarioId, desde);
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarSeguidores(String usuarioId) {
+        if (usuarioId == null) return java.util.Collections.emptyList();
+        return repository.listarSeguidores(usuarioId);
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarSeguindo(String usuarioId) {
+        if (usuarioId == null) return java.util.Collections.emptyList();
+        return repository.listarSeguindo(usuarioId);
     }
 }

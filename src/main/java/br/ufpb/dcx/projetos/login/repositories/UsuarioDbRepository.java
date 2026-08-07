@@ -202,24 +202,24 @@ public class UsuarioDbRepository implements UsuarioRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return lista;
         }
-        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE nome ILIKE ? OR email ILIKE ? OR username ILIKE ?;";
+        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE LOWER(nome) LIKE ? OR LOWER(email) LIKE ? OR LOWER(username) LIKE ?;";
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            String wildcard = "%" + termo.trim() + "%";
+            String wildcard = "%" + termo.trim().toLowerCase() + "%";
             ps.setString(1, wildcard);
             ps.setString(2, wildcard);
             ps.setString(3, wildcard);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Usuario u = new Usuario(
-                            rs.getString("id"),
-                            rs.getString("nome"),
-                            rs.getString("username"),
-                            rs.getString("email"),
-                            rs.getString("senha"),
-                            rs.getString("tipo"),
-                            rs.getString("bio"),
-                            rs.getString("foto_url")
+                             rs.getString("id"),
+                             rs.getString("nome"),
+                             rs.getString("username"),
+                             rs.getString("email"),
+                             rs.getString("senha"),
+                             rs.getString("tipo"),
+                             rs.getString("bio"),
+                             rs.getString("foto_url")
                     );
                     lista.add(u);
                 }

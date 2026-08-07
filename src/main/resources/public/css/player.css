@@ -15,6 +15,23 @@
     transform: translateY(-50%) translateX(calc(100% - 22px));
 }
 
+/* === Floating State === */
+#mini-player.player-floating {
+    top: 100px; /* Default start position when detached */
+    right: 50px;
+    transform: none; /* Remove transform so top/left/right work purely */
+    transition: none; /* No transition while dragging */
+}
+#mini-player.player-floating .player-toggle-tab {
+    display: none; /* Hide tab when floating */
+}
+#mini-player.player-floating .player-panel {
+    border-radius: 12px; /* Round all corners */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    overflow: hidden;
+    position: relative;
+}
+
 /* === Toggle Tab (aba lateral) === */
 .player-toggle-tab {
     background: #181818;
@@ -74,13 +91,66 @@
     overflow: hidden;
     overflow-y: auto;
     outline: none !important;
+    position: relative;
+    transform: scale(var(--player-scale, 1));
+    transform-origin: top right;
 }
+#mini-player.player-floating .player-panel {
+    transform-origin: top left;
+}
+
+/* === Drag Handle === */
+.player-drag-handle {
+    cursor: grab;
+    background: transparent;
+    border: none;
+    padding: 2px 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.player-drag-handle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+.player-drag-handle:active {
+    cursor: grabbing;
+}
+.player-drag-handle i {
+    font-size: 1.25rem;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    transition: background 0.2s;
+}
+.player-drag-handle:hover i {
+    background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* === Edge Resize Handles === */
+.player-edge {
+    position: absolute;
+    z-index: 20;
+    display: none; /* Only show when floating */
+}
+#mini-player.player-floating .player-edge {
+    display: block;
+}
+.player-edge-t { top: 0; left: 0; right: 0; height: 8px; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="%23BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M6 6h6M6 6v6"/></svg>') 14 14, nw-resize; }
+.player-edge-b { bottom: 0; left: 0; right: 0; height: 8px; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="%23BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 18L6 6M18 18h-6M18 18v-6"/></svg>') 14 14, se-resize; }
+.player-edge-l { top: 0; bottom: 0; left: 0; width: 8px; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="%23BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M6 6h6M6 6v6"/></svg>') 14 14, nw-resize; }
+.player-edge-r { top: 0; bottom: 0; right: 0; width: 8px; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="%23BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 18L6 6M18 18h-6M18 18v-6"/></svg>') 14 14, se-resize; }
 
 /* === Header === */
 #mini-player .player-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 #mini-player h3 {
     font-size: 0.95rem;
@@ -294,6 +364,14 @@
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #3a3a5c transparent;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 1;
+}
+#mini-player .player-track-list.hidden {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin: 0;
 }
 #mini-player .player-track-button {
     align-items: center;
@@ -318,6 +396,25 @@
     background: rgba(124, 58, 237, 0.25);
     border-color: #a78bfa;
     color: #fff;
+}
+
+/* === Track List Button === */
+.player-tracklist-btn {
+    font-size: 0.75rem;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa) !important;
+    border: none !important;
+    border-radius: 20px;
+    padding: 4px 14px !important;
+    font-weight: 700;
+    transition: background 0.2s, transform 0.1s;
+}
+.player-tracklist-btn:hover {
+    background: linear-gradient(135deg, #6d28d9, #8b5cf6) !important;
+    color: #ffffff !important;
+}
+.player-tracklist-btn:active {
+    transform: scale(0.95);
 }
 
 /* === Mobile === */

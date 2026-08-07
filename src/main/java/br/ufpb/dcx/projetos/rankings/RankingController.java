@@ -31,9 +31,10 @@ public class RankingController {
     private synchronized void updateCacheIfNeeded() {
         if (lastCacheUpdate == null || lastCacheUpdate.isBefore(java.time.LocalDateTime.now().minusMinutes(1)) 
             || cachedMusicas == null || cachedAlbuns == null || cachedArtistas == null) {
-            cachedMusicas = calcularRankingMusicas(musicaService.findAll());
+            List<Musica> allMusicas = musicaService.findAll();
+            cachedMusicas = calcularRankingMusicas(allMusicas);
             cachedAlbuns = calcularRankingAlbuns(albumService.findAllGlobal());
-            cachedArtistas = calcularRankingArtistas(artistaService.findAllGlobal());
+            cachedArtistas = calcularRankingArtistas(artistaService.findAllGlobal(), allMusicas);
             lastCacheUpdate = java.time.LocalDateTime.now();
         }
     }
@@ -76,7 +77,7 @@ public class RankingController {
             double soma = grupo.stream().mapToDouble(Musica::getNota).sum();
             double media = soma / grupo.size();
             String mediaStr = String.format(Locale.US, "%.1f", media);
-            ranking.add(new RankingItemDTO(rep.getYoutubeId() != null ? rep.getYoutubeId() : rep.getId(), rep.getTitulo(), rep.getArtista(), media, grupo.size(), "MUSICA", mediaStr));
+            ranking.add(new RankingItemDTO(rep.getYoutubeId() != null ? rep.getYoutubeId() : rep.getId(), rep.getTitulo(), rep.getArtista(), media, grupo.size(), "MUSICA", mediaStr, rep.getCapaUrl()));
         }
         ranking.sort(Comparator.comparing(RankingItemDTO::notaMedia).reversed().thenComparing(RankingItemDTO::totalAvaliacoes).reversed());
         return ranking;
@@ -93,31 +94,67 @@ public class RankingController {
             double soma = grupo.stream().mapToDouble(Album::getNota).sum();
             double media = soma / grupo.size();
             String mediaStr = String.format(Locale.US, "%.1f", media);
-            ranking.add(new RankingItemDTO(rep.getId(), rep.getTitulo(), rep.getArtista(), media, grupo.size(), "ALBUM", mediaStr));
+            ranking.add(new RankingItemDTO(rep.getId(), rep.getTitulo(), rep.getArtista(), media, grupo.size(), "ALBUM", mediaStr, rep.getCapaUrl()));
         }
         ranking.sort(Comparator.comparing(RankingItemDTO::notaMedia).reversed().thenComparing(RankingItemDTO::totalAvaliacoes).reversed());
         return ranking;
     }
 
-    public List<RankingItemDTO> calcularRankingArtistas(List<Artista> artistas) {
-        // Agrupa artistas por nome (case-insensitive) e conta usuários distintos que salvaram
-        Map<String, List<Artista>> agrupado = artistas.stream()
+    public List<RankingItemDTO> calcularRankingArtistas(List<Artista> artistas, List<Musica> musicas) {
+        // Agrupa todas as músicas pelo nome do artista (case-insensitive) e conta a frequência
+        Map<String, Long> frequenciaArtista = musicas.stream()
+                .filter(m -> m.getArtista() != null && !m.getArtista().isBlank())
+                .collect(Collectors.groupingBy(m -> m.getArtista().trim().toLowerCase(), Collectors.counting()));
+
+        // Mapeia o nome do artista (case-insensitive) para o objeto Artista para obter a capaUrl e nome correto
+        Map<String, Artista> artistaPorNome = artistas.stream()
                 .filter(a -> a.getNome() != null && !a.getNome().isBlank())
-                .collect(Collectors.groupingBy(a -> a.getNome().toLowerCase()));
+                .collect(Collectors.toMap(
+                        a -> a.getNome().trim().toLowerCase(),
+                        a -> a,
+                        (a1, a2) -> a1 // mantém o primeiro em caso de duplicatas
+                ));
 
         List<RankingItemDTO> ranking = new ArrayList<>();
-        for (List<Artista> grupo : agrupado.values()) {
-            Artista rep = grupo.get(0);
-            // Conta usuários distintos que salvaram este artista
-            long totalUsuarios = grupo.stream()
-                    .map(Artista::getUsuarioId)
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .count();
-            String subtitulo = totalUsuarios + (totalUsuarios == 1 ? " usuário salvou" : " usuários salvaram");
-            ranking.add(new RankingItemDTO(rep.getId(), rep.getNome(), subtitulo, (double) totalUsuarios, (int) totalUsuarios, "ARTISTA", String.valueOf(totalUsuarios)));
+        
+        // Vamos ordenar os artistas por frequência decrescente
+        List<Map.Entry<String, Long>> ordenados = frequenciaArtista.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .collect(Collectors.toList());
+
+        int rank = 1;
+        for (Map.Entry<String, Long> entry : ordenados) {
+            String nomeMinusculo = entry.getKey();
+            long totalOuvidos = entry.getValue();
+            
+            // Busca o objeto Artista correspondente
+            Artista art = artistaPorNome.get(nomeMinusculo);
+            String nomeExibicao = art != null ? art.getNome() : formatarNome(entry.getKey());
+            String capaUrl = art != null ? art.getCapaUrl() : null;
+            String id = art != null ? art.getId() : UUID.randomUUID().toString();
+
+            // Se não tiver capa do artista, tenta pegar a capa de alguma música dele
+            if (capaUrl == null || capaUrl.isBlank()) {
+                capaUrl = musicas.stream()
+                        .filter(m -> m.getArtista() != null && m.getArtista().trim().toLowerCase().equals(nomeMinusculo))
+                        .map(Musica::getCapaUrl)
+                        .filter(url -> url != null && !url.isBlank())
+                        .findFirst()
+                        .orElse(null);
+            }
+
+            String subtitulo = "Top #" + rank;
+            ranking.add(new RankingItemDTO(id, nomeExibicao, subtitulo, (double) totalOuvidos, (int) totalOuvidos, "ARTISTA", String.valueOf(totalOuvidos), capaUrl));
+            rank++;
         }
-        ranking.sort(Comparator.comparing(RankingItemDTO::notaMedia).reversed());
+
         return ranking;
+    }
+
+    private String formatarNome(String nome) {
+        if (nome == null || nome.isEmpty()) return "";
+        return Arrays.stream(nome.split("\\s+"))
+                .map(w -> w.length() > 0 ? Character.toUpperCase(w.charAt(0)) + w.substring(1) : "")
+                .collect(Collectors.joining(" "));
     }
 }

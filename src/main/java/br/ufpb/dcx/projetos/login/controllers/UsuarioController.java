@@ -158,6 +158,14 @@ public final class UsuarioController {
             pedidoPendenteRecebido = comunidadeService.isPedidoPendente(id, logadoId);
         }
         
+        if (comunidadeService != null) {
+            modelo.put("seguidores", comunidadeService.listarSeguidores(id));
+            modelo.put("seguindo", comunidadeService.listarSeguindo(id));
+        } else {
+            modelo.put("seguidores", List.of());
+            modelo.put("seguindo", List.of());
+        }
+
         modelo.put("amigos", amigos);
         modelo.put("pedidoPendenteEnviado", pedidoPendenteEnviado);
         modelo.put("pedidoPendenteRecebido", pedidoPendenteRecebido);
@@ -315,6 +323,14 @@ public final class UsuarioController {
         modelo.put("bio", usuario.getBio());
         modelo.put("fotoUrl", usuario.getFotoUrl() != null ? usuario.getFotoUrl() : "");
         modelo.put("sucesso", ctx.queryParam("sucesso") != null);
+        if (comunidadeService != null) {
+            modelo.put("seguidores", comunidadeService.listarSeguidores(idLogado));
+            modelo.put("seguindo", comunidadeService.listarSeguindo(idLogado));
+        } else {
+            modelo.put("seguidores", List.of());
+            modelo.put("seguindo", List.of());
+        }
+
         modelo.put("minhasMusicas", minhasMusicas);
         modelo.put("meusArtistas", meusArtistas);
         modelo.put("meusAlbums", meusAlbums);

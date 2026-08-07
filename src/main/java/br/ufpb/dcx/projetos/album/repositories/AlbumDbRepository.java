@@ -149,10 +149,10 @@ public final class AlbumDbRepository implements AlbumRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return listarTodos(usuarioId);
         }
-        String sql = "SELECT " + COLUNAS + " FROM album WHERE (titulo ILIKE ? OR artista ILIKE ?) AND usuario_id = ?;";
+        String sql = "SELECT " + COLUNAS + " FROM album WHERE (LOWER(titulo) LIKE ? OR LOWER(artista) LIKE ?) AND usuario_id = ?;";
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            String wildcard = "%" + termo.trim() + "%";
+            String wildcard = "%" + termo.trim().toLowerCase() + "%";
             statement.setString(1, wildcard);
             statement.setString(2, wildcard);
             statement.setString(3, usuarioId);

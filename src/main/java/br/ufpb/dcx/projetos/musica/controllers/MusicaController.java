@@ -63,9 +63,25 @@ public final class MusicaController {
             List<Album> albums = albumService.findAll(usuarioId);
             List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
 
-            Map<String, String> playlistCovers = new HashMap<>();
+            Map<String, String> musicCovers = new HashMap<>();
+            for (Musica m : musicas) {
+                if (m.getYoutubeId() != null && m.getCapaUrl() != null && !m.getCapaUrl().isBlank()) {
+                    musicCovers.put(m.getYoutubeId(), m.getCapaUrl());
+                }
+            }
+
+            Map<String, List<String>> playlistCovers = new HashMap<>();
             for (br.ufpb.dcx.projetos.playlist.models.Playlist pl : playlists) {
-                playlistCovers.put(pl.getId(), playlistService.getPlaylistCapaUrl(pl.getId()));
+                List<String> covers = playlistService.findPlaylistWithItems(pl.getId(), usuarioId).getItems().stream()
+                        .limit(4)
+                        .map(item -> {
+                            if (musicCovers.containsKey(item.getVideoId())) {
+                                return musicCovers.get(item.getVideoId());
+                            }
+                            return "https://img.youtube.com/vi/" + item.getVideoId() + "/hqdefault.jpg";
+                        })
+                        .toList();
+                playlistCovers.put(pl.getId(), covers);
             }
 
             Map<String, Object> modelo = new HashMap<>();
@@ -90,9 +106,25 @@ public final class MusicaController {
         List<Musica> musicas = service.search(busca, usuarioId);
         List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
 
-        Map<String, String> playlistCovers = new HashMap<>();
+        Map<String, String> musicCovers = new HashMap<>();
+        for (Musica m : musicas) {
+            if (m.getYoutubeId() != null && m.getCapaUrl() != null && !m.getCapaUrl().isBlank()) {
+                musicCovers.put(m.getYoutubeId(), m.getCapaUrl());
+            }
+        }
+
+        Map<String, List<String>> playlistCovers = new HashMap<>();
         for (br.ufpb.dcx.projetos.playlist.models.Playlist pl : playlists) {
-            playlistCovers.put(pl.getId(), playlistService.getPlaylistCapaUrl(pl.getId()));
+            List<String> covers = playlistService.findPlaylistWithItems(pl.getId(), usuarioId).getItems().stream()
+                    .limit(4)
+                    .map(item -> {
+                        if (musicCovers.containsKey(item.getVideoId())) {
+                            return musicCovers.get(item.getVideoId());
+                        }
+                        return "https://img.youtube.com/vi/" + item.getVideoId() + "/hqdefault.jpg";
+                    })
+                    .toList();
+            playlistCovers.put(pl.getId(), covers);
         }
 
         Map<String, Object> modelo = new HashMap<>();
@@ -171,9 +203,17 @@ public final class MusicaController {
                     dto.capaUrl());
             service.save(musica);
 
-            // Publica automaticamente na comunidade se houver resenha
-            if (comunidadeService != null && musica.getResenha() != null && !musica.getResenha().trim().isEmpty()) {
-                String msg = musica.getResenha().trim();
+            // Publica automaticamente na comunidade se solicitado pelo checkbox
+            String compartilhar = ctx.formParam("compartilharNaComunidade");
+            if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
+                String msg = "Catalogou a música: **" + musica.getTitulo() + "** (" + musica.getArtista() + ")";
+                if (musica.getNota() != null) {
+                    msg += " e avaliou com " + musica.getNota() + " estrelas. ⭐";
+                }
+                String mensagem = ctx.formParam("mensagemComunidade");
+                if (mensagem != null && !mensagem.trim().isEmpty()) {
+                    msg += "\n\n\"" + mensagem.trim() + "\"";
+                }
                 comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", musica.getId(), msg);
             }
 

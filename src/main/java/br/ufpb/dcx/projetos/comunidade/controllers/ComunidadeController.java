@@ -59,6 +59,16 @@ public class ComunidadeController {
         var posts = service.listarFeedPublico(usuarioLogadoId);
         var amigos = service.listarAmigos(usuarioLogadoId);
         var pedidos = service.listarPedidosRecebidos(usuarioLogadoId);
+        var seguidores = service.listarSeguidores(usuarioLogadoId);
+        var seguindo = service.listarSeguindo(usuarioLogadoId);
+        
+        java.util.Set<String> amigosIds = amigos.stream()
+                .map(br.ufpb.dcx.projetos.login.models.Usuario::getId)
+                .collect(java.util.stream.Collectors.toSet());
+        
+        java.util.Set<String> seguindoIds = seguindo.stream()
+                .map(br.ufpb.dcx.projetos.login.models.Usuario::getId)
+                .collect(java.util.stream.Collectors.toSet());
         
         var postIds = posts.stream().map(PostViewDTO::id).toList();
         var comentarios = service.listarComentariosParaPosts(postIds);
@@ -69,7 +79,11 @@ public class ComunidadeController {
         modelo.put("paginaAtiva", "comunidade");
         modelo.put("posts", posts);
         modelo.put("amigos", amigos);
+        modelo.put("amigosIds", amigosIds);
+        modelo.put("seguindoIds", seguindoIds);
         modelo.put("pedidos", pedidos);
+        modelo.put("seguidores", seguidores);
+        modelo.put("seguindo", seguindo);
         modelo.put("usuarios", usuarioService.listarTodos());
         modelo.put("comentarios", comentarios);
         modelo.put("erro", ctx.sessionAttribute("erroComunidade")); // flash message
@@ -244,7 +258,7 @@ public class ComunidadeController {
         String seguidoId = ctx.pathParam("id");
         
         try {
-            service.desfazerAmizade(usuarioLogadoId, seguidoId);
+            service.deixarDeSeguir(usuarioLogadoId, seguidoId);
         } catch (IllegalArgumentException e) {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }

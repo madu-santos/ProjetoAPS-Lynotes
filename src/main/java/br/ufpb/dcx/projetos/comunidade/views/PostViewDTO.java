@@ -19,14 +19,17 @@ public record PostViewDTO(
     String musicaArtista,
     Double musicaNota,
     String musicaYoutubeUrl,
+    String musicaCapaUrl,
     String albumId,
     String albumTitulo,
     String albumArtista,
     Double albumNota,
+    String albumCapaUrl,
     String artistaId,
-    String artistaNome
+    String artistaNome,
+    String artistaCapaUrl
 ) {
     public PostViewDTO(String id, String usuarioId, String usuarioNome, String conteudo, LocalDateTime dataCriacao, int qtdEstrelas, int qtdComentarios, boolean estreladoPorMim) {
-        this(id, usuarioId, usuarioNome, null, null, conteudo, dataCriacao, qtdEstrelas, qtdComentarios, estreladoPorMim, "TEXTO", null, null, null, null, null, null, null, null, null, null, null);
+        this(id, usuarioId, usuarioNome, null, null, conteudo, dataCriacao, qtdEstrelas, qtdComentarios, estreladoPorMim, "TEXTO", null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 }

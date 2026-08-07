@@ -133,12 +133,15 @@ public class ComunidadeDbRepository {
                 rs.getString("musica_artista"),
                 rs.getObject("musica_nota") != null ? rs.getDouble("musica_nota") : null,
                 rs.getString("musica_youtube_url"),
+                rs.getString("musica_capa_url"),
                 rs.getString("album_id"),
                 rs.getString("album_titulo"),
                 rs.getString("album_artista"),
                 rs.getObject("album_nota") != null ? rs.getDouble("album_nota") : null,
+                rs.getString("album_capa_url"),
                 rs.getString("artista_id"),
-                rs.getString("artista_nome")
+                rs.getString("artista_nome"),
+                rs.getString("artista_capa_url")
         );
     }
 
@@ -150,9 +153,9 @@ public class ComunidadeDbRepository {
             "(SELECT COUNT(*) FROM post_estrela pe WHERE pe.post_id = p.id) AS qtd_estrelas, " +
             "(SELECT COUNT(*) FROM comentario c WHERE c.post_id = p.id) AS qtd_comentarios, " +
             "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim, " +
-            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, " +
-            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, " +
-            "ar.nome AS artista_nome " +
+            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, m.capa_url AS musica_capa_url, " +
+            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, al.capa_url AS album_capa_url, " +
+            "ar.nome AS artista_nome, ar.capa_url AS artista_capa_url " +
             "FROM post p " +
             "JOIN usuario u ON p.usuario_id = u.id " +
             "LEFT JOIN musica m ON p.musica_id = m.id " +
@@ -197,9 +200,9 @@ public class ComunidadeDbRepository {
             "(SELECT COUNT(*) FROM post_estrela pe WHERE pe.post_id = p.id) AS qtd_estrelas, " +
             "(SELECT COUNT(*) FROM comentario c WHERE c.post_id = p.id) AS qtd_comentarios, " +
             "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim, " +
-            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, " +
-            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, " +
-            "ar.nome AS artista_nome " +
+            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, m.capa_url AS musica_capa_url, " +
+            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, al.capa_url AS album_capa_url, " +
+            "ar.nome AS artista_nome, ar.capa_url AS artista_capa_url " +
             "FROM post p " +
             "JOIN usuario u ON p.usuario_id = u.id " +
             "LEFT JOIN musica m ON p.musica_id = m.id " +
@@ -487,9 +490,9 @@ public class ComunidadeDbRepository {
             "(SELECT COUNT(*) FROM post_estrela pe WHERE pe.post_id = p.id) AS qtd_estrelas, " +
             "(SELECT COUNT(*) FROM comentario c WHERE c.post_id = p.id) AS qtd_comentarios, " +
             "(SELECT COUNT(*) > 0 FROM post_estrela pe2 WHERE pe2.post_id = p.id AND pe2.usuario_id = ?) AS estrelado_por_mim, " +
-            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, " +
-            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, " +
-            "ar.nome AS artista_nome " +
+            "m.titulo AS musica_titulo, m.artista AS musica_artista, m.nota AS musica_nota, m.youtube_url AS musica_youtube_url, m.capa_url AS musica_capa_url, " +
+            "al.titulo AS album_titulo, al.artista AS album_artista, al.nota AS album_nota, al.capa_url AS album_capa_url, " +
+            "ar.nome AS artista_nome, ar.capa_url AS artista_capa_url " +
             "FROM post p " +
             "JOIN usuario u ON p.usuario_id = u.id " +
             "LEFT JOIN musica m ON p.musica_id = m.id " +
@@ -529,5 +532,63 @@ public class ComunidadeDbRepository {
             // Ignorar falhas silenciosamente para resiliÃªncia do navbar
         }
         return false;
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarSeguidores(String usuarioId) {
+        List<br.ufpb.dcx.projetos.login.models.Usuario> lista = new ArrayList<>();
+        String sql = "SELECT u.id, u.nome, u.username, u.email, u.senha, u.tipo, u.bio, u.foto_url " +
+                     "FROM usuario u " +
+                     "JOIN seguidor s ON u.id = s.seguidor_id " +
+                     "WHERE s.seguido_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuarioId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new br.ufpb.dcx.projetos.login.models.Usuario(
+                            rs.getString("id"),
+                            rs.getString("nome"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("senha"),
+                            rs.getString("tipo"),
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar seguidores: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarSeguindo(String usuarioId) {
+        List<br.ufpb.dcx.projetos.login.models.Usuario> lista = new ArrayList<>();
+        String sql = "SELECT u.id, u.nome, u.username, u.email, u.senha, u.tipo, u.bio, u.foto_url " +
+                     "FROM usuario u " +
+                     "JOIN seguidor s ON u.id = s.seguido_id " +
+                     "WHERE s.seguidor_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuarioId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new br.ufpb.dcx.projetos.login.models.Usuario(
+                            rs.getString("id"),
+                            rs.getString("nome"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("senha"),
+                            rs.getString("tipo"),
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar seguindo: " + e.getMessage(), e);
+        }
+        return lista;
     }
 }

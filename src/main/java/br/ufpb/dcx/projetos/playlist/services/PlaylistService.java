@@ -143,6 +143,17 @@ public class PlaylistService {
         return null;
     }
 
+    public List<String> getPlaylistFirstFourCovers(String playlistId) {
+        List<PlaylistItem> items = playlistRepository.findItemsByPlaylistId(playlistId);
+        if (items != null) {
+            return items.stream()
+                    .limit(4)
+                    .map(item -> "https://img.youtube.com/vi/" + item.getVideoId() + "/hqdefault.jpg")
+                    .toList();
+        }
+        return List.of();
+    }
+
     public void removeItem(String playlistId, String itemId, String usuarioId) {
         removeItem(playlistId, itemId, usuarioId, false, null);
     }

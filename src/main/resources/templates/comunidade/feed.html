@@ -39,7 +39,7 @@
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link px-4 py-2.5 rounded-pill fw-bold fs-6 shadow" id="rankings-tab" data-bs-toggle="tab" data-bs-target="#rankings-pane" type="button" role="tab">
-                    <i class="bi bi-trophy-fill me-2"></i> Rankings da comunidade
+                    <i class="bi bi-trophy-fill me-2 text-purple"></i> Rankings da comunidade
                 </button>
             </li>
         </ul>
@@ -53,6 +53,24 @@
                     <div class="col-lg-8">
                         <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
                         
+                        <!-- Notificações de Seguidores Recebidas (Discreto) -->
+                        <div th:each="pedido : ${pedidos}" class="alert bg-darker border border-purple border-opacity-25 rounded-4 p-3 mb-4 d-flex align-items-center justify-content-between animation-fade-in" style="background-color: #121212 !important;">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle bg-purple text-white fw-bold d-flex align-items-center justify-content-center font-monospace" style="width: 32px; height: 32px; font-size: 0.8rem;" th:text="${#strings.substring(pedido.nome, 0, 1).toUpperCase()}">U</div>
+                                <div class="small">
+                                    <strong class="text-white" th:text="${pedido.nome}"></strong> começou a seguir você.
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <form th:action="@{'/comunidade/pedidos/' + ${pedido.id} + '/aceitar'}" method="post" hx-boost="false" class="m-0">
+                                    <button type="submit" class="btn btn-purple btn-sm rounded-pill px-3 py-1" style="font-size: 0.72rem;">Seguir de Volta</button>
+                                </form>
+                                <form th:action="@{'/comunidade/pedidos/' + ${pedido.id} + '/recusar'}" method="post" hx-boost="false" class="m-0">
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1" style="font-size: 0.72rem;">Dispensar</button>
+                                </form>
+                            </div>
+                        </div>
+
                         <!-- Caixa de Nova Publicação/Resenha -->
                         <div class="music-card-cyber p-4 mb-4">
                             <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
@@ -110,10 +128,25 @@
 
                     <!-- Lateral Direita (Membros da Comunidade) -->
                     <div class="col-lg-4 mt-4 mt-lg-0">
+                        <!-- Card 1: Membros da Comunidade -->
                         <div class="music-card-cyber p-4 mb-4">
                             <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
                                 <i class="bi bi-people text-purple"></i> Membros da Comunidade
                             </h5>
+                            
+                            <!-- Estatísticas sociais integradas e discretas -->
+                            <div class="d-flex align-items-center gap-2 mb-3 pb-3 border-bottom border-secondary border-opacity-10" style="font-size: 0.85rem;">
+                                <button type="button" class="btn btn-link text-secondary p-0 text-decoration-none d-flex align-items-center gap-1.5 shadow-none social-hover-purple" data-bs-toggle="modal" data-bs-target="#seguidoresModal">
+                                    <strong class="text-white transition-all" th:text="${seguidores != null ? seguidores.size() : 0}">0</strong>
+                                    <span class="transition-all">seguidores</span>
+                                </button>
+                                <span class="text-secondary opacity-30">•</span>
+                                <button type="button" class="btn btn-link text-secondary p-0 text-decoration-none d-flex align-items-center gap-1.5 shadow-none social-hover-purple" data-bs-toggle="modal" data-bs-target="#seguindoModal">
+                                    <strong class="text-white transition-all" th:text="${seguindo != null ? seguindo.size() : 0}">0</strong>
+                                    <span class="transition-all">seguindo</span>
+                                </button>
+                            </div>
+
                             <div class="d-flex flex-column gap-3">
                                 <div class="d-flex align-items-center justify-content-between" th:each="user : ${usuarios}" th:if="${user.id != usuarioLogadoId}">
                                     <div class="d-flex align-items-center gap-2 overflow-hidden me-2">
@@ -123,9 +156,14 @@
                                             <span class="text-secondary font-monospace" style="font-size: 0.75rem;" th:text="${'@' + user.username}">@user</span>
                                         </div>
                                     </div>
-                                    <form th:action="@{'/comunidade/seguir/' + ${user.id}}" method="post" hx-boost="false" class="m-0">
-                                        <button class="btn btn-outline-purple btn-sm rounded-pill px-3 py-1" type="submit">Seguir</button>
-                                    </form>
+                                    <div class="flex-shrink-0">
+                                        <form th:if="${seguindoIds != null and seguindoIds.contains(user.id)}" th:action="@{'/comunidade/deseguir/' + ${user.id}}" method="post" hx-boost="false" class="m-0">
+                                            <button class="btn btn-outline-danger btn-sm rounded-pill px-2 py-0.5" style="font-size: 0.72rem;" type="submit">Deseguir</button>
+                                        </form>
+                                        <form th:unless="${seguindoIds != null and seguindoIds.contains(user.id)}" th:action="@{'/comunidade/seguir/' + ${user.id}}" method="post" hx-boost="false" class="m-0">
+                                            <button class="btn btn-outline-purple btn-sm rounded-pill px-3 py-0.5" style="font-size: 0.72rem;" type="submit">Seguir</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -140,17 +178,20 @@
                 <ul class="nav nav-pills mb-4 gap-2 border-bottom border-secondary border-opacity-20 pb-3" id="rankCategoryTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active px-3 py-1.5 rounded-pill btn-sm" id="rank-musicas-tab" data-bs-toggle="tab" data-bs-target="#rank-musicas-pane" type="button" role="tab">
-                            <i class="bi bi-disc me-1"></i> Músicas
+                            <i class="bi bi-disc me-1 text-purple"></i> Músicas
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link px-3 py-1.5 rounded-pill btn-sm" id="rank-albums-tab" data-bs-toggle="tab" data-bs-target="#rank-albums-pane" type="button" role="tab">
-                            <i class="bi bi-disc-fill me-1"></i> Álbuns
+                            <i class="bi bi-disc-fill me-1 text-purple"></i> Álbuns
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link px-3 py-1.5 rounded-pill btn-sm" id="rank-artistas-tab" data-bs-toggle="tab" data-bs-target="#rank-artistas-pane" type="button" role="tab">
-                            <i class="bi bi-mic-fill me-1"></i> Artistas
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#BB86FC" class="bi bi-mic-fill me-1" viewBox="0 0 16 16" style="vertical-align: middle;">
+                                <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/>
+                                <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+                            </svg> Artistas Mais Ouvidos
                         </button>
                     </li>
                 </ul>
@@ -161,7 +202,7 @@
                     <div class="tab-pane fade show active" id="rank-musicas-pane" role="tabpanel">
                         <div class="music-card-cyber p-4">
                             <h4 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
-                                <i class="bi bi-trophy-fill text-warning"></i> Ranking de Músicas Mais Bem Avaliadas
+                                <i class="bi bi-trophy-fill text-purple"></i> Ranking de Músicas Mais Bem Avaliadas
                             </h4>
                             <div class="d-flex flex-column gap-3">
                                 <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-darker border border-secondary border-opacity-10" th:each="musica, iter : ${topMusicas}">
@@ -203,23 +244,26 @@
                         </div>
                     </div>
 
-                    <!-- CATEGORIA: ARTISTAS -->
+                    <!-- CATEGORIA: ARTISTAS MAIS OUVIDOS -->
                     <div class="tab-pane fade" id="rank-artistas-pane" role="tabpanel">
                         <div class="music-card-cyber p-4">
                             <h4 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
-                                <i class="bi bi-mic-fill text-info"></i> Ranking de Artistas
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#BB86FC" class="bi bi-mic-fill" viewBox="0 0 16 16" style="vertical-align: middle;">
+                                    <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/>
+                                    <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+                                </svg> Artistas Mais Ouvidos
                             </h4>
-                            <div class="d-flex flex-column gap-3">
-                                <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-darker border border-secondary border-opacity-10" th:each="artista, iter : ${topArtistas}">
-                                    <div class="d-flex align-items-center gap-3 overflow-hidden">
-                                        <span class="fw-bold text-purple fs-4 font-monospace ms-2" th:text="${iter.count + 'º'}">1º</span>
-                                        <div class="overflow-hidden">
-                                            <h6 class="fw-bold text-white mb-0 text-truncate fs-5" th:text="${artista.titulo}"></h6>
-                                            <span class="text-secondary small text-truncate d-block" th:text="${artista.subtitulo != null ? artista.subtitulo : 'Artista'}"></span>
+                            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+                                <div class="col" th:each="artista, iter : ${topArtistas}">
+                                    <div class="card h-100 bg-darker border-secondary border-opacity-10 p-3 rounded-4 text-center">
+                                        <div class="position-relative mb-2 mx-auto" style="max-width: 100px;">
+                                            <img th:if="${artista.capaUrl != null and !artista.capaUrl.isBlank()}" th:src="${artista.capaUrl}" class="w-100 rounded-circle shadow object-fit-cover" style="aspect-ratio: 1;" alt="Foto do Artista">
+                                            <div th:unless="${artista.capaUrl != null and !artista.capaUrl.isBlank()}" class="w-100 rounded-circle shadow bg-dark border border-secondary d-flex align-items-center justify-content-center" style="aspect-ratio: 1; color: #BB86FC;">
+                                                <i class="bi bi-mic-fill fs-3"></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="score-badge-circle" th:if="${artista.notaFormatada != null}">
-                                        <span th:text="${artista.notaFormatada + ' ★'}">5 ★</span>
+                                        <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${artista.titulo}"></h6>
+                                        <span class="badge bg-purple rounded-pill text-dark fw-bold px-2 py-1 mt-1 small" th:text="${artista.subtitulo}">Top #1</span>
                                     </div>
                                 </div>
                             </div>
@@ -233,9 +277,74 @@
 
     </main>
 
+    <!-- Modal Seguidores -->
+    <div class="modal fade" id="seguidoresModal" tabindex="-1" aria-labelledby="seguidoresModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-darker border-secondary text-white rounded-4 shadow">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="seguidoresModalLabel">
+                        <i class="bi bi-people-fill text-purple me-2"></i>Seguidores
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <div th:if="${seguidores == null or seguidores.isEmpty()}" class="text-center py-4 text-secondary">
+                        <i class="bi bi-emoji-smile fs-1 mb-2 d-block"></i>
+                        Nenhum seguidor ainda.
+                    </div>
+                    <div class="d-flex flex-column gap-3" th:unless="${seguidores == null or seguidores.isEmpty()}">
+                        <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark bg-opacity-50" th:each="user : ${seguidores}">
+                            <div class="d-flex align-items-center gap-3">
+                                <img th:if="${user.fotoUrl != null and !user.fotoUrl.isEmpty()}" th:src="${user.fotoUrl}" class="rounded-circle object-fit-cover shadow border border-purple" style="width: 40px; height: 40px;">
+                                <div th:unless="${user.fotoUrl != null and !user.fotoUrl.isEmpty()}" class="rounded-circle bg-darker text-purple border border-purple d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;" th:text="${#strings.substring(user.nome, 0, 1).toUpperCase()}">U</div>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-white" th:text="${user.nome}"></h6>
+                                    <span class="text-secondary small">@<span th:text="${user.username}">username</span></span>
+                                </div>
+                            </div>
+                            <a th:href="@{'/usuarios/' + ${user.id}}" class="btn btn-outline-purple btn-sm rounded-pill px-3" data-bs-dismiss="modal">Ver Perfil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Seguindo -->
+    <div class="modal fade" id="seguindoModal" tabindex="-1" aria-labelledby="seguindoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-darker border-secondary text-white rounded-4 shadow">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="seguindoModalLabel">
+                        <i class="bi bi-person-check-fill text-purple me-2"></i>Seguindo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <div th:if="${seguindo == null or seguindo.isEmpty()}" class="text-center py-4 text-secondary">
+                        <i class="bi bi-emoji-neutral fs-1 mb-2 d-block"></i>
+                        Você não está seguindo ninguém ainda.
+                    </div>
+                    <div class="d-flex flex-column gap-3" th:unless="${seguindo == null or seguindo.isEmpty()}">
+                        <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark bg-opacity-50" th:each="user : ${seguindo}">
+                            <div class="d-flex align-items-center gap-3">
+                                <img th:if="${user.fotoUrl != null and !user.fotoUrl.isEmpty()}" th:src="${user.fotoUrl}" class="rounded-circle object-fit-cover shadow border border-purple" style="width: 40px; height: 40px;">
+                                <div th:unless="${user.fotoUrl != null and !user.fotoUrl.isEmpty()}" class="rounded-circle bg-darker text-purple border border-purple d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;" th:text="${#strings.substring(user.nome, 0, 1).toUpperCase()}">U</div>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-white" th:text="${user.nome}"></h6>
+                                    <span class="text-secondary small">@<span th:text="${user.username}">username</span></span>
+                                </div>
+                            </div>
+                            <a th:href="@{'/usuarios/' + ${user.id}}" class="btn btn-outline-purple btn-sm rounded-pill px-3" data-bs-dismiss="modal">Ver Perfil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>
-<script src="/js/player.js?v=3" defer></script>
 </body>
 </html>

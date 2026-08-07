@@ -124,7 +124,7 @@ public final class App {
         ArtistaModule.registrar(app, connectionFactory, comunidadeService);
         br.ufpb.dcx.projetos.album.AlbumModule.registrar(app, connectionFactory, comunidadeService, musicaService);
         MusicaModule.registrar(app, connectionFactory, comunidadeService);
-        br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, connectionFactory, musicaService);
+        br.ufpb.dcx.projetos.playlist.PlaylistModule.registrar(app, connectionFactory, musicaService, comunidadeService);
         br.ufpb.dcx.projetos.comunidade.ComunidadeModule.registrar(app, connectionFactory, service, musicaService, albumService, artistaService);
 
         var rankingController = new br.ufpb.dcx.projetos.rankings.RankingController(musicaService, albumService, artistaService);
