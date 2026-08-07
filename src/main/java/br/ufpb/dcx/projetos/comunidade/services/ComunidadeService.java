@@ -229,11 +229,10 @@ public class ComunidadeService {
         if (deId == null || paraId == null || deId.equals(paraId)) {
             throw new IllegalArgumentException("Operação inválida.");
         }
-        if (repository.isPedidoPendente(paraId, deId)) {
-            aceitarSolicitacao(paraId, deId);
-        } else {
-            repository.criarPedidoSeguir(deId, paraId);
-        }
+        // A segue B imediatamente (unidirecional)
+        repository.seguir(deId, paraId);
+        // Cria uma notificação (pedido de seguir) para B saber que A o está seguindo
+        repository.criarPedidoSeguir(deId, paraId);
     }
 
     public void aceitarSolicitacao(String deId, String paraId) {

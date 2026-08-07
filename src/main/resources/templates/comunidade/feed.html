@@ -53,6 +53,24 @@
                     <div class="col-lg-8">
                         <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
                         
+                        <!-- Notificações de Seguidores Recebidas (Discreto) -->
+                        <div th:each="pedido : ${pedidos}" class="alert bg-darker border border-purple border-opacity-25 rounded-4 p-3 mb-4 d-flex align-items-center justify-content-between animation-fade-in" style="background-color: #121212 !important;">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle bg-purple text-white fw-bold d-flex align-items-center justify-content-center font-monospace" style="width: 32px; height: 32px; font-size: 0.8rem;" th:text="${#strings.substring(pedido.nome, 0, 1).toUpperCase()}">U</div>
+                                <div class="small">
+                                    <strong class="text-white" th:text="${pedido.nome}"></strong> começou a seguir você.
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <form th:action="@{'/comunidade/pedidos/' + ${pedido.id} + '/aceitar'}" method="post" hx-boost="false" class="m-0">
+                                    <button type="submit" class="btn btn-purple btn-sm rounded-pill px-3 py-1" style="font-size: 0.72rem;">Seguir de Volta</button>
+                                </form>
+                                <form th:action="@{'/comunidade/pedidos/' + ${pedido.id} + '/recusar'}" method="post" hx-boost="false" class="m-0">
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1" style="font-size: 0.72rem;">Dispensar</button>
+                                </form>
+                            </div>
+                        </div>
+
                         <!-- Caixa de Nova Publicação/Resenha -->
                         <div class="music-card-cyber p-4 mb-4">
                             <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
@@ -110,10 +128,25 @@
 
                     <!-- Lateral Direita (Membros da Comunidade) -->
                     <div class="col-lg-4 mt-4 mt-lg-0">
+                        <!-- Card 1: Membros da Comunidade -->
                         <div class="music-card-cyber p-4 mb-4">
                             <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
                                 <i class="bi bi-people text-purple"></i> Membros da Comunidade
                             </h5>
+                            
+                            <!-- Estatísticas sociais integradas e discretas -->
+                            <div class="d-flex align-items-center gap-2 mb-3 pb-3 border-bottom border-secondary border-opacity-10" style="font-size: 0.85rem;">
+                                <button type="button" class="btn btn-link text-secondary p-0 text-decoration-none d-flex align-items-center gap-1.5 shadow-none social-hover-purple" data-bs-toggle="modal" data-bs-target="#seguidoresModal">
+                                    <strong class="text-white transition-all" th:text="${seguidores != null ? seguidores.size() : 0}">0</strong>
+                                    <span class="transition-all">seguidores</span>
+                                </button>
+                                <span class="text-secondary opacity-30">•</span>
+                                <button type="button" class="btn btn-link text-secondary p-0 text-decoration-none d-flex align-items-center gap-1.5 shadow-none social-hover-purple" data-bs-toggle="modal" data-bs-target="#seguindoModal">
+                                    <strong class="text-white transition-all" th:text="${seguindo != null ? seguindo.size() : 0}">0</strong>
+                                    <span class="transition-all">seguindo</span>
+                                </button>
+                            </div>
+
                             <div class="d-flex flex-column gap-3">
                                 <div class="d-flex align-items-center justify-content-between" th:each="user : ${usuarios}" th:if="${user.id != usuarioLogadoId}">
                                     <div class="d-flex align-items-center gap-2 overflow-hidden me-2">
@@ -123,27 +156,15 @@
                                             <span class="text-secondary font-monospace" style="font-size: 0.75rem;" th:text="${'@' + user.username}">@user</span>
                                         </div>
                                     </div>
-                                    <form th:action="@{'/comunidade/seguir/' + ${user.id}}" method="post" hx-boost="false" class="m-0">
-                                        <button class="btn btn-outline-purple btn-sm rounded-pill px-3 py-1" type="submit">Seguir</button>
-                                    </form>
+                                    <div class="flex-shrink-0">
+                                        <form th:if="${seguindoIds != null and seguindoIds.contains(user.id)}" th:action="@{'/comunidade/deseguir/' + ${user.id}}" method="post" hx-boost="false" class="m-0">
+                                            <button class="btn btn-outline-danger btn-sm rounded-pill px-2 py-0.5" style="font-size: 0.72rem;" type="submit">Deseguir</button>
+                                        </form>
+                                        <form th:unless="${seguindoIds != null and seguindoIds.contains(user.id)}" th:action="@{'/comunidade/seguir/' + ${user.id}}" method="post" hx-boost="false" class="m-0">
+                                            <button class="btn btn-outline-purple btn-sm rounded-pill px-3 py-0.5" style="font-size: 0.72rem;" type="submit">Seguir</button>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Card de Rede de Conexões (Seguidores e Seguindo) -->
-                        <div class="music-card-cyber p-4 mb-4">
-                            <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
-                                <i class="bi bi-person-check text-purple"></i> Minha Rede
-                            </h5>
-                            <div class="d-flex gap-3">
-                                <button type="button" class="btn btn-darker flex-fill border border-purple border-opacity-25 rounded-4 p-3 text-center transition-all hover-glow" style="background-color: rgba(0, 0, 0, 0.2);" data-bs-toggle="modal" data-bs-target="#seguidoresModal">
-                                    <div class="text-secondary small font-monospace uppercase mb-1" style="font-size: 0.7rem;">Seguidores</div>
-                                    <h4 class="fw-bold text-white mb-0" th:text="${seguidores != null ? seguidores.size() : 0}">0</h4>
-                                </button>
-                                <button type="button" class="btn btn-darker flex-fill border border-purple border-opacity-25 rounded-4 p-3 text-center transition-all hover-glow" style="background-color: rgba(0, 0, 0, 0.2);" data-bs-toggle="modal" data-bs-target="#seguindoModal">
-                                    <div class="text-secondary small font-monospace uppercase mb-1" style="font-size: 0.7rem;">Seguindo</div>
-                                    <h4 class="fw-bold text-white mb-0" th:text="${seguindo != null ? seguindo.size() : 0}">0</h4>
-                                </button>
                             </div>
                         </div>
                     </div>

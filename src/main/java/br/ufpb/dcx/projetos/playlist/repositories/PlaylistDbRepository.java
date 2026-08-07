@@ -84,10 +84,10 @@ public final class PlaylistDbRepository implements PlaylistRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return findByUsuarioId(usuarioId);
         }
-        String sql = "SELECT id, nome, usuario_id, oculta, criado_em FROM playlist WHERE nome ILIKE ? AND usuario_id = ? ORDER BY criado_em DESC";
+        String sql = "SELECT id, nome, usuario_id, oculta, criado_em FROM playlist WHERE LOWER(nome) LIKE ? AND usuario_id = ? ORDER BY criado_em DESC";
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            String wildcard = "%" + termo.trim() + "%";
+            String wildcard = "%" + termo.trim().toLowerCase() + "%";
             statement.setString(1, wildcard);
             statement.setString(2, usuarioId);
             try (ResultSet result = statement.executeQuery()) {

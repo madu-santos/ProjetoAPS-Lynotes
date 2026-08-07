@@ -119,13 +119,13 @@ public final class ArtistaDbRepository implements ArtistaRepository {
         String sql = """
                 SELECT %s
                 FROM artista
-                WHERE (nome ILIKE ?
-                   OR genero_musical ILIKE ?
-                   OR biografia ILIKE ?)
+                WHERE (LOWER(nome) LIKE ?
+                   OR LOWER(genero_musical) LIKE ?
+                   OR LOWER(biografia) LIKE ?)
                    AND usuario_id = ?
                 ORDER BY nome, id
                 """.formatted(COLUNAS);
-        String padrao = "%" + termo + "%";
+        String padrao = "%" + termo.trim().toLowerCase() + "%";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {

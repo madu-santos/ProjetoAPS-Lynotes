@@ -1382,16 +1382,19 @@ thead th {
 }
 
 .glass-search-input {
-    background: transparent;
-    border: none;
-    color: #ffffff;
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
     font-size: 0.95rem;
 }
 .glass-search-input:focus {
-    outline: none;
-    box-shadow: none;
-    background: transparent;
-    color: #ffffff;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: #ffffff !important;
+}
+.glass-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.45) !important;
 }
 
 .glass-search-btn {
@@ -1407,6 +1410,15 @@ thead th {
     background: #8A2BE2;
     color: #ffffff;
     box-shadow: 0 4px 8px rgba(138, 43, 226, 0.25);
+}
+
+.social-hover-purple {
+    transition: all 0.2s ease-in-out;
+}
+.social-hover-purple:hover span,
+.social-hover-purple:hover h4,
+.social-hover-purple:hover strong {
+    color: #BB86FC !important;
 }
 
 /* Card de Música da Biblioteca */

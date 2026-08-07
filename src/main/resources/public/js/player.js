@@ -46,6 +46,11 @@ function playerElements() {
 window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
     const displayTitle = (artista && titulo) ? `${artista} - ${titulo}` : (titulo || 'Música');
     
+    // Reseta fila para apenas uma música
+    playerState.playlistItems = [];
+    playerState.currentPlaylistId = null;
+    playerState.currentIndex = 0;
+
     // Expande o painel lateral do player se estiver recolhido
     if (playerState.collapsed) {
         playerTogglePanel();
@@ -79,6 +84,12 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
 
     // Se temos um ID de 11 caracteres válido do YouTube, executa imediatamente
     if (videoId) {
+        playerState.playlistItems = [{
+            id: 'single_' + videoId,
+            titulo: displayTitle,
+            videoId: videoId,
+            playlistId: null
+        }];
         playerLoad(videoId, displayTitle, null, 0);
         return;
     }
@@ -111,7 +122,14 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
         .then(r => r.json())
         .then(data => {
             if (data && data.length > 0 && data[0].youtubeId && data[0].youtubeId.length === 11 && !data[0].youtubeId.startsWith('yt_')) {
-                playerLoad(data[0].youtubeId, displayTitle, null, 0);
+                const resolvedId = data[0].youtubeId;
+                playerState.playlistItems = [{
+                    id: 'single_' + resolvedId,
+                    titulo: displayTitle,
+                    videoId: resolvedId,
+                    playlistId: null
+                }];
+                playerLoad(resolvedId, displayTitle, null, 0);
             } else {
                 if (currentTitle) currentTitle.textContent = 'Não foi possível encontrar o vídeo real no YouTube.';
             }
@@ -423,7 +441,7 @@ function playerLoad(videoId, title, playlistId, startSeconds) {
 
     playerState.currentVideoId    = videoId;
     playerState.currentTitle      = playerCleanTitle(title, videoId);
-    playerState.currentPlaylistId = playlistId || playerState.currentPlaylistId;
+    playerState.currentPlaylistId = playlistId || null;
     playerState.playing           = true;
     playerState.currentTime       = startSeconds || 0;
 
@@ -668,14 +686,15 @@ function playerRenderTracks() {
     const { trackList } = playerElements();
     if (!trackList) return;
 
-    // Controla visibilidade do botão de faixas com base na existência de faixas na fila
     const toggleBtn = document.getElementById('player-toggle-tracklist-btn');
+    const isAlbumOrPlaylist = playerState.currentPlaylistId !== null;
+
     if (toggleBtn) {
-        if (playerState.playlistItems && playerState.playlistItems.length > 0) {
+        if (isAlbumOrPlaylist && playerState.playlistItems && playerState.playlistItems.length > 0) {
             toggleBtn.classList.remove('d-none');
         } else {
             toggleBtn.classList.add('d-none');
-            // Força a esconder a lista se estiver vazia
+            // Força a esconder a lista
             if (window.playerToggleTrackList) {
                 window.playerToggleTrackList(true);
             }
@@ -683,17 +702,19 @@ function playerRenderTracks() {
     }
 
     trackList.innerHTML = '';
-    playerState.playlistItems.forEach((item, index) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'player-track-button';
-        if (index === playerState.currentIndex && playerState.playing) {
-            btn.classList.add('active');
-        }
-        btn.textContent = playerCleanTitle(item.titulo, item.videoId);
-        btn.addEventListener('click', () => playerLoadTrack(item));
-        trackList.appendChild(btn);
-    });
+    if (isAlbumOrPlaylist) {
+        playerState.playlistItems.forEach((item, index) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'player-track-button';
+            if (index === playerState.currentIndex && playerState.playing) {
+                btn.classList.add('active');
+            }
+            btn.textContent = playerCleanTitle(item.titulo, item.videoId);
+            btn.addEventListener('click', () => playerLoadTrack(item));
+            trackList.appendChild(btn);
+        });
+    }
 }
 
 // --- Inicialização ---

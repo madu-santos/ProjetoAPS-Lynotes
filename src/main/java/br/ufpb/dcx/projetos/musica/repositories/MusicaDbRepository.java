@@ -206,10 +206,10 @@ public final class MusicaDbRepository implements MusicaRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return buscarPorUsuarioId(usuarioId);
         }
-        String sql = "SELECT " + COLUNAS + " FROM musica WHERE (titulo ILIKE ? OR artista ILIKE ? OR genero ILIKE ? OR resenha ILIKE ?) AND usuario_id = ? AND oculta_da_biblioteca = FALSE;";
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE (LOWER(titulo) LIKE ? OR LOWER(artista) LIKE ? OR LOWER(genero) LIKE ? OR LOWER(resenha) LIKE ?) AND usuario_id = ? AND oculta_da_biblioteca = FALSE;";
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            String wildcard = "%" + termo.trim() + "%";
+            String wildcard = "%" + termo.trim().toLowerCase() + "%";
             statement.setString(1, wildcard);
             statement.setString(2, wildcard);
             statement.setString(3, wildcard);

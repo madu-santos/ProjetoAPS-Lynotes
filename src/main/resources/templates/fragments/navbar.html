@@ -194,10 +194,29 @@
             };
 
             // Custom Confirmation Modal Helper
-            window.confirmarExclusaoCustom = function(formElement, titulo, mensagem, opacaoApagarCatalogo = false) {
+            window.confirmarExclusaoCustom = function(formElement, titulo, mensagem, opacaoApagarCatalogo = false, eventObj = null) {
+                if (formElement.dataset.confirmed === 'true') {
+                    return true;
+                }
+
+                const ev = eventObj || window.event;
+                if (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                }
+
                 const modalEl = document.getElementById('customConfirmModal');
                 if (!modalEl) {
-                    return confirm(mensagem);
+                    if (confirm(mensagem)) {
+                        formElement.dataset.confirmed = 'true';
+                        formElement.submit();
+                    }
+                    return false;
+                }
+                
+                // Mover o modal para o body para evitar problemas de stacking context (tela preta bloqueada)
+                if (modalEl.parentNode !== document.body) {
+                    document.body.appendChild(modalEl);
                 }
                 
                 const titleEl = document.getElementById('customConfirmTitle');
@@ -219,6 +238,7 @@
                     document.getElementById('btnApenasRemover').onclick = function() {
                         formElement.action = formElement.action.split('?')[0] + "?apagarMusica=false";
                         bootstrapModal.hide();
+                        formElement.dataset.confirmed = 'true';
                         if (typeof formElement.requestSubmit === 'function') {
                             formElement.requestSubmit();
                         } else {
@@ -238,6 +258,7 @@
                     
                     document.getElementById('customConfirmBtn').onclick = function() {
                         bootstrapModal.hide();
+                        formElement.dataset.confirmed = 'true';
                         if (typeof formElement.requestSubmit === 'function') {
                             formElement.requestSubmit();
                         } else {
