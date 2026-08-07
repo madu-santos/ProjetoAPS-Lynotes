@@ -668,6 +668,20 @@ function playerRenderTracks() {
     const { trackList } = playerElements();
     if (!trackList) return;
 
+    // Controla visibilidade do botão de faixas com base na existência de faixas na fila
+    const toggleBtn = document.getElementById('player-toggle-tracklist-btn');
+    if (toggleBtn) {
+        if (playerState.playlistItems && playerState.playlistItems.length > 0) {
+            toggleBtn.classList.remove('d-none');
+        } else {
+            toggleBtn.classList.add('d-none');
+            // Força a esconder a lista se estiver vazia
+            if (window.playerToggleTrackList) {
+                window.playerToggleTrackList(true);
+            }
+        }
+    }
+
     trackList.innerHTML = '';
     playerState.playlistItems.forEach((item, index) => {
         const btn = document.createElement('button');
@@ -694,11 +708,12 @@ async function initPlayerModule() {
     window.playerModuleInitialized = true;
 
     // Restaurar estado do painel (retraído ou não)
+    // Força o painel a iniciar fechado sempre, independente do estado salvo
+    playerState.collapsed = true;
+    if (container) container.classList.add('collapsed');
+
     const saved = playerRestoreState();
     if (saved) {
-        playerState.collapsed = !!saved.collapsed;
-        if (container) container.classList.toggle('collapsed', playerState.collapsed);
-
         if (saved.currentPlaylistId) {
             await playerLoadPlaylists(saved.currentPlaylistId).catch(() =>
                 playerSetMessage('Falha ao carregar playlists.')
@@ -737,6 +752,47 @@ async function initPlayerModule() {
     }
 }
 
+window.playerToggleTrackList = function(forceHide) {
+    const trackList = document.getElementById('player-track-list');
+    const toggleBtn = document.getElementById('player-toggle-tracklist-btn');
+    if (!trackList || !toggleBtn) return;
+
+    if (forceHide === true || !trackList.classList.contains('hidden')) {
+        trackList.classList.add('hidden');
+        toggleBtn.innerHTML = 'Faixas &#9660;';
+    } else {
+        trackList.classList.remove('hidden');
+        toggleBtn.innerHTML = 'Faixas &#9650;';
+    }
+};
+
+window.playerResetPosition = function() {
+    const player = document.getElementById('mini-player');
+    const panel = document.querySelector('.player-panel');
+    const resetBtn = document.getElementById('player-reset-pos-btn');
+    if (!player || !panel) return;
+    
+    // Desativa transições temporariamente para que o retorno à lateral seja instantâneo (teleporte)
+    player.style.transition = 'none';
+    
+    player.classList.remove('player-floating');
+    player.style.top = '';
+    player.style.left = '';
+    player.style.right = '';
+    
+    panel.style.setProperty('--player-scale', 1);
+    
+    if (resetBtn) resetBtn.classList.add('d-none');
+    
+    // Força reflow para renderizar a remoção de classes e estilos instantaneamente
+    player.offsetHeight;
+    
+    // Reativa a transição suave logo em seguida
+    setTimeout(() => {
+        player.style.transition = '';
+    }, 50);
+};
+
 // --- UX Improvements (Drag and Drop & Resize) ---
 function initPlayerUX() {
     const player = document.getElementById('mini-player');
@@ -760,6 +816,12 @@ function initPlayerUX() {
             player.style.left = rect.left + 'px';
             player.style.top = rect.top + 'px';
             player.classList.add('player-floating');
+            const resetBtn = document.getElementById('player-reset-pos-btn');
+            if (resetBtn) resetBtn.classList.remove('d-none');
+        }
+        
+        if (window.playerToggleTrackList) {
+            window.playerToggleTrackList(true);
         }
         
         dragStartX = e.clientX;
@@ -829,6 +891,12 @@ function initPlayerUX() {
     document.addEventListener('mouseup', () => {
         if (isResizing) isResizing = false;
     });
+    
+    // Mostra o botão reset se o player estiver flutuando ao recarregar a página
+    if (player.classList.contains('player-floating')) {
+        const resetBtn = document.getElementById('player-reset-pos-btn');
+        if (resetBtn) resetBtn.classList.remove('d-none');
+    }
 }
 
 window.addEventListener('beforeunload', playerSaveState);
