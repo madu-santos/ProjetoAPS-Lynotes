@@ -63,6 +63,23 @@
                             <p id="previewArtista" class="text-secondary small mb-0 px-3 overflow-hidden" style="max-height: 60px;"></p>
                         </div>
 
+                        <!-- OPINIÃO E AVALIAÇÃO (Sempre visível) -->
+                        <div class="mb-4 p-4 rounded-4 bg-darker border border-secondary border-opacity-20">
+                            <h5 class="fw-bold text-purple mb-3"><i class="bi bi-chat-left-quote me-2"></i> Sua Avaliação</h5>
+                            
+                            <div class="mb-0">
+                                <label class="form-label d-block text-white fw-bold">Sua nota (1 a 5 estrelas)</label>
+                                <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
+                                    <i class="bi bi-star star-btn text-warning" data-index="1"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="2"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="3"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="4"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="5"></i>
+                                </div>
+                                <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
+                            </div>
+                        </div>
+
                         <!-- Toggle para exibir formulário bruto -->
                         <div class="form-check form-switch mb-4" th:if="${!form.edicao}">
                             <input class="form-check-input bg-dark border-secondary" type="checkbox" id="toggleRawForm" onchange="document.getElementById('rawFormFields').classList.toggle('d-none')">
@@ -109,19 +126,6 @@
                                        th:value="${form.anoLancamento}"
                                        placeholder="Ex: 2013"
                                        autocomplete="off">
-                            </div>
-
-                            <!-- Avaliação -->
-                            <div class="mb-4">
-                                <label class="form-label text-purple font-monospace small uppercase fw-bold">Sua nota (1 a 5 estrelas)</label>
-                                <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
-                                    <i class="bi bi-star star-btn text-warning" data-index="1"></i>
-                                    <i class="bi bi-star star-btn text-warning" data-index="2"></i>
-                                    <i class="bi bi-star star-btn text-warning" data-index="3"></i>
-                                    <i class="bi bi-star star-btn text-warning" data-index="4"></i>
-                                    <i class="bi bi-star star-btn text-warning" data-index="5"></i>
-                                </div>
-                                <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
                             </div>
 
                             <!-- URL da Capa -->
@@ -290,52 +294,6 @@
                 document.getElementById('ytQuery').value = item.titulo;
                 activeIndex = -1;
             };
-
-            // Lógica das Estrelas
-            document.querySelectorAll('.interactive-stars').forEach(container => {
-                const inputId = container.getAttribute('data-input');
-                const hiddenInput = document.getElementById(inputId);
-                const stars = container.querySelectorAll('.star-btn');
-                let currentVal = parseFloat(container.getAttribute('data-initial')) || 0;
-
-                function updateStars(val) {
-                    stars.forEach(star => {
-                        let idx = parseFloat(star.getAttribute('data-index'));
-                        if (idx <= val) {
-                            star.classList.replace('bi-star', 'bi-star-fill');
-                            star.classList.replace('bi-star-half', 'bi-star-fill');
-                        } else if (idx - 0.5 === val) {
-                            star.classList.replace('bi-star-fill', 'bi-star-half');
-                            star.classList.replace('bi-star', 'bi-star-half');
-                        } else {
-                            star.classList.replace('bi-star-fill', 'bi-star');
-                            star.classList.replace('bi-star-half', 'bi-star');
-                        }
-                    });
-                }
-
-                updateStars(currentVal);
-
-                container.addEventListener('mousemove', e => {
-                    const rect = container.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const starWidth = rect.width / 5;
-                    const hoverVal = Math.ceil((x / starWidth) * 2) / 2;
-                    updateStars(hoverVal > 5 ? 5 : (hoverVal < 0.5 ? 0.5 : hoverVal));
-                });
-
-                container.addEventListener('mouseleave', () => updateStars(currentVal));
-
-                container.addEventListener('click', e => {
-                    const rect = container.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const starWidth = rect.width / 5;
-                    currentVal = Math.ceil((x / starWidth) * 2) / 2;
-                    currentVal = currentVal > 5 ? 5 : (currentVal < 0.5 ? 0.5 : currentVal);
-                    hiddenInput.value = currentVal;
-                    updateStars(currentVal);
-                });
-            });
         })();
     </script>
 

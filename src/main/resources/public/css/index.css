@@ -879,7 +879,7 @@ thead th {
 .navbar-profile-btn:hover {
     background: #BB86FC;
     color: #121212 !important;
-    box-shadow: 0 0 12px rgba(187, 134, 252, 0.4);
+    box-shadow: 0 4px 8px rgba(187, 134, 252, 0.15);
 }
 
 .navbar-logout-btn {
@@ -926,7 +926,7 @@ thead th {
 .music-card .btn-outline-success:hover {
     background-color: #1ed760 !important;
     transform: scale(1.04);
-    box-shadow: 0 0 12px rgba(29, 185, 84, 0.4);
+    box-shadow: 0 4px 8px rgba(29, 185, 84, 0.15);
 }
 
 /* YouTube button custom design */
@@ -1342,7 +1342,7 @@ thead th {
     background: linear-gradient(135deg, #8A2BE2 0%, #4CA1AF 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
+    text-shadow: 0 2px 10px rgba(138, 43, 226, 0.2);
     letter-spacing: -0.5px;
 }
 
@@ -1353,7 +1353,7 @@ thead th {
     padding: 10px 24px;
     font-weight: 600;
     border: none;
-    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.5);
+    box-shadow: 0 4px 10px rgba(138, 43, 226, 0.2);
     transition: all 0.25s ease;
     text-decoration: none;
     display: inline-flex;
@@ -1363,7 +1363,7 @@ thead th {
 }
 .btn-add-music-glow:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(160, 32, 240, 0.7);
+    box-shadow: 0 6px 15px rgba(160, 32, 240, 0.3);
     color: #ffffff !important;
 }
 
@@ -1373,12 +1373,12 @@ thead th {
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(138, 43, 226, 0.35);
     border-radius: 14px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(138, 43, 226, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 8px rgba(138, 43, 226, 0.1);
     transition: all 0.3s ease;
 }
 .glass-search-box:focus-within {
     border-color: #8A2BE2;
-    box-shadow: 0 0 25px rgba(138, 43, 226, 0.6);
+    box-shadow: 0 0 12px rgba(138, 43, 226, 0.25);
 }
 
 .glass-search-input {
@@ -1406,7 +1406,7 @@ thead th {
 .glass-search-btn:hover {
     background: #8A2BE2;
     color: #ffffff;
-    box-shadow: 0 0 12px rgba(138, 43, 226, 0.6);
+    box-shadow: 0 4px 8px rgba(138, 43, 226, 0.25);
 }
 
 /* Card de Música da Biblioteca */
@@ -1427,7 +1427,7 @@ thead th {
 .music-card-cyber:hover {
     transform: translateY(-6px);
     border-color: rgba(138, 43, 226, 0.6);
-    box-shadow: 0 10px 30px rgba(138, 43, 226, 0.35);
+    box-shadow: 0 8px 20px rgba(138, 43, 226, 0.15);
 }
 
 .music-card-cover-container {
@@ -1476,7 +1476,7 @@ thead th {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.6);
+    box-shadow: 0 4px 10px rgba(138, 43, 226, 0.25);
     transition: all 0.2s ease;
 }
 .btn-quick-play:hover {
@@ -1498,7 +1498,7 @@ thead th {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.6);
+    box-shadow: 0 4px 10px rgba(138, 43, 226, 0.25);
     transition: all 0.2s ease;
     z-index: 2;
 }
@@ -1544,7 +1544,7 @@ thead th {
     font-weight: 700;
     font-size: 0.85rem;
     color: #ffffff;
-    box-shadow: 0 0 12px rgba(138, 43, 226, 0.35);
+    box-shadow: 0 2px 8px rgba(138, 43, 226, 0.15);
 }
 
 /* Card Horizontal de Playlist */
@@ -1569,7 +1569,7 @@ thead th {
     background: #23233D;
     transform: translateY(-3px);
     border-color: rgba(138, 43, 226, 0.5);
-    box-shadow: 0 6px 20px rgba(138, 43, 226, 0.25);
+    box-shadow: 0 6px 12px rgba(138, 43, 226, 0.12);
     color: #ffffff;
 }
 
@@ -1646,14 +1646,14 @@ thead th {
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(138, 43, 226, 0.18) !important;
     border-radius: 24px !important;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(138, 43, 226, 0.12) !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 12px rgba(138, 43, 226, 0.05) !important;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: relative;
     z-index: 5;
 }
 .auth-card:hover {
     border-color: rgba(138, 43, 226, 0.35) !important;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 35px rgba(138, 43, 226, 0.22) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 16px rgba(138, 43, 226, 0.1) !important;
 }
 .auth-input-group {
     position: relative;
@@ -1668,7 +1668,7 @@ thead th {
 }
 .auth-input-group .form-control:focus {
     border-color: #8A2BE2 !important;
-    box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.25) !important;
+    box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.12) !important;
     background: rgba(15, 15, 26, 0.75) !important;
 }
 .auth-icon {
@@ -1685,6 +1685,6 @@ thead th {
     background: linear-gradient(135deg, #a78bfa 0%, #4ca1af 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+    text-shadow: 0 2px 8px rgba(138, 43, 226, 0.1);
 }
 

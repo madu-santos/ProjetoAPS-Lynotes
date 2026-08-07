@@ -63,6 +63,23 @@
                             <p id="previewBio" class="text-secondary small mb-0 px-3 overflow-hidden" style="max-height: 60px; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;"></p>
                         </div>
 
+                        <!-- OPINIÃO E AVALIAÇÃO (Sempre visível) -->
+                        <div class="mb-4 p-4 rounded-4 bg-darker border border-secondary border-opacity-20">
+                            <h5 class="fw-bold text-purple mb-3"><i class="bi bi-chat-left-quote me-2"></i> Sua Avaliação</h5>
+                            
+                            <div class="mb-0">
+                                <label class="form-label d-block text-white fw-bold">Sua nota (1 a 5 estrelas)</label>
+                                <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
+                                    <i class="bi bi-star star-btn text-warning" data-index="1"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="2"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="3"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="4"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="5"></i>
+                                </div>
+                                <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
+                            </div>
+                        </div>
+
                         <!-- Toggle para exibir formulário bruto -->
                         <div class="form-check form-switch mb-4" th:if="${!form.edicao}">
                             <input class="form-check-input bg-dark border-secondary" type="checkbox" id="toggleRawForm" onchange="document.getElementById('rawFormFields').classList.toggle('d-none')">

@@ -59,58 +59,59 @@
         <!-- Grid de Cards de Álbuns -->
         <div th:unless="${semAlbums}" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
             <div class="col" th:each="album : ${albums}">
-                <div class="music-card-cyber h-100 d-flex flex-column justify-content-between p-3">
-                    <div class="position-relative" style="group">
-                        <!-- Capa do Álbum -->
-                        <a th:href="${'/albums/' + album.id}" class="text-decoration-none text-white d-block">
-                            <div class="music-card-cover-container mb-3 position-relative">
-                                <img th:if="${album.capaUrl != null and !album.capaUrl.isBlank()}" th:src="${album.capaUrl}" class="music-card-cover" alt="Capa do Álbum">
-                                <div th:unless="${album.capaUrl != null and !album.capaUrl.isBlank()}" class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-secondary">
-                                    <i class="bi bi-disc fs-1"></i>
-                                </div>
-                                <!-- Botão de Play Overlay -->
-                                <div class="music-card-play-overlay">
-                                    <button class="btn btn-purple rounded-circle shadow-lg d-flex align-items-center justify-content-center"
-                                            style="width: 48px; height: 48px;"
-                                            th:data-id="${album.id}"
-                                            th:data-titulo="${album.titulo}"
-                                            th:data-capa="${album.capaUrl}"
-                                            onclick="if(typeof playerTocarAlbum === 'function') { event.preventDefault(); event.stopPropagation(); playerTocarAlbum(this.getAttribute('data-id'), this.getAttribute('data-titulo'), this.getAttribute('data-capa')); }">
-                                        <i class="bi bi-play-fill fs-3"></i>
-                                    </button>
-                                </div>
+                <div class="music-card-cyber p-3 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Capa -->
+                        <div class="music-card-cover-container mb-3 position-relative">
+                            <img th:if="${album.capaUrl != null and !album.capaUrl.isBlank()}" th:src="${album.capaUrl}" class="music-card-cover" alt="Capa do Álbum">
+                            <div th:unless="${album.capaUrl != null and !album.capaUrl.isBlank()}" class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-secondary">
+                                <i class="bi bi-disc fs-1 text-purple"></i>
                             </div>
-
-                            <!-- Informações do Álbum -->
-                            <h5 class="fw-bold text-white mb-1 text-truncate" th:text="${album.titulo}"></h5>
-                        </a>
+                        </div>
+                        <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${album.titulo}"></h6>
                         <p class="text-secondary small mb-2 text-truncate" th:text="${album.artista}"></p>
                     </div>
-
-                    <!-- Metadados de Baixo (Ano & Ações) -->
-                    <div>
-                        <div class="d-flex align-items-center justify-content-between pt-2 border-top border-secondary border-opacity-10 mt-2 mb-3">
-                            <span class="text-secondary small font-monospace" th:text="${album.anoLancamento != null ? 'Ano: ' + album.anoLancamento : 'Álbum'}"></span>
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center gap-2">
-                            <button type="button" 
-                                    class="btn btn-purple btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm" 
-                                    style="width: 32px; height: 32px; min-width: 32px;"
-                                    title="Tocar Álbum no Miniplayer"
-                                    th:data-albid="${album.id}"
-                                    onclick="if(typeof playerFetchAlbum === 'function') playerFetchAlbum(this.getAttribute('data-albid'), true);">
-                                <i class="bi bi-play-fill text-white fs-5"></i>
-                            </button>
-                            <a class="btn btn-outline-purple btn-sm px-3 rounded-pill" th:href="${'/albums/' + album.id + '/editar'}">
-                                <i class="bi bi-pencil-fill me-1"></i> Editar
-                            </a>
-                            <form method="post" th:action="${'/albums/' + album.id + '/excluir'}" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?');" class="m-0">
-                                <button class="btn btn-outline-danger btn-sm px-3 rounded-pill" type="submit">
-                                    <i class="bi bi-trash-fill me-1"></i> Excluir
+                        <div class="pt-2 border-top border-secondary border-opacity-10 mt-2">
+                            <!-- Linha superior: Play (esquerda) e Nota (direita) -->
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <!-- Play -->
+                                <button type="button" 
+                                        class="btn btn-purple rounded-circle p-0 d-flex align-items-center justify-content-center" 
+                                        style="width: 32px; height: 32px; min-width: 32px;"
+                                        title="Tocar Álbum no Miniplayer"
+                                        th:data-albid="${album.id}"
+                                        onclick="if(typeof playerFetchAlbum === 'function') playerFetchAlbum(this.getAttribute('data-albid'), true);">
+                                    <i class="bi bi-play-fill text-white fs-5"></i>
                                 </button>
-                            </form>
+                                
+                                <!-- Nota / Estrelas -->
+                                <div th:if="${album.nota != null}" class="score-badge-circle m-0" title="Sua Avaliação">
+                                    <span th:text="${album.nota != null ? album.nota + ' ★' : ''}">5 ★</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Linha inferior: Três pontos (esquerda) e Ano (direita) -->
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="dropend">
+                                    <button class="btn btn-link text-secondary p-0 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções">
+                                        <i class="bi bi-three-dots fs-5"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
+                                        <li>
+                                            <a class="dropdown-item text-purple fw-bold" th:href="${'/albums/' + album.id + '/editar'}">
+                                                <i class="bi bi-star-fill me-2"></i>Avaliar
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <form th:action="${'/albums/' + album.id + '/excluir'}" method="post" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?');">
+                                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <span class="text-secondary small font-monospace text-truncate" th:text="${album.anoLancamento != null ? album.anoLancamento : 'Álbum'}"></span>
+                            </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>

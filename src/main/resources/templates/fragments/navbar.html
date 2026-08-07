@@ -62,9 +62,7 @@
                             stars.forEach((star, idx) => {
                                 let starValue = idx + 1;
                                 if (rating >= starValue) {
-                                    star.className = 'bi bi-star-fill star-btn text-purple';
-                                } else if (rating >= starValue - 0.5) {
-                                    star.className = 'bi bi-star-half star-btn text-purple';
+                                    star.className = 'bi bi-star-fill star-btn text-warning';
                                 } else {
                                     star.className = 'bi bi-star star-btn text-muted';
                                 }
@@ -74,20 +72,14 @@
                         render(currentRating);
 
                         stars.forEach((star, idx) => {
-                            star.addEventListener('mousemove', e => {
-                                const rect = star.getBoundingClientRect();
-                                const isHalf = e.clientX - rect.left < rect.width / 2;
-                                const rating = isHalf ? idx + 0.5 : idx + 1;
-                                render(rating);
+                            star.addEventListener('mouseenter', () => {
+                                render(idx + 1);
                             });
-                            star.addEventListener('mouseleave', () => {
-                                render(currentRating);
-                            });
-                            star.addEventListener('click', e => {
-                                const rect = star.getBoundingClientRect();
-                                const isHalf = e.clientX - rect.left < rect.width / 2;
-                                currentRating = isHalf ? idx + 0.5 : idx + 1;
-                                input.value = currentRating;
+                            star.addEventListener('click', () => {
+                                currentRating = idx + 1;
+                                if (input) {
+                                    input.value = currentRating;
+                                }
                                 render(currentRating);
                             });
                         });

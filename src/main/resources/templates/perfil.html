@@ -44,7 +44,7 @@
                     <p class="text-purple font-monospace mb-2">@<span th:text="${perfilUsername}">username</span></p>
 
                     <!-- Pílulas de Estatísticas -->
-                    <div class="d-flex gap-2 flex-wrap">
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
                         <span class="badge bg-darker border border-secondary border-opacity-20 px-3 py-2 text-white font-monospace">
                             <i class="bi bi-music-note text-purple me-1"></i> <strong th:text="${musicas != null ? musicas.size() : 0}">0</strong> Músicas
                         </span>
@@ -54,6 +54,12 @@
                         <span class="badge bg-darker border border-secondary border-opacity-20 px-3 py-2 text-white font-monospace">
                             <i class="bi bi-disc text-purple me-1"></i> <strong th:text="${albums != null ? albums.size() : 0}">0</strong> Álbuns
                         </span>
+                        <button type="button" class="btn badge bg-darker border border-purple border-opacity-40 px-3 py-2 text-white font-monospace hover-glow" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#seguidoresModal">
+                            <i class="bi bi-people-fill text-purple me-1"></i> <strong th:text="${seguidores != null ? seguidores.size() : 0}">0</strong> Seguidores
+                        </button>
+                        <button type="button" class="btn badge bg-darker border border-purple border-opacity-40 px-3 py-2 text-white font-monospace hover-glow" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#seguindoModal">
+                            <i class="bi bi-person-check-fill text-purple me-1"></i> <strong th:text="${seguindo != null ? seguindo.size() : 0}">0</strong> Seguindo
+                        </button>
                     </div>
                 </div>
 
@@ -113,6 +119,72 @@
         </div>
 
     </main>
+
+    <!-- Modal Seguidores -->
+    <div class="modal fade" id="seguidoresModal" tabindex="-1" aria-labelledby="seguidoresModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-darker border-secondary text-white rounded-4 shadow">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="seguidoresModalLabel">
+                        <i class="bi bi-people-fill text-purple me-2"></i>Seguidores
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <div th:if="${seguidores == null or seguidores.isEmpty()}" class="text-center py-4 text-secondary">
+                        <i class="bi bi-emoji-smile fs-1 mb-2 d-block"></i>
+                        Nenhum seguidor ainda.
+                    </div>
+                    <div class="d-flex flex-column gap-3" th:unless="${seguidores == null or seguidores.isEmpty()}">
+                        <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark bg-opacity-50" th:each="user : ${seguidores}">
+                            <div class="d-flex align-items-center gap-3">
+                                <img th:if="${user.fotoUrl != null and !user.fotoUrl.isEmpty()}" th:src="${user.fotoUrl}" class="rounded-circle object-fit-cover shadow border border-purple" style="width: 40px; height: 40px;">
+                                <div th:unless="${user.fotoUrl != null and !user.fotoUrl.isEmpty()}" class="rounded-circle bg-darker text-purple border border-purple d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;" th:text="${#strings.substring(user.nome, 0, 1).toUpperCase()}">U</div>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-white" th:text="${user.nome}"></h6>
+                                    <span class="text-secondary small">@<span th:text="${user.username}">username</span></span>
+                                </div>
+                            </div>
+                            <a th:href="@{'/usuarios/' + ${user.id}}" class="btn btn-outline-purple btn-sm rounded-pill px-3" data-bs-dismiss="modal">Ver Perfil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Seguindo -->
+    <div class="modal fade" id="seguindoModal" tabindex="-1" aria-labelledby="seguindoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-darker border-secondary text-white rounded-4 shadow">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="seguindoModalLabel">
+                        <i class="bi bi-person-check-fill text-purple me-2"></i>Seguindo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <div th:if="${seguindo == null or seguindo.isEmpty()}" class="text-center py-4 text-secondary">
+                        <i class="bi bi-emoji-neutral fs-1 mb-2 d-block"></i>
+                        Não está seguindo ninguém ainda.
+                    </div>
+                    <div class="d-flex flex-column gap-3" th:unless="${seguindo == null or seguindo.isEmpty()}">
+                        <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark bg-opacity-50" th:each="user : ${seguindo}">
+                            <div class="d-flex align-items-center gap-3">
+                                <img th:if="${user.fotoUrl != null and !user.fotoUrl.isEmpty()}" th:src="${user.fotoUrl}" class="rounded-circle object-fit-cover shadow border border-purple" style="width: 40px; height: 40px;">
+                                <div th:unless="${user.fotoUrl != null and !user.fotoUrl.isEmpty()}" class="rounded-circle bg-darker text-purple border border-purple d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;" th:text="${#strings.substring(user.nome, 0, 1).toUpperCase()}">U</div>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-white" th:text="${user.nome}"></h6>
+                                    <span class="text-secondary small">@<span th:text="${user.username}">username</span></span>
+                                </div>
+                            </div>
+                            <a th:href="@{'/usuarios/' + ${user.id}}" class="btn btn-outline-purple btn-sm rounded-pill px-3" data-bs-dismiss="modal">Ver Perfil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 

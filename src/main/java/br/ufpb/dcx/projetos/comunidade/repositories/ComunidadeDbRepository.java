@@ -530,4 +530,62 @@ public class ComunidadeDbRepository {
         }
         return false;
     }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarSeguidores(String usuarioId) {
+        List<br.ufpb.dcx.projetos.login.models.Usuario> lista = new ArrayList<>();
+        String sql = "SELECT u.id, u.nome, u.username, u.email, u.senha, u.tipo, u.bio, u.foto_url " +
+                     "FROM usuario u " +
+                     "JOIN seguidor s ON u.id = s.seguidor_id " +
+                     "WHERE s.seguido_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuarioId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new br.ufpb.dcx.projetos.login.models.Usuario(
+                            rs.getString("id"),
+                            rs.getString("nome"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("senha"),
+                            rs.getString("tipo"),
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar seguidores: " + e.getMessage(), e);
+        }
+        return lista;
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarSeguindo(String usuarioId) {
+        List<br.ufpb.dcx.projetos.login.models.Usuario> lista = new ArrayList<>();
+        String sql = "SELECT u.id, u.nome, u.username, u.email, u.senha, u.tipo, u.bio, u.foto_url " +
+                     "FROM usuario u " +
+                     "JOIN seguidor s ON u.id = s.seguido_id " +
+                     "WHERE s.seguidor_id = ?;";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuarioId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(new br.ufpb.dcx.projetos.login.models.Usuario(
+                            rs.getString("id"),
+                            rs.getString("nome"),
+                            rs.getString("username"),
+                            rs.getString("email"),
+                            rs.getString("senha"),
+                            rs.getString("tipo"),
+                            rs.getString("bio"),
+                            rs.getString("foto_url")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar seguindo: " + e.getMessage(), e);
+        }
+        return lista;
+    }
 }

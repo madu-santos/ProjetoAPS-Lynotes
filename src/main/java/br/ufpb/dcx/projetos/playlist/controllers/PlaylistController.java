@@ -30,9 +30,27 @@ public final class PlaylistController {
         String busca = ctx.queryParam("busca");
         java.util.List<Playlist> playlists = service.search(busca, usuarioId);
         
-        java.util.Map<String, String> playlistCovers = new java.util.HashMap<>();
+        java.util.Map<String, String> musicCovers = new java.util.HashMap<>();
+        if (musicaService != null) {
+            for (br.ufpb.dcx.projetos.musica.models.Musica m : musicaService.findByUsuarioId(usuarioId)) {
+                if (m.getYoutubeId() != null && m.getCapaUrl() != null && !m.getCapaUrl().isBlank()) {
+                    musicCovers.put(m.getYoutubeId(), m.getCapaUrl());
+                }
+            }
+        }
+
+        java.util.Map<String, java.util.List<String>> playlistCovers = new java.util.HashMap<>();
         for (Playlist pl : playlists) {
-            playlistCovers.put(pl.getId(), service.getPlaylistCapaUrl(pl.getId()));
+            java.util.List<String> covers = service.findPlaylistWithItems(pl.getId(), usuarioId).getItems().stream()
+                    .limit(4)
+                    .map(item -> {
+                        if (musicCovers.containsKey(item.getVideoId())) {
+                            return musicCovers.get(item.getVideoId());
+                        }
+                        return "https://img.youtube.com/vi/" + item.getVideoId() + "/hqdefault.jpg";
+                    })
+                    .toList();
+            playlistCovers.put(pl.getId(), covers);
         }
 
         Map<String, Object> modelo = new HashMap<>();

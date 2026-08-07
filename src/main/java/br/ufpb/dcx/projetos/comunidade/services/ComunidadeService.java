@@ -279,4 +279,14 @@ public class ComunidadeService {
         if (usuarioId == null || desde == null) return false;
         return repository.temNovosPosts(usuarioId, desde);
     }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarSeguidores(String usuarioId) {
+        if (usuarioId == null) return java.util.Collections.emptyList();
+        return repository.listarSeguidores(usuarioId);
+    }
+
+    public List<br.ufpb.dcx.projetos.login.models.Usuario> listarSeguindo(String usuarioId) {
+        if (usuarioId == null) return java.util.Collections.emptyList();
+        return repository.listarSeguindo(usuarioId);
+    }
 }
