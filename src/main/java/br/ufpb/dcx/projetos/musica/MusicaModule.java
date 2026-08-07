@@ -21,7 +21,7 @@ public final class MusicaModule {
 
     public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
         var albumRepository = new AlbumDbRepository(connectionFactory);
-        var musicaRepository = new MusicaDbRepository(connectionFactory);
+        var musicaRepository = new br.ufpb.dcx.projetos.musica.repositories.LoggingMusicaRepositoryDecorator(new MusicaDbRepository(connectionFactory));
         var playlistRepository = new PlaylistDbRepository(connectionFactory);
         var artistaRepository = new ArtistaDbRepository(connectionFactory);
 

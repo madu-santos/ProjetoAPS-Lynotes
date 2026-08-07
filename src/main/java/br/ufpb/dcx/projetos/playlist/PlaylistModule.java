@@ -3,6 +3,7 @@ package br.ufpb.dcx.projetos.playlist;
 import br.ufpb.dcx.projetos.infra.database.ConnectionFactory;
 import br.ufpb.dcx.projetos.playlist.controllers.PlaylistController;
 import br.ufpb.dcx.projetos.playlist.repositories.PlaylistDbRepository;
+import br.ufpb.dcx.projetos.playlist.repositories.LoggingPlaylistRepositoryDecorator;
 import br.ufpb.dcx.projetos.playlist.repositories.PlaylistRepository;
 import br.ufpb.dcx.projetos.playlist.services.PlaylistService;
 import br.ufpb.dcx.projetos.login.models.Role;
@@ -14,7 +15,7 @@ public final class PlaylistModule {
     }
 
     public static void registrar(Javalin app, ConnectionFactory connectionFactory, br.ufpb.dcx.projetos.musica.services.MusicaService musicaService, br.ufpb.dcx.projetos.comunidade.services.ComunidadeService comunidadeService) {
-        PlaylistRepository playlistRepository = new PlaylistDbRepository(connectionFactory);
+        PlaylistRepository playlistRepository = new LoggingPlaylistRepositoryDecorator(new PlaylistDbRepository(connectionFactory));
         PlaylistService playlistService = new PlaylistService(playlistRepository);
         PlaylistController controller = new PlaylistController(playlistService, musicaService, comunidadeService);
         

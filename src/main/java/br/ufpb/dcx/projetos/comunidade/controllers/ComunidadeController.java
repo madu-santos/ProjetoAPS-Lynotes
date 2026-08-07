@@ -111,12 +111,7 @@ public class ComunidadeController {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
         
-        String urlReferencia = ctx.header("Referer");
-        if (urlReferencia != null) {
-            ctx.redirect(urlReferencia);
-        } else {
-            ctx.redirect("/comunidade");
-        }
+        redirecionarParaRefererOu(ctx);
     }
 
     private void detalhePost(Context ctx) {
@@ -211,13 +206,7 @@ public class ComunidadeController {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
         
-        // Redireciona de volta para onde estava (feed ou post detalhe)
-        String urlReferencia = ctx.header("Referer");
-        if (urlReferencia != null) {
-            ctx.redirect(urlReferencia);
-        } else {
-            ctx.redirect("/comunidade");
-        }
+        redirecionarParaRefererOu(ctx);
     }
 
     private void compartilharItem(Context ctx) {
@@ -245,12 +234,7 @@ public class ComunidadeController {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
         
-        String urlReferencia = ctx.header("Referer");
-        if (urlReferencia != null) {
-            ctx.redirect(urlReferencia);
-        } else {
-            ctx.redirect("/comunidade");
-        }
+        redirecionarParaRefererOu(ctx);
     }
 
     private void deseguirUsuario(Context ctx) {
@@ -263,12 +247,12 @@ public class ComunidadeController {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
         
+        redirecionarParaRefererOu(ctx);
+    }
+
+    private void redirecionarParaRefererOu(Context ctx) {
         String urlReferencia = ctx.header("Referer");
-        if (urlReferencia != null) {
-            ctx.redirect(urlReferencia);
-        } else {
-            ctx.redirect("/comunidade");
-        }
+        ctx.redirect(urlReferencia != null ? urlReferencia : "/comunidade");
     }
 
     private void aceitarPedido(Context ctx) {

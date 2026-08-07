@@ -53,7 +53,7 @@ public class ComunidadeService {
         if (conteudo.length() > 500) {
             throw new IllegalArgumentException("O post não pode exceder 500 caracteres.");
         }
-        Post post = new Post(usuarioId, conteudo.trim());
+        Post post = PostFactory.criarPostTexto(usuarioId, conteudo);
         repository.salvarPost(post);
         notificarPostCriado(post);
     }
@@ -176,30 +176,12 @@ public class ComunidadeService {
             throw new IllegalArgumentException("O post não pode exceder 500 caracteres.");
         }
         
-        String musicaId = null;
-        String albumId = null;
-        String artistaId = null;
-        
-        if ("SHARE_MUSIC".equals(tipo) || "ACTIVITY_MUSIC".equals(tipo)) {
-            musicaId = itemId;
-        } else if ("SHARE_ALBUM".equals(tipo) || "ACTIVITY_ALBUM".equals(tipo)) {
-            albumId = itemId;
-        } else if ("SHARE_ARTIST".equals(tipo) || "ACTIVITY_ARTIST".equals(tipo)) {
-            artistaId = itemId;
-        } else {
-            throw new IllegalArgumentException("Tipo de compartilhamento inválido.");
-        }
-        
-        Post post = new Post(
-                java.util.UUID.randomUUID().toString(),
-                usuarioId,
-                cont,
-                java.time.LocalDateTime.now(),
-                tipo,
-                musicaId,
-                albumId,
-                artistaId
-        );
+        Post post = switch (tipo) {
+            case "SHARE_MUSIC", "ACTIVITY_MUSIC" -> PostFactory.criarPostMusica(usuarioId, itemId, cont, tipo);
+            case "SHARE_ALBUM", "ACTIVITY_ALBUM" -> PostFactory.criarPostAlbum(usuarioId, itemId, cont, tipo);
+            case "SHARE_ARTIST", "ACTIVITY_ARTIST" -> PostFactory.criarPostArtista(usuarioId, itemId, cont, tipo);
+            default -> throw new IllegalArgumentException("Tipo de compartilhamento inválido.");
+        };
         repository.salvarPost(post);
         notificarPostCriado(post);
     }

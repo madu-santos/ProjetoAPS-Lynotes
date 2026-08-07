@@ -8,8 +8,6 @@ import br.ufpb.dcx.projetos.login.models.Role;
 import br.ufpb.dcx.projetos.musica.MusicaModule;
 import br.ufpb.dcx.projetos.exceptions.GlobalHttpExceptionHandler;
 import io.javalin.Javalin;
-import io.javalin.http.HttpStatus;
-import io.javalin.http.ForbiddenResponse;
 import io.javalin.rendering.template.JavalinThymeleaf;
 import io.javalin.security.RouteRole;
 import org.slf4j.Logger;
@@ -87,7 +85,9 @@ public final class App {
 
         var dbRepo = new br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository(dbUrl, dbUser, dbPass);
         var repo = new br.ufpb.dcx.projetos.login.repositories.LoggingUsuarioRepositoryDecorator(dbRepo);
-        var service = new br.ufpb.dcx.projetos.login.services.UsuarioService(repo, new br.ufpb.dcx.projetos.login.services.BCryptHashingStrategy());
+        var hashingAlgorithm = variavelAmbiente("HASH_ALGORITHM", "BCRYPT");
+        var hashingStrategy = br.ufpb.dcx.projetos.login.services.HashingStrategyFactory.criar(hashingAlgorithm);
+        var service = new br.ufpb.dcx.projetos.login.services.UsuarioService(repo, hashingStrategy);
 
         registrarAutenticacao(app, service);
 
@@ -111,14 +111,14 @@ public final class App {
         });
 
         // Inicializar repositórios e serviços de música e álbum antes dos módulos que dependem deles
-        var musicaRepo = new br.ufpb.dcx.projetos.musica.repositories.MusicaDbRepository(connectionFactory);
+        var musicaRepo = new br.ufpb.dcx.projetos.musica.repositories.LoggingMusicaRepositoryDecorator(new br.ufpb.dcx.projetos.musica.repositories.MusicaDbRepository(connectionFactory));
         var albumRepo = new br.ufpb.dcx.projetos.album.repositories.AlbumDbRepository(connectionFactory);
         var musicaService = new br.ufpb.dcx.projetos.musica.services.MusicaService(musicaRepo, albumRepo);
         var artistaRepo = new br.ufpb.dcx.projetos.artista.repositories.ArtistaDbRepository(connectionFactory);
         var artistaService = new br.ufpb.dcx.projetos.artista.services.ArtistaService(artistaRepo, new br.ufpb.dcx.projetos.artista.services.ArtistaValidator());
         var albumService = new br.ufpb.dcx.projetos.album.services.AlbumService(albumRepo);
         
-        var playlistRepo = new br.ufpb.dcx.projetos.playlist.repositories.PlaylistDbRepository(connectionFactory);
+        var playlistRepo = new br.ufpb.dcx.projetos.playlist.repositories.LoggingPlaylistRepositoryDecorator(new br.ufpb.dcx.projetos.playlist.repositories.PlaylistDbRepository(connectionFactory));
         var playlistService = new br.ufpb.dcx.projetos.playlist.services.PlaylistService(playlistRepo);
 
         ArtistaModule.registrar(app, connectionFactory, comunidadeService);
@@ -172,17 +172,18 @@ public final class App {
         try {
             java.io.File envFile = new java.io.File(".env");
             if (envFile.exists()) {
-                java.nio.file.Files.lines(envFile.toPath())
-                        .map(String::trim)
-                        .filter(line -> !line.isEmpty() && !line.startsWith("#"))
-                        .forEach(line -> {
-                            int eqIdx = line.indexOf('=');
-                            if (eqIdx > 0) {
-                                String key = line.substring(0, eqIdx).trim();
-                                String val = line.substring(eqIdx + 1).trim();
-                                System.setProperty(key, val);
-                            }
-                        });
+                try (java.util.stream.Stream<String> lines = java.nio.file.Files.lines(envFile.toPath())) {
+                    lines.map(String::trim)
+                            .filter(line -> !line.isEmpty() && !line.startsWith("#"))
+                            .forEach(line -> {
+                                int eqIdx = line.indexOf('=');
+                                if (eqIdx > 0) {
+                                    String key = line.substring(0, eqIdx).trim();
+                                    String val = line.substring(eqIdx + 1).trim();
+                                    System.setProperty(key, val);
+                                }
+                            });
+                }
             }
         } catch (Exception e) {
             // Ignorar falhas de leitura
@@ -205,17 +206,12 @@ public final class App {
         return Javalin.create(config -> {
             config.staticFiles.add("/public");
             config.fileRenderer(new JavalinThymeleaf(criarTemplateEngine()));
-            config.registerPlugin(new OpenApiPlugin(openapi -> {
-                openapi.withDefinitionConfiguration((version, definition) -> {
+            config.registerPlugin(new OpenApiPlugin(openapi -> openapi.withDefinitionConfiguration((version, definition) ->
                     definition.withInfo(info -> {
                         info.title("Lynotes API");
                         info.version("1.0.0");
-                    });
-                });
-            }));
-            config.registerPlugin(new SwaggerPlugin(swagger -> {
-                swagger.setUiPath("/swagger");
-            }));
+                    }))));
+            config.registerPlugin(new SwaggerPlugin(swagger -> swagger.setUiPath("/swagger")));
         });
     }
 
@@ -248,13 +244,9 @@ public final class App {
     }
 
     private static void registrarTratamentoDeErrosStatus(Javalin app) {
-        app.error(404, ctx -> {
-            ctx.render("erros/404");
-        });
+        app.error(404, ctx -> ctx.render("erros/404"));
 
-        app.error(500, ctx -> {
-            ctx.render("erros/500");
-        });
+        app.error(500, ctx -> ctx.render("erros/500"));
     }
 
     private static ConnectionFactory criarConnectionFactory() {
