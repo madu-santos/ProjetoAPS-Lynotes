@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${edicao ? 'Editar Artista - Lynotes' : 'Novo Artista - Lynotes'}">Artista - Lynotes</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
     <!-- Fonte Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,78 +59,17 @@
                         </div>
 
                         <!-- Preview do Artista Selecionado -->
-                        <div id="artistPreview" class="d-none mb-4 p-3 rounded-4 bg-darker border border-purple align-items-center gap-3 shadow text-center position-relative">
-                            <img id="previewCapa" src="" class="rounded-circle shadow-lg mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #b268ff;">
-                            <h4 id="previewNome" class="fw-bold text-white mb-1"></h4>
-                            <p id="previewBio" class="text-secondary small mb-0 px-3 overflow-hidden" style="max-height: 60px; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;"></p>
+                        <div id="artistPreview" th:class="${form.edicao ? 'd-flex flex-column mb-4 p-3 rounded-4 bg-darker border border-purple align-items-center gap-3 shadow text-center position-relative' : 'd-none mb-4 p-3 rounded-4 bg-darker border border-purple align-items-center gap-3 shadow text-center position-relative'}">
+                            <img id="previewCapa" th:src="${form.capaUrl != null and !form.capaUrl.isBlank() ? form.capaUrl : '/public/img/default-cover.png'}" class="rounded-circle shadow-lg mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #b268ff;">
+                            <h4 id="previewNome" class="fw-bold text-white mb-1" th:text="${form.nome}"></h4>
+                            <p id="previewBio" class="text-secondary small mb-0 px-3 overflow-hidden" th:text="${form.biografia}" style="max-height: 60px; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;"></p>
                         </div>
 
-                        <!-- OPINIÃO E AVALIAÇÃO (Sempre visível) -->
-                        <div class="mb-4 p-4 rounded-4 bg-darker border border-secondary border-opacity-20">
-                            <h5 class="fw-bold text-purple mb-3"><i class="bi bi-chat-left-quote me-2"></i> Sua Avaliação</h5>
-                            
-                            <div class="mb-0">
-                                <label class="form-label d-block text-white fw-bold">Sua nota (1 a 5 estrelas)</label>
-                                <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
-                                    <i class="bi bi-star star-btn text-warning" data-index="1"></i>
-                                    <i class="bi bi-star star-btn text-warning" data-index="2"></i>
-                                    <i class="bi bi-star star-btn text-warning" data-index="3"></i>
-                                    <i class="bi bi-star star-btn text-warning" data-index="4"></i>
-                                    <i class="bi bi-star star-btn text-warning" data-index="5"></i>
-                                </div>
-                                <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
-                            </div>
-                        </div>
-
-                        <!-- Toggle para exibir formulário bruto -->
-                        <div class="form-check form-switch mb-4" th:if="${!form.edicao}">
-                            <input class="form-check-input bg-dark border-secondary" type="checkbox" id="toggleRawForm" onchange="document.getElementById('rawFormFields').classList.toggle('d-none')">
-                            <label class="form-check-label text-secondary small" for="toggleRawForm">
-                                Editar informações manualmente
-                            </label>
-                        </div>
-
-                        <!-- CAMPOS BRUTOS -->
-                        <div id="rawFormFields" th:classappend="${form.edicao} ? '' : 'd-none'">
-                            <!-- Nome -->
-                            <div class="mb-4">
-                                <label class="form-label text-purple font-monospace small uppercase fw-bold" for="nome">Nome do Artista</label>
-                                <input class="form-control glass-search-input bg-dark text-white border-secondary p-3"
-                                       id="nome"
-                                       name="nome"
-                                       th:value="${form.nome}"
-                                       placeholder="Ex: Daft Punk, Arctic Monkeys..."
-                                       maxlength="100"
-                                       autocomplete="off">
-                            </div>
-
-
-                            <!-- URL da Foto de Capa -->
-                            <div class="mb-4">
-                                <label class="form-label text-purple font-monospace small uppercase fw-bold" for="capaUrl">URL da Foto / Imagem</label>
-                                <input class="form-control glass-search-input bg-dark text-white border-secondary p-3"
-                                       id="capaUrl"
-                                       name="capaUrl"
-                                       type="text"
-                                       th:value="${form.capaUrl}"
-                                       placeholder="https://exemplo.com/foto-artista.jpg"
-                                       autocomplete="off">
-                            </div>
-
-                            <!-- Biografia -->
-                            <div class="mb-5">
-                                <label class="form-label text-purple font-monospace small uppercase fw-bold" for="biografia">Biografia / Descrição</label>
-                                <textarea class="form-control glass-search-input bg-dark text-white border-secondary p-3"
-                                          id="biografia"
-                                          name="biografia"
-                                          rows="4"
-                                          th:text="${form.biografia}"
-                                          placeholder="Escreva um resumo da carreira e conquistas deste artista..."></textarea>
-                            </div>
-                            
-                            <!-- CAMPOS OCULTOS -->
-                            <input type="hidden" id="youtubeId" name="youtubeId">
-                        </div>
+                        <!-- CAMPOS OCULTOS -->
+                        <input type="hidden" id="nome" name="nome" th:value="${form.nome}">
+                        <input type="hidden" id="capaUrl" name="capaUrl" th:value="${form.capaUrl}">
+                        <input type="hidden" id="biografia" name="biografia" th:value="${form.biografia}">
+                        <input type="hidden" id="youtubeId" name="youtubeId" th:value="${form.youtubeId}">
 
                         <!-- Compartilhar na Comunidade Checkbox -->
                         <div class="form-check form-switch mb-4" th:if="${!form.edicao}">

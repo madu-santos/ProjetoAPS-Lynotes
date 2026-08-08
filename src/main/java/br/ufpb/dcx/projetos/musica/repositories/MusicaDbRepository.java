@@ -188,7 +188,7 @@ public final class MusicaDbRepository implements MusicaRepository {
 
     @Override
     public List<Musica> buscarPorUsuarioId(String usuarioId) {
-        String sql = "SELECT " + COLUNAS + " FROM musica WHERE usuario_id = ? AND oculta_da_biblioteca = FALSE ORDER BY titulo, id";
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE usuario_id = ? AND (album_id IS NULL OR album_id = '') AND oculta_da_biblioteca = FALSE ORDER BY titulo, id";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -197,7 +197,7 @@ public final class MusicaDbRepository implements MusicaRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar mÃºsicas por ID do usuÃ¡rio", e);
+            throw erroPersistencia("buscar músicas por ID do usuário", e);
         }
     }
 
@@ -206,7 +206,7 @@ public final class MusicaDbRepository implements MusicaRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return buscarPorUsuarioId(usuarioId);
         }
-        String sql = "SELECT " + COLUNAS + " FROM musica WHERE (LOWER(titulo) LIKE ? OR LOWER(artista) LIKE ? OR LOWER(genero) LIKE ? OR LOWER(resenha) LIKE ?) AND usuario_id = ? AND oculta_da_biblioteca = FALSE;";
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE (LOWER(titulo) LIKE ? OR LOWER(artista) LIKE ? OR LOWER(genero) LIKE ? OR LOWER(resenha) LIKE ?) AND usuario_id = ? AND (album_id IS NULL OR album_id = '') AND oculta_da_biblioteca = FALSE;";
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             String wildcard = "%" + termo.trim().toLowerCase() + "%";
@@ -221,6 +221,15 @@ public final class MusicaDbRepository implements MusicaRepository {
         } catch (SQLException e) {
             throw erroPersistencia("buscar mÃºsicas com filtro", e);
         }
+    }
+
+    @Override
+    public boolean alternarOculta(String id, String usuarioId) {
+        String sql = "UPDATE musica SET oculta_da_biblioteca = NOT oculta_da_biblioteca WHERE id = ? AND usuario_id = ?";
+        return executarAtualizacao(sql, statement -> {
+            statement.setString(1, id);
+            statement.setString(2, usuarioId);
+        }) == 1;
     }
 
     @Override

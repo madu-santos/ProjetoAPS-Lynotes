@@ -42,7 +42,9 @@ public final class UsuarioController {
         app.get("/usuarios/novo", this::exibirCadastro, Role.ANYONE);
         app.post("/usuarios", this::cadastrar, Role.ANYONE);
         app.get("/usuarios/me", this::exibirMeuPerfil, Role.USER);
+        app.get("/perfil", this::exibirMeuPerfil, Role.USER);
         app.post("/usuarios/me", this::salvarMeuPerfil, Role.USER);
+        app.post("/perfil", this::salvarMeuPerfil, Role.USER);
         app.get("/usuarios/me/check-username", this::verificarDisponibilidadeUsernameEndpoint, Role.USER);
         app.post("/usuarios/me/excluir", this::excluirMinhaConta, Role.USER);
         app.get("/usuarios/{id}", this::exibirPerfilPublico, Role.USER);

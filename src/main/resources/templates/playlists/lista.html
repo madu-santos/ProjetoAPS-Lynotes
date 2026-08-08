@@ -2,6 +2,8 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Playlists - Lynotes</title>
     <!-- Fonte Plus Jakarta Sans -->
@@ -31,6 +33,9 @@
             </a>
         </div>
 
+        <!-- Alertas de Erro -->
+        <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
+
         <!-- Glassmorphism Search Bar -->
         <form class="glass-search-box p-2 mb-5 d-flex align-items-center gap-2" method="get" action="/playlists">
             <i class="bi bi-search text-purple fs-5 ms-3"></i>
@@ -59,7 +64,10 @@
         <!-- Grid de Cards de Playlists -->
         <div th:unless="${#lists.isEmpty(playlists)}" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
             <div class="col" th:each="playlist : ${playlists}">
-                <div class="music-card-cyber p-3 h-100 d-flex flex-column justify-content-between">
+                <div class="music-card-cyber p-3 h-100 d-flex flex-column justify-content-between position-relative"
+                     th:data-href="${'/playlists/' + playlist.id}"
+                     onclick="if(!event.target.closest('button, a, input, select, form, ul, li')) window.location.href=this.getAttribute('data-href');"
+                     style="cursor: pointer;">
                     <div>
                         <!-- Capa da Playlist (Grid 2x2 ou Nota Musical se vazia) -->
                         <div class="playlist-cover-grid ratio ratio-1x1 mb-3 rounded-3 overflow-hidden shadow-sm bg-darker position-relative">
@@ -92,7 +100,7 @@
                     </div>
 
                     <div class="pt-2 border-top border-secondary border-opacity-10 mt-2">
-                        <!-- Linha superior: Play (esquerda) e Link Abrir (direita) -->
+                        <!-- Linha superior: Play (esquerda) e Indicador de Faixas (direita) -->
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <!-- Play -->
                             <button type="button" 
@@ -100,23 +108,20 @@
                                     style="width: 32px; height: 32px; min-width: 32px;"
                                     title="Carregar Playlist no Miniplayer"
                                     th:data-plid="${playlist.id}"
-                                    onclick="if(typeof playerFetchPlaylist === 'function') playerFetchPlaylist(this.getAttribute('data-plid'), true);">
+                                    onclick="event.stopPropagation(); if(typeof playerFetchPlaylist === 'function') playerFetchPlaylist(this.getAttribute('data-plid'), true);">
                                 <i class="bi bi-play-fill text-white fs-5"></i>
                             </button>
                             
-                            <!-- Link Abrir -->
-                            <a class="btn btn-outline-purple btn-sm rounded-pill px-3 py-1" style="font-size: 0.75rem;" th:href="${'/playlists/' + playlist.id}">
-                                Abrir <i class="bi bi-arrow-right ms-0.5"></i>
-                            </a>
+                            <span class="text-purple small fw-semibold">Acessar <i class="bi bi-chevron-right ms-0.5"></i></span>
                         </div>
                         
                         <!-- Linha inferior: Três pontos (esquerda) e Data de criação (direita) -->
                         <div class="d-flex align-items-center justify-content-between">
-                            <div class="dropend">
-                                <button class="btn btn-link text-secondary p-0 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções">
+                            <div class="dropdown position-relative">
+                                <button class="btn btn-link text-secondary p-0 shadow-none" type="button" title="Opções" onclick="window.toggleOpcoesMenu(event, this)">
                                     <i class="bi bi-three-dots fs-5"></i>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
+                                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-darker border-secondary shadow">
                                     <li th:if="${playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">
                                         <a class="dropdown-item text-purple fw-bold" th:href="${'/playlists/' + playlist.id + '/editar'}">
                                             <i class="bi bi-pencil me-2"></i>Editar
@@ -131,7 +136,7 @@
                                         <form method="post" 
                                               th:action="${'/playlists/' + playlist.id + '/excluir'}" 
                                               th:data-nome="${playlist.nome}"
-                                              onsubmit="return confirmarExclusaoCustom(this, 'Excluir Playlist?', 'Tem certeza que deseja excluir a playlist &quot;' + this.getAttribute('data-nome') + '&quot;?');"
+                                              onsubmit="return confirmarExclusaoCustom(this, 'Excluir Playlist?', 'Tem certeza que deseja excluir a playlist &quot;' + this.getAttribute('data-nome') + '&quot;?', false, event);"
                                               hx-boost="false" 
                                               class="m-0">
                                             <button type="submit" class="dropdown-item text-danger">

@@ -55,12 +55,25 @@ public class YouTubeService {
         }
 
         String rawQuery = query.trim();
-        String tipoUpper = (tipo != null) ? tipo.toUpperCase() : "MUSICA";
+        String tipoUpper = (tipo != null) ? tipo.toUpperCase().trim() : "MUSICA";
+
+        // Se for busca de artista, queremos APENAS canais de artistas oficiais do YouTube
+        if ("ARTISTA".equals(tipoUpper) || "ARTISTAS".equals(tipoUpper) || "CANAL".equals(tipoUpper)) {
+            return buscarCanaisScraper(rawQuery);
+        }
+
         String searchType = switch (tipoUpper) {
-            case "ALBUM" -> "playlist";
-            case "ARTISTA" -> "channel";
+            case "ALBUM", "ALBUMS", "ALBUNS", "PLAYLIST" -> "playlist";
+            case "ARTISTA", "ARTISTAS", "CANAL" -> "channel";
             default -> "video";
         };
+
+        boolean isAlbum = "ALBUM".equals(tipoUpper) || "ALBUMS".equals(tipoUpper) || "ALBUNS".equals(tipoUpper);
+
+        // Se for busca de álbum, busca apenas as playlists do YouTube
+        if (isAlbum) {
+            return buscarPlaylistsScraper(rawQuery);
+        }
 
         // 1. Tentar API oficial do YouTube se chave estiver presente
         if (apiKey != null) {
@@ -88,7 +101,6 @@ public class YouTubeService {
         }
 
         // 3. O player usará sempre o Scraper Nativo do YouTube para buscas orgânicas
-        // (Isso garante IDs válidos e remove qualquer dependência externa)
         return buscarViaPipedApi(rawQuery, tipoUpper);
     }
 
@@ -166,7 +178,23 @@ public class YouTubeService {
                 }
             } else if ("channel".equals(searchType)) {
                 String channelId = idNode.path("channelId").asText();
-                if (!channelId.isBlank()) {
+                String titleLower = channelTitle.toLowerCase();
+                String descLower = description.toLowerCase();
+
+                boolean contemNaoMusical = titleLower.contains("react") || titleLower.contains("game") ||
+                        titleLower.contains("vlog") || titleLower.contains("podcast") ||
+                        titleLower.contains("cortes") || titleLower.contains("humor") ||
+                        titleLower.contains("comedy") || titleLower.contains("comédia") ||
+                        titleLower.contains("moda") || titleLower.contains("fashion") ||
+                        titleLower.contains("tutorial") || titleLower.contains("tech") ||
+                        titleLower.contains("futebol") || titleLower.contains("anime") ||
+                        titleLower.contains("minecraft") || titleLower.contains("roblox") ||
+                        descLower.contains("react") || descLower.contains("gameplay") ||
+                        descLower.contains("podcast") || descLower.contains("vlog") ||
+                        descLower.contains("humor") || descLower.contains("moda") ||
+                        descLower.contains("futebol") || descLower.contains("tecnologia");
+
+                if (!channelId.isBlank() && !contemNaoMusical) {
                     resultados.add(new YouTubeItemDTO(
                             channelId,
                             "ARTISTA",
@@ -235,13 +263,126 @@ public class YouTubeService {
 
 
     private List<YouTubeItemDTO> buscarViaPipedApi(String query, String tipo) {
-        if ("ARTISTA".equals(tipo)) {
+        String tipoUpper = (tipo != null) ? tipo.toUpperCase().trim() : "MUSICA";
+        if ("ARTISTA".equals(tipoUpper) || "ARTISTAS".equals(tipoUpper) || "CANAL".equals(tipoUpper)) {
             return buscarCanaisScraper(query);
         }
-        if ("ALBUM".equals(tipo)) {
-            return buscarAlbumsItunes(query);
+        if ("ALBUM".equals(tipoUpper) || "ALBUMS".equals(tipoUpper) || "ALBUNS".equals(tipoUpper) || "PLAYLIST".equals(tipoUpper)) {
+            return buscarPlaylistsScraper(query);
         }
         return buscarMusicaItunes(query);
+    }
+
+    private List<YouTubeItemDTO> buscarArtistasItunes(String query) {
+        List<YouTubeItemDTO> lista = new ArrayList<>();
+        try {
+            String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+            String url = "https://itunes.apple.com/search?term=" + encodedQuery + "&media=music&entity=musicArtist&attribute=artistTerm&limit=6&country=BR";
+
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(4))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+            if (res.statusCode() == 200) {
+                JsonNode root = objectMapper.readTree(res.body());
+                JsonNode results = root.path("results");
+
+                for (JsonNode item : results) {
+                    if (lista.size() >= 6) break;
+
+                    String wrapperType = item.path("wrapperType").asText("");
+                    if (!"artist".equalsIgnoreCase(wrapperType)) {
+                        continue;
+                    }
+
+                    String primaryGenre = item.path("primaryGenreName").asText("");
+                    if (primaryGenre.isBlank()) {
+                        continue;
+                    }
+
+                    String lowerGenre = primaryGenre.toLowerCase();
+                    if (lowerGenre.contains("podcast") || lowerGenre.contains("book") || lowerGenre.contains("livro") || lowerGenre.contains("audiobook")) {
+                        continue;
+                    }
+
+                    String artistName = item.path("artistName").asText("");
+                    String lowerName = artistName.toLowerCase();
+                    if (lowerName.contains("topic") || lowerName.contains("tópico") || lowerName.contains("vevo") || lowerName.contains("album") || lowerName.contains("single")) {
+                        continue;
+                    }
+
+                    if (!artistName.isBlank()) {
+                        String ytSearchUrl = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(artistName, StandardCharsets.UTF_8);
+                        
+                        // Busca a foto real do perfil do canal do YouTube do artista
+                        String avatarUrl = obterFotoCanalYouTube(artistName);
+                        if (avatarUrl == null || avatarUrl.isBlank()) {
+                            avatarUrl = "/img/default-artist.svg";
+                        }
+
+                        lista.add(new YouTubeItemDTO(
+                                "itunes_artist_" + Math.abs(artistName.hashCode()),
+                                "ARTISTA",
+                                artistName,
+                                artistName,
+                                null,
+                                null,
+                                avatarUrl,
+                                ytSearchUrl,
+                                "Artista Musical • " + primaryGenre
+                        ));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Erro na busca de artistas do iTunes API: {}", e.getMessage());
+        }
+        return lista;
+    }
+
+    private String obterFotoCanalYouTube(String artistName) {
+        try {
+            String encoded = URLEncoder.encode(artistName + " oficial", StandardCharsets.UTF_8);
+            String searchUrl = "https://www.youtube.com/results?search_query=" + encoded + "&sp=EgIQAg%253D%253D";
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(searchUrl))
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                    .header("Accept-Language", "pt-BR,pt;q=0.9,en;q=0.8")
+                    .timeout(Duration.ofSeconds(4))
+                    .GET()
+                    .build();
+            HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+            if (res.statusCode() == 200) {
+                String html = res.body();
+                int jsonIdx = html.indexOf("var ytInitialData = ");
+                int jsonEnd = (jsonIdx != -1) ? html.indexOf(";</script>", jsonIdx) : -1;
+                if (jsonIdx != -1 && jsonEnd > jsonIdx) {
+                    String jsonStr = html.substring(jsonIdx + "var ytInitialData = ".length(), jsonEnd);
+                    JsonNode root = objectMapper.readTree(jsonStr);
+                    JsonNode contents = root.path("contents").path("twoColumnSearchResultsRenderer").path("primaryContents").path("sectionListRenderer").path("contents");
+                    if (contents.isArray() && contents.size() > 0) {
+                        JsonNode itemSection = contents.get(0).path("itemSectionRenderer").path("contents");
+                        if (itemSection.isArray()) {
+                            for (JsonNode item : itemSection) {
+                                JsonNode channelRenderer = item.path("channelRenderer");
+                                if (!channelRenderer.isMissingNode()) {
+                                    JsonNode thumbnails = channelRenderer.path("thumbnail").path("thumbnails");
+                                    if (thumbnails.isArray() && thumbnails.size() > 0) {
+                                        String imgUrl = thumbnails.get(thumbnails.size() - 1).path("url").asText("");
+                                        if (imgUrl.startsWith("//")) imgUrl = "https:" + imgUrl;
+                                        return imgUrl.replaceAll("=s\\d+.*", "=s800-c-k-c0x00ffffff-no-rj");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        return null;
     }
 
     private List<YouTubeItemDTO> buscarMusicaItunes(String query) {
@@ -300,7 +441,7 @@ public class YouTubeService {
         List<YouTubeItemDTO> lista = new ArrayList<>();
         try {
             String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-            String url = "https://itunes.apple.com/search?term=" + encodedQuery + "&entity=album&limit=6&country=BR";
+            String url = "https://itunes.apple.com/search?term=" + encodedQuery + "&media=music&entity=album&limit=6&country=BR";
 
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -315,8 +456,17 @@ public class YouTubeService {
 
                 for (JsonNode item : results) {
                     if (lista.size() >= 6) break;
+
+                    String wrapperType = item.path("wrapperType").asText("");
+                    String collectionType = item.path("collectionType").asText("");
+                    if (!"collection".equalsIgnoreCase(wrapperType) || !"Album".equalsIgnoreCase(collectionType)) {
+                        continue;
+                    }
                     
                     String albumName = item.path("collectionName").asText("");
+                    if (albumName.toLowerCase().contains("single")) {
+                        continue;
+                    }
                     String artistName = item.path("artistName").asText("");
                     String rawCover = item.path("artworkUrl100").asText("");
                     String hdCover = rawCover.replace("100x100bb", "600x600bb");
@@ -364,10 +514,10 @@ public class YouTubeService {
             HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
             if (res.statusCode() == 200) {
                 String html = res.body();
-                java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("var ytInitialData = (\\{.*?\\});</script>");
-                java.util.regex.Matcher matcher = pattern.matcher(html);
-                if (matcher.find()) {
-                    String jsonStr = matcher.group(1);
+                int jsonIdx = html.indexOf("var ytInitialData = ");
+                int jsonEnd = (jsonIdx != -1) ? html.indexOf(";</script>", jsonIdx) : -1;
+                if (jsonIdx != -1 && jsonEnd > jsonIdx) {
+                    String jsonStr = html.substring(jsonIdx + "var ytInitialData = ".length(), jsonEnd);
                     JsonNode root = objectMapper.readTree(jsonStr);
                     
                     JsonNode contents = root.path("contents").path("twoColumnSearchResultsRenderer").path("primaryContents").path("sectionListRenderer").path("contents");
@@ -461,10 +611,10 @@ public class YouTubeService {
             HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
             if (res.statusCode() == 200) {
                 String html = res.body();
-                java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("var ytInitialData = (\\{.*?\\});</script>");
-                java.util.regex.Matcher matcher = pattern.matcher(html);
-                if (matcher.find()) {
-                    String jsonStr = matcher.group(1);
+                int jsonIdx = html.indexOf("var ytInitialData = ");
+                int jsonEnd = (jsonIdx != -1) ? html.indexOf(";</script>", jsonIdx) : -1;
+                if (jsonIdx != -1 && jsonEnd > jsonIdx) {
+                    String jsonStr = html.substring(jsonIdx + "var ytInitialData = ".length(), jsonEnd);
                     JsonNode root = objectMapper.readTree(jsonStr);
                     
                     JsonNode contents = root.path("contents").path("twoColumnSearchResultsRenderer").path("primaryContents").path("sectionListRenderer").path("contents");
@@ -494,13 +644,20 @@ public class YouTubeService {
                                         avatarUrl = "https:" + avatarUrl;
                                     }
                                     
-                                    boolean isOfficial = false;
+                                    boolean isArtistChannel = false;
                                     JsonNode badges = channelRenderer.path("ownerBadges");
                                     if (badges.isArray()) {
                                         for (JsonNode b : badges) {
-                                            String tooltip = b.path("metadataBadgeRenderer").path("tooltip").asText("").toLowerCase();
-                                            if (tooltip.contains("oficial") || tooltip.contains("official") || tooltip.contains("verificado") || tooltip.contains("verified")) {
-                                                isOfficial = true;
+                                            JsonNode badgeRenderer = b.path("metadataBadgeRenderer");
+                                            String style = badgeRenderer.path("style").asText("");
+                                            String iconType = badgeRenderer.path("icon").path("iconType").asText("");
+                                            String tooltip = badgeRenderer.path("tooltip").asText("").toLowerCase();
+                                            
+                                            if ("BADGE_STYLE_TYPE_VERIFIED_ARTIST".equals(style) || 
+                                                "AUDIO_BADGE".equals(iconType) || 
+                                                tooltip.contains("artista") || 
+                                                tooltip.contains("artist")) {
+                                                isArtistChannel = true;
                                             }
                                         }
                                     }
@@ -509,7 +666,7 @@ public class YouTubeService {
                                     long subsCount = parseSubscriberCount(subsText);
                                     
                                     // Bônus gigantesco para canais oficiais ou nomes exatos
-                                    if (isOfficial) {
+                                    if (isArtistChannel) {
                                         subsCount += 1000000000L; // +1 bilhão
                                     }
                                     if (title.equalsIgnoreCase(query)) {
@@ -518,6 +675,31 @@ public class YouTubeService {
                                     
                                     String finalDesc = subsText.isBlank() ? description.toString() : subsText + " • " + description.toString();
                                     
+                                    String titleLower = title.toLowerCase();
+                                    String descLower = finalDesc.toLowerCase();
+                                    
+                                    boolean contemNaoMusical = titleLower.contains(" - topic") || titleLower.endsWith(" topic") || titleLower.contains("tópico") ||
+                                        titleLower.contains("full album") || titleLower.contains(" - single") || titleLower.contains("vevo") ||
+                                        titleLower.contains("react") || titleLower.contains("game") || titleLower.contains("vlog") ||
+                                        titleLower.contains("podcast") || titleLower.contains("cortes") || titleLower.contains("humor") ||
+                                        titleLower.contains("comedy") || titleLower.contains("comédia") || titleLower.contains("moda") ||
+                                        titleLower.contains("fashion") || titleLower.contains("tutorial") || titleLower.contains("tech") ||
+                                        titleLower.contains("futebol") || titleLower.contains("anime") || titleLower.contains("minecraft") ||
+                                        titleLower.contains("roblox") || titleLower.contains("fortnite") || titleLower.contains("streamer") ||
+                                        titleLower.contains("asmr") || titleLower.contains("receita") || titleLower.contains("cozinha") ||
+                                        titleLower.contains("brinquedos") || titleLower.contains("kids") || titleLower.contains("infantil") ||
+                                        descLower.contains("react") || descLower.contains("gameplay") || descLower.contains("podcast") ||
+                                        descLower.contains("vlog") || descLower.contains("humor") || descLower.contains("moda") ||
+                                        descLower.contains("futebol") || descLower.contains("tecnologia");
+
+                                    if (contemNaoMusical) {
+                                        continue;
+                                    }
+
+                                     if (!isArtistChannel && subsCount < 1000) {
+                                         continue;
+                                     }
+
                                     if (!channelId.isBlank() && !title.isBlank()) {
                                         // Usa o anoLancamento como um campo temporário para ordenar
                                         lista.add(new YouTubeItemDTO(
@@ -554,6 +736,137 @@ public class YouTubeService {
             lista = new ArrayList<>(lista.subList(0, 5));
         }
         
+        return lista;
+    }
+
+    private List<YouTubeItemDTO> buscarPlaylistsScraper(String query) {
+        List<YouTubeItemDTO> lista = new ArrayList<>();
+        try {
+            String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+            String url = "https://www.youtube.com/results?search_query=" + encodedQuery + "&sp=EgIQAw%3D%3D";
+
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                    .header("Accept-Language", "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7")
+                    .timeout(Duration.ofSeconds(6))
+                    .GET()
+                    .build();
+
+            HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+            if (res.statusCode() == 200) {
+                String html = res.body();
+                int jsonIdx = html.indexOf("var ytInitialData = ");
+                int jsonEnd = (jsonIdx != -1) ? html.indexOf(";</script>", jsonIdx) : -1;
+                if (jsonIdx != -1 && jsonEnd > jsonIdx) {
+                    String jsonStr = html.substring(jsonIdx + "var ytInitialData = ".length(), jsonEnd);
+                    JsonNode root = objectMapper.readTree(jsonStr);
+
+                    JsonNode contents = root.path("contents").path("twoColumnSearchResultsRenderer").path("primaryContents").path("sectionListRenderer").path("contents");
+                    if (contents.isArray() && contents.size() > 0) {
+                        JsonNode itemSection = contents.get(0).path("itemSectionRenderer").path("contents");
+                        if (itemSection.isArray()) {
+                            for (JsonNode item : itemSection) {
+                                JsonNode playlistRenderer = item.path("playlistRenderer");
+                                if (!playlistRenderer.isMissingNode()) {
+                                    String playlistId = playlistRenderer.path("playlistId").asText("");
+                                    String title = "";
+                                    JsonNode titleNode = playlistRenderer.path("title");
+                                    if (titleNode.has("simpleText")) {
+                                        title = titleNode.path("simpleText").asText("");
+                                    } else if (titleNode.has("runs") && titleNode.path("runs").isArray() && titleNode.path("runs").size() > 0) {
+                                        title = titleNode.path("runs").get(0).path("text").asText("");
+                                    }
+
+                                    String channelName = "";
+                                    JsonNode ownerRuns = playlistRenderer.path("shortBylineText").path("runs");
+                                    if (ownerRuns.isArray() && ownerRuns.size() > 0) {
+                                        channelName = ownerRuns.get(0).path("text").asText("");
+                                    }
+
+                                    String videoCountText = playlistRenderer.path("videoCount").asText("");
+
+                                    String thumbnail = "";
+                                    JsonNode thumbnails = playlistRenderer.path("thumbnails");
+                                    if (thumbnails.isArray() && thumbnails.size() > 0) {
+                                        JsonNode firstThumb = thumbnails.get(0);
+                                        if (firstThumb.has("thumbnails") && firstThumb.path("thumbnails").isArray()) {
+                                            JsonNode innerThumbs = firstThumb.path("thumbnails");
+                                            thumbnail = innerThumbs.get(innerThumbs.size() - 1).path("url").asText("");
+                                        } else {
+                                            thumbnail = firstThumb.path("url").asText("");
+                                        }
+                                    }
+                                    if (thumbnail.startsWith("//")) {
+                                        thumbnail = "https:" + thumbnail;
+                                    }
+
+                                    if (!playlistId.isBlank() && !title.isBlank()) {
+                                        lista.add(new YouTubeItemDTO(
+                                                "yt_playlist_" + playlistId,
+                                                "ALBUM",
+                                                extrairTituloAlbum(title),
+                                                channelName.isBlank() ? "YouTube" : channelName,
+                                                null,
+                                                java.time.Year.now().getValue(),
+                                                thumbnail.isEmpty() ? "/public/img/default-cover.png" : thumbnail,
+                                                "https://www.youtube.com/playlist?list=" + playlistId,
+                                                "Álbum / Playlist" + (videoCountText.isBlank() ? "" : " • " + videoCountText + " faixas")
+                                        ));
+                                        if (lista.size() >= 6) break;
+                                    }
+                                } else {
+                                    JsonNode lockup = item.path("lockupViewModel");
+                                    if (!lockup.isMissingNode()) {
+                                        JsonNode playlistIdNode = lockup.findValue("playlistId");
+                                        if (playlistIdNode != null && !playlistIdNode.isMissingNode()) {
+                                            String playlistId = playlistIdNode.asText("");
+                                            
+                                            String title = lockup.path("metadata").path("lockupMetadataViewModel").path("title").path("content").asText("");
+                                            
+                                            String channelName = "";
+                                            JsonNode rows = lockup.path("metadata").path("lockupMetadataViewModel").path("metadata").path("contentMetadataViewModel").path("metadataRows");
+                                            if (rows.isArray() && rows.size() > 0) {
+                                                JsonNode firstRowParts = rows.get(0).path("metadataParts");
+                                                if (firstRowParts.isArray() && firstRowParts.size() > 0) {
+                                                    channelName = firstRowParts.get(0).path("text").path("content").asText("");
+                                                }
+                                            }
+                                            
+                                            String thumbnail = "";
+                                            JsonNode sources = lockup.findValue("sources");
+                                            if (sources != null && sources.isArray() && sources.size() > 0) {
+                                                thumbnail = sources.get(sources.size() - 1).path("url").asText("");
+                                            }
+                                            if (thumbnail.startsWith("//")) {
+                                                thumbnail = "https:" + thumbnail;
+                                            }
+                                            
+                                            if (!playlistId.isBlank() && !title.isBlank()) {
+                                                lista.add(new YouTubeItemDTO(
+                                                        "yt_playlist_" + playlistId,
+                                                        "ALBUM",
+                                                        extrairTituloAlbum(title),
+                                                        channelName.isBlank() ? "YouTube" : channelName,
+                                                        null,
+                                                        java.time.Year.now().getValue(),
+                                                        thumbnail.isEmpty() ? "/public/img/default-cover.png" : thumbnail,
+                                                        "https://www.youtube.com/playlist?list=" + playlistId,
+                                                        "Álbum / Playlist"
+                                                ));
+                                                if (lista.size() >= 6) break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Erro no Scraper nativo de playlists/álbuns do YouTube: {}", e.getMessage());
+        }
         return lista;
     }
     

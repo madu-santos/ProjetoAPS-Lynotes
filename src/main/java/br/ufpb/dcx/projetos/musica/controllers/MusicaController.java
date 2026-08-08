@@ -72,15 +72,21 @@ public final class MusicaController {
 
             Map<String, List<String>> playlistCovers = new HashMap<>();
             for (br.ufpb.dcx.projetos.playlist.models.Playlist pl : playlists) {
-                List<String> covers = playlistService.findPlaylistWithItems(pl.getId(), usuarioId).getItems().stream()
-                        .limit(4)
-                        .map(item -> {
-                            if (musicCovers.containsKey(item.getVideoId())) {
-                                return musicCovers.get(item.getVideoId());
-                            }
-                            return "https://img.youtube.com/vi/" + item.getVideoId() + "/hqdefault.jpg";
-                        })
-                        .toList();
+                List<String> covers = java.util.Collections.emptyList();
+                try {
+                    var plWithItems = playlistService.findPlaylistWithItems(pl.getId(), usuarioId);
+                    if (plWithItems != null && plWithItems.getItems() != null) {
+                        covers = plWithItems.getItems().stream()
+                                .limit(4)
+                                .map(item -> {
+                                    if (musicCovers.containsKey(item.getVideoId())) {
+                                        return musicCovers.get(item.getVideoId());
+                                    }
+                                    return "https://img.youtube.com/vi/" + item.getVideoId() + "/hqdefault.jpg";
+                                })
+                                .toList();
+                    }
+                } catch (Exception ignored) {}
                 playlistCovers.put(pl.getId(), covers);
             }
 
@@ -115,27 +121,59 @@ public final class MusicaController {
 
         Map<String, List<String>> playlistCovers = new HashMap<>();
         for (br.ufpb.dcx.projetos.playlist.models.Playlist pl : playlists) {
-            List<String> covers = playlistService.findPlaylistWithItems(pl.getId(), usuarioId).getItems().stream()
-                    .limit(4)
-                    .map(item -> {
-                        if (musicCovers.containsKey(item.getVideoId())) {
-                            return musicCovers.get(item.getVideoId());
-                        }
-                        return "https://img.youtube.com/vi/" + item.getVideoId() + "/hqdefault.jpg";
-                    })
-                    .toList();
+            List<String> covers = java.util.Collections.emptyList();
+            try {
+                var plWithItems = playlistService.findPlaylistWithItems(pl.getId(), usuarioId);
+                if (plWithItems != null && plWithItems.getItems() != null) {
+                    covers = plWithItems.getItems().stream()
+                            .limit(4)
+                            .map(item -> {
+                                if (musicCovers.containsKey(item.getVideoId())) {
+                                    return musicCovers.get(item.getVideoId());
+                                }
+                                return "https://img.youtube.com/vi/" + item.getVideoId() + "/hqdefault.jpg";
+                            })
+                            .toList();
+                }
+            } catch (Exception ignored) {}
             playlistCovers.put(pl.getId(), covers);
         }
 
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
-        modelo.put("musicas", musicas);
+        modelo.put("musicas", musicas.stream().limit(8).toList());
+        modelo.put("totalMusicas", musicas.size());
+        modelo.put("temMaisMusicas", musicas.size() > 8);
         modelo.put("semMusicas", musicas.isEmpty() && (busca == null || busca.trim().isEmpty()));
         modelo.put("playlists", playlists);
         modelo.put("playlistCovers", playlistCovers);
         modelo.put("busca", busca != null ? busca : "");
         modelo.put("buscaAtiva", busca != null && !busca.trim().isEmpty());
         ctx.render("musicas/lista", modelo);
+    }
+
+    public void listarTodas(Context ctx) {
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        String busca = ctx.queryParam("busca");
+        List<Musica> musicas = service.search(busca, usuarioId);
+        List<br.ufpb.dcx.projetos.playlist.models.Playlist> playlists = playlistService.findByUsuarioId(usuarioId);
+
+        Map<String, String> musicCovers = new HashMap<>();
+        for (Musica m : musicas) {
+            if (m.getYoutubeId() != null && m.getCapaUrl() != null && !m.getCapaUrl().isBlank()) {
+                musicCovers.put(m.getYoutubeId(), m.getCapaUrl());
+            }
+        }
+
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+        modelo.put("musicas", musicas);
+        modelo.put("totalMusicas", musicas.size());
+        modelo.put("semMusicas", musicas.isEmpty() && (busca == null || busca.trim().isEmpty()));
+        modelo.put("playlists", playlists);
+        modelo.put("busca", busca != null ? busca : "");
+        modelo.put("buscaAtiva", busca != null && !busca.trim().isEmpty());
+        ctx.render("musicas/todas", modelo);
     }
 
     public void exibirCadastro(Context ctx) {
@@ -219,12 +257,14 @@ public final class MusicaController {
 
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
                 String redirectPlaylistId = null;
+                String hiddenPlaylistId = playlistService.findOrCreateHiddenPlaylist(usuarioId).getId();
+
                 try {
                     if (novaPlaylistId != null) {
-                        playlistService.addItem(novaPlaylistId, dto.youtubeUrl(), videoId, usuarioId);
+                        playlistService.addItem(novaPlaylistId, dto.youtubeUrl(), videoId, usuarioId, dto.titulo());
                         redirectPlaylistId = novaPlaylistId;
                     } else if (dto.playlistId() != null && !dto.playlistId().isBlank() && !"NEW_TEMP".equals(dto.playlistId())) {
-                        playlistService.addItem(dto.playlistId(), dto.youtubeUrl(), videoId, usuarioId);
+                        playlistService.addItem(dto.playlistId(), dto.youtubeUrl(), videoId, usuarioId, dto.titulo());
                         redirectPlaylistId = dto.playlistId();
                     }
                 } catch (Exception ignored) {
@@ -232,8 +272,9 @@ public final class MusicaController {
                 }
                 
                 try {
-                    playlistService.addItem(playlistService.findOrCreateHiddenPlaylist(usuarioId).getId(),
-                            dto.youtubeUrl(), videoId, usuarioId);
+                    if (!hiddenPlaylistId.equals(redirectPlaylistId)) {
+                        playlistService.addItem(hiddenPlaylistId, dto.youtubeUrl(), videoId, usuarioId, dto.titulo());
+                    }
                 } catch (Exception ignored) {
                     LOGGER.warn("Nao foi possivel adicionar musica na playlist oculta: {}", ignored.getMessage());
                 }
@@ -392,8 +433,13 @@ public final class MusicaController {
                 .orElseThrow(() -> new io.javalin.http.NotFoundResponse("MÃºsica nÃ£o encontrada"));
 
         if (!usuarioId.equals(musicaExistente.getUsuarioId())) {
-            ctx.status(HttpStatus.FORBIDDEN).result("VocÃª nÃ£o tem permissÃ£o para excluir esta mÃºsica.");
+            ctx.status(HttpStatus.FORBIDDEN).result("Você não tem permissão para excluir esta música.");
             return;
+        }
+
+        // Exclusão em cascata: remove a música de todas as playlists do usuário
+        if (playlistService != null) {
+            playlistService.removerMusicaDeTodasPlaylists(musicaExistente.getTitulo(), musicaExistente.getArtista(), musicaExistente.getYoutubeId(), usuarioId);
         }
 
         service.deleteById(id);

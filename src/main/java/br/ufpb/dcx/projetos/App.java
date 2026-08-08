@@ -93,20 +93,31 @@ public final class App {
 
         var connectionFactory = criarConnectionFactory();
         
+        // Garante que o esquema do banco (incluindo colunas e tabelas) esteja atualizado
+        try {
+            br.ufpb.dcx.projetos.album.repositories.AlbumSchemaInitializer.inicializar(connectionFactory);
+        } catch (Exception e) {
+            LOGGER.warn("Aviso ao inicializar esquema do álbum: {}", e.getMessage());
+        }
+
         var comunidadeRepo = new br.ufpb.dcx.projetos.comunidade.repositories.ComunidadeDbRepository(connectionFactory);
         var comunidadeService = new br.ufpb.dcx.projetos.comunidade.services.ComunidadeService(comunidadeRepo);
 
         // Interceptor para Bolinha Vermelha de Notificação da Comunidade
         app.before(ctx -> {
-            String logadoId = ctx.sessionAttribute("usuarioLogadoId");
-            if (logadoId != null && !ctx.path().startsWith("/comunidade") && !ctx.path().startsWith("/public") && !ctx.path().startsWith("/js") && !ctx.path().startsWith("/css")) {
-                java.time.LocalDateTime lastVisited = ctx.sessionAttribute("comunidadeLastVisited");
-                if (lastVisited == null) {
-                    lastVisited = java.time.LocalDateTime.now().minusDays(1);
+            try {
+                String logadoId = ctx.sessionAttribute("usuarioLogadoId");
+                if (logadoId != null && !ctx.path().startsWith("/comunidade") && !ctx.path().startsWith("/public") && !ctx.path().startsWith("/js") && !ctx.path().startsWith("/css")) {
+                    java.time.LocalDateTime lastVisited = ctx.sessionAttribute("comunidadeLastVisited");
+                    if (lastVisited == null) {
+                        lastVisited = java.time.LocalDateTime.now().minusDays(1);
+                    }
+                    boolean temNovos = comunidadeService.temNovosPosts(logadoId, lastVisited);
+                    boolean temPedidos = !comunidadeService.listarPedidosRecebidos(logadoId).isEmpty();
+                    ctx.sessionAttribute("novidadesComunidade", temNovos || temPedidos);
                 }
-                boolean temNovos = comunidadeService.temNovosPosts(logadoId, lastVisited);
-                boolean temPedidos = !comunidadeService.listarPedidosRecebidos(logadoId).isEmpty();
-                ctx.sessionAttribute("novidadesComunidade", temNovos || temPedidos);
+            } catch (Exception ignored) {
+                // Interceptor silencioso para nunca causar Erro 500
             }
         });
 

@@ -29,4 +29,6 @@ public interface PlaylistRepository {
     Optional<PlaylistItem> findItemById(String itemId);
 
     boolean deleteItem(String itemId);
+
+    boolean alternarOcultaItem(String itemId);
 }

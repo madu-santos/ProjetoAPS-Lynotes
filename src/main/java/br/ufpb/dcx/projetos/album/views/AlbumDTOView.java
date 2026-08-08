@@ -14,6 +14,7 @@ public final class AlbumDTOView {
     private final Double nota;
     private final String youtubeId;
     private final String capaUrl;
+    private final String resenha;
     private final boolean edicao;
     private final String acao;
 
@@ -25,6 +26,7 @@ public final class AlbumDTOView {
             Double nota,
             String youtubeId,
             String capaUrl,
+            String resenha,
             boolean edicao,
             String acao
     ) {
@@ -35,6 +37,7 @@ public final class AlbumDTOView {
         this.nota = nota;
         this.youtubeId = youtubeId;
         this.capaUrl = capaUrl;
+        this.resenha = resenha;
         this.edicao = edicao;
         this.acao = acao;
     }
@@ -48,6 +51,7 @@ public final class AlbumDTOView {
                 form.nota(),
                 valor(form.youtubeId()),
                 valor(form.capaUrl()),
+                valor(form.resenha()),
                 false,
                 "/albums"
         );
@@ -62,6 +66,7 @@ public final class AlbumDTOView {
                 album.getNota(),
                 album.getYoutubeId(),
                 album.getCapaUrl(),
+                album.getResenha(),
                 true,
                 "/albums/" + album.getId()
         );
@@ -76,6 +81,7 @@ public final class AlbumDTOView {
                 form.nota(),
                 valor(form.youtubeId()),
                 valor(form.capaUrl()),
+                valor(form.resenha()),
                 true,
                 "/albums/" + id
             );
@@ -119,5 +125,9 @@ public final class AlbumDTOView {
 
     public String getCapaUrl() {
         return capaUrl;
+    }
+
+    public String getResenha() {
+        return resenha;
     }
 }

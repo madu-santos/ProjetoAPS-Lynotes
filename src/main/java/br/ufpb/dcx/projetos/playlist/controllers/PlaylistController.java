@@ -105,13 +105,15 @@ public final class PlaylistController {
                 String msg = "Criou a playlist: **" + playlist.getNome() + "**";
                 comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_PLAYLIST", playlist.getId(), msg);
             }
-            ctx.redirect("/playlists", HttpStatus.SEE_OTHER);
+            ctx.redirect("/playlists/" + playlist.getId(), HttpStatus.SEE_OTHER);
         } catch (IllegalArgumentException e) {
             Map<String, Object> modelo = new HashMap<>();
             modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
             modelo.put("erro", e.getMessage());
-            modelo.put("playlists", service.findAllByUsuarioId(usuarioId));
-            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("playlists/lista", modelo);
+            modelo.put("edicao", false);
+            modelo.put("acao", "/playlists");
+            modelo.put("nome", nome != null ? nome : "");
+            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("playlists/formulario", modelo);
         }
     }
 
@@ -149,21 +151,56 @@ public final class PlaylistController {
         String artista = ctx.formParam("artista");
         String duracaoStr = ctx.formParam("duracaoSegundos");
         String youtubeUrl = ctx.formParam("youtubeUrl");
+        if (youtubeUrl == null || youtubeUrl.isBlank()) {
+            youtubeUrl = ctx.formParam("url");
+        }
         String youtubeId = ctx.formParam("youtubeId");
         String capaUrl = ctx.formParam("capaUrl");
 
         try {
-            if (youtubeId != null && !youtubeId.isBlank() && musicaService != null) {
-                // Deduplicate: check if already cataloged
-                boolean jaExiste = musicaService.findByUsuarioId(usuarioId).stream()
-                        .anyMatch(m -> youtubeId.equals(m.getYoutubeId()));
-                if (!jaExiste) {
+            if ((youtubeId == null || youtubeId.isBlank()) && youtubeUrl != null && !youtubeUrl.isBlank()) {
+                try {
+                    youtubeId = service.extractVideoId(youtubeUrl);
+                } catch (Exception ignored) {}
+            }
+
+            if (youtubeUrl == null || youtubeUrl.isBlank()) {
+                if (youtubeId != null && !youtubeId.isBlank()) {
+                    youtubeUrl = "https://www.youtube.com/watch?v=" + youtubeId;
+                }
+            }
+
+            if (youtubeUrl == null || youtubeUrl.isBlank()) {
+                throw new IllegalArgumentException("Informações da música incompletas.");
+            }
+
+            if (youtubeId == null || youtubeId.isBlank()) {
+                try {
+                    youtubeId = service.extractVideoId(youtubeUrl);
+                } catch (Exception ignored) {}
+            }
+
+            if (musicaService != null && youtubeId != null && !youtubeId.isBlank()) {
+                final String finalYtId = youtubeId;
+                var musicaExistente = musicaService.findByUsuarioId(usuarioId).stream()
+                        .filter(m -> finalYtId.equals(m.getYoutubeId()))
+                        .findFirst();
+
+                if (musicaExistente.isPresent()) {
+                    var m = musicaExistente.get();
+                    if (titulo == null || titulo.isBlank()) titulo = m.getTitulo();
+                    if (artista == null || artista.isBlank()) artista = m.getArtista();
+                    if (duracaoStr == null || duracaoStr.isBlank()) {
+                        duracaoStr = m.getDuracaoSegundos() != null ? m.getDuracaoSegundos().toString() : null;
+                    }
+                    if (capaUrl == null || capaUrl.isBlank()) capaUrl = m.getCapaUrl();
+                } else if (titulo != null && !titulo.isBlank()) {
                     String musicaId = java.util.UUID.randomUUID().toString();
                     Integer duracao = null;
                     if (duracaoStr != null && !duracaoStr.isBlank()) {
                         try {
                             duracao = Integer.parseInt(duracaoStr);
-                        } catch (Exception e) {}
+                        } catch (Exception ignored) {}
                     }
                     br.ufpb.dcx.projetos.musica.models.Musica novaMusica = new br.ufpb.dcx.projetos.musica.models.Musica(
                         musicaId,
@@ -182,20 +219,19 @@ public final class PlaylistController {
                         false
                     );
                     musicaService.save(novaMusica);
-                }
 
-                // Add to default playlist "Músicas Catalogadas"
-                String defaultPlaylistId = service.findOrCreateHiddenPlaylist(usuarioId).getId();
-                try {
-                    service.addItem(defaultPlaylistId, youtubeUrl, youtubeId, usuarioId);
-                } catch (Exception ignored) {}
-
-                // Add to the current playlist (unless it is already the default playlist)
-                if (!playlistId.equals(defaultPlaylistId)) {
-                    service.addItem(playlistId, youtubeUrl, youtubeId, usuarioId);
+                    // Add to default playlist "Músicas Catalogadas"
+                    String defaultPlaylistId = service.findOrCreateHiddenPlaylist(usuarioId).getId();
+                    try {
+                        service.addItem(defaultPlaylistId, youtubeUrl, youtubeId, usuarioId, titulo);
+                    } catch (Exception ignored) {}
                 }
-            } else {
-                throw new IllegalArgumentException("Informações da música incompletas.");
+            }
+
+            // Add to target playlist (se não for a mesma playlist oculta já inserida)
+            String defaultId = service.findOrCreateHiddenPlaylist(usuarioId).getId();
+            if (!defaultId.equals(playlistId)) {
+                service.addItem(playlistId, youtubeUrl, youtubeId, usuarioId, titulo);
             }
 
             ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
@@ -217,6 +253,15 @@ public final class PlaylistController {
         boolean apagarMusica = "true".equalsIgnoreCase(ctx.queryParam("apagarMusica"));
 
         service.removeItem(playlistId, itemId, usuarioId, apagarMusica, musicaService);
+        ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
+    }
+
+    public void alternarOcultaItem(Context ctx) {
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        String playlistId = ctx.pathParam("id");
+        String itemId = ctx.pathParam("itemId");
+
+        service.alternarOcultaItem(playlistId, itemId, usuarioId);
         ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
     }
 
@@ -251,8 +296,15 @@ public final class PlaylistController {
             service.updatePlaylist(playlistId, nome, oculta, usuarioId);
             ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
         } catch (IllegalArgumentException e) {
-            ctx.sessionAttribute("erroPlaylist", e.getMessage());
-            ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
+            PlaylistWithItems playlist = service.findPlaylistWithItems(playlistId, usuarioId);
+            Map<String, Object> modelo = new HashMap<>();
+            modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
+            modelo.put("edicao", true);
+            modelo.put("acao", "/playlists/" + playlistId + "/editar");
+            modelo.put("playlist", playlist.getPlaylist());
+            modelo.put("nome", nome != null ? nome : playlist.getPlaylist().getNome());
+            modelo.put("erro", e.getMessage());
+            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("playlists/formulario", modelo);
         }
     }
 
@@ -262,7 +314,12 @@ public final class PlaylistController {
 
         try {
             service.deletePlaylist(playlistId, usuarioId);
-            ctx.redirect("/playlists", HttpStatus.SEE_OTHER);
+            String referer = ctx.header("Referer");
+            if (referer != null && !referer.contains("/playlists/" + playlistId) && (referer.contains("/musicas") || referer.contains("/home") || referer.endsWith("/playlists") || referer.endsWith("/playlists/"))) {
+                ctx.redirect(referer, HttpStatus.SEE_OTHER);
+            } else {
+                ctx.redirect("/playlists", HttpStatus.SEE_OTHER);
+            }
         } catch (IllegalArgumentException e) {
             ctx.sessionAttribute("erroPlaylist", e.getMessage());
             ctx.redirect("/playlists/" + playlistId, HttpStatus.SEE_OTHER);
@@ -278,6 +335,14 @@ public final class PlaylistController {
         payload.put("playlist", playlist.getPlaylist());
         payload.put("items", playlist.getItems());
         ctx.json(payload);
+    }
+
+    public void checkDuplicateJson(Context ctx) {
+        String playlistId = ctx.pathParam("id");
+        String url = ctx.queryParam("url");
+        String videoId = ctx.queryParam("videoId");
+        boolean duplicada = service.itemExisteNaPlaylist(playlistId, videoId, url);
+        ctx.json(Map.of("duplicada", duplicada));
     }
 
     public void adicionarItemJson(Context ctx) {

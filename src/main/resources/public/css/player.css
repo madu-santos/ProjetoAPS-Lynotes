@@ -1,13 +1,13 @@
 /* === Mini Player Container === */
 #mini-player {
-    position: fixed;
+    position: fixed !important;
     top: 50%;
     right: 0;
     /* o container inteiro desliza para a direita */
     transform: translateY(-50%) translateX(0);
     display: flex;
     align-items: center;
-    z-index: 1050;
+    z-index: 999999 !important;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* quando collapsed, empurra tudo para fora — só a aba (22 px) fica visível */

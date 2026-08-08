@@ -32,7 +32,7 @@
 
                     <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
 
-                    <form method="post" th:action="${acao}">
+                    <form method="post" th:action="${acao}" hx-boost="false">
                         <!-- Nome da Playlist -->
                         <div class="mb-4">
                             <label class="form-label text-purple font-monospace small uppercase fw-bold" for="nome">Nome da Playlist</label>
@@ -57,16 +57,8 @@
                             <label class="form-check-label text-secondary small" for="oculta">Ocultar esta playlist do seu perfil público</label>
                         </div>
 
-                        <!-- Compartilhar na Comunidade Checkbox -->
-                        <div class="form-check form-switch mb-4" th:if="${!edicao}">
-                            <input class="form-check-input bg-dark border-secondary" type="checkbox" id="compartilharNaComunidade" name="compartilharNaComunidade" checked>
-                            <label class="form-check-label text-secondary small" for="compartilharNaComunidade">
-                                Compartilhar na comunidade (criar postagem automática)
-                            </label>
-                        </div>
-
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">
-                            <a class="btn btn-outline-secondary rounded-pill px-4" href="/musicas">Cancelar</a>
+                            <a class="btn btn-outline-secondary rounded-pill px-4" href="/playlists">Cancelar</a>
                             <button class="btn-add-music-glow px-4" type="submit">
                                 <i class="bi bi-check-circle-fill me-1"></i>
                                 <span th:text="${edicao} ? 'Salvar Alterações' : 'Criar Playlist'">Criar Playlist</span>
@@ -78,6 +70,83 @@
             </div>
         </div>
     </main>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('form');
+            if (!form) return;
+
+            const isEdicao = [[${edicao}]];
+
+            // If there's an error passed from server, alert it
+            const erroMsg = [[${erro}]];
+            if (erroMsg) {
+                if (typeof window.exibirAlertCustom === 'function') {
+                    window.exibirAlertCustom('Atenção', erroMsg);
+                } else {
+                    alert(erroMsg);
+                }
+            }
+
+            form.addEventListener('submit', async (e) => {
+                if (isEdicao) {
+                    return;
+                }
+
+                e.preventDefault();
+                e.stopPropagation();
+
+                const nomeInput = document.getElementById('nome');
+                const nome = nomeInput.value.trim();
+
+                if (!nome) {
+                    if (typeof window.exibirAlertCustom === 'function') {
+                        window.exibirAlertCustom('Atenção', 'O nome da playlist não pode ser vazio.');
+                    } else {
+                        alert('O nome da playlist não pode ser vazio.');
+                    }
+                    return;
+                }
+
+                const btnSubmit = form.querySelector('button[type="submit"]');
+                const originalText = btnSubmit.innerHTML;
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Criando...';
+
+                try {
+                    const res = await fetch('/api/playlists', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ nome: nome })
+                    });
+
+                    if (res.ok) {
+                        const playlist = await res.json();
+                        window.location.href = '/playlists/' + playlist.id;
+                    } else {
+                        btnSubmit.disabled = false;
+                        btnSubmit.innerHTML = originalText;
+                        const errMsg = await res.text();
+                        if (typeof window.exibirAlertCustom === 'function') {
+                            window.exibirAlertCustom('Erro ao Criar Playlist', errMsg || 'Verifique se o nome é válido.');
+                        } else {
+                            alert(errMsg || 'Erro ao criar playlist. Verifique se o nome é válido.');
+                        }
+                    }
+                } catch (err) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = originalText;
+                    if (typeof window.exibirAlertCustom === 'function') {
+                        window.exibirAlertCustom('Erro de Conexão', 'Erro ao se conectar ao servidor.');
+                    } else {
+                        alert('Erro ao se conectar ao servidor.');
+                    }
+                }
+            });
+        });
+    </script>
 
 </div>
 

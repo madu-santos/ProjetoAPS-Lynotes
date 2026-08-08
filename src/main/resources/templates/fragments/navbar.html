@@ -88,26 +88,52 @@
                 }
                 
                 document.addEventListener('DOMContentLoaded', initInteractiveStars);
+
+                if (typeof window.toggleOpcoesMenu !== 'function') {
+                    window.toggleOpcoesMenu = function(e, btn) {
+                        if (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                        const dropdownDiv = btn.closest('.dropdown') || btn.closest('.dropend');
+                        if (!dropdownDiv) return;
+                        const menu = dropdownDiv.querySelector('.dropdown-menu');
+                        if (!menu) return;
+
+                        const isShown = menu.classList.contains('show');
+                        document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+
+                        if (!isShown) {
+                            menu.classList.add('show');
+                        }
+                    };
+
+                    document.addEventListener('click', function(e) {
+                        if (!e.target.closest('.dropdown') && !e.target.closest('.dropend')) {
+                            document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+                        }
+                    });
+                }
             </script>
             
             <div class="flex-grow-1">
-                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'catalogo'} ? 'active' : ''" href="/">
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'catalogo'} ? 'active' : ''" href="/" hx-boost="false">
                     <i class="bi bi-house-door-fill fs-5"></i>
                     <span class="sidebar-text">Meu Catálogo</span>
                 </a>
-                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'musicas'} ? 'active' : ''" href="/musicas">
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'musicas'} ? 'active' : ''" href="/musicas" hx-boost="false">
                     <i class="bi bi-music-note-list fs-5"></i>
                     <span class="sidebar-text">Músicas</span>
                 </a>
-                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'artistas'} ? 'active' : ''" href="/artistas">
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'artistas'} ? 'active' : ''" href="/artistas" hx-boost="false">
                     <i class="bi bi-mic-fill fs-5"></i>
                     <span class="sidebar-text">Artistas</span>
                 </a>
-                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'albums'} ? 'active' : ''" href="/albums">
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'albums' or paginaAtiva == 'albuns'} ? 'active' : ''" href="/albuns" hx-boost="false">
                     <i class="bi bi-disc-fill fs-5"></i>
                     <span class="sidebar-text">Álbuns</span>
                 </a>
-                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'comunidade'} ? 'active' : ''" href="/comunidade">
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'comunidade'} ? 'active' : ''" href="/comunidade" hx-boost="false">
                     <div class="position-relative">
                         <i class="bi bi-people-fill fs-5"></i>
                         <span th:if="${session != null and session.novidadesComunidade}" class="position-absolute top-0 start-100 translate-middle p-1 bg-purple border border-dark rounded-circle">
@@ -117,7 +143,7 @@
                     <span class="sidebar-text">Comunidade</span>
                 </a>
                 
-                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'perfil'} ? 'active' : ''" th:if="${usuarioLogado != null}" href="/usuarios/me">
+                <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'perfil'} ? 'active' : ''" th:if="${usuarioLogado != null}" href="/perfil" hx-boost="false">
                     <i class="bi bi-person-circle fs-5"></i>
                     <span class="sidebar-text text-truncate">Meu Perfil</span>
                 </a>
@@ -193,6 +219,51 @@
                 }, 4000);
             };
 
+            window.fecharTodosModaisEBackdrops = function() {
+                document.querySelectorAll('.modal').forEach(modalEl => {
+                    try {
+                        const inst = bootstrap.Modal.getInstance(modalEl);
+                        if (inst) inst.hide();
+                    } catch(e) {}
+                    modalEl.classList.remove('show');
+                    modalEl.style.display = 'none';
+                    modalEl.setAttribute('aria-hidden', 'true');
+                    modalEl.removeAttribute('aria-modal');
+                    modalEl.removeAttribute('role');
+                });
+                document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            };
+
+            // Custom Alert Modal Helper
+            window.exibirAlertCustom = function(titulo, mensagem) {
+                const modalEl = document.getElementById('customConfirmModal');
+                if (!modalEl) {
+                    alert(mensagem);
+                    return;
+                }
+                
+                if (modalEl.parentNode !== document.body) {
+                    document.body.appendChild(modalEl);
+                }
+                
+                const titleEl = document.getElementById('customConfirmTitle');
+                const msgEl = document.getElementById('customConfirmMessage');
+                const footerEl = document.getElementById('customConfirmFooter');
+                
+                titleEl.innerHTML = `<i class="bi bi-exclamation-triangle text-purple fs-4"></i> ${titulo}`;
+                msgEl.innerHTML = mensagem;
+                
+                footerEl.innerHTML = `
+                    <button type="button" class="btn btn-outline-purple rounded-pill px-4" data-bs-dismiss="modal" onclick="fecharTodosModaisEBackdrops()">Fechar</button>
+                `;
+                
+                const bootstrapModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                bootstrapModal.show();
+            };
+
             // Custom Confirmation Modal Helper
             window.confirmarExclusaoCustom = function(formElement, titulo, mensagem, opacaoApagarCatalogo = false, eventObj = null) {
                 if (formElement.dataset.confirmed === 'true') {
@@ -214,7 +285,6 @@
                     return false;
                 }
                 
-                // Mover o modal para o body para evitar problemas de stacking context (tela preta bloqueada)
                 if (modalEl.parentNode !== document.body) {
                     document.body.appendChild(modalEl);
                 }
@@ -230,14 +300,14 @@
                 
                 if (opacaoApagarCatalogo) {
                     footerEl.innerHTML = `
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal" onclick="fecharTodosModaisEBackdrops()">Cancelar</button>
                         <button type="button" class="btn btn-outline-purple rounded-pill px-3" id="btnApenasRemover">Apenas remover da playlist</button>
                         <button type="button" class="btn btn-danger rounded-pill px-3 fw-bold" id="btnApagarTudo">Apagar de Tudo (Catálogo e Playlist)</button>
                     `;
                     
                     document.getElementById('btnApenasRemover').onclick = function() {
                         formElement.action = formElement.action.split('?')[0] + "?apagarMusica=false";
-                        bootstrapModal.hide();
+                        fecharTodosModaisEBackdrops();
                         formElement.dataset.confirmed = 'true';
                         if (typeof formElement.requestSubmit === 'function') {
                             formElement.requestSubmit();
@@ -247,17 +317,17 @@
                     };
                     
                     document.getElementById('btnApagarTudo').onclick = function() {
-                        bootstrapModal.hide();
+                        fecharTodosModaisEBackdrops();
                         window.confirmarExclusaoCustom(formElement, "Excluir Música permanentemente?", "Tem certeza absoluta que deseja excluir esta música do seu catálogo permanentemente? Esta ação é definitiva.", false);
                     };
                 } else {
                     footerEl.innerHTML = `
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal" onclick="fecharTodosModaisEBackdrops()">Cancelar</button>
                         <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold" id="customConfirmBtn">Confirmar</button>
                     `;
                     
                     document.getElementById('customConfirmBtn').onclick = function() {
-                        bootstrapModal.hide();
+                        fecharTodosModaisEBackdrops();
                         formElement.dataset.confirmed = 'true';
                         if (typeof formElement.requestSubmit === 'function') {
                             formElement.requestSubmit();
@@ -271,8 +341,13 @@
                 return false;
             };
 
+            document.addEventListener('htmx:afterSwap', () => window.fecharTodosModaisEBackdrops());
+            document.addEventListener('htmx:beforeSwap', () => window.fecharTodosModaisEBackdrops());
+            window.addEventListener('popstate', () => window.fecharTodosModaisEBackdrops());
+
             // URL Parameters success/error automatic toast notifications
             window.addEventListener('DOMContentLoaded', () => {
+                window.fecharTodosModaisEBackdrops();
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.has('sucesso')) {
                     const msg = urlParams.get('sucesso');

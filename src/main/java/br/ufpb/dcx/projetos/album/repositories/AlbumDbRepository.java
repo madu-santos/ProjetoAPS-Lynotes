@@ -19,7 +19,7 @@ public final class AlbumDbRepository implements AlbumRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AlbumDbRepository.class);
 
-    private static final String COLUNAS = "id, titulo, artista, ano_lancamento, nota, usuario_id, youtube_id, capa_url";
+    private static final String COLUNAS = "id, titulo, artista, ano_lancamento, nota, usuario_id, youtube_id, capa_url, resenha";
 
     private final ConnectionFactory connectionFactory;
 
@@ -30,8 +30,8 @@ public final class AlbumDbRepository implements AlbumRepository {
     @Override
     public void criar(Album album) {
         String sql = """
-                INSERT INTO album (id, titulo, artista, ano_lancamento, nota, usuario_id, youtube_id, capa_url)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO album (id, titulo, artista, ano_lancamento, nota, usuario_id, youtube_id, capa_url, resenha)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> {
@@ -47,6 +47,7 @@ public final class AlbumDbRepository implements AlbumRepository {
             statement.setString(6, album.getUsuarioId());
             statement.setString(7, album.getYoutubeId());
             statement.setString(8, album.getCapaUrl());
+            statement.setString(9, album.getResenha());
         });
         LOGGER.debug("Álbum persistido. id={}", album.getId());
     }
@@ -55,7 +56,7 @@ public final class AlbumDbRepository implements AlbumRepository {
     public boolean atualizar(Album album) {
         String sql = """
                 UPDATE album
-                SET titulo = ?, artista = ?, ano_lancamento = ?, nota = ?, youtube_id = ?, capa_url = ?
+                SET titulo = ?, artista = ?, ano_lancamento = ?, nota = ?, youtube_id = ?, capa_url = ?, resenha = ?
                 WHERE id = ? AND usuario_id = ?
                 """;
 
@@ -70,8 +71,9 @@ public final class AlbumDbRepository implements AlbumRepository {
             }
             statement.setString(5, album.getYoutubeId());
             statement.setString(6, album.getCapaUrl());
-            statement.setString(7, album.getId());
-            statement.setString(8, album.getUsuarioId());
+            statement.setString(7, album.getResenha());
+            statement.setString(8, album.getId());
+            statement.setString(9, album.getUsuarioId());
         });
         return alterados == 1;
     }
@@ -184,6 +186,10 @@ public final class AlbumDbRepository implements AlbumRepository {
 
     private Album mapear(ResultSet result) throws SQLException {
         Double nota = result.getObject("nota") != null ? result.getDouble("nota") : null;
+        String resenha = null;
+        try {
+            resenha = result.getString("resenha");
+        } catch (SQLException ignored) {}
         return new Album(
                 result.getString("id"),
                 result.getString("titulo"),
@@ -192,7 +198,8 @@ public final class AlbumDbRepository implements AlbumRepository {
                 nota,
                 result.getString("usuario_id"),
                 result.getString("youtube_id"),
-                result.getString("capa_url")
+                result.getString("capa_url"),
+                resenha
         );
     }
 

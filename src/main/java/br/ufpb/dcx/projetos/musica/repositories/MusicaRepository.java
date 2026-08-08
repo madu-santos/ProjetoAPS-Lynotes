@@ -25,5 +25,9 @@ public interface MusicaRepository {
         return Optional.empty();
     }
 
+    default boolean alternarOculta(String id, String usuarioId) {
+        return false;
+    }
+
     boolean remover(String id);
 }

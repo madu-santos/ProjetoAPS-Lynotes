@@ -87,7 +87,7 @@ public final class AlbumController {
             dto.validar();
             int ano = Integer.parseInt(dto.anoLancamento().trim());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-            Album album = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId, dto.youtubeId(), dto.capaUrl());
+            Album album = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId, dto.youtubeId(), dto.capaUrl(), dto.resenha());
             service.save(album, usuarioId);
             
             if (dto.youtubeId() != null && dto.youtubeId().startsWith("itunes_album_")) {
@@ -159,7 +159,7 @@ public final class AlbumController {
             dto.validar();
             int ano = Integer.parseInt(dto.anoLancamento().trim());
             String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
-            Album albumDetails = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId, dto.youtubeId(), dto.capaUrl());
+            Album albumDetails = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId, dto.youtubeId(), dto.capaUrl(), dto.resenha());
             service.update(id, albumDetails, usuarioId);
             
             String compartilhar = ctx.formParam("compartilharComunidade");
@@ -195,6 +195,16 @@ public final class AlbumController {
         ctx.json(musicaService.findByAlbumId(id));
     }
 
+    public void alternarOcultaFaixa(Context ctx) {
+        String albumId = ctx.pathParam("albumId");
+        String faixaId = ctx.pathParam("faixaId");
+        String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        if (musicaService != null) {
+            musicaService.alternarOculta(faixaId, usuarioId);
+        }
+        ctx.redirect("/albums/" + albumId, HttpStatus.SEE_OTHER);
+    }
+
     private AlbumDTO extrairFormulario(Context ctx) {
         String notaStr = ctx.formParam("nota");
         Double nota = (notaStr != null && !notaStr.trim().isEmpty()) ? Double.parseDouble(notaStr.trim()) : null;
@@ -204,7 +214,8 @@ public final class AlbumController {
                 ctx.formParam("anoLancamento"),
                 nota,
                 ctx.formParam("youtubeId"),
-                ctx.formParam("capaUrl")
+                ctx.formParam("capaUrl"),
+                ctx.formParam("resenha")
         ).normalizado();
     }
 
