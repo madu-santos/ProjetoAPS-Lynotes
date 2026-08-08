@@ -61,7 +61,9 @@ public class AlbumService {
         String yid = albumDetails.getYoutubeId() != null ? albumDetails.getYoutubeId() : album.getYoutubeId();
         String capa = albumDetails.getCapaUrl() != null ? albumDetails.getCapaUrl() : album.getCapaUrl();
 
-        Album albumAtualizado = new Album(album.getId(), albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento(), albumDetails.getNota(), usuarioId, yid, capa);
+        String resenha = albumDetails.getResenha() != null ? albumDetails.getResenha() : album.getResenha();
+
+        Album albumAtualizado = new Album(album.getId(), albumDetails.getTitulo(), albumDetails.getArtista(), albumDetails.getAnoLancamento(), albumDetails.getNota(), usuarioId, yid, capa, resenha);
         albumRepository.atualizar(albumAtualizado);
         return albumAtualizado;
     }

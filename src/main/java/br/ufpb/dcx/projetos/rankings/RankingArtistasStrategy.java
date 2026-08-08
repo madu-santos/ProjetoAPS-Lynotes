@@ -1,34 +1,65 @@
 package br.ufpb.dcx.projetos.rankings;
 
+import br.ufpb.dcx.projetos.album.models.Album;
+import br.ufpb.dcx.projetos.album.services.AlbumService;
 import br.ufpb.dcx.projetos.artista.models.Artista;
 import br.ufpb.dcx.projetos.artista.services.ArtistaService;
 import br.ufpb.dcx.projetos.musica.models.Musica;
 import br.ufpb.dcx.projetos.musica.services.MusicaService;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RankingArtistasStrategy implements RankingStrategy {
 
     private final ArtistaService artistaService;
     private final MusicaService musicaService;
+    private final AlbumService albumService;
 
-    public RankingArtistasStrategy(ArtistaService artistaService, MusicaService musicaService) {
+    public RankingArtistasStrategy(ArtistaService artistaService, MusicaService musicaService, AlbumService albumService) {
         this.artistaService = artistaService;
         this.musicaService = musicaService;
+        this.albumService = albumService;
+    }
+
+    public RankingArtistasStrategy(ArtistaService artistaService, MusicaService musicaService) {
+        this(artistaService, musicaService, null);
     }
 
     @Override
     public List<RankingItemDTO> calcularRanking() {
-        List<Artista> artistas = artistaService.findAllGlobal();
-        List<Musica> musicas = musicaService.findAll();
+        List<Artista> artistas = artistaService != null ? artistaService.findAllGlobal() : Collections.emptyList();
+        List<Musica> musicas = musicaService != null ? musicaService.findAll() : Collections.emptyList();
+        List<Album> albuns = albumService != null ? albumService.findAllGlobal() : Collections.emptyList();
 
-        Map<String, Long> frequenciaArtista = musicas.stream()
-                .filter(m -> m.getArtista() != null && !m.getArtista().isBlank())
-                .collect(Collectors.groupingBy(m -> m.getArtista().trim().toLowerCase(), Collectors.counting()));
+        Map<String, Set<String>> ouvintesPorArtista = new HashMap<>();
+
+        for (Artista a : artistas) {
+            if (a.getNome() != null && !a.getNome().isBlank() && a.getUsuarioId() != null) {
+                String key = a.getNome().trim().toLowerCase();
+                if (isNomeArtistaValido(key)) {
+                    ouvintesPorArtista.computeIfAbsent(key, k -> new HashSet<>()).add(a.getUsuarioId());
+                }
+            }
+        }
+
+        for (Musica m : musicas) {
+            if (m.getArtista() != null && !m.getArtista().isBlank() && m.getUsuarioId() != null) {
+                String key = m.getArtista().trim().toLowerCase();
+                if (isNomeArtistaValido(key)) {
+                    ouvintesPorArtista.computeIfAbsent(key, k -> new HashSet<>()).add(m.getUsuarioId());
+                }
+            }
+        }
+
+        for (Album alb : albuns) {
+            if (alb.getArtista() != null && !alb.getArtista().isBlank() && alb.getUsuarioId() != null) {
+                String key = alb.getArtista().trim().toLowerCase();
+                if (isNomeArtistaValido(key)) {
+                    ouvintesPorArtista.computeIfAbsent(key, k -> new HashSet<>()).add(alb.getUsuarioId());
+                }
+            }
+        }
 
         Map<String, Artista> artistaPorNome = artistas.stream()
                 .filter(a -> a.getNome() != null && !a.getNome().isBlank())
@@ -38,17 +69,19 @@ public class RankingArtistasStrategy implements RankingStrategy {
                         (a1, a2) -> a1
                 ));
 
-        List<Map.Entry<String, Long>> ordenados = frequenciaArtista.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+        List<Map.Entry<String, Set<String>>> ordenados = ouvintesPorArtista.entrySet().stream()
+                .filter(e -> isNomeArtistaValido(e.getKey()))
+                .sorted((e1, e2) -> Integer.compare(e2.getValue().size(), e1.getValue().size()))
                 .toList();
 
+        List<RankingItemDTO> ranking = new ArrayList<>();
         int rank = 1;
-        List<RankingItemDTO> ranking = new java.util.ArrayList<>();
-        for (Map.Entry<String, Long> entry : ordenados) {
+        for (Map.Entry<String, Set<String>> entry : ordenados) {
             String nomeMinusculo = entry.getKey();
-            long totalOuvidos = entry.getValue();
+            int totalOuvintes = entry.getValue().size();
+
             Artista art = artistaPorNome.get(nomeMinusculo);
-            String nomeExibicao = art != null ? art.getNome() : formatarNome(entry.getKey());
+            String nomeExibicao = art != null ? art.getNome() : formatarNome(nomeMinusculo);
             String capaUrl = art != null ? art.getCapaUrl() : null;
             String id = art != null ? art.getId() : UUID.randomUUID().toString();
 
@@ -61,11 +94,42 @@ public class RankingArtistasStrategy implements RankingStrategy {
                         .orElse(null);
             }
 
-            ranking.add(new RankingItemDTO(id, nomeExibicao, "Top #" + rank, (double) totalOuvidos, (int) totalOuvidos, "ARTISTA", String.valueOf(totalOuvidos), capaUrl));
+            if (capaUrl == null || capaUrl.isBlank()) {
+                try {
+                    capaUrl = "https://ui-avatars.com/api/?name=" + java.net.URLEncoder.encode(nomeExibicao, java.nio.charset.StandardCharsets.UTF_8) + "&background=b268ff&color=ffffff&size=300";
+                } catch (Exception ignored) {}
+            }
+
+            String subtitulo = totalOuvintes + (totalOuvintes == 1 ? " ouvinte" : " ouvintes");
+
+            ranking.add(new RankingItemDTO(
+                    id,
+                    nomeExibicao,
+                    subtitulo,
+                    (double) totalOuvintes,
+                    totalOuvintes,
+                    "ARTISTA",
+                    "Top #" + rank,
+                    capaUrl
+            ));
             rank++;
         }
 
         return ranking;
+    }
+
+    private boolean isNomeArtistaValido(String name) {
+        if (name == null || name.isBlank()) return false;
+        String lower = name.trim().toLowerCase();
+        if (lower.contains(" - ") || lower.contains(" - topic") || lower.endsWith(" topic") ||
+            lower.contains("tópico") || lower.contains("vevo") || lower.contains("full album") ||
+            lower.contains(" - single") || lower.endsWith(" single") || lower.contains("http") ||
+            lower.contains("www.") || lower.contains("results?") || lower.contains("official video") ||
+            lower.contains("clipe oficial") || lower.contains("lyric video") || lower.contains("audiotrack") ||
+            lower.contains("track_") || lower.contains("itunes_")) {
+            return false;
+        }
+        return true;
     }
 
     private String formatarNome(String nome) {

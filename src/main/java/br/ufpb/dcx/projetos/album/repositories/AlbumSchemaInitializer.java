@@ -35,6 +35,7 @@ public final class AlbumSchemaInitializer {
             ALTER TABLE musica ALTER COLUMN duracao_segundos DROP NOT NULL;
             
             ALTER TABLE album ADD COLUMN IF NOT EXISTS usuario_id VARCHAR(36);
+            ALTER TABLE album ADD COLUMN IF NOT EXISTS resenha TEXT;
             
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS artista VARCHAR(255);
             ALTER TABLE musica ADD COLUMN IF NOT EXISTS resenha TEXT;
@@ -61,9 +62,12 @@ public final class AlbumSchemaInitializer {
                 video_id VARCHAR(50) NOT NULL,
                 titulo VARCHAR(500) NOT NULL,
                 ordem INT NOT NULL,
+                oculta BOOLEAN NOT NULL DEFAULT FALSE,
                 criado_em TIMESTAMP WITH TIME ZONE NOT NULL,
                 CONSTRAINT fk_playlist_item_playlist FOREIGN KEY (playlist_id) REFERENCES playlist(id) ON DELETE CASCADE
             );
+
+            ALTER TABLE playlist_item ADD COLUMN IF NOT EXISTS oculta BOOLEAN NOT NULL DEFAULT FALSE;
 
             DO $$
             BEGIN
@@ -73,6 +77,8 @@ public final class AlbumSchemaInitializer {
                     ALTER TABLE musica ADD CONSTRAINT fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE;
                 END IF;
             END $$;
+
+            UPDATE musica SET oculta_da_biblioteca = FALSE WHERE album_id IS NOT NULL AND oculta_da_biblioteca IS TRUE;
             """;
 
     private AlbumSchemaInitializer() {

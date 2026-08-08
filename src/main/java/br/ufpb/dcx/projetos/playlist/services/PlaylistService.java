@@ -25,6 +25,11 @@ public class PlaylistService {
     public Playlist createPlaylist(String nome, String usuarioId) {
         validarUsuarioId(usuarioId);
         validarNome(nome);
+        boolean nomeJaExiste = playlistRepository.findByUsuarioId(usuarioId).stream()
+                .anyMatch(p -> p.getNome().equalsIgnoreCase(nome.trim()));
+        if (nomeJaExiste) {
+            throw new IllegalArgumentException("Você já possui uma playlist com este nome.");
+        }
         Playlist playlist = Playlist.novo(nome, usuarioId);
         playlistRepository.create(playlist);
         return playlist;
@@ -54,6 +59,12 @@ public class PlaylistService {
                 .orElseThrow(() -> new IllegalArgumentException("Playlist não encontrada."));
         if (!playlist.getUsuarioId().equals(usuarioId)) {
             throw new IllegalArgumentException("Você não tem permissão para editar esta playlist.");
+        }
+        boolean nomeJaExiste = playlistRepository.findByUsuarioId(usuarioId).stream()
+                .filter(p -> !p.getId().equals(id))
+                .anyMatch(p -> p.getNome().equalsIgnoreCase(nome.trim()));
+        if (nomeJaExiste) {
+            throw new IllegalArgumentException("Você já possui uma playlist com este nome.");
         }
         Playlist playlistAtualizada = new Playlist(playlist.getId(), nome.trim(), playlist.getUsuarioId(), oculta, playlist.getCriadoEm());
         playlistRepository.update(playlistAtualizada);
@@ -111,28 +122,74 @@ public class PlaylistService {
         return new PlaylistWithItems(playlist, playlistRepository.findItemsByPlaylistId(playlistId));
     }
 
-    public PlaylistItem addItem(String playlistId, String url, String videoId, String usuarioId) {
+    public PlaylistItem addItem(String playlistId, String url, String videoId, String usuarioId, String tituloParam) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .filter(p -> p.getUsuarioId().equals(usuarioId))
                 .orElseThrow(() -> new ResourceNotFoundException("Playlist não encontrada."));
 
         validarUrl(url);
 
-        // Prevent duplicate items in the same playlist
-        Optional<PlaylistItem> existingItem = playlistRepository.findItemsByPlaylistId(playlistId).stream()
-                .filter(item -> item.getVideoId().equals(videoId))
-                .findFirst();
-        if (existingItem.isPresent()) {
-            throw new IllegalArgumentException("Essa música já está salva nessa playlist.");
+        String titulo = (tituloParam != null && !tituloParam.isBlank()) ? tituloParam.trim() : fetchYouTubeTitle(url, videoId);
+
+        if (itemExisteNaPlaylist(playlistId, videoId, url, titulo)) {
+            List<PlaylistItem> existentes = playlistRepository.findItemsByPlaylistId(playlistId);
+            if (existentes != null && !existentes.isEmpty()) {
+                String ext = extractVideoId(url);
+                return existentes.stream().filter(item ->
+                        (titulo != null && item.getTitulo() != null && item.getTitulo().trim().equalsIgnoreCase(titulo)) ||
+                        (videoId != null && !videoId.isBlank() && item.getVideoId().equalsIgnoreCase(videoId)) ||
+                        (ext != null && !ext.isBlank() && item.getVideoId().equalsIgnoreCase(ext)) ||
+                        (url != null && !url.isBlank() && item.getUrl().trim().equalsIgnoreCase(url.trim()))
+                ).findFirst().orElse(existentes.get(0));
+            }
         }
 
         int ordem = playlistRepository.countItemsByPlaylistId(playlistId) + 1;
-        String titulo = fetchYouTubeTitle(url, videoId);
         PlaylistItem item = new PlaylistItem(
                 java.util.UUID.randomUUID().toString(),
                 playlistId, url, videoId, titulo, ordem, java.time.Instant.now());
         playlistRepository.createItem(item);
         return item;
+    }
+
+    public PlaylistItem addItem(String playlistId, String url, String videoId, String usuarioId) {
+        return addItem(playlistId, url, videoId, usuarioId, null);
+    }
+
+    public boolean itemExisteNaPlaylist(String playlistId, String videoId, String url, String tituloParam) {
+        List<PlaylistItem> items = playlistRepository.findItemsByPlaylistId(playlistId);
+        if (items == null || items.isEmpty()) return false;
+        String extracted = extractVideoId(url);
+        String tituloNorm = (tituloParam != null && !tituloParam.isBlank()) ? tituloParam.trim() : null;
+        return items.stream().anyMatch(item ->
+                (tituloNorm != null && item.getTitulo() != null && item.getTitulo().trim().equalsIgnoreCase(tituloNorm)) ||
+                (videoId != null && !videoId.isBlank() && item.getVideoId().equalsIgnoreCase(videoId)) ||
+                (extracted != null && !extracted.isBlank() && item.getVideoId().equalsIgnoreCase(extracted)) ||
+                (url != null && !url.isBlank() && item.getUrl().trim().equalsIgnoreCase(url.trim()))
+        );
+    }
+
+    public boolean itemExisteNaPlaylist(String playlistId, String videoId, String url) {
+        return itemExisteNaPlaylist(playlistId, videoId, url, null);
+    }
+
+    public void removerMusicaDeTodasPlaylists(String titulo, String artista, String youtubeId, String usuarioId) {
+        List<Playlist> playlists = playlistRepository.findByUsuarioId(usuarioId);
+        if (playlists == null || playlists.isEmpty()) return;
+
+        for (Playlist pl : playlists) {
+            List<PlaylistItem> items = playlistRepository.findItemsByPlaylistId(pl.getId());
+            if (items == null) continue;
+
+            for (PlaylistItem item : items) {
+                boolean matchVideoId = youtubeId != null && !youtubeId.isBlank() && youtubeId.equalsIgnoreCase(item.getVideoId());
+                boolean matchTitulo = titulo != null && item.getTitulo() != null && item.getTitulo().toLowerCase().contains(titulo.toLowerCase().trim());
+
+                if (matchVideoId || matchTitulo) {
+                    playlistRepository.deleteItem(item.getId());
+                }
+            }
+        }
     }
 
     public String getPlaylistCapaUrl(String playlistId) {
@@ -172,11 +229,24 @@ public class PlaylistService {
         }
 
         if (deleteFromCatalog && musicaService != null && item.getVideoId() != null) {
-            musicaService.findByUsuarioId(usuarioId).stream()
-                    .filter(m -> item.getVideoId().equals(m.getYoutubeId()))
-                    .findFirst()
-                    .ifPresent(m -> musicaService.deleteById(m.getId()));
+            musicaService.findByYouTubeId(item.getVideoId()).ifPresent(m -> {
+                if (m.getUsuarioId().equals(usuarioId)) {
+                    musicaService.deleteById(m.getId());
+                }
+            });
         }
+    }
+
+    public void alternarOcultaItem(String playlistId, String itemId, String usuarioId) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .filter(p -> p.getUsuarioId().equals(usuarioId))
+                .orElseThrow(() -> new ResourceNotFoundException("Playlist não encontrada."));
+
+        PlaylistItem item = playlistRepository.findItemById(itemId)
+                .filter(i -> i.getPlaylistId().equals(playlistId))
+                .orElseThrow(() -> new ResourceNotFoundException("Item de playlist não encontrado."));
+
+        playlistRepository.alternarOcultaItem(itemId);
     }
 
     public Optional<Playlist> findById(String playlistId) {

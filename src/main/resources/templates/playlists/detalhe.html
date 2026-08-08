@@ -2,6 +2,8 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${playlist.nome} + ' - Lynotes'">Playlist - Lynotes</title>
     <!-- Fonte Plus Jakarta Sans -->
@@ -42,6 +44,26 @@
                                     <span class="badge bg-purple rounded-pill px-2 py-0.5 small" th:if="${playlist.oculta}" style="font-size: 0.75rem;">Oculta</span>
                                 </div>
                                 <p class="text-secondary small mb-0 mt-1">Adicione e ouça faixas do YouTube diretamente no mini-player.</p>
+                                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                                    <button type="button" 
+                                            class="btn btn-purple rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-2 shadow-sm fw-bold small"
+                                            th:data-plid="${playlist.id}"
+                                            onclick="if(typeof playerFetchPlaylist === 'function') playerFetchPlaylist(this.getAttribute('data-plid'), true);">
+                                        <i class="bi bi-play-fill fs-5"></i> Tocar Playlist
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-outline-purple rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-2 fw-semibold small"
+                                            th:data-plid="${playlist.id}"
+                                            onclick="if(typeof playerTocarPlaylistEmOrdemAleatoria === 'function') playerTocarPlaylistEmOrdemAleatoria(this.getAttribute('data-plid'));">
+                                        <i class="bi bi-shuffle fs-5"></i> Ordem Aleatória
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-outline-purple rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-2 fw-semibold small"
+                                            th:data-plid="${playlist.id}"
+                                            onclick="if(typeof playerTocarPlaylistEmLoop === 'function') playerTocarPlaylistEmLoop(this.getAttribute('data-plid'));">
+                                        <i class="bi bi-repeat fs-5"></i> Repetir Playlist
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -60,7 +82,8 @@
                                     <form method="post" 
                                           th:action="${'/playlists/' + playlist.id + '/excluir'}" 
                                           th:data-nome="${playlist.nome}"
-                                          onsubmit="return confirmarExclusaoCustom(this, 'Excluir Playlist?', 'Tem certeza que deseja excluir a playlist &quot;' + this.getAttribute('data-nome') + '&quot;?');" 
+                                          onsubmit="return confirmarExclusaoCustom(this, 'Excluir Playlist?', 'Tem certeza que deseja excluir a playlist &quot;' + this.getAttribute('data-nome') + '&quot;?', false, event);" 
+                                          hx-boost="false"
                                           class="m-0">
                                         <button class="dropdown-item text-danger" type="submit">
                                             <i class="bi bi-trash me-2"></i>Excluir
@@ -80,16 +103,8 @@
                     <div class="alert alert-danger rounded-4 mb-3" th:if="${erro}" th:text="${erro}"></div>
                     
                     <div class="position-relative">
-                        <input type="text" id="ytQuery" class="form-control glass-search-input bg-dark text-white border-secondary pe-5 p-3" placeholder="Pesquise o título da música ou artista..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="window.debounceSearchYT('MUSICA')" onkeydown="window.handleKeyNav(event, 'MUSICA')">
-                        <button type="button" class="btn text-purple position-absolute top-50 end-0 translate-middle-y me-2 p-1 border-0" onclick="window.buscarYT('MUSICA')" title="Buscar no YouTube">
-                            <i class="bi bi-search fs-5 text-purple"></i>
-                        </button>
-                    </div>
-
-                    <!-- Spinner -->
-                    <div id="ytSpinner" class="text-center py-3 d-none">
-                        <div class="spinner-border spinner-border-sm text-purple" role="status"></div>
-                        <span class="text-secondary small ms-2">Buscando no YouTube...</span>
+                        <input type="text" id="ytQuery" class="form-control form-control-dark rounded-pill pe-5 p-3" placeholder="Pesquise o título da música ou artista..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="window.debounceSearchYT('MUSICA')" onkeydown="window.handleKeyNav(event, 'MUSICA')">
+                        <div id="ytSpinner" class="spinner-border spinner-border-sm text-purple position-absolute end-0 top-50 translate-middle-y me-3 d-none"></div>
                     </div>
 
                     <!-- Resultados -->
@@ -107,29 +122,41 @@
                 </form>
 
                 <!-- Lista de Faixas / Itens da Playlist -->
-                <div class="music-card-cyber p-4">
-                    <h5 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
-                        <i class="bi bi-music-note-list text-purple"></i> Faixas da Playlist
-                    </h5>
+                <div class="glass-card p-4 rounded-4 shadow-lg">
+                    <h4 class="fw-bold text-white mb-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-music-note-list text-purple"></i> Músicas da Playlist
+                    </h4>
 
-                    <div class="alert alert-dark border-purple text-secondary text-center p-4 rounded-4" th:if="${items == null or items.isEmpty()}">
-                        Nenhuma faixa adicionada nesta playlist ainda. Pesquise e adicione faixas acima!
+                    <div class="alert alert-dark border-secondary text-secondary text-center p-4 rounded-4 mb-0" th:if="${items == null or items.isEmpty()}">
+                        <i class="bi bi-music-note fs-2 mb-2 d-block"></i>
+                        Nenhuma música nesta playlist ainda.
                     </div>
 
                     <div class="d-flex flex-column gap-3" th:unless="${items == null or items.isEmpty()}">
                         <div class="d-flex align-items-center justify-content-between p-3 rounded-3 bg-darker border border-secondary border-opacity-10" 
                              th:each="item, iter : ${items}" 
-                             th:id="${'item-' + item.id}">
+                             th:id="${'item-' + item.id}"
+                             th:classappend="${item.oculta ? 'opacity-50 text-muted bg-dark' : ''}">
                             
                             <div class="d-flex align-items-center gap-3 overflow-hidden">
                                 <span class="fw-bold text-purple font-monospace ms-2 fs-5" th:text="${iter.count}">1</span>
                                 <div class="overflow-hidden">
-                                    <h6 class="fw-bold text-white mb-0 text-truncate" th:text="${item.titulo}"></h6>
+                                    <h6 class="fw-bold mb-0 text-truncate" th:text="${item.titulo}" th:classappend="${item.oculta ? 'text-secondary text-decoration-line-through' : 'text-white'}"></h6>
+                                    <span th:if="${item.oculta}" class="badge bg-secondary text-white ms-0 mt-1 d-inline-block" style="font-size: 0.65rem;">Desativada</span>
                                     <span class="text-secondary small font-monospace text-truncate d-block" th:text="${item.url}"></span>
                                 </div>
                             </div>
 
                             <div class="d-flex align-items-center gap-2">
+                                <!-- Botão Ocultar / Desocultar -->
+                                <form th:action="${'/playlists/' + playlist.id + '/items/' + item.id + '/toggle-oculta'}" method="post" class="d-inline-block m-0 align-middle">
+                                    <button type="submit"
+                                            class="btn btn-link p-0 me-2 text-decoration-none shadow-none"
+                                            th:title="${item.oculta ? 'Reativar faixa na playlist' : 'Ocultar/Desativar faixa da playlist'}">
+                                        <i th:class="${item.oculta ? 'bi bi-eye-slash-fill text-warning fs-5' : 'bi bi-eye text-secondary fs-5'}"></i>
+                                    </button>
+                                </form>
+
                                 <button type="button" 
                                         class="btn btn-outline-purple btn-sm rounded-pill px-3"
                                         th:data-url="${item.url}"
@@ -278,8 +305,13 @@
             document.getElementById('youtubeId').value = item.youtubeId || '';
             document.getElementById('capaUrl').value = item.capaUrl || '';
 
-            // Submit form
-            document.getElementById('formAdicionarItem').submit();
+            const form = document.getElementById('formAdicionarItem');
+            const playlistId = '[[${playlist.id}]]';
+            if (typeof window.checarESubmeterPlaylist === 'function') {
+                window.checarESubmeterPlaylist(form, playlistId, item.youtubeId, item.youtubeUrl);
+            } else {
+                form.submit();
+            }
         };
     })();
 </script>

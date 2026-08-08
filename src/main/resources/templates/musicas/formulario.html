@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${form.edicao ? 'Editar Música - Lynotes' : 'Catalogar Música - Lynotes'}">Música - Lynotes</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
     <!-- Fonte Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +32,7 @@
                         <p class="text-secondary mb-0">Pesquise no YouTube ou preencha as informações para adicionar ao seu acervo.</p>
                     </div>
 
-                    <form method="post" th:action="${form.acao}" id="formMusica">
+                    <form method="post" th:action="${form.acao}" id="formMusica" onsubmit="return handleFormMusicaSubmit(event, this);">
 
                         <!-- Pesquisa no YouTube (Criar) -->
                         <div th:if="${!form.edicao}" class="mb-4 p-4 rounded-4 border border-purple bg-darker shadow">
@@ -265,6 +267,19 @@
                     document.getElementById('ytResults').innerHTML = '';
                     document.getElementById('ytQuery').value = item.titulo + " - " + item.artistaOuCanal;
                     activeIndex = -1;
+                };
+
+                window.handleFormMusicaSubmit = function(e, form) {
+                    const playlistSelect = document.getElementById('playlistId');
+                    const playlistId = playlistSelect ? playlistSelect.value : '';
+                    const videoId = document.getElementById('youtubeId') ? document.getElementById('youtubeId').value : '';
+                    const youtubeUrl = document.getElementById('youtubeUrl') ? document.getElementById('youtubeUrl').value : '';
+
+                    if (playlistId && playlistId !== '' && playlistId !== 'NEW_TEMP' && typeof window.checarESubmeterPlaylist === 'function') {
+                        window.checarESubmeterPlaylist(form, playlistId, videoId, youtubeUrl);
+                        return false;
+                    }
+                    return true;
                 };
             })();
         </script>

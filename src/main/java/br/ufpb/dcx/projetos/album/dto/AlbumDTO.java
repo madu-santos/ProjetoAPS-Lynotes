@@ -2,14 +2,18 @@ package br.ufpb.dcx.projetos.album.dto;
 
 import java.util.Objects;
 
-public record AlbumDTO(String titulo, String artista, String anoLancamento, Double nota, String youtubeId, String capaUrl) {
+public record AlbumDTO(String titulo, String artista, String anoLancamento, Double nota, String youtubeId, String capaUrl, String resenha) {
 
     public AlbumDTO(String titulo, String artista, String anoLancamento) {
-        this(titulo, artista, anoLancamento, null, null, null);
+        this(titulo, artista, anoLancamento, null, null, null, null);
     }
 
     public AlbumDTO(String titulo, String artista, String anoLancamento, Double nota) {
-        this(titulo, artista, anoLancamento, nota, null, null);
+        this(titulo, artista, anoLancamento, nota, null, null, null);
+    }
+
+    public AlbumDTO(String titulo, String artista, String anoLancamento, Double nota, String youtubeId, String capaUrl) {
+        this(titulo, artista, anoLancamento, nota, youtubeId, capaUrl, null);
     }
 
     public AlbumDTO normalizado() {
@@ -19,7 +23,8 @@ public record AlbumDTO(String titulo, String artista, String anoLancamento, Doub
                 normalizarObrigatorio(anoLancamento),
                 nota,
                 normalizarOpcional(youtubeId),
-                normalizarOpcional(capaUrl)
+                normalizarOpcional(capaUrl),
+                normalizarOpcional(resenha)
         );
     }
 

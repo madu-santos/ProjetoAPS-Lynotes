@@ -34,6 +34,8 @@ public final class MusicaModule {
         
         app.get("/", controller::exibirHomeOuLanding, Role.ANYONE);
         app.get("/musicas", controller::listar, Role.USER);
+        app.get("/musicas/todas", controller::listarTodas, Role.USER);
+        app.get("/musicas/salvas", controller::listarTodas, Role.USER);
         app.get("/musicas/novo", controller::exibirCadastro, Role.USER);
         app.get("/musicas/new", controller::exibirCadastro, Role.USER);
         app.post("/musicas", controller::cadastrar, Role.USER);

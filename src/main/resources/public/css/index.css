@@ -45,17 +45,58 @@ html {
     border-bottom: 1px solid #282828 !important;
 }
 
-/* Input Fields escuros */
-.form-control, .form-select {
-    background-color: #181818 !important;
-    border: 1px solid #282828 !important;
+/* Input Fields escuros com bordas padronizadas e sempre visíveis */
+.form-control,
+.form-select,
+textarea.form-control,
+input.form-control,
+select.form-control {
+    background-color: rgba(18, 18, 28, 0.85) !important;
+    border: 1.5px solid rgba(178, 104, 252, 0.45) !important;
+    border-radius: 12px !important;
     color: #ffffff !important;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
 }
-.form-control:focus, .form-select:focus {
-    background-color: #202020 !important;
+
+.form-control:hover,
+.form-select:hover,
+textarea.form-control:hover {
+    border-color: rgba(178, 104, 252, 0.75) !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea.form-control:focus {
+    background-color: rgba(24, 24, 38, 0.95) !important;
     border-color: #BB86FC !important;
-    box-shadow: 0 0 0 0.25rem rgba(187, 134, 252, 0.25) !important;
+    box-shadow: 0 0 0 0.25rem rgba(187, 134, 252, 0.3) !important;
     color: #ffffff !important;
+    outline: none !important;
+}
+
+.form-control::placeholder,
+.form-select::placeholder,
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.input-group-text {
+    background-color: rgba(24, 18, 38, 0.9) !important;
+    border: 1.5px solid rgba(178, 104, 252, 0.45) !important;
+    border-right: none !important;
+    color: #BB86FC !important;
+    border-top-left-radius: 12px !important;
+    border-bottom-left-radius: 12px !important;
+}
+
+.input-group > .form-control,
+.input-group > .form-select {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.border-secondary {
+    border-color: rgba(178, 104, 252, 0.45) !important;
 }
 
 /* Títulos */
@@ -1381,20 +1422,29 @@ thead th {
     box-shadow: 0 0 12px rgba(138, 43, 226, 0.25);
 }
 
-.glass-search-input {
+.glass-search-box .glass-search-input {
     background: transparent !important;
     border: none !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+    font-size: 0.95rem;
+}
+
+.glass-search-input {
+    background-color: rgba(18, 18, 28, 0.85) !important;
+    border: 1.5px solid rgba(178, 104, 252, 0.45) !important;
     color: #ffffff !important;
     font-size: 0.95rem;
 }
 .glass-search-input:focus {
     outline: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
+    border-color: #BB86FC !important;
+    box-shadow: 0 0 0 0.25rem rgba(187, 134, 252, 0.3) !important;
+    background-color: rgba(24, 24, 38, 0.95) !important;
     color: #ffffff !important;
 }
 .glass-search-input::placeholder {
-    color: rgba(255, 255, 255, 0.45) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
 }
 
 .glass-search-btn {
@@ -1429,12 +1479,24 @@ thead th {
     padding: 16px;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     position: relative;
-    overflow: visible;
+    overflow: visible !important;
 }
 .music-card-cyber:hover,
-.music-card-cyber:focus-within,
-.music-card-cyber:has(.show) {
-    z-index: 10;
+.music-card-cyber:focus-within {
+    z-index: 8000 !important;
+}
+.music-card-cyber:has(.show),
+.music-card-cyber:has(.dropdown-menu.show) {
+    z-index: 9500 !important;
+}
+.music-card-cyber .dropdown-menu {
+    z-index: 9600 !important;
+}
+.dropdown-menu.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9600 !important;
 }
 .music-card-cyber:hover {
     transform: translateY(-6px);
@@ -1698,5 +1760,13 @@ thead th {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 2px 8px rgba(138, 43, 226, 0.1);
+}
+
+/* Modal z-index overrides to ensure modals display above cyberpunk cards and dropdowns */
+.modal {
+    z-index: 100000 !important;
+}
+.modal-backdrop {
+    z-index: 99999 !important;
 }
 

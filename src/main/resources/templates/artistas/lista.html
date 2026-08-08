@@ -2,6 +2,8 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artistas - Lynotes</title>
     <!-- Fonte Plus Jakarta Sans -->
@@ -63,10 +65,7 @@
                     <div>
                         <!-- Foto do Artista -->
                         <div class="position-relative mx-auto mb-3" style="width: 130px; height: 130px;">
-                            <img th:if="${artista.capaUrl != null and !artista.capaUrl.isBlank()}" th:src="${artista.capaUrl}" class="rounded-circle w-100 h-100 shadow border border-purple border-2" style="object-fit: cover;">
-                            <div th:unless="${artista.capaUrl != null and !artista.capaUrl.isBlank()}" class="rounded-circle w-100 h-100 shadow d-flex align-items-center justify-content-center bg-dark text-secondary border border-secondary">
-                                <i class="bi bi-person fs-1"></i>
-                            </div>
+                            <img th:src="${artista.capaUrl != null and !artista.capaUrl.isBlank() ? artista.capaUrl : '/img/default-artist.svg'}" class="rounded-circle w-100 h-100 shadow border border-purple border-2" style="object-fit: cover;" alt="Foto do Artista">
                         </div>
 
                         <!-- Informações do Artista -->
@@ -78,9 +77,9 @@
                     <!-- Botões de Ação de Edição / Exclusão -->
                     <div class="pt-3 border-top border-secondary border-opacity-10 mt-3 d-flex justify-content-center gap-2">
                         <a class="btn btn-outline-purple btn-sm px-3 rounded-pill" th:href="${'/artistas/' + artista.id + '/editar'}">
-                            <i class="bi bi-pencil-fill me-1"></i> Editar
+                            <i class="bi bi-star-fill me-1"></i> Avaliar
                         </a>
-                        <form method="post" th:action="${'/artistas/' + artista.id + '/excluir'}" th:data-nome="${artista.nome}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Artista?', 'Tem certeza que deseja excluir o artista &quot;' + this.getAttribute('data-nome') + '&quot;?');" class="m-0">
+                        <form method="post" th:action="${'/artistas/' + artista.id + '/excluir'}" th:data-nome="${artista.nome}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Artista?', 'Tem certeza que deseja excluir o artista &quot;' + this.getAttribute('data-nome') + '&quot;?', false, event);" hx-boost="false" class="m-0">
                             <button class="btn btn-outline-danger btn-sm px-3 rounded-pill" type="submit">
                                 <i class="bi bi-trash-fill me-1"></i> Excluir
                             </button>
@@ -95,5 +94,6 @@
 </div>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

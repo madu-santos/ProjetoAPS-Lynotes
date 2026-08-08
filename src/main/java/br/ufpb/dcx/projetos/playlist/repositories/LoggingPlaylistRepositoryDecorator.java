@@ -112,5 +112,14 @@ public class LoggingPlaylistRepositoryDecorator implements PlaylistRepository {
         LOGGER.info("AUDITORIA/PERFORMANCE (Decorator): deleteItem playlist executado em {}ms. itemId={} resultado={}", (fim - inicio), itemId, resultado);
         return resultado;
     }
+
+    @Override
+    public boolean alternarOcultaItem(String itemId) {
+        long inicio = System.currentTimeMillis();
+        boolean resultado = decorado.alternarOcultaItem(itemId);
+        long fim = System.currentTimeMillis();
+        LOGGER.info("AUDITORIA/PERFORMANCE (Decorator): alternarOcultaItem playlist executado em {}ms. itemId={} resultado={}", (fim - inicio), itemId, resultado);
+        return resultado;
+    }
 }
 

@@ -20,12 +20,12 @@ public class RankingController {
         this.estrategias = Map.of(
                 "musicas", new RankingMusicasStrategy(musicaService),
                 "albuns", new RankingAlbunsStrategy(albumService),
-                "artistas", new RankingArtistasStrategy(artistaService, musicaService)
+                "artistas", new RankingArtistasStrategy(artistaService, musicaService, albumService)
         );
     }
 
     private synchronized void updateCacheIfNeeded() {
-        if (lastCacheUpdate == null || lastCacheUpdate.isBefore(java.time.LocalDateTime.now().minusMinutes(1)) 
+        if (lastCacheUpdate == null || lastCacheUpdate.isBefore(java.time.LocalDateTime.now().minusSeconds(5)) 
             || cachedMusicas == null || cachedAlbuns == null || cachedArtistas == null) {
             cachedMusicas = estrategias.get("musicas").calcularRanking();
             cachedAlbuns = estrategias.get("albuns").calcularRanking();

@@ -12,21 +12,27 @@ public final class PlaylistItem {
     private final String videoId;
     private final String titulo;
     private final int ordem;
+    private final boolean oculta;
     private final Instant criadoEm;
 
-    public PlaylistItem(String id, String playlistId, String url, String videoId, String titulo, int ordem, Instant criadoEm) {
+    public PlaylistItem(String id, String playlistId, String url, String videoId, String titulo, int ordem, boolean oculta, Instant criadoEm) {
         this.id = Objects.requireNonNull(id);
         this.playlistId = Objects.requireNonNull(playlistId);
         this.url = Objects.requireNonNull(url);
         this.videoId = Objects.requireNonNull(videoId);
         this.titulo = Objects.requireNonNull(titulo);
         this.ordem = ordem;
+        this.oculta = oculta;
         this.criadoEm = Objects.requireNonNull(criadoEm);
+    }
+
+    public PlaylistItem(String id, String playlistId, String url, String videoId, String titulo, int ordem, Instant criadoEm) {
+        this(id, playlistId, url, videoId, titulo, ordem, false, criadoEm);
     }
 
     public static PlaylistItem novo(String playlistId, String url, String videoId, int ordem) {
         String titulo = "YouTube - " + videoId;
-        return new PlaylistItem(UUID.randomUUID().toString(), playlistId, url, videoId, titulo, ordem, Instant.now());
+        return new PlaylistItem(UUID.randomUUID().toString(), playlistId, url, videoId, titulo, ordem, false, Instant.now());
     }
 
     public String getId() {
@@ -51,6 +57,10 @@ public final class PlaylistItem {
 
     public int getOrdem() {
         return ordem;
+    }
+
+    public boolean isOculta() {
+        return oculta;
     }
 
     @com.fasterxml.jackson.annotation.JsonIgnore

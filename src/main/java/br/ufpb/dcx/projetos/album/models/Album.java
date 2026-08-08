@@ -13,8 +13,9 @@ public final class Album {
     private final String usuarioId;
     private final String youtubeId;
     private final String capaUrl;
+    private final String resenha;
 
-    public Album(String id, String titulo, String artista, int anoLancamento, Double nota, String usuarioId, String youtubeId, String capaUrl) {
+    public Album(String id, String titulo, String artista, int anoLancamento, Double nota, String usuarioId, String youtubeId, String capaUrl, String resenha) {
         this.id = Objects.requireNonNull(id);
         this.titulo = titulo;
         this.artista = artista;
@@ -23,26 +24,35 @@ public final class Album {
         this.usuarioId = usuarioId;
         this.youtubeId = youtubeId;
         this.capaUrl = capaUrl;
+        this.resenha = resenha;
+    }
+
+    public Album(String id, String titulo, String artista, int anoLancamento, Double nota, String usuarioId, String youtubeId, String capaUrl) {
+        this(id, titulo, artista, anoLancamento, nota, usuarioId, youtubeId, capaUrl, null);
     }
 
     public Album(String id, String titulo, String artista, int anoLancamento, Double nota, String usuarioId) {
-        this(id, titulo, artista, anoLancamento, nota, usuarioId, null, null);
+        this(id, titulo, artista, anoLancamento, nota, usuarioId, null, null, null);
     }
 
     public Album(String id, String titulo, String artista, int anoLancamento, String usuarioId) {
-        this(id, titulo, artista, anoLancamento, null, usuarioId, null, null);
+        this(id, titulo, artista, anoLancamento, null, usuarioId, null, null, null);
     }
 
     public static Album novo(String titulo, String artista, int anoLancamento, String usuarioId) {
-        return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, null, usuarioId, null, null);
+        return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, null, usuarioId, null, null, null);
     }
 
     public static Album novo(String titulo, String artista, int anoLancamento, Double nota, String usuarioId) {
-        return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, nota, usuarioId, null, null);
+        return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, nota, usuarioId, null, null, null);
+    }
+
+    public static Album novo(String titulo, String artista, int anoLancamento, Double nota, String usuarioId, String youtubeId, String capaUrl, String resenha) {
+        return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, nota, usuarioId, youtubeId, capaUrl, resenha);
     }
 
     public static Album novo(String titulo, String artista, int anoLancamento, Double nota, String usuarioId, String youtubeId, String capaUrl) {
-        return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, nota, usuarioId, youtubeId, capaUrl);
+        return new Album(UUID.randomUUID().toString(), titulo, artista, anoLancamento, nota, usuarioId, youtubeId, capaUrl, null);
     }
 
     public String getId() {
@@ -75,6 +85,10 @@ public final class Album {
 
     public String getCapaUrl() {
         return capaUrl;
+    }
+
+    public String getResenha() {
+        return resenha;
     }
 
     @Override

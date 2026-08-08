@@ -88,6 +88,15 @@ public class LoggingMusicaRepositoryDecorator implements MusicaRepository {
     }
 
     @Override
+    public boolean alternarOculta(String id, String usuarioId) {
+        long inicio = System.currentTimeMillis();
+        boolean resultado = decorado.alternarOculta(id, usuarioId);
+        long fim = System.currentTimeMillis();
+        LOGGER.info("AUDITORIA/PERFORMANCE (Decorator): alternarOculta musica executado em {}ms. id={} usuarioId={} resultado={}", (fim - inicio), id, usuarioId, resultado);
+        return resultado;
+    }
+
+    @Override
     public boolean remover(String id) {
         long inicio = System.currentTimeMillis();
         boolean resultado = decorado.remover(id);

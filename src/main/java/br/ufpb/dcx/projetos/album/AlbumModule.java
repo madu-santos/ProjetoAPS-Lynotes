@@ -19,12 +19,22 @@ public final class AlbumModule {
         AlbumController controller = new AlbumController(albumService, comunidadeService, musicaService);
 
         app.get("/albums", controller::listar, Role.USER);
+        app.get("/albuns", controller::listar, Role.USER);
         app.get("/albums/novo", controller::exibirCadastro, Role.USER);
+        app.get("/albuns/novo", controller::exibirCadastro, Role.USER);
         app.get("/albums/{id}", controller::exibirDetalhes, Role.USER);
+        app.get("/albuns/{id}", controller::exibirDetalhes, Role.USER);
         app.post("/albums", controller::cadastrar, Role.USER);
+        app.post("/albuns", controller::cadastrar, Role.USER);
         app.get("/albums/{id}/editar", controller::exibirEdicao, Role.USER);
+        app.get("/albuns/{id}/editar", controller::exibirEdicao, Role.USER);
         app.post("/albums/{id}", controller::atualizar, Role.USER);
+        app.post("/albuns/{id}", controller::atualizar, Role.USER);
         app.post("/albums/{id}/excluir", controller::excluir, Role.USER);
+        app.post("/albuns/{id}/excluir", controller::excluir, Role.USER);
         app.get("/api/albums/{id}/faixas", controller::listarFaixasApi);
+        app.get("/api/albuns/{id}/faixas", controller::listarFaixasApi);
+        app.post("/albums/{albumId}/faixas/{faixaId}/toggle-oculta", controller::alternarOcultaFaixa, Role.USER);
+        app.post("/albuns/{albumId}/faixas/{faixaId}/toggle-oculta", controller::alternarOcultaFaixa, Role.USER);
     }
 }

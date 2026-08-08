@@ -31,12 +31,18 @@
             <span class="player-time" id="player-time-total">0:00</span>
         </div>
 
-        <div class="player-controls mb-3">
-            <button class="btn btn-outline-primary btn-sm" type="button" onclick="playerPrev()" title="Anterior">&#9198;</button>
-        <button class="btn btn-primary btn-sm player-play-btn" type="button" onclick="playerPlayPause()" id="player-play-btn" title="Play/Pause">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
-        </button>
-            <button class="btn btn-outline-primary btn-sm" type="button" onclick="playerNext()" title="Próximo">&#9197;</button>
+        <div class="player-controls mb-3 d-flex align-items-center justify-content-center gap-2">
+            <button class="btn btn-outline-secondary btn-sm rounded-circle" type="button" id="player-shuffle-btn" onclick="playerToggleShuffle()" title="Aleatório (Shuffle)">
+                <i class="bi bi-shuffle"></i>
+            </button>
+            <button class="btn btn-outline-primary btn-sm rounded-circle" type="button" onclick="playerPrev()" title="Anterior"><i class="bi bi-skip-start-fill"></i></button>
+            <button class="btn btn-purple btn-sm rounded-circle player-play-btn shadow" style="width: 38px; height: 38px;" type="button" onclick="playerPlayPause()" id="player-play-btn" title="Play/Pause">
+                <i class="bi bi-play-fill fs-5"></i>
+            </button>
+            <button class="btn btn-outline-primary btn-sm rounded-circle" type="button" onclick="playerNext()" title="Próximo"><i class="bi bi-skip-end-fill"></i></button>
+            <button class="btn btn-outline-secondary btn-sm rounded-circle" type="button" id="player-loop-btn" onclick="playerToggleLoop()" title="Repetir (Loop)">
+                <i class="bi bi-repeat"></i>
+            </button>
         </div>
 
         <div class="player-frame-holder">
@@ -67,5 +73,25 @@
         <div class="player-edge player-edge-l" data-resize></div>
         <div class="player-edge player-edge-r" data-resize></div>
     </div>
-    <script src="/js/player.js?v=5"></script>
+
+    <!-- Modal de Confirmação de Duplicidade em Playlist -->
+    <div class="modal fade" id="modalConfirmarDuplicado" tabindex="-1" aria-hidden="true" style="z-index: 9999;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-darker border-secondary shadow-lg">
+          <div class="modal-header border-bottom border-secondary border-opacity-25">
+            <h5 class="modal-title text-white fw-bold"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Música Já Existente</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-white">
+            <p class="mb-0 fs-6">Essa música já existe na playlist, deseja continuar?</p>
+          </div>
+          <div class="modal-footer border-top border-secondary border-opacity-25">
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal" id="btnCancelarDuplicado">Não</button>
+            <button type="button" class="btn btn-purple rounded-pill px-4 fw-bold" id="btnConfirmarDuplicado">Sim</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/player.js?v=6"></script>
 </div>

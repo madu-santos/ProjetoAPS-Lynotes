@@ -2,6 +2,8 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Catálogo - Lynotes</title>
     <!-- Fonte Plus Jakarta Sans -->
@@ -103,18 +105,18 @@
                             
                             <!-- Linha inferior: Três pontos (esquerda) e Duração/Gênero (direita) -->
                             <div class="d-flex align-items-center justify-content-between">
-                                <div class="dropend">
-                                    <button class="btn btn-link text-secondary p-0 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções">
+                                <div class="dropdown position-relative">
+                                    <button class="btn btn-link text-secondary p-0 shadow-none" type="button" title="Opções" onclick="window.toggleOpcoesMenu(event, this)">
                                         <i class="bi bi-three-dots fs-5"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
+                                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-darker border-secondary shadow">
                                         <li>
                                             <a class="dropdown-item text-purple fw-bold" th:href="${'/musicas/' + musica.id + '/editar'}">
                                                 <i class="bi bi-star-fill me-2"></i>Avaliar
                                             </a>
                                         </li>
                                         <li>
-                                            <form th:action="${'/musicas/' + musica.id + '/excluir'}" method="post" th:data-titulo="${musica.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Música?', 'Tem certeza que deseja excluir a música &quot;' + this.getAttribute('data-titulo') + '&quot;?');">
+                                            <form th:action="${'/musicas/' + musica.id + '/excluir'}" method="post" th:data-titulo="${musica.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Música?', 'Tem certeza que deseja excluir a música &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);" hx-boost="false">
                                                 <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
                                             </form>
                                         </li>
@@ -122,12 +124,24 @@
                                         <li><h6 class="dropdown-header text-purple">Salvar em...</h6></li>
                                         <li th:each="pl : ${playlists}">
                                             <form th:action="@{/playlists/{pid}/items(pid=${pl.id})}" method="post">
-                                                <input type="hidden" name="url" th:value="${musica.youtubeUrl != null ? musica.youtubeUrl : ''}">
+                                                <input type="hidden" name="youtubeUrl" th:value="${musica.youtubeUrl}">
+                                                <input type="hidden" name="youtubeId" th:value="${musica.youtubeId}">
+                                                <input type="hidden" name="titulo" th:value="${musica.titulo}">
+                                                <input type="hidden" name="artista" th:value="${musica.artista}">
+                                                <input type="hidden" name="duracaoSegundos" th:value="${musica.duracaoSegundos}">
+                                                <input type="hidden" name="capaUrl" th:value="${musica.capaUrl}">
                                                 <button type="submit" class="dropdown-item text-white"><i class="bi bi-music-note-list me-2 text-secondary"></i><span th:text="${pl.nome}"></span></button>
                                             </form>
                                         </li>
                                         <li>
-                                            <button type="button" class="dropdown-item text-purple fw-bold" th:data-url="${musica.youtubeUrl}" onclick="abrirModalNovaPlaylist(this.getAttribute('data-url'))">
+                                            <button type="button" class="dropdown-item text-purple fw-bold" 
+                                                    th:data-url="${musica.youtubeUrl}"
+                                                    th:data-id="${musica.youtubeId}"
+                                                    th:data-titulo="${musica.titulo}"
+                                                    th:data-artista="${musica.artista}"
+                                                    th:data-duracao="${musica.duracaoSegundos}"
+                                                    th:data-capa="${musica.capaUrl}"
+                                                    onclick="abrirModalNovaPlaylist(this)">
                                                 <i class="bi bi-plus-circle me-2"></i>Nova playlist
                                             </button>
                                         </li>
@@ -216,18 +230,18 @@
                             
                             <!-- Linha inferior: Três pontos (esquerda) e Ano (direita) -->
                             <div class="d-flex align-items-center justify-content-between">
-                                <div class="dropend">
-                                    <button class="btn btn-link text-secondary p-0 shadow-none" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opções">
+                                <div class="dropdown position-relative">
+                                    <button class="btn btn-link text-secondary p-0 shadow-none" type="button" title="Opções" onclick="window.toggleOpcoesMenu(event, this)">
                                         <i class="bi bi-three-dots fs-5"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-dark bg-darker border-secondary shadow">
+                                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-darker border-secondary shadow">
                                         <li>
                                             <a class="dropdown-item text-purple fw-bold" th:href="${'/albums/' + album.id + '/editar'}">
                                                 <i class="bi bi-star-fill me-2"></i>Avaliar
                                             </a>
                                         </li>
                                         <li>
-                                            <form th:action="${'/albums/' + album.id + '/excluir'}" method="post" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?');">
+                                            <form th:action="${'/albums/' + album.id + '/excluir'}" method="post" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);" hx-boost="false">
                                                 <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
                                             </form>
                                         </li>
@@ -256,8 +270,13 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="formNovaPlaylist" method="post" action="/playlists">
+        <form id="formNovaPlaylist" hx-boost="false" onsubmit="event.preventDefault(); return false;">
           <input type="hidden" id="novaPlaylistMusicaUrl" name="musicaUrl">
+          <input type="hidden" id="novaPlaylistMusicaId" name="musicaId">
+          <input type="hidden" id="novaPlaylistMusicaTitulo" name="musicaTitulo">
+          <input type="hidden" id="novaPlaylistMusicaArtista" name="musicaArtista">
+          <input type="hidden" id="novaPlaylistMusicaDuracao" name="musicaDuracao">
+          <input type="hidden" id="novaPlaylistMusicaCapa" name="musicaCapa">
           <div class="mb-3">
             <label class="form-label text-secondary small font-monospace text-uppercase" for="nomeNovaPlaylist">Nome da Playlist</label>
             <input type="text" class="form-control glass-search-input bg-dark text-white border-secondary p-3" id="nomeNovaPlaylist" name="nome" required>
@@ -273,8 +292,35 @@
 </div>
 
 <script>
-function abrirModalNovaPlaylist(url) {
-    document.getElementById('novaPlaylistMusicaUrl').value = url || '';
+function abrirModalNovaPlaylist(btnOrUrl) {
+    // Fecha todos os dropdowns abertos imediatamente
+    document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+
+    let url = '';
+    let ytId = '';
+    let titulo = '';
+    let artista = '';
+    let duracao = '';
+    let capa = '';
+
+    if (typeof btnOrUrl === 'string') {
+        url = btnOrUrl;
+    } else if (btnOrUrl && btnOrUrl.getAttribute) {
+        url = btnOrUrl.getAttribute('data-url') || '';
+        ytId = btnOrUrl.getAttribute('data-id') || '';
+        titulo = btnOrUrl.getAttribute('data-titulo') || '';
+        artista = btnOrUrl.getAttribute('data-artista') || '';
+        duracao = btnOrUrl.getAttribute('data-duracao') || '';
+        capa = btnOrUrl.getAttribute('data-capa') || '';
+    }
+
+    document.getElementById('novaPlaylistMusicaUrl').value = url;
+    document.getElementById('novaPlaylistMusicaId').value = ytId;
+    document.getElementById('novaPlaylistMusicaTitulo').value = titulo;
+    document.getElementById('novaPlaylistMusicaArtista').value = artista;
+    document.getElementById('novaPlaylistMusicaDuracao').value = duracao;
+    document.getElementById('novaPlaylistMusicaCapa').value = capa;
+
     new bootstrap.Modal(document.getElementById('modalNovaPlaylist')).show();
     
     document.getElementById('formNovaPlaylist').onsubmit = async function(e) {
@@ -297,11 +343,26 @@ function abrirModalNovaPlaylist(url) {
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = '/playlists/' + playlist.id + '/items';
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'url';
-                input.value = musicaUrl;
-                form.appendChild(input);
+                
+                const fields = {
+                    youtubeUrl: musicaUrl,
+                    youtubeId: document.getElementById('novaPlaylistMusicaId').value,
+                    titulo: document.getElementById('novaPlaylistMusicaTitulo').value,
+                    artista: document.getElementById('novaPlaylistMusicaArtista').value,
+                    duracaoSegundos: document.getElementById('novaPlaylistMusicaDuracao').value,
+                    capaUrl: document.getElementById('novaPlaylistMusicaCapa').value
+                };
+
+                for (const [k, v] of Object.entries(fields)) {
+                    if (v) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = k;
+                        input.value = v;
+                        form.appendChild(input);
+                    }
+                }
+
                 document.body.appendChild(form);
                 form.submit();
             } else {
@@ -310,7 +371,8 @@ function abrirModalNovaPlaylist(url) {
         } else {
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = btnOriginalText;
-            alert('Erro ao criar playlist. Verifique se o nome é válido.');
+            const errMsg = await res.text();
+            alert(errMsg || 'Erro ao criar playlist. Verifique se o nome é válido.');
         }
     };
 }

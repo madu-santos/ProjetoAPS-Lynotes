@@ -13,7 +13,9 @@ const playerState = {
     currentTitle: null,
     currentTime: 0,
     duration: 0,
-    collapsed: false
+    collapsed: false,
+    shuffle: false,
+    loop: false
 };
 
 let ytPlayer = null;
@@ -43,7 +45,10 @@ function playerElements() {
     };
 }
 
-window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
+window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId, keepLoop = false) {
+    if (!keepLoop && playerState.loop) {
+        playerToggleLoop();
+    }
     const displayTitle = (artista && titulo) ? `${artista} - ${titulo}` : (titulo || 'Música');
     
     // Reseta fila para apenas uma música
@@ -139,7 +144,10 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId) {
         });
 };
 
-window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa, startTrackId = null, shuffle = false) {
+window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa, startTrackId = null, shuffle = false, keepLoop = false) {
+    if (!keepLoop && playerState.loop) {
+        playerToggleLoop();
+    }
     if (playerState.collapsed) {
         playerTogglePanel();
     }
@@ -157,8 +165,14 @@ window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa, startT
             return;
         }
 
-        // Converte as faixas no formato do player
-        let items = faixas.map((f) => ({
+        const faixasAtivas = faixas.filter(f => !f.ocultaDaBiblioteca && !f.oculta_da_biblioteca);
+        if (faixasAtivas.length === 0) {
+            if (currentTitle) currentTitle.textContent = 'Todas as faixas deste álbum estão ocultas/desativadas.';
+            return;
+        }
+
+        // Converte apenas as faixas ativas no formato do player
+        let items = faixasAtivas.map((f) => ({
             id: f.id,
             titulo: `${f.artista} - ${f.titulo}`,
             videoId: f.youtubeId || `yt_search_${f.artista}_${f.titulo}`,
@@ -198,6 +212,13 @@ window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa, startT
 
 window.playerTocarAlbumEmOrdemAleatoria = function(albumId, albumTitulo, albumCapa) {
     return window.playerTocarAlbum(albumId, albumTitulo, albumCapa, null, true);
+};
+
+window.playerTocarAlbumEmLoop = function(albumId, albumTitulo, albumCapa) {
+    if (!playerState.loop) {
+        playerToggleLoop();
+    }
+    return window.playerTocarAlbum(albumId, albumTitulo, albumCapa, null, false, true);
 };
 
 window.playerTocarAlbumApartirDe = function(albumId, albumTitulo, startTrackId, albumCapa) {
@@ -283,6 +304,8 @@ function playerSaveState() {
             playlistItems:    playerState.playlistItems,
             currentTime,
             collapsed:        playerState.collapsed,
+            shuffle:          playerState.shuffle,
+            loop:             playerState.loop,
             timestamp:        Date.now()
         };
         localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(data));
@@ -309,6 +332,29 @@ function playerRestoreState() {
         return data;
     } catch {
         return null;
+    }
+}
+
+function playerUpdateToggleButtonsUI() {
+    const loopBtn = document.getElementById('player-loop-btn');
+    if (loopBtn) {
+        if (playerState.loop) {
+            loopBtn.classList.remove('btn-outline-secondary');
+            loopBtn.classList.add('btn-purple', 'text-white', 'shadow');
+        } else {
+            loopBtn.classList.remove('btn-purple', 'text-white', 'shadow');
+            loopBtn.classList.add('btn-outline-secondary');
+        }
+    }
+    const shuffleBtn = document.getElementById('player-shuffle-btn');
+    if (shuffleBtn) {
+        if (playerState.shuffle) {
+            shuffleBtn.classList.remove('btn-outline-secondary');
+            shuffleBtn.classList.add('btn-purple', 'text-white', 'shadow');
+        } else {
+            shuffleBtn.classList.remove('btn-purple', 'text-white', 'shadow');
+            shuffleBtn.classList.add('btn-outline-secondary');
+        }
     }
 }
 
@@ -365,6 +411,12 @@ function onYouTubeIframeAPIReady() {
 function onPlayerReady() {
     const saved = playerRestoreState();
 
+    if (saved) {
+        if (saved.loop !== undefined) playerState.loop = !!saved.loop;
+        if (saved.shuffle !== undefined) playerState.shuffle = !!saved.shuffle;
+        playerUpdateToggleButtonsUI();
+    }
+
     if (saved && saved.currentVideoId) {
         playerState.currentVideoId    = saved.currentVideoId;
         playerState.currentTitle      = saved.currentTitle;
@@ -415,7 +467,34 @@ function onPlayerStateChange(event) {
         if (vinyl) vinyl.classList.remove('spinning');
         if (playBtn) playBtn.innerHTML = SVG_PLAY;
 
-        // Avançar automaticamente
+        // Se Loop (Repetir) estiver ativo
+        if (playerState.loop) {
+            if (!playerState.playlistItems || playerState.playlistItems.length <= 1) {
+                if (playerState.currentVideoId) {
+                    ytPlayer.seekTo(0);
+                    ytPlayer.playVideo();
+                    return;
+                }
+            } else {
+                let nextIdx = (playerState.currentIndex + 1) % playerState.playlistItems.length;
+                playerState.currentIndex = nextIdx;
+                playerLoadTrack(playerState.playlistItems[nextIdx]);
+                return;
+            }
+        }
+
+        // Se Shuffle estiver ativo
+        if (playerState.shuffle && playerState.playlistItems && playerState.playlistItems.length > 1) {
+            let nextIdx = Math.floor(Math.random() * playerState.playlistItems.length);
+            if (nextIdx === playerState.currentIndex) {
+                nextIdx = (playerState.currentIndex + 1) % playerState.playlistItems.length;
+            }
+            playerState.currentIndex = nextIdx;
+            playerLoadTrack(playerState.playlistItems[nextIdx]);
+            return;
+        }
+
+        // Avançar sequencialmente (sem loop)
         if (playerState.playlistItems.length > 0 &&
             playerState.currentIndex < playerState.playlistItems.length - 1) {
             playerState.currentIndex += 1;
@@ -426,6 +505,76 @@ function onPlayerStateChange(event) {
         }
     }
 }
+
+function playerToggleShuffle() {
+    playerState.shuffle = !playerState.shuffle;
+    const btn = document.getElementById('player-shuffle-btn');
+    if (btn) {
+        if (playerState.shuffle) {
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-purple', 'text-white', 'shadow');
+        } else {
+            btn.classList.remove('btn-purple', 'text-white', 'shadow');
+            btn.classList.add('btn-outline-secondary');
+        }
+    }
+    playerSaveState();
+}
+
+function playerToggleLoop() {
+    playerState.loop = !playerState.loop;
+    const btn = document.getElementById('player-loop-btn');
+    if (btn) {
+        if (playerState.loop) {
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-purple', 'text-white', 'shadow');
+        } else {
+            btn.classList.remove('btn-purple', 'text-white', 'shadow');
+            btn.classList.add('btn-outline-secondary');
+        }
+    }
+    playerSaveState();
+}
+
+window.checarESubmeterPlaylist = async function(formElement, playlistId, videoId, url) {
+    if (!playlistId || playlistId === '' || playlistId === 'NEW_TEMP') {
+        formElement.submit();
+        return;
+    }
+
+    try {
+        const queryParams = new URLSearchParams({ videoId: videoId || '', url: url || '' });
+        const res = await fetch(`/api/playlists/${playlistId}/check-duplicate?` + queryParams);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.duplicada) {
+                const modalEl = document.getElementById('modalConfirmarDuplicado');
+                if (modalEl) {
+                    const bsModal = new bootstrap.Modal(modalEl);
+                    const btnSim = document.getElementById('btnConfirmarDuplicado');
+
+                    const handleSim = function() {
+                        btnSim.removeEventListener('click', handleSim);
+                        bsModal.hide();
+                        formElement.submit();
+                    };
+
+                    btnSim.addEventListener('click', handleSim);
+                    bsModal.show();
+                    return false;
+                } else if (confirm("Essa música já existe na playlist, deseja continuar?")) {
+                    formElement.submit();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Erro ao checar duplicata:', e);
+    }
+    formElement.submit();
+};
 
 // --- Controles ---
 
@@ -485,7 +634,11 @@ function playerSelectPlaylist() {
 
 function playerPrev() {
     if (!playerState.playlistItems.length) return;
-    playerState.currentIndex = Math.max(0, playerState.currentIndex - 1);
+    if (playerState.currentIndex > 0) {
+        playerState.currentIndex -= 1;
+    } else if (playerState.loop) {
+        playerState.currentIndex = playerState.playlistItems.length - 1;
+    }
     playerLoadTrack(playerState.playlistItems[playerState.currentIndex]);
 }
 
@@ -493,6 +646,8 @@ function playerNext() {
     if (!playerState.playlistItems.length) return;
     if (playerState.currentIndex < playerState.playlistItems.length - 1) {
         playerState.currentIndex += 1;
+    } else if (playerState.loop) {
+        playerState.currentIndex = 0;
     }
     playerLoadTrack(playerState.playlistItems[playerState.currentIndex]);
 }
@@ -520,16 +675,30 @@ function playerLoadTrack(item) {
     const idx = playerState.playlistItems.findIndex(t => t.id === item.id);
     playerState.currentIndex = idx === -1 ? 0 : idx;
     
-    // Se o videoId não for um ID válido do YouTube (ex: começa com itunes_track_), busca na API
-    if (item.videoId && (item.videoId.startsWith('itunes_') || item.videoId.startsWith('yt_search_'))) {
+    let vId = item.videoId;
+    if ((!vId || vId.length !== 11 || vId.startsWith('itunes_') || vId.startsWith('yt_') || vId.startsWith('track_')) && item.url) {
+        try {
+            const extracted = playerExtractVideoId(item.url);
+            if (extracted && extracted.length === 11) {
+                vId = extracted;
+                item.videoId = extracted;
+            }
+        } catch (e) {}
+    }
+
+    if (!vId || vId.length !== 11 || vId.startsWith('itunes_') || vId.startsWith('yt_') || vId.startsWith('track_')) {
         const { currentTitle } = playerElements();
-        if (currentTitle) currentTitle.textContent = `Buscando faixa: ${item.titulo}...`;
+        let queryTitle = item.titulo || '';
+        if (queryTitle.startsWith('YouTube - ')) {
+            queryTitle = queryTitle.replace('YouTube - ', '');
+        }
+        if (currentTitle) currentTitle.textContent = `Buscando faixa: ${queryTitle}...`;
         
-        const searchTerm = encodeURIComponent(item.titulo);
-        fetch('/api/youtube/search?q=' + searchTerm + '&tipo=MUSICA')
+        const searchTerm = encodeURIComponent(queryTitle);
+        fetch('/api/youtube/search?q=' + searchTerm + '&tipo=MUSICA&realVideo=true')
             .then(r => r.json())
             .then(data => {
-                if (data && data.length > 0) {
+                if (data && data.length > 0 && data[0].youtubeId && data[0].youtubeId.length === 11 && !data[0].youtubeId.startsWith('yt_')) {
                     const resolvedId = data[0].youtubeId;
                     item.videoId = resolvedId;
                     playerLoad(resolvedId, item.titulo, item.playlistId, 0);
@@ -543,7 +712,6 @@ function playerLoadTrack(item) {
                     }
                 } else {
                     if (currentTitle) currentTitle.textContent = 'Faixa não encontrada no YouTube.';
-                    // Avança para a próxima faixa automaticamente após 3 segundos se falhar
                     setTimeout(playerNext, 3000);
                 }
             })
@@ -552,7 +720,7 @@ function playerLoadTrack(item) {
                 setTimeout(playerNext, 3000);
             });
     } else {
-        playerLoad(item.videoId, item.titulo, item.playlistId, 0);
+        playerLoad(vId, item.titulo, item.playlistId, 0);
     }
 }
 
@@ -618,13 +786,53 @@ async function playerLoadPlaylists(selectedPlaylistId) {
     });
 }
 
-async function playerFetchPlaylist(playlistId, autoplay) {
+async function playerFetchPlaylist(playlistId, autoplay, keepLoop = false) {
+    if (!keepLoop && playerState.loop) {
+        playerToggleLoop();
+    }
+    if (playerState.collapsed) {
+        playerTogglePanel();
+    }
     const res = await fetch(`/api/playlists/${playlistId}`);
     if (!res.ok) { playerSetMessage('Falha ao carregar playlist.'); return; }
 
     const payload = await res.json();
+    if (!payload || !payload.playlist) {
+        playerSetMessage('Playlist não encontrada.');
+        return;
+    }
     playerState.currentPlaylistId = payload.playlist.id;
-    playerState.playlistItems     = payload.items || [];
+    const { playlistSelect } = playerElements();
+    if (playlistSelect) {
+        playlistSelect.value = playlistId;
+    }
+    const items = payload.items || [];
+    const itemsAtivos = items.filter(item => !item.oculta && !item.ocultaDaBiblioteca);
+    playerState.playlistItems = itemsAtivos.map(item => {
+        let vId = item.videoId;
+        if ((!vId || vId.length !== 11 || vId.startsWith('yt_') || vId.startsWith('track_')) && item.url) {
+            try {
+                vId = playerExtractVideoId(item.url);
+            } catch (e) {
+                // Not a direct YT URL
+            }
+        }
+        return {
+            id: item.id,
+            videoId: vId || item.videoId || `yt_search_${item.titulo}`,
+            url: item.url || '',
+            titulo: item.titulo,
+            playlistId: playlistId
+        };
+    });
+
+    if (playerState.shuffle && playerState.playlistItems.length > 1) {
+        for (let i = playerState.playlistItems.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [playerState.playlistItems[i], playerState.playlistItems[j]] = [playerState.playlistItems[j], playerState.playlistItems[i]];
+        }
+    }
+
     playerState.currentIndex      = 0;
     playerRenderTracks();
 
@@ -634,13 +842,28 @@ async function playerFetchPlaylist(playlistId, autoplay) {
     playerSaveState();
 }
 
+window.playerTocarPlaylistEmOrdemAleatoria = function(playlistId) {
+    if (!playerState.shuffle) {
+        playerToggleShuffle();
+    }
+    return playerFetchPlaylist(playlistId, true);
+};
+
+window.playerTocarPlaylistEmLoop = function(playlistId) {
+    if (!playerState.loop) {
+        playerToggleLoop();
+    }
+    return playerFetchPlaylist(playlistId, true, true);
+};
+
 async function playerFetchAlbum(albumId, autoplay) {
     const res = await fetch(`/api/albums/${albumId}/faixas`);
     if (!res.ok) { playerSetMessage('Falha ao carregar álbum.'); return; }
 
     const faixas = await res.json();
+    const faixasAtivas = (faixas || []).filter(f => !f.ocultaDaBiblioteca && !f.oculta_da_biblioteca);
     playerState.currentPlaylistId = 'album_' + albumId;
-    playerState.playlistItems     = faixas.map(f => ({
+    playerState.playlistItems     = faixasAtivas.map(f => ({
         id: f.id,
         videoId: f.youtubeId || `yt_search_${f.artista}_${f.titulo}`,
         url: f.youtubeUrl || '',
@@ -735,6 +958,10 @@ async function initPlayerModule() {
 
     const saved = playerRestoreState();
     if (saved) {
+        if (saved.loop !== undefined) playerState.loop = !!saved.loop;
+        if (saved.shuffle !== undefined) playerState.shuffle = !!saved.shuffle;
+        playerUpdateToggleButtonsUI();
+
         if (saved.currentPlaylistId) {
             await playerLoadPlaylists(saved.currentPlaylistId).catch(() =>
                 playerSetMessage('Falha ao carregar playlists.')
@@ -744,7 +971,7 @@ async function initPlayerModule() {
                 playerState.currentPlaylistId = saved.currentPlaylistId;
                 playerState.currentIndex      = saved.currentIndex || 0;
             } else {
-                await playerFetchPlaylist(saved.currentPlaylistId, false).catch(() => {});
+                await playerFetchPlaylist(saved.currentPlaylistId, false, true).catch(() => {});
                 playerState.currentIndex = saved.currentIndex || 0;
             }
             if (saved.currentTitle) {

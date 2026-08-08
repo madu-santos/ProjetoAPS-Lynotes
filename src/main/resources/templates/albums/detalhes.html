@@ -2,6 +2,8 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${album.titulo + ' - Álbuns - Lynotes'}">Álbum - Lynotes</title>
     <!-- Fonte Plus Jakarta Sans -->
@@ -66,11 +68,18 @@
                                 onclick="if(typeof playerTocarAlbumEmOrdemAleatoria === 'function') playerTocarAlbumEmOrdemAleatoria(this.getAttribute('data-id'), this.getAttribute('data-titulo'));">
                             <i class="bi bi-shuffle fs-5"></i> Ordem Aleatória
                         </button>
+                        <button type="button"
+                                class="btn btn-outline-purple rounded-pill px-4 py-2 d-flex align-items-center gap-2 fw-semibold"
+                                th:data-id="${album.id}"
+                                th:data-titulo="${album.titulo}"
+                                onclick="if(typeof playerTocarAlbumEmLoop === 'function') playerTocarAlbumEmLoop(this.getAttribute('data-id'), this.getAttribute('data-titulo'));">
+                            <i class="bi bi-repeat fs-5"></i> Repetir Álbum
+                        </button>
                         <div class="ms-auto d-flex align-items-center gap-2">
                             <a class="btn btn-outline-purple btn-sm px-3 rounded-pill" th:href="${'/albums/' + album.id + '/editar'}">
-                                <i class="bi bi-pencil-fill me-1"></i> Editar
+                                <i class="bi bi-star-fill me-1"></i> Avaliar
                             </a>
-                            <form method="post" th:action="${'/albums/' + album.id + '/excluir'}" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?');" class="m-0">
+                            <form method="post" th:action="${'/albums/' + album.id + '/excluir'}" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);" hx-boost="false" class="m-0">
                                 <button class="btn btn-outline-danger btn-sm px-3 rounded-pill" type="submit">
                                     <i class="bi bi-trash-fill me-1"></i> Excluir
                                 </button>
@@ -105,17 +114,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="faixa, iterStat : ${faixas}" class="border-secondary border-opacity-10">
+                        <tr th:each="faixa, iterStat : ${faixas}" class="border-secondary border-opacity-10" th:classappend="${faixa.ocultaDaBiblioteca ? 'opacity-50 text-muted bg-dark' : ''}">
                             <td class="text-center font-monospace text-secondary" th:text="${iterStat.count}">1</td>
-                            <td class="fw-semibold text-white" th:text="${faixa.titulo}">Título da Faixa</td>
+                            <td class="fw-semibold">
+                                <span th:text="${faixa.titulo}" th:class="${faixa.ocultaDaBiblioteca ? 'text-secondary text-decoration-line-through' : 'text-white'}">Título da Faixa</span>
+                                <span th:if="${faixa.ocultaDaBiblioteca}" class="badge bg-secondary text-white ms-2" style="font-size: 0.65rem;">Desativada</span>
+                            </td>
                             <td class="text-secondary small" th:text="${faixa.artista}">Artista</td>
                             <td class="text-secondary small">
                                 <span th:if="${faixa.genero != null and !faixa.genero.isBlank()}" class="badge bg-dark border border-secondary text-secondary rounded-pill px-2 py-1" th:text="${faixa.genero}"></span>
                             </td>
                             <td class="text-center font-monospace text-secondary small" th:text="${faixa.duracaoSegundos != null ? (faixa.duracaoSegundos / 60 + ':' + (faixa.duracaoSegundos % 60 < 10 ? '0' : '') + (faixa.duracaoSegundos % 60)) : '--:--'}">0:00</td>
                             <td class="text-end">
+                                <!-- Botão Ocultar / Desocultar -->
+                                <form th:action="${'/albums/' + album.id + '/faixas/' + faixa.id + '/toggle-oculta'}" method="post" class="d-inline-block m-0 align-middle">
+                                    <button type="submit"
+                                            class="btn btn-link p-0 me-2 text-decoration-none shadow-none"
+                                            th:title="${faixa.ocultaDaBiblioteca ? 'Reativar faixa no álbum' : 'Ocultar/Desativar faixa do álbum'}">
+                                        <i th:class="${faixa.ocultaDaBiblioteca ? 'bi bi-eye-slash-fill text-warning fs-5' : 'bi bi-eye text-secondary fs-5'}"></i>
+                                    </button>
+                                </form>
+                                <!-- Botão Play Individual -->
                                 <button type="button"
-                                        class="btn btn-purple btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm"
+                                        class="btn btn-purple btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm align-middle"
                                         style="width: 32px; height: 32px;"
                                         title="Tocar a partir desta faixa"
                                         th:data-albid="${album.id}"
@@ -136,5 +157,6 @@
 </div>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

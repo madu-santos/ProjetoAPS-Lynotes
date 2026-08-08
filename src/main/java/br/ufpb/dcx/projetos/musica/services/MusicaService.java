@@ -102,7 +102,7 @@ public class MusicaService {
                             int duracaoSegundos = trackTimeMillis / 1000;
                             String trackId = item.path("trackId").asText("");
                             
-                            Musica faixa = Musica.novoOculto(
+                            Musica faixa = Musica.novo(
                                 item.path("trackName").asText(""),
                                 item.path("artistName").asText(""),
                                 item.path("primaryGenreName").asText(""),
@@ -167,6 +167,10 @@ public class MusicaService {
             throw new ResourceNotFoundException("Música não encontrada com id: " + id);
         }
         musicaRepository.remover(id);
+    }
+
+    public boolean alternarOculta(String id, String usuarioId) {
+        return musicaRepository.alternarOculta(id, usuarioId);
     }
 
     private void validar(String titulo, String artista, Double nota) {

@@ -144,8 +144,8 @@ public final class PlaylistDbRepository implements PlaylistRepository {
     @Override
     public void createItem(PlaylistItem item) {
         String sql = """
-                INSERT INTO playlist_item (id, playlist_id, url, video_id, titulo, ordem, criado_em)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO playlist_item (id, playlist_id, url, video_id, titulo, ordem, oculta, criado_em)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         executarAtualizacao(sql, statement -> {
@@ -155,7 +155,8 @@ public final class PlaylistDbRepository implements PlaylistRepository {
             statement.setString(4, item.getVideoId());
             statement.setString(5, item.getTitulo());
             statement.setInt(6, item.getOrdem());
-            statement.setTimestamp(7, java.sql.Timestamp.from(item.getCriadoEm()));
+            statement.setBoolean(7, item.isOculta());
+            statement.setTimestamp(8, java.sql.Timestamp.from(item.getCriadoEm()));
         });
 
         LOGGER.debug("Item adicionado à playlist. itemId={} playlistId={} url={}", item.getId(), item.getPlaylistId(), item.getUrl());
@@ -163,7 +164,7 @@ public final class PlaylistDbRepository implements PlaylistRepository {
 
     @Override
     public List<PlaylistItem> findItemsByPlaylistId(String playlistId) {
-        String sql = "SELECT id, playlist_id, url, video_id, titulo, ordem, criado_em FROM playlist_item WHERE playlist_id = ? ORDER BY ordem, criado_em";
+        String sql = "SELECT id, playlist_id, url, video_id, titulo, ordem, oculta, criado_em FROM playlist_item WHERE playlist_id = ? ORDER BY ordem, criado_em";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -182,7 +183,7 @@ public final class PlaylistDbRepository implements PlaylistRepository {
 
     @Override
     public Optional<PlaylistItem> findItemById(String itemId) {
-        String sql = "SELECT id, playlist_id, url, video_id, titulo, ordem, criado_em FROM playlist_item WHERE id = ?";
+        String sql = "SELECT id, playlist_id, url, video_id, titulo, ordem, oculta, criado_em FROM playlist_item WHERE id = ?";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -201,6 +202,12 @@ public final class PlaylistDbRepository implements PlaylistRepository {
         return executarAtualizacao(sql, statement -> statement.setString(1, itemId)) == 1;
     }
 
+    @Override
+    public boolean alternarOcultaItem(String itemId) {
+        String sql = "UPDATE playlist_item SET oculta = NOT oculta WHERE id = ?";
+        return executarAtualizacao(sql, statement -> statement.setString(1, itemId)) == 1;
+    }
+
     private Playlist mapPlaylist(ResultSet result) throws SQLException {
         java.sql.Timestamp criadoEmTimestamp = result.getTimestamp("criado_em");
         return new Playlist(
@@ -214,6 +221,10 @@ public final class PlaylistDbRepository implements PlaylistRepository {
 
     private PlaylistItem mapItem(ResultSet result) throws SQLException {
         java.sql.Timestamp criadoEmTimestamp = result.getTimestamp("criado_em");
+        boolean oculta = false;
+        try {
+            oculta = result.getBoolean("oculta");
+        } catch (SQLException ignored) {}
         return new PlaylistItem(
                 result.getString("id"),
                 result.getString("playlist_id"),
@@ -221,6 +232,7 @@ public final class PlaylistDbRepository implements PlaylistRepository {
                 result.getString("video_id"),
                 result.getString("titulo"),
                 result.getInt("ordem"),
+                oculta,
                 criadoEmTimestamp != null ? criadoEmTimestamp.toInstant() : null
         );
     }
