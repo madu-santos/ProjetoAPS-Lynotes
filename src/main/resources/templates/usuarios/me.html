@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="/css/index.css" rel="stylesheet">
     <link href="/css/player.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.11"></script>
 </head>
 <body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
@@ -46,7 +47,22 @@
                         <h2 class="glowing-title-library mb-0 fs-2" th:text="${nome}">Nome do Usuário</h2>
                         <span class="badge bg-purple rounded-pill px-3 py-1">Perfil Público</span>
                     </div>
-                    <p class="text-purple font-monospace mb-2">@<span th:text="${username}">username</span></p>
+                    <p class="text-purple font-monospace mb-1">@<span th:text="${username}">username</span></p>
+                    <p class="text-secondary small mb-2"><i class="bi bi-envelope me-1"></i> <span th:text="${email}">email@email.com</span></p>
+
+                    <!-- Seguidores e Seguindo (estilo discreto e interativo) -->
+                    <div class="d-flex align-items-center gap-2 mb-3" style="font-size: 0.9rem;">
+                        <button type="button" class="btn btn-link text-secondary p-0 text-decoration-none d-flex align-items-center gap-1 shadow-none social-hover-purple" data-bs-toggle="modal" data-bs-target="#seguidoresModal">
+                            <strong class="text-white transition-all" th:text="${seguidores != null ? seguidores.size() : 0}">0</strong>
+                            <span class="transition-all ms-1">seguidores</span>
+                        </button>
+                        <span class="text-secondary opacity-30">•</span>
+                        <button type="button" class="btn btn-link text-secondary p-0 text-decoration-none d-flex align-items-center gap-1 shadow-none social-hover-purple" data-bs-toggle="modal" data-bs-target="#seguindoModal">
+                            <strong class="text-white transition-all" th:text="${seguindo != null ? seguindo.size() : 0}">0</strong>
+                            <span class="transition-all ms-1">seguindo</span>
+                        </button>
+                    </div>
+
                     <p class="text-secondary mb-3" th:text="${bio != null and !bio.isBlank() ? bio : 'Nenhuma biografia informada ainda.'}"></p>
 
                     <!-- Pílulas de Estatísticas do Usuário -->
@@ -63,12 +79,6 @@
                         <span class="badge bg-darker border border-secondary border-opacity-20 px-3 py-2 text-white font-monospace">
                             <i class="bi bi-collection-play text-purple me-1"></i> <strong th:text="${minhasPlaylists != null ? minhasPlaylists.size() : 0}">0</strong> Playlists
                         </span>
-                        <button type="button" class="btn badge bg-darker border border-purple border-opacity-40 px-3 py-2 text-white font-monospace hover-glow" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#seguidoresModal">
-                            <i class="bi bi-people-fill text-purple me-1"></i> <strong th:text="${seguidores != null ? seguidores.size() : 0}">0</strong> Seguidores
-                        </button>
-                        <button type="button" class="btn badge bg-darker border border-purple border-opacity-40 px-3 py-2 text-white font-monospace hover-glow" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#seguindoModal">
-                            <i class="bi bi-person-check-fill text-purple me-1"></i> <strong th:text="${seguindo != null ? seguindo.size() : 0}">0</strong> Seguindo
-                        </button>
                     </div>
                 </div>
             </div>
@@ -186,7 +196,7 @@
                         <div class="d-flex align-items-center gap-3 pt-3 border-top border-secondary border-opacity-10">
                             <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" hx-boost="false" class="m-0">
                                 <button type="submit" class="btn btn-sm rounded-pill px-3 d-flex align-items-center gap-1 btn-outline-purple" th:classappend="${post.estreladoPorMim} ? 'bg-purple text-white fw-bold' : ''">
-                                    <i class="bi" th:classappend="${post.estreladoPorMim} ? 'bi-star-fill' : 'bi-star'"></i>
+                                    <i class="bi" th:classappend="${post.estreladoPorMim} ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
                                     <span th:text="${post.qtdEstrelas}"></span>
                                 </button>
                             </form>

@@ -30,14 +30,6 @@ public final class PostFactory {
         return criarPost(usuarioId, conteudo, tipo, null, albumId, null);
     }
 
-    public static Post criarPostArtista(String usuarioId, String artistaId, String conteudo) {
-        return criarPostArtista(usuarioId, artistaId, conteudo, "SHARE_ARTIST");
-    }
-
-    public static Post criarPostArtista(String usuarioId, String artistaId, String conteudo, String tipo) {
-        return criarPost(usuarioId, conteudo, tipo, null, null, artistaId);
-    }
-
     private static Post criarPost(String usuarioId, String conteudo, String tipo, String musicaId, String albumId, String artistaId) {
         return new Post(
                 UUID.randomUUID().toString(),

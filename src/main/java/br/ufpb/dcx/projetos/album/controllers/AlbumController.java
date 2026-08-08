@@ -97,15 +97,11 @@ public final class AlbumController {
             
             String compartilhar = ctx.formParam("compartilharNaComunidade");
             if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
-                String msg = "Catalogou o álbum: **" + album.getTitulo() + "** (" + album.getArtista() + ")";
-                if (album.getNota() != null) {
-                    msg += " e avaliou com " + album.getNota() + " estrelas. ⭐";
+                String opiniao = ctx.formParam("opiniaoComunidade");
+                if (opiniao == null) {
+                    opiniao = "";
                 }
-                String mensagem = ctx.formParam("mensagemComunidade");
-                if (mensagem != null && !mensagem.trim().isEmpty()) {
-                    msg += "\n\n\"" + mensagem.trim() + "\"";
-                }
-                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ALBUM", album.getId(), msg);
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ALBUM", album.getId(), opiniao);
             }
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {
@@ -162,18 +158,13 @@ public final class AlbumController {
             Album albumDetails = Album.novo(dto.titulo(), dto.artista(), ano, dto.nota(), usuarioId, dto.youtubeId(), dto.capaUrl(), dto.resenha());
             service.update(id, albumDetails, usuarioId);
             
-            String compartilhar = ctx.formParam("compartilharComunidade");
-            String mensagem = ctx.formParam("mensagemComunidade");
-
-            if (comunidadeService != null && "on".equals(compartilhar)) {
-                String msg = "Atualizou o Ã¡lbum: **" + albumDetails.getTitulo() + "** (" + albumDetails.getArtista() + ")";
-                if (albumDetails.getNota() != null) {
-                    msg += " e avaliou com " + albumDetails.getNota() + " estrelas. â­";
+            String compartilhar = ctx.formParam("compartilharNaComunidade");
+            if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
+                String opiniao = ctx.formParam("opiniaoComunidade");
+                if (opiniao == null) {
+                    opiniao = "";
                 }
-                if (mensagem != null && !mensagem.trim().isEmpty()) {
-                    msg += "\n\n\"" + mensagem.trim() + "\"";
-                }
-                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ALBUM", id, msg);
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ALBUM", id, opiniao);
             }
             redirecionarParaListagem(ctx);
         } catch (IllegalArgumentException e) {

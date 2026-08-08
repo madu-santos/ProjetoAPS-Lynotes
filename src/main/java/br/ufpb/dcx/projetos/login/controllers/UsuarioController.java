@@ -48,6 +48,7 @@ public final class UsuarioController {
         app.get("/usuarios/me/check-username", this::verificarDisponibilidadeUsernameEndpoint, Role.USER);
         app.post("/usuarios/me/excluir", this::excluirMinhaConta, Role.USER);
         app.get("/usuarios/{id}", this::exibirPerfilPublico, Role.USER);
+        app.get("/perfil/{id}", this::exibirPerfilPublico, Role.USER);
         app.get("/usuarios/{id}/editar", this::exibirEdicao, Role.USER);
         app.post("/usuarios/{id}", this::atualizar, Role.USER);
         app.post("/usuarios/{id}/excluir", this::excluir, Role.USER);

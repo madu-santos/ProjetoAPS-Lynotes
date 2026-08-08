@@ -78,19 +78,7 @@ public final class ArtistaController {
     public void cadastrar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         processarFormulario(ctx, null, dto -> {
-            Artista artista = useCase.cadastrar(dto, usuarioId);
-            String compartilhar = ctx.formParam("compartilharNaComunidade");
-
-            if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
-                String msg = "Catalogou o artista: **" + artista.getNome() + "**";
-                if (artista.getNota() != null) {
-                    msg += " e avaliou com " + artista.getNota() + " estrelas. ⭐";
-                }
-                if (artista.getBiografia() != null && !artista.getBiografia().trim().isEmpty()) {
-                    msg += "\n\n\"" + artista.getBiografia().trim() + "\"";
-                }
-                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ARTIST", artista.getId(), msg);
-            }
+            useCase.cadastrar(dto, usuarioId);
         });
     }
 
@@ -104,20 +92,7 @@ public final class ArtistaController {
         String id = ctx.pathParam("id");
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         processarFormulario(ctx, id, dto -> {
-            Artista artista = useCase.atualizar(id, dto, usuarioId);
-            String compartilhar = ctx.formParam("compartilharComunidade");
-            String mensagem = ctx.formParam("mensagemComunidade");
-
-            if (comunidadeService != null && "on".equals(compartilhar)) {
-                String msg = "Atualizou o artista: **" + artista.getNome() + "**";
-                if (artista.getNota() != null) {
-                    msg += " e avaliou com " + artista.getNota() + " estrelas. â­";
-                }
-                if (mensagem != null && !mensagem.trim().isEmpty()) {
-                    msg += "\n\n\"" + mensagem.trim() + "\"";
-                }
-                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_ARTIST", id, msg);
-            }
+            useCase.atualizar(id, dto, usuarioId);
         });
     }
 

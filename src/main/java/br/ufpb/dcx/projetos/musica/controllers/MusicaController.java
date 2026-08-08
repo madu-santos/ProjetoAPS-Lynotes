@@ -241,18 +241,14 @@ public final class MusicaController {
                     dto.capaUrl());
             service.save(musica);
 
-            // Publica automaticamente na comunidade se solicitado pelo checkbox
+            // Publica na comunidade se solicitado pelo toggle
             String compartilhar = ctx.formParam("compartilharNaComunidade");
             if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
-                String msg = "Catalogou a música: **" + musica.getTitulo() + "** (" + musica.getArtista() + ")";
-                if (musica.getNota() != null) {
-                    msg += " e avaliou com " + musica.getNota() + " estrelas. ⭐";
+                String opiniao = ctx.formParam("opiniaoComunidade");
+                if (opiniao == null) {
+                    opiniao = "";
                 }
-                String mensagem = ctx.formParam("mensagemComunidade");
-                if (mensagem != null && !mensagem.trim().isEmpty()) {
-                    msg += "\n\n\"" + mensagem.trim() + "\"";
-                }
-                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", musica.getId(), msg);
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", musica.getId(), opiniao);
             }
 
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
@@ -373,10 +369,14 @@ public final class MusicaController {
                     dto.capaUrl() != null ? dto.capaUrl() : musicaExistente.getCapaUrl());
             service.update(id, musicaDetails);
 
-            // Publica automaticamente na comunidade se houver resenha
-            if (comunidadeService != null && musicaDetails.getResenha() != null && !musicaDetails.getResenha().trim().isEmpty()) {
-                String msg = musicaDetails.getResenha().trim();
-                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", id, msg);
+            // Publica na comunidade se solicitado pelo toggle
+            String compartilhar = ctx.formParam("compartilharNaComunidade");
+            if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
+                String opiniao = ctx.formParam("opiniaoComunidade");
+                if (opiniao == null) {
+                    opiniao = "";
+                }
+                comunidadeService.criarPostCompartilhado(usuarioId, "SHARE_MUSIC", id, opiniao);
             }
 
             if (dto.youtubeUrl() != null && !dto.youtubeUrl().isBlank()) {
