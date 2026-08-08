@@ -52,6 +52,10 @@ public final class UsuarioController {
         app.get("/usuarios/{id}/editar", this::exibirEdicao, Role.USER);
         app.post("/usuarios/{id}", this::atualizar, Role.USER);
         app.post("/usuarios/{id}/excluir", this::excluir, Role.USER);
+
+        app.get("/recuperar", this::exibirRecuperacao, Role.ANYONE);
+        app.post("/recuperar/solicitar", this::solicitarRecuperacao, Role.ANYONE);
+        app.post("/recuperar/confirmar", this::confirmarRecuperacao, Role.ANYONE);
     }
 
     private void listar(Context ctx) {
@@ -419,5 +423,54 @@ public final class UsuarioController {
         service.remover(idLogado);
         ctx.req().getSession().invalidate();
         ctx.redirect("/login?excluido=true");
+    }
+
+    private void exibirRecuperacao(Context ctx) {
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("step", 1);
+        ctx.render("recuperacao", modelo);
+    }
+
+    private void solicitarRecuperacao(Context ctx) {
+        String email = ctx.formParam("email");
+        Map<String, Object> modelo = new HashMap<>();
+        try {
+            service.solicitarRecuperacao(email);
+            modelo.put("step", 2);
+            modelo.put("email", email);
+            ctx.render("recuperacao", modelo);
+        } catch (IllegalArgumentException e) {
+            modelo.put("step", 1);
+            modelo.put("erro", e.getMessage());
+            modelo.put("email", email);
+            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("recuperacao", modelo);
+        }
+    }
+
+    private void confirmarRecuperacao(Context ctx) {
+        String email = ctx.formParam("email");
+        String codigo = ctx.formParam("codigo");
+        String novaSenha = ctx.formParam("novaSenha");
+        String confirmacao = ctx.formParam("confirmacaoSenha");
+
+        Map<String, Object> modelo = new HashMap<>();
+        modelo.put("email", email);
+        modelo.put("codigo", codigo);
+
+        if (novaSenha == null || confirmacao == null || !novaSenha.equals(confirmacao)) {
+            modelo.put("step", 2);
+            modelo.put("erro", "As senhas não coincidem.");
+            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("recuperacao", modelo);
+            return;
+        }
+
+        try {
+            service.confirmarRecuperacao(email, codigo, novaSenha);
+            ctx.redirect("/login?recuperado=true");
+        } catch (IllegalArgumentException e) {
+            modelo.put("step", 2);
+            modelo.put("erro", e.getMessage());
+            ctx.status(HttpStatus.UNPROCESSABLE_CONTENT).render("recuperacao", modelo);
+        }
     }
 }

@@ -70,4 +70,19 @@ public class LoggingUsuarioRepositoryDecorator implements UsuarioRepository {
         LOGGER.info("AUDITORIA/PERFORMANCE (Decorator): remover usuario executado em {}ms. id={}", 
                 (fim - inicio), id);
     }
+
+    @Override
+    public void salvarCodigoRecuperacao(String email, String codigo, java.time.LocalDateTime expiracao) {
+        decorado.salvarCodigoRecuperacao(email, codigo, expiracao);
+    }
+
+    @Override
+    public java.util.Optional<String> obterCodigoRecuperacaoValido(String email, String codigo) {
+        return decorado.obterCodigoRecuperacaoValido(email, codigo);
+    }
+
+    @Override
+    public void limparCodigoRecuperacao(String email) {
+        decorado.limparCodigoRecuperacao(email);
+    }
 }

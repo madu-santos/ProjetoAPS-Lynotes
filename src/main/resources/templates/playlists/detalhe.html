@@ -140,10 +140,14 @@
                             
                             <div class="d-flex align-items-center gap-3 overflow-hidden">
                                 <span class="fw-bold text-purple font-monospace ms-2 fs-5" th:text="${iter.count}">1</span>
+                                
+                                <!-- Imagem da Capa da Música -->
+                                <img th:src="${item.capaUrl}" class="rounded-3 shadow" style="width: 50px; height: 50px; min-width: 50px; object-fit: cover;" loading="lazy" alt="Capa">
+
                                 <div class="overflow-hidden">
-                                    <h6 class="fw-bold mb-0 text-truncate" th:text="${item.titulo}" th:classappend="${item.oculta ? 'text-secondary text-decoration-line-through' : 'text-white'}"></h6>
+                                    <h6 class="fw-bold mb-0 text-truncate fs-6" th:text="${item.titulo}" th:classappend="${item.oculta ? 'text-secondary text-decoration-line-through' : 'text-white'}"></h6>
                                     <span th:if="${item.oculta}" class="badge bg-secondary text-white ms-0 mt-1 d-inline-block" style="font-size: 0.65rem;">Desativada</span>
-                                    <span class="text-secondary small font-monospace text-truncate d-block" th:text="${item.url}"></span>
+                                    <span class="text-secondary small text-truncate d-block mt-1" th:text="${item.artista}" style="font-size: 0.82rem;"></span>
                                 </div>
                             </div>
 
@@ -161,8 +165,9 @@
                                         class="btn btn-outline-purple btn-sm rounded-pill px-3"
                                         th:data-url="${item.url}"
                                         th:data-titulo="${item.titulo}"
+                                        th:data-artista="${item.artista}"
                                         th:data-ytid="${item.videoId}"
-                                        onclick="if(typeof playerTocar === 'function') playerTocar(this.getAttribute('data-url'), this.getAttribute('data-titulo'), 'Playlist', '', this.getAttribute('data-ytid'));">
+                                        onclick="if(typeof playerTocar === 'function') playerTocar(this.getAttribute('data-url'), this.getAttribute('data-titulo'), this.getAttribute('data-artista'), '', this.getAttribute('data-ytid'));">
                                     <i class="bi bi-play-fill me-1"></i> Tocar
                                 </button>
                                 

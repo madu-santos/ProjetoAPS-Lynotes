@@ -14,7 +14,7 @@ public class BCryptHashingStrategy implements PasswordHashingStrategy {
             throw new IllegalArgumentException("Senha não pode ser nula para gerar hash.");
         }
         // Gera o hash com um salt aleatório gerado internamente
-        return BCrypt.hashpw(senha, BCrypt.gensalt(12));
+        return BCrypt.hashpw(senha, BCrypt.gensalt(10));
     }
 
     @Override

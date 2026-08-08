@@ -31,6 +31,15 @@ public class YouTubeService {
         this(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build(), new ObjectMapper());
     }
 
+    private final java.util.Map<String, List<YouTubeItemDTO>> searchCache = java.util.Collections.synchronizedMap(
+        new java.util.LinkedHashMap<String, List<YouTubeItemDTO>>(200, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(java.util.Map.Entry<String, List<YouTubeItemDTO>> eldest) {
+                return size() > 500;
+            }
+        }
+    );
+
     public YouTubeService(HttpClient httpClient, ObjectMapper objectMapper) {
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
@@ -50,6 +59,25 @@ public class YouTubeService {
     }
 
     public List<YouTubeItemDTO> buscar(String query, String tipo, boolean realVideoOnly) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
+
+        String cacheKey = (query.trim() + "::" + (tipo != null ? tipo.trim() : "") + "::" + realVideoOnly).toLowerCase();
+        List<YouTubeItemDTO> cached = searchCache.get(cacheKey);
+        if (cached != null) {
+            LOGGER.debug("Buscando YouTube do cache para query={}", query);
+            return cached;
+        }
+
+        List<YouTubeItemDTO> resultados = executarBuscaSemCache(query, tipo, realVideoOnly);
+        if (resultados != null && !resultados.isEmpty()) {
+            searchCache.put(cacheKey, resultados);
+        }
+        return resultados;
+    }
+
+    private List<YouTubeItemDTO> executarBuscaSemCache(String query, String tipo, boolean realVideoOnly) {
         if (query == null || query.isBlank()) {
             return List.of();
         }

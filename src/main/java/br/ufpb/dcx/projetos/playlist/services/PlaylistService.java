@@ -17,6 +17,8 @@ import java.util.Optional;
 public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
+    private static final java.util.Map<String, String> titleCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final java.util.Map<String, Integer> durationCache = new java.util.concurrent.ConcurrentHashMap<>();
 
     public PlaylistService(PlaylistRepository playlistRepository) {
         this.playlistRepository = playlistRepository;
@@ -253,7 +255,33 @@ public class PlaylistService {
         return playlistRepository.findById(playlistId);
     }
 
+    public java.util.Map<String, List<PlaylistItem>> findItemsForPlaylists(List<String> playlistIds) {
+        List<PlaylistItem> allItems = playlistRepository.findItemsByPlaylistIds(playlistIds);
+        java.util.Map<String, List<PlaylistItem>> map = new java.util.HashMap<>();
+        for (String plId : playlistIds) {
+            map.put(plId, new java.util.ArrayList<>());
+        }
+        for (PlaylistItem item : allItems) {
+            if (map.containsKey(item.getPlaylistId())) {
+                map.get(item.getPlaylistId()).add(item);
+            }
+        }
+        return map;
+    }
+
     private String fetchYouTubeTitle(String url, String videoId) {
+        String cacheKey = (videoId != null && !videoId.isBlank()) ? videoId : url;
+        if (cacheKey != null && titleCache.containsKey(cacheKey)) {
+            return titleCache.get(cacheKey);
+        }
+        String title = executarFetchTitleSemCache(url, videoId);
+        if (cacheKey != null && title != null) {
+            titleCache.put(cacheKey, title);
+        }
+        return title;
+    }
+
+    private String executarFetchTitleSemCache(String url, String videoId) {
         if (url != null && url.contains("search_query=")) {
             try {
                 int start = url.indexOf("search_query=") + 13;
@@ -297,6 +325,17 @@ public class PlaylistService {
 
     public Integer fetchYouTubeDuration(String url) {
         if (url == null || url.isBlank()) return null;
+        if (durationCache.containsKey(url)) {
+            return durationCache.get(url);
+        }
+        Integer duration = executarFetchDurationSemCache(url);
+        if (duration != null) {
+            durationCache.put(url, duration);
+        }
+        return duration;
+    }
+
+    private Integer executarFetchDurationSemCache(String url) {
         try {
             HttpClient client = HttpClient.newBuilder()
                     .connectTimeout(java.time.Duration.ofSeconds(5))

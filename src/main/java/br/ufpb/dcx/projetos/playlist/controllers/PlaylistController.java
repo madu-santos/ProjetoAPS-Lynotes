@@ -48,9 +48,13 @@ public final class PlaylistController {
             }
         }
 
+        java.util.List<String> plIds = playlists.stream().map(Playlist::getId).toList();
+        java.util.Map<String, java.util.List<PlaylistItem>> allPlaylistItems = service.findItemsForPlaylists(plIds);
+
         java.util.Map<String, java.util.List<String>> playlistCovers = new java.util.HashMap<>();
         for (Playlist pl : playlists) {
-            java.util.List<String> covers = service.findPlaylistWithItems(pl.getId(), usuarioId).getItems().stream()
+            java.util.List<PlaylistItem> items = allPlaylistItems.getOrDefault(pl.getId(), java.util.List.of());
+            java.util.List<String> covers = items.stream()
                     .limit(4)
                     .map(item -> {
                         if (musicCovers.containsKey(item.getVideoId())) {
@@ -131,6 +135,61 @@ public final class PlaylistController {
         return sanitized;
     }
 
+    private java.util.List<br.ufpb.dcx.projetos.playlist.views.PlaylistItemView> mapToViews(java.util.List<PlaylistItem> items, String usuarioId) {
+        java.util.List<br.ufpb.dcx.projetos.musica.models.Musica> userMusicas = musicaService != null ? musicaService.findByUsuarioId(usuarioId) : java.util.List.of();
+        java.util.Map<String, br.ufpb.dcx.projetos.musica.models.Musica> musicMap = new java.util.HashMap<>();
+        for (var m : userMusicas) {
+            if (m.getYoutubeId() != null) {
+                musicMap.put(m.getYoutubeId(), m);
+            }
+        }
+
+        java.util.List<br.ufpb.dcx.projetos.playlist.views.PlaylistItemView> views = new java.util.ArrayList<>();
+        for (PlaylistItem item : items) {
+            String title = item.getTitulo();
+            if (title == null || title.isBlank()) {
+                title = "Música Sem Título";
+            } else if (title.startsWith("YouTube - ")) {
+                title = title.replace("YouTube - ", "");
+            }
+
+            String artist = "";
+            String capa = "https://img.youtube.com/vi/" + item.getVideoId() + "/hqdefault.jpg";
+
+            br.ufpb.dcx.projetos.musica.models.Musica matching = musicMap.get(item.getVideoId());
+            if (matching != null) {
+                title = matching.getTitulo();
+                artist = matching.getArtista();
+                if (matching.getCapaUrl() != null && !matching.getCapaUrl().isBlank()) {
+                    capa = matching.getCapaUrl();
+                }
+            } else {
+                if (title.contains(" - ")) {
+                    String[] parts = title.split(" - ", 2);
+                    artist = parts[0].trim();
+                    title = parts[1].trim();
+                } else if (title.contains("-")) {
+                    String[] parts = title.split("-", 2);
+                    artist = parts[0].trim();
+                    title = parts[1].trim();
+                } else {
+                    artist = "Artista do Vídeo";
+                }
+            }
+
+            views.add(new br.ufpb.dcx.projetos.playlist.views.PlaylistItemView(
+                    item.getId(),
+                    item.getVideoId(),
+                    item.getUrl(),
+                    title,
+                    artist,
+                    capa,
+                    item.isOculta()
+            ));
+        }
+        return views;
+    }
+
     public void exibirPlaylist(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
@@ -139,7 +198,7 @@ public final class PlaylistController {
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("usuarioLogado", ctx.sessionAttribute("usuarioLogado"));
         modelo.put("playlist", playlist.getPlaylist());
-        modelo.put("items", sanitizePlaylistItems(playlist.getItems()));
+        modelo.put("items", mapToViews(playlist.getItems(), usuarioId));
         ctx.render("playlists/detalhe", modelo);
     }
 
