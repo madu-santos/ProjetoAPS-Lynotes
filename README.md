@@ -8,7 +8,10 @@ Os usuários podem explorar o catálogo com integração direta a APIs públicas
 
 ### 📺 Vídeo de Apresentação
 Assista à nossa demonstração prática e tour pela arquitetura no YouTube:
-**[Acesse o Vídeo de Apresentação no YouTube](https://youtu.be/hnuIOO55QWY)**
+
+[![Vídeo de Apresentação](https://img.youtube.com/vi/QjDpExiqm0Q/maxresdefault.jpg)](https://youtu.be/QjDpExiqm0Q)
+
+**[Clique aqui para assistir ao vídeo no YouTube](https://youtu.be/QjDpExiqm0Q)**
 
 ---
 
