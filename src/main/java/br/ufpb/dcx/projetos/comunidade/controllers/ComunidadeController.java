@@ -161,7 +161,7 @@ public class ComunidadeController {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
         
-        ctx.redirect("/comunidade");
+        redirecionarParaRefererOu(ctx);
     }
 
     private void editarPost(Context ctx) {
@@ -175,7 +175,7 @@ public class ComunidadeController {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
         
-        ctx.redirect("/comunidade");
+        redirecionarParaRefererOu(ctx);
     }
 
     private void excluirComentario(Context ctx) {
@@ -258,7 +258,7 @@ public class ComunidadeController {
         } catch (IllegalArgumentException e) {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
-        ctx.redirect("/comunidade");
+        redirecionarParaRefererOu(ctx);
     }
 
     private void recusarPedido(Context ctx) {
@@ -269,6 +269,6 @@ public class ComunidadeController {
         } catch (IllegalArgumentException e) {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
-        ctx.redirect("/comunidade");
+        redirecionarParaRefererOu(ctx);
     }
 }
