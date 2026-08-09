@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import br.ufpb.dcx.projetos.comunidade.views.NotificacaoViewDTO;
 
 public class ComunidadeDbRepository {
 
@@ -82,7 +84,7 @@ public class ComunidadeDbRepository {
         }
     }
 
-    public void darEstrela(String postId, String usuarioId) {
+    public boolean darEstrela(String postId, String usuarioId) {
         String checkSql = "SELECT 1 FROM post_estrela WHERE post_id = ? AND usuario_id = ?";
         String insertSql = "INSERT INTO post_estrela (post_id, usuario_id) VALUES (?, ?)";
         String deleteSql = "DELETE FROM post_estrela WHERE post_id = ? AND usuario_id = ?";
@@ -103,12 +105,14 @@ public class ComunidadeDbRepository {
                     delPs.setString(2, usuarioId);
                     delPs.executeUpdate();
                 }
+                return false;
             } else {
                 try (PreparedStatement insPs = conn.prepareStatement(insertSql)) {
                     insPs.setString(1, postId);
                     insPs.setString(2, usuarioId);
                     insPs.executeUpdate();
                 }
+                return true;
             }
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao processar estrela no post: " + e.getMessage(), e);
@@ -590,5 +594,77 @@ public class ComunidadeDbRepository {
             throw new RuntimeException("Erro ao listar seguindo: " + e.getMessage(), e);
         }
         return lista;
+    }
+
+    private String formatarTempoAtras(java.time.LocalDateTime dateTime) {
+        java.time.Duration d = java.time.Duration.between(dateTime, java.time.LocalDateTime.now());
+        long segundos = d.getSeconds();
+        if (segundos < 60) return "agora mesmo";
+        long minutos = d.toMinutes();
+        if (minutos < 60) return "há " + minutos + " min";
+        long horas = d.toHours();
+        if (horas < 24) return "há " + horas + " h";
+        long dias = d.toDays();
+        return "há " + dias + " dias";
+    }
+
+    public void criarNotificacao(String usuarioId, String autorId, String tipo, String postId, String conteudo) {
+        String sql = "INSERT INTO notificacao (id, usuario_id, autor_id, tipo, post_id, conteudo, lida) VALUES (?, ?, ?, ?, ?, ?, false)";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, UUID.randomUUID().toString());
+            ps.setString(2, usuarioId);
+            ps.setString(3, autorId);
+            ps.setString(4, tipo);
+            ps.setString(5, postId);
+            ps.setString(6, conteudo);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao criar notificação: " + e.getMessage(), e);
+        }
+    }
+
+    public List<NotificacaoViewDTO> listarNotificacoes(String usuarioId) {
+        String sql = "SELECT n.id, n.usuario_id, n.autor_id, u.nome AS autor_nome, n.tipo, n.post_id, n.conteudo, n.lida, n.data_criacao, " +
+                     "(SELECT COUNT(*) > 0 FROM seguidor s WHERE s.seguidor_id = n.usuario_id AND s.seguido_id = n.autor_id) AS seguindo_de_volta " +
+                     "FROM notificacao n " +
+                     "JOIN usuario u ON n.autor_id = u.id " +
+                     "WHERE n.usuario_id = ? " +
+                     "ORDER BY n.data_criacao DESC LIMIT 50";
+        List<NotificacaoViewDTO> list = new ArrayList<>();
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuarioId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new NotificacaoViewDTO(
+                        rs.getString("id"),
+                        rs.getString("usuario_id"),
+                        rs.getString("autor_id"),
+                        rs.getString("autor_nome"),
+                        rs.getString("tipo"),
+                        rs.getString("post_id"),
+                        rs.getString("conteudo"),
+                        rs.getBoolean("lida"),
+                        formatarTempoAtras(rs.getTimestamp("data_criacao").toLocalDateTime()),
+                        rs.getBoolean("seguindo_de_volta")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar notificações: " + e.getMessage(), e);
+        }
+        return list;
+    }
+
+    public void marcarNotificacoesComoLidas(String usuarioId) {
+        String sql = "UPDATE notificacao SET lida = true WHERE usuario_id = ?";
+        try (Connection conn = factory.abrir();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuarioId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao marcar notificações como lidas: " + e.getMessage(), e);
+        }
     }
 }
