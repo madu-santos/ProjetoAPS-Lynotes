@@ -210,17 +210,24 @@
                                 </div>
                                 
                                 <!-- Botão de Seguir/Deseguir no Canto Inferior Direito do post -->
-                                <div th:if="${usuarioLogadoId != post.usuarioId}">
-                                    <form th:if="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/deseguir/' + ${post.usuarioId}}" method="post" hx-boost="false" class="m-0">
-                                        <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1" style="font-size: 0.8rem;" type="submit">
-                                            <i class="bi bi-person-x-fill me-1"></i> Deseguir
+                                <div>
+                                    <div th:if="${usuarioLogadoId == post.usuarioId}">
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1" style="font-size: 0.8rem;" disabled>
+                                            <i class="bi bi-person-fill me-1"></i> Você
                                         </button>
-                                    </form>
-                                    <form th:unless="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/seguir/' + ${post.usuarioId}}" method="post" hx-boost="false" class="m-0">
-                                        <button class="btn btn-sm btn-outline-purple rounded-pill px-3 py-1" style="font-size: 0.8rem;" type="submit">
-                                            <i class="bi bi-person-plus-fill me-1"></i> Seguir
-                                        </button>
-                                    </form>
+                                    </div>
+                                    <div th:unless="${usuarioLogadoId == post.usuarioId}">
+                                        <form th:if="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/deseguir/' + ${post.usuarioId}}" method="post" hx-boost="false" class="m-0">
+                                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1" style="font-size: 0.8rem;" type="submit">
+                                                <i class="bi bi-person-x-fill me-1"></i> Deseguir
+                                            </button>
+                                        </form>
+                                        <form th:unless="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/seguir/' + ${post.usuarioId}}" method="post" hx-boost="false" class="m-0">
+                                            <button class="btn btn-sm btn-outline-purple rounded-pill px-3 py-1" style="font-size: 0.8rem;" type="submit">
+                                                <i class="bi bi-person-plus-fill me-1"></i> Seguir
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
 
