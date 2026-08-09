@@ -19,12 +19,12 @@
 <body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
 
-    <div th:insert="~{fragments/navbar :: navbar('albums')}"></div>
+    <div th:insert="~{fragments/navbar :: navbar('albuns')}"></div>
 
     <main class="spotify-main container py-5">
         <!-- Botão Voltar -->
         <div class="mb-4">
-            <a href="/albums" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+            <a href="/albuns" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                 <i class="bi bi-arrow-left me-1"></i> Voltar para Álbuns
             </a>
         </div>
@@ -58,32 +58,30 @@
                                 class="btn btn-purple rounded-pill px-4 py-2 d-flex align-items-center gap-2 shadow-lg fw-bold"
                                 th:data-id="${album.id}"
                                 th:data-titulo="${album.titulo}"
-                                onclick="if(typeof playerTocarAlbum === 'function') playerTocarAlbum(this.getAttribute('data-id'), this.getAttribute('data-titulo'));">
+                                th:data-capa="${album.capaUrl}"
+                                onclick="if(typeof playerTocarAlbum === 'function') playerTocarAlbum(this.getAttribute('data-id'), this.getAttribute('data-titulo'), this.getAttribute('data-capa'));">
                             <i class="bi bi-play-fill fs-4"></i> Tocar Álbum
                         </button>
                         <button type="button"
                                 class="btn btn-outline-purple rounded-pill px-4 py-2 d-flex align-items-center gap-2 fw-semibold"
                                 th:data-id="${album.id}"
                                 th:data-titulo="${album.titulo}"
-                                onclick="if(typeof playerTocarAlbumEmOrdemAleatoria === 'function') playerTocarAlbumEmOrdemAleatoria(this.getAttribute('data-id'), this.getAttribute('data-titulo'));">
+                                th:data-capa="${album.capaUrl}"
+                                onclick="if(typeof playerTocarAlbumEmOrdemAleatoria === 'function') playerTocarAlbumEmOrdemAleatoria(this.getAttribute('data-id'), this.getAttribute('data-titulo'), this.getAttribute('data-capa'));">
                             <i class="bi bi-shuffle fs-5"></i> Ordem Aleatória
                         </button>
                         <button type="button"
                                 class="btn btn-outline-purple rounded-pill px-4 py-2 d-flex align-items-center gap-2 fw-semibold"
                                 th:data-id="${album.id}"
                                 th:data-titulo="${album.titulo}"
-                                onclick="if(typeof playerTocarAlbumEmLoop === 'function') playerTocarAlbumEmLoop(this.getAttribute('data-id'), this.getAttribute('data-titulo'));">
+                                th:data-capa="${album.capaUrl}"
+                                onclick="if(typeof playerTocarAlbumEmLoop === 'function') playerTocarAlbumEmLoop(this.getAttribute('data-id'), this.getAttribute('data-titulo'), this.getAttribute('data-capa'));">
                             <i class="bi bi-repeat fs-5"></i> Repetir Álbum
                         </button>
                         <div class="ms-auto d-flex align-items-center gap-2">
-                            <a class="btn btn-outline-purple btn-sm px-3 rounded-pill" th:href="${'/albums/' + album.id + '/editar'}">
+                            <a class="btn btn-outline-purple btn-sm px-3 rounded-pill" th:href="${'/albuns/' + album.id + '/editar'}">
                                 <i class="bi bi-star-fill me-1"></i> Avaliar
                             </a>
-                            <form method="post" th:action="${'/albums/' + album.id + '/excluir'}" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);" hx-boost="false" class="m-0">
-                                <button class="btn btn-outline-danger btn-sm px-3 rounded-pill" type="submit">
-                                    <i class="bi bi-trash-fill me-1"></i> Excluir
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -127,7 +125,7 @@
                             <td class="text-center font-monospace text-secondary small" th:text="${faixa.duracaoSegundos != null ? (faixa.duracaoSegundos / 60 + ':' + (faixa.duracaoSegundos % 60 < 10 ? '0' : '') + (faixa.duracaoSegundos % 60)) : '--:--'}">0:00</td>
                             <td class="text-end">
                                 <!-- Botão Ocultar / Desocultar -->
-                                <form th:action="${'/albums/' + album.id + '/faixas/' + faixa.id + '/toggle-oculta'}" method="post" class="d-inline-block m-0 align-middle">
+                                <form th:action="${'/albuns/' + album.id + '/faixas/' + faixa.id + '/toggle-oculta'}" method="post" class="d-inline-block m-0 align-middle">
                                     <button type="submit"
                                             class="btn btn-link p-0 me-2 text-decoration-none shadow-none"
                                             th:title="${faixa.ocultaDaBiblioteca ? 'Reativar faixa no álbum' : 'Ocultar/Desativar faixa do álbum'}">
@@ -142,7 +140,8 @@
                                         th:data-albid="${album.id}"
                                         th:data-albtit="${album.titulo}"
                                         th:data-faixaid="${faixa.id}"
-                                        onclick="if(typeof playerTocarAlbumApartirDe === 'function') playerTocarAlbumApartirDe(this.getAttribute('data-albid'), this.getAttribute('data-albtit'), this.getAttribute('data-faixaid'));">
+                                        th:data-capa="${album.capaUrl}"
+                                        onclick="if(typeof playerTocarAlbumApartirDe === 'function') playerTocarAlbumApartirDe(this.getAttribute('data-albid'), this.getAttribute('data-albtit'), this.getAttribute('data-faixaid'), this.getAttribute('data-capa'));">
                                     <i class="bi bi-play-fill text-white fs-5"></i>
                                 </button>
                             </td>

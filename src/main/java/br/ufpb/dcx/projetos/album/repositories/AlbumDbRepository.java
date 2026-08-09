@@ -112,7 +112,7 @@ public final class AlbumDbRepository implements AlbumRepository {
 
     @Override
     public List<Album> listarTodos(String usuarioId) {
-        String sql = "SELECT " + COLUNAS + " FROM album WHERE usuario_id = ? ORDER BY titulo, id";
+        String sql = "SELECT " + COLUNAS + " FROM album WHERE usuario_id = ? ORDER BY criado_em DESC, id DESC";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -126,7 +126,7 @@ public final class AlbumDbRepository implements AlbumRepository {
     }
 
     public List<Album> listarTodosGlobal() {
-        String sql = "SELECT " + COLUNAS + " FROM album ORDER BY titulo, id";
+        String sql = "SELECT " + COLUNAS + " FROM album ORDER BY criado_em DESC, id DESC";
 
         try (Connection connection = connectionFactory.abrir();
              Statement statement = connection.createStatement();
@@ -151,7 +151,7 @@ public final class AlbumDbRepository implements AlbumRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return listarTodos(usuarioId);
         }
-        String sql = "SELECT " + COLUNAS + " FROM album WHERE (LOWER(titulo) LIKE ? OR LOWER(artista) LIKE ?) AND usuario_id = ?;";
+        String sql = "SELECT " + COLUNAS + " FROM album WHERE (LOWER(titulo) LIKE ? OR LOWER(artista) LIKE ?) AND usuario_id = ? ORDER BY criado_em DESC, id DESC;";
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             String wildcard = "%" + termo.trim().toLowerCase() + "%";

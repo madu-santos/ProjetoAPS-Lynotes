@@ -34,6 +34,7 @@ class AlbumControllerTest {
         });
         
         app.get("/albums", controller::listar);
+        app.get("/albuns", controller::listar);
         return app;
     }
 
@@ -53,7 +54,7 @@ class AlbumControllerTest {
         when(albumService.search(any(), anyString())).thenReturn(Collections.emptyList());
 
         JavalinTest.test(criarApp(), (server, client) -> {
-            try (var resposta = client.get("/albums")) {
+            try (var resposta = client.get("/albuns")) {
                 assertEquals(200, resposta.code());
             }
         });

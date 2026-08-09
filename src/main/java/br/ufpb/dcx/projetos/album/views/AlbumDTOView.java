@@ -53,7 +53,7 @@ public final class AlbumDTOView {
                 valor(form.capaUrl()),
                 valor(form.resenha()),
                 false,
-                "/albums"
+                "/albuns"
         );
     }
 
@@ -68,7 +68,7 @@ public final class AlbumDTOView {
                 album.getCapaUrl(),
                 album.getResenha(),
                 true,
-                "/albums/" + album.getId()
+                "/albuns/" + album.getId()
         );
     }
 
@@ -83,7 +83,7 @@ public final class AlbumDTOView {
                 valor(form.capaUrl()),
                 valor(form.resenha()),
                 true,
-                "/albums/" + id
+                "/albuns/" + id
             );
     }
 

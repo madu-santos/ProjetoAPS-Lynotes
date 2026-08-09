@@ -144,6 +144,7 @@ public final class App {
         var youtubeService = new br.ufpb.dcx.projetos.infra.youtube.YouTubeService();
         var youtubeController = new br.ufpb.dcx.projetos.infra.youtube.controllers.YouTubeController(youtubeService);
         app.get("/api/youtube/search", youtubeController::buscar, Role.USER);
+        app.get("/api/youtube/album-faixas", youtubeController::buscarFaixasPreview, Role.USER);
 
         new br.ufpb.dcx.projetos.login.controllers.UsuarioController(service, musicaService, artistaService, albumService, comunidadeService, playlistService).registrarRotas(app);
 

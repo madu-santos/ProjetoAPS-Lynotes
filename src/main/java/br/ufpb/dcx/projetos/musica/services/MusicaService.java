@@ -27,30 +27,44 @@ public class MusicaService {
                     .orElseThrow(() -> new ResourceNotFoundException("Álbum não encontrado com id: " + musica.getAlbumId()));
         }
 
-        // Deduplicação: se já existir música do mesmo usuário com este youtubeId, reaproveita ou atualiza
+        // Deduplicação: se já existir música do mesmo usuário com este youtubeId OU com mesmo título e artista
+        Optional<Musica> existente = Optional.empty();
         if (musica.getYoutubeId() != null && !musica.getYoutubeId().isBlank()) {
-            Optional<Musica> existente = musicaRepository.buscarPorYouTubeId(musica.getYoutubeId());
-            if (existente.isPresent() && existente.get().getUsuarioId().equals(musica.getUsuarioId())) {
-                Musica m = existente.get();
-                Musica atualizada = new Musica(
-                        m.getId(),
-                        musica.getTitulo(),
-                        musica.getArtista(),
-                        musica.getGenero(),
-                        musica.getDuracaoSegundos(),
-                        musica.getResenha(),
-                        musica.getNota(),
-                        musica.getSpotifyUrl(),
-                        musica.getYoutubeUrl(),
-                        musica.getAlbumId(),
-                        musica.getUsuarioId(),
-                        musica.getYoutubeId(),
-                        musica.getCapaUrl(),
-                        musica.isOcultaDaBiblioteca()
-                );
-                musicaRepository.atualizar(atualizada);
-                return atualizada;
+            Optional<Musica> porYt = musicaRepository.buscarPorYouTubeId(musica.getYoutubeId());
+            if (porYt.isPresent() && porYt.get().getUsuarioId().equals(musica.getUsuarioId())) {
+                existente = porYt;
             }
+        }
+        if (existente.isEmpty() && musica.getTitulo() != null && musica.getArtista() != null && musica.getUsuarioId() != null) {
+            String tNorm = musica.getTitulo().trim().toLowerCase();
+            String aNorm = musica.getArtista().trim().toLowerCase();
+            existente = musicaRepository.buscarPorUsuarioId(musica.getUsuarioId()).stream()
+                    .filter(m -> m.getTitulo() != null && m.getArtista() != null &&
+                            m.getTitulo().trim().toLowerCase().equals(tNorm) &&
+                            m.getArtista().trim().toLowerCase().equals(aNorm))
+                    .findFirst();
+        }
+
+        if (existente.isPresent()) {
+            Musica m = existente.get();
+            Musica atualizada = new Musica(
+                    m.getId(),
+                    musica.getTitulo(),
+                    musica.getArtista(),
+                    musica.getGenero() != null ? musica.getGenero() : m.getGenero(),
+                    musica.getDuracaoSegundos() != null ? musica.getDuracaoSegundos() : m.getDuracaoSegundos(),
+                    musica.getResenha() != null ? musica.getResenha() : m.getResenha(),
+                    musica.getNota() != null ? musica.getNota() : m.getNota(),
+                    musica.getSpotifyUrl() != null ? musica.getSpotifyUrl() : m.getSpotifyUrl(),
+                    musica.getYoutubeUrl() != null ? musica.getYoutubeUrl() : m.getYoutubeUrl(),
+                    musica.getAlbumId() != null ? musica.getAlbumId() : m.getAlbumId(),
+                    musica.getUsuarioId(),
+                    musica.getYoutubeId() != null ? musica.getYoutubeId() : m.getYoutubeId(),
+                    musica.getCapaUrl() != null ? musica.getCapaUrl() : m.getCapaUrl(),
+                    musica.isOcultaDaBiblioteca()
+            );
+            musicaRepository.atualizar(atualizada);
+            return atualizada;
         }
 
         if (musicaRepository.buscarPorId(musica.getId()).isPresent()) {
@@ -82,48 +96,47 @@ public class MusicaService {
     }
 
     public void importarFaixasAlbumItunes(String collectionId, String albumId, String usuarioId, String capaUrl) {
-        java.util.concurrent.CompletableFuture.runAsync(() -> {
-            try {
-                String url = "https://itunes.apple.com/lookup?id=" + collectionId + "&entity=song";
-                java.net.http.HttpClient httpClient = java.net.http.HttpClient.newHttpClient();
-                java.net.http.HttpRequest req = java.net.http.HttpRequest.newBuilder()
-                        .uri(java.net.URI.create(url))
-                        .timeout(java.time.Duration.ofSeconds(10))
-                        .GET()
-                        .build();
-                java.net.http.HttpResponse<String> res = httpClient.send(req, java.net.http.HttpResponse.BodyHandlers.ofString());
-                if (res.statusCode() == 200) {
-                    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-                    com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(res.body());
-                    com.fasterxml.jackson.databind.JsonNode results = root.path("results");
-                    for (com.fasterxml.jackson.databind.JsonNode item : results) {
-                        if ("track".equals(item.path("wrapperType").asText(""))) {
-                            int trackTimeMillis = item.path("trackTimeMillis").asInt(0);
-                            int duracaoSegundos = trackTimeMillis / 1000;
-                            String trackId = item.path("trackId").asText("");
-                            
-                            Musica faixa = Musica.novo(
-                                item.path("trackName").asText(""),
-                                item.path("artistName").asText(""),
-                                item.path("primaryGenreName").asText(""),
-                                duracaoSegundos > 0 ? duracaoSegundos : null,
-                                "",
-                                null,
-                                null,
-                                null,
-                                albumId,
-                                usuarioId,
-                                "itunes_track_" + trackId,
-                                capaUrl
-                            );
-                            save(faixa);
-                        }
+        try {
+            String cleanId = collectionId.replace("itunes_album_", "");
+            String url = "https://itunes.apple.com/lookup?id=" + cleanId + "&entity=song";
+            java.net.http.HttpClient httpClient = java.net.http.HttpClient.newHttpClient();
+            java.net.http.HttpRequest req = java.net.http.HttpRequest.newBuilder()
+                    .uri(java.net.URI.create(url))
+                    .timeout(java.time.Duration.ofSeconds(6))
+                    .GET()
+                    .build();
+            java.net.http.HttpResponse<String> res = httpClient.send(req, java.net.http.HttpResponse.BodyHandlers.ofString());
+            if (res.statusCode() == 200) {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(res.body());
+                com.fasterxml.jackson.databind.JsonNode results = root.path("results");
+                for (com.fasterxml.jackson.databind.JsonNode item : results) {
+                    if ("track".equals(item.path("wrapperType").asText(""))) {
+                        int trackTimeMillis = item.path("trackTimeMillis").asInt(0);
+                        int duracaoSegundos = trackTimeMillis / 1000;
+                        String trackId = item.path("trackId").asText("");
+                        
+                        Musica faixa = Musica.novo(
+                            item.path("trackName").asText(""),
+                            item.path("artistName").asText(""),
+                            item.path("primaryGenreName").asText(""),
+                            duracaoSegundos > 0 ? duracaoSegundos : null,
+                            "",
+                            null,
+                            null,
+                            null,
+                            albumId,
+                            usuarioId,
+                            "itunes_track_" + trackId,
+                            capaUrl
+                        );
+                        save(faixa);
                     }
                 }
-            } catch (Exception e) {
-                // Ignore erros de importação para não travar o log
             }
-        });
+        } catch (Exception e) {
+            // Ignore erros de importação
+        }
     }
 
     public void importarFaixasAlbumYouTube(String playlistId, String albumId, String usuarioId, String capaUrl) {

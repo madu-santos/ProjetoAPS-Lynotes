@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${edicao ? 'Editar Artista - Lynotes' : 'Novo Artista - Lynotes'}">Artista - Lynotes</title>
+    <title th:text="${form.edicao ? 'Editar Artista - Lynotes' : 'Novo Artista - Lynotes'}">Artista - Lynotes</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
-    <!-- Fonte Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,77 +17,134 @@
 </head>
 <body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
+    <style>
+        .artist-result-item {
+            transition: all 0.2s ease;
+        }
+        .artist-result-item:hover, .active-artist-item {
+            background-color: rgba(181, 124, 255, 0.15) !important;
+            border-color: #B57CFF !important;
+            transform: translateX(4px);
+        }
+    </style>
 
     <div th:insert="~{fragments/navbar :: navbar('artistas')}"></div>
 
     <main class="spotify-main container py-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                
+
                 <!-- Card Cyberpunk do Formulário -->
                 <div class="music-card-cyber p-4 p-md-5">
                     <div class="mb-4">
                         <h2 class="glowing-title-library mb-1" th:text="${form.edicao ? 'Editar Artista' : 'Novo Artista'}">Novo Artista</h2>
-                        <p class="text-secondary mb-0" th:text="${form.edicao ? 'Atualize as informações do artista no seu acervo.' : 'Adicionar novo artista ao acervo'}">Adicionar novo artista ao acervo</p>
+                        <p class="text-secondary mb-0">Cadastre ou edite as informações de um artista musical no seu acervo.</p>
                     </div>
 
                     <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
 
-                    <form method="post" th:action="${form.acao}">
-                        
-                        <!-- Pesquisa no YouTube (Criar) -->
-                        <div th:if="${!form.edicao}" class="mb-4 p-4 rounded-4 border border-purple bg-darker shadow">
-                            <label class="form-label text-purple font-monospace small uppercase fw-bold mb-2" for="ytQuery">
-                                <i class="bi bi-youtube text-danger me-1"></i> Preencher dados com o YouTube
-                            </label>
-                            <div class="position-relative">
-                                <input type="text" id="ytQuery" class="form-control glass-search-input bg-dark text-white border-secondary pe-5" placeholder="Digite o nome do Artista/Canal..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="window.debounceSearchYT('ARTISTA')" onkeydown="window.handleKeyNav(event, 'ARTISTA')">
-                                <button type="button" class="btn text-purple position-absolute top-50 end-0 translate-middle-y me-2 p-1 border-0" onclick="window.buscarYT('ARTISTA')" title="Buscar no YouTube">
-                                    <i class="bi bi-search fs-5 text-purple"></i>
-                                </button>
-                            </div>
+                    <!-- BUSCA DINÂMICA DE ARTISTAS OFICIAIS (Apenas no cadastro) -->
+                    <div th:unless="${form.edicao}" class="mb-5 p-4 rounded-4 bg-darker border border-secondary border-opacity-30 position-relative shadow-sm">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-person-badge-fill text-purple fs-4"></i>
+                            <h4 class="fw-bold text-white mb-0">Buscar Artista</h4>
+                        </div>
+                        <p class="text-secondary small mb-3">Pesquise pelo <strong>nome do artista ou banda</strong> (ex: Queen, Matuê, Billie Eilish) para localizar o perfil oficial no catálogo musical.</p>
 
-                            <!-- Spinner -->
-                            <div id="ytSpinner" class="text-center py-3 d-none">
-                                <div class="spinner-border spinner-border-sm text-purple" role="status"></div>
-                                <span class="text-secondary small ms-2">Buscando canais no YouTube...</span>
-                            </div>
-
-                            <!-- Resultados -->
-                            <div id="ytResults" class="d-flex flex-column gap-2 mt-3 overflow-auto" style="max-height: 250px;"></div>
+                        <div class="position-relative">
+                            <input type="text"
+                                   id="artistaQuery"
+                                   class="form-control glass-search-input bg-dark text-white border-secondary p-3 pe-5"
+                                   placeholder="Digite o nome do artista ou banda..."
+                                   autocomplete="off"
+                                   autocorrect="off"
+                                   autocapitalize="off"
+                                   spellcheck="false"
+                                   oninput="window.debounceSearchArtista()"
+                                   onkeydown="window.handleKeyNavArtista(event)">
+                            <div id="artistaSpinner" class="spinner-border spinner-border-sm text-purple position-absolute end-0 top-50 translate-middle-y me-3 d-none"></div>
                         </div>
 
-                        <!-- Preview do Artista Selecionado -->
-                        <div id="artistPreview" th:class="${form.edicao ? 'd-flex flex-column mb-4 p-3 rounded-4 bg-darker border border-purple align-items-center gap-3 shadow text-center position-relative' : 'd-none mb-4 p-3 rounded-4 bg-darker border border-purple align-items-center gap-3 shadow text-center position-relative'}">
-                            <img id="previewCapa" th:src="${form.capaUrl != null and !form.capaUrl.isBlank() ? form.capaUrl : '/public/img/default-cover.png'}" class="rounded-circle shadow-lg mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #b268ff;">
-                            <h4 id="previewNome" class="fw-bold text-white mb-1" th:text="${form.nome}"></h4>
-                            <p id="previewBio" class="text-secondary small mb-0 px-3 overflow-hidden" th:text="${form.biografia}" style="max-height: 60px; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;"></p>
+                        <!-- Lista de Resultados -->
+                        <div id="artistaResults" class="d-flex flex-column gap-2 mt-3 overflow-auto" style="max-height: 280px;"></div>
+
+                        <!-- Card de Pré-visualização do Artista Selecionado -->
+                        <div id="artistPreviewCard" class="d-none mt-4 p-3 rounded-4 bg-dark border border-purple border-opacity-40 shadow">
+                            <div class="d-flex align-items-center gap-3">
+                                <img id="previewCapa" src="/public/img/default-cover.png" class="rounded-circle shadow" style="width: 80px; height: 80px; min-width: 80px; object-fit: cover; border: 3px solid #B57CFF;">
+                                <div class="overflow-hidden">
+                                    <div class="badge bg-purple rounded-pill px-2 py-1 mb-1 small fw-bold">Artista Selecionado</div>
+                                    <h5 id="previewNome" class="fw-bold text-white mb-0 text-truncate">Nome</h5>
+                                    <p id="previewBio" class="text-secondary small mb-0 text-truncate">Artista Oficial</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" th:action="${form.acao}">
+                        <!-- Card de Pré-visualização do Artista (Apenas na Edição) -->
+                        <div th:if="${form.edicao}" class="mb-4 p-3 rounded-4 bg-darker border border-purple border-opacity-40 shadow d-flex align-items-center gap-3">
+                            <img th:src="${form.capaUrl != null and !form.capaUrl.isBlank() ? form.capaUrl : '/public/img/default-cover.png'}" class="rounded-circle shadow" style="width: 80px; height: 80px; min-width: 80px; object-fit: cover; border: 3px solid #B57CFF;">
+                            <div class="overflow-hidden">
+                                <div class="badge bg-purple rounded-pill px-2.5 py-1 mb-1 small fw-bold">Artista</div>
+                                <h5 class="fw-bold text-white mb-0 text-truncate" th:text="${form.nome}">Nome</h5>
+                                <p class="text-secondary small mb-0 text-truncate" th:text="${form.biografia}">Artista Oficial</p>
+                            </div>
                         </div>
 
                         <!-- CAMPOS OCULTOS -->
                         <input type="hidden" id="nome" name="nome" th:value="${form.nome}">
                         <input type="hidden" id="capaUrl" name="capaUrl" th:value="${form.capaUrl}">
-                        <input type="hidden" id="biografia" name="biografia" th:value="${form.biografia}">
+                        <input type="hidden" id="generoMusical" name="generoMusical" th:value="${form.generoMusical}">
                         <input type="hidden" id="youtubeId" name="youtubeId" th:value="${form.youtubeId}">
 
-                        <!-- Avaliação por estrelas (1 a 5) -->
-                        <div class="mb-4 p-4 rounded-4 bg-darker border border-secondary border-opacity-20">
-                            <label class="form-label d-block text-white fw-bold"><i class="bi bi-star-fill text-warning me-2"></i>Sua Nota (1 a 5 estrelas)</label>
-                            <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
-                                <i class="bi bi-star star-btn text-warning" data-index="1"></i>
-                                <i class="bi bi-star star-btn text-warning" data-index="2"></i>
-                                <i class="bi bi-star star-btn text-warning" data-index="3"></i>
-                                <i class="bi bi-star star-btn text-warning" data-index="4"></i>
-                                <i class="bi bi-star star-btn text-warning" data-index="5"></i>
+                        <!-- OPINIÃO E AVALIAÇÃO (Apenas na edição) -->
+                        <div th:if="${form.edicao}" class="mb-4 p-4 rounded-4 bg-darker border border-secondary border-opacity-20">
+                            <h5 class="fw-bold text-purple mb-3"><i class="bi bi-chat-left-quote me-2"></i> Sua Opinião &amp; Avaliação</h5>
+
+                            <!-- 1. NOTA (Estrelas) -->
+                            <div class="mb-4">
+                                <label class="form-label d-block text-white fw-bold">Sua nota (1 a 5 estrelas)</label>
+                                <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
+                                    <i class="bi bi-star star-btn text-warning" data-index="1"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="2"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="3"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="4"></i>
+                                    <i class="bi bi-star star-btn text-warning" data-index="5"></i>
+                                </div>
+                                <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
                             </div>
-                            <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
+
+                            <!-- 2. RESENHA / ANOTAÇÕES -->
+                            <div class="mb-4">
+                                <label class="form-label text-purple font-monospace small uppercase fw-bold" for="biografia">Comentário / Resenha</label>
+                                <textarea class="form-control glass-search-input bg-dark text-white border-secondary p-3"
+                                          id="biografia"
+                                          name="biografia"
+                                          rows="3"
+                                          th:text="${form.biografia}"
+                                          placeholder="Escreva sobre o artista, suas músicas favoritas, impressões ou anotações..."></textarea>
+                            </div>
+
+                            <!-- 3. COMPARTILHAR COM A COMUNIDADE -->
+                            <div class="p-3 rounded-4 bg-dark border border-secondary border-opacity-20">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <label class="form-check-label fw-bold text-white mb-0" for="compartilharNaComunidade" style="cursor: pointer;">
+                                        Compartilhar com a Comunidade
+                                    </label>
+                                    <div class="form-check form-switch p-0 m-0">
+                                        <input class="custom-toggle-switch" type="checkbox" id="compartilharNaComunidade" name="compartilharNaComunidade">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- BOTÕES DE AÇÃO -->
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">
                             <a class="btn btn-outline-secondary rounded-pill px-4" href="/artistas">Cancelar</a>
                             <button class="btn-add-music-glow px-4" type="submit">
                                 <i class="bi bi-check-circle-fill me-1"></i>
-                                <span th:text="${form.edicao ? 'Salvar Alterações' : 'Cadastrar Artista'}">Cadastrar</span>
+                                <span th:text="${form.edicao ? 'Salvar Alterações' : 'Catalogar Artista'}">Catalogar Artista</span>
                             </button>
                         </div>
                     </form>
@@ -97,23 +153,24 @@
             </div>
         </div>
     </main>
+
     <script>
         (function() {
             let searchTimer = null;
             let itemsList = [];
             let activeIndex = -1;
 
-            window.debounceSearchYT = function(tipo) {
+            window.debounceSearchArtista = function() {
                 clearTimeout(searchTimer);
-                searchTimer = setTimeout(() => window.buscarYT(tipo), 250);
+                searchTimer = setTimeout(() => window.buscarArtista(), 250);
             };
 
-            window.handleKeyNav = function(e, tipo) {
-                const resultsDiv = document.getElementById('ytResults');
+            window.handleKeyNavArtista = function(e) {
+                const resultsDiv = document.getElementById('artistaResults');
                 if (!resultsDiv || itemsList.length === 0) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
-                        window.buscarYT(tipo);
+                        window.buscarArtista();
                     }
                     return;
                 }
@@ -121,41 +178,46 @@
                 if (e.key === 'ArrowDown') {
                     e.preventDefault();
                     activeIndex = (activeIndex + 1) % itemsList.length;
-                    updateHighlight();
+                    window.updateHighlightArtista();
                 } else if (e.key === 'ArrowUp') {
                     e.preventDefault();
                     activeIndex = (activeIndex - 1 + itemsList.length) % itemsList.length;
-                    updateHighlight();
+                    window.updateHighlightArtista();
                 } else if (e.key === 'Enter') {
                     e.preventDefault();
                     if (activeIndex >= 0 && activeIndex < itemsList.length) {
-                        window.selecionarItem(activeIndex);
+                        window.selecionarArtista(activeIndex);
                     } else {
-                        window.buscarYT(tipo);
+                        window.buscarArtista();
                     }
                 }
             };
 
-            function updateHighlight() {
-                const resultsDiv = document.getElementById('ytResults');
+            window.updateHighlightArtista = function() {
+                const resultsDiv = document.getElementById('artistaResults');
                 if (!resultsDiv) return;
-                const children = resultsDiv.querySelectorAll('.yt-result-item');
+                const children = resultsDiv.querySelectorAll('.artist-result-item');
                 children.forEach((child, idx) => {
                     if (idx === activeIndex) {
-                        child.classList.add('active-item');
+                        child.classList.add('active-artist-item');
                         child.scrollIntoView({ block: 'nearest' });
                     } else {
-                        child.classList.remove('active-item');
+                        child.classList.remove('active-artist-item');
                     }
                 });
             }
 
-            window.buscarYT = function(tipo) {
-                const queryInput = document.getElementById('ytQuery');
+            window.setHighlightArtista = function(idx) {
+                activeIndex = idx;
+                window.updateHighlightArtista();
+            };
+
+            window.buscarArtista = function() {
+                const queryInput = document.getElementById('artistaQuery');
                 if (!queryInput) return;
                 const query = queryInput.value.trim();
-                const resultsDiv = document.getElementById('ytResults');
-                const spinner = document.getElementById('ytSpinner');
+                const resultsDiv = document.getElementById('artistaResults');
+                const spinner = document.getElementById('artistaSpinner');
 
                 if (!query) {
                     if (resultsDiv) resultsDiv.innerHTML = '';
@@ -167,7 +229,7 @@
                 if (resultsDiv) resultsDiv.innerHTML = '';
                 activeIndex = -1;
 
-                fetch('/api/youtube/search?q=' + encodeURIComponent(query) + '&tipo=' + tipo)
+                fetch('/api/youtube/search?q=' + encodeURIComponent(query) + '&tipo=ARTISTA')
                     .then(r => r.json())
                     .then(data => {
                         if (spinner) spinner.classList.add('d-none');
@@ -175,25 +237,25 @@
                         activeIndex = -1;
                         if (!resultsDiv) return;
                         if (itemsList.length === 0) {
-                            resultsDiv.innerHTML = '<div class="text-secondary small p-2">Nenhum canal encontrado.</div>';
+                            resultsDiv.innerHTML = '<div class="text-secondary small p-3 bg-dark rounded border border-secondary border-opacity-20 text-center">Nenhum artista oficial encontrado. Tente refinar sua busca.</div>';
                             return;
                         }
                         resultsDiv.innerHTML = itemsList.map((item, idx) => `
-                            <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark border border-secondary cursor-pointer yt-result-item" data-index="${idx}" onclick="window.selecionarItem(${idx})">
-                                <div class="d-flex align-items-center gap-2">
-                                    <img src="${item.capaUrl || '/public/img/default-cover.png'}" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
-                                    <div>
-                                        <div class="fw-bold text-white small">${escapeHtml(item.titulo)}</div>
-                                        <div class="text-secondary extra-small">Canal Oficial</div>
+                            <div class="d-flex align-items-center justify-content-between p-2.5 rounded bg-dark border border-secondary border-opacity-25 cursor-pointer artist-result-item" data-index="${idx}" onclick="window.selecionarArtista(${idx})" onmouseenter="window.setHighlightArtista(${idx})">
+                                <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                    <img src="${item.capaUrl || '/public/img/default-cover.png'}" class="rounded-circle shadow-sm" style="width: 52px; height: 52px; min-width: 52px; object-fit: cover; border: 2px solid #B57CFF;">
+                                    <div class="overflow-hidden">
+                                        <div class="fw-bold text-white small text-truncate">${escapeHtml(item.titulo)}</div>
+                                        <div class="text-secondary extra-small text-truncate">${escapeHtml(item.descricao || 'Artista Oficial')}</div>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-sm btn-outline-purple">Preencher</button>
+                                <button type="button" class="btn btn-sm btn-outline-purple rounded-pill px-3 ms-2">Selecionar</button>
                             </div>
                         `).join('');
                     })
                     .catch(() => {
                         if (spinner) spinner.classList.add('d-none');
-                        if (resultsDiv) resultsDiv.innerHTML = '<div class="text-danger small p-2">Erro ao realizar a busca.</div>';
+                        if (resultsDiv) resultsDiv.innerHTML = '<div class="text-danger small p-3 text-center">Erro ao buscar artistas.</div>';
                     });
             };
 
@@ -201,39 +263,74 @@
                 return (text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
             }
 
-            window.selecionarItem = function(idx) {
+            window.selecionarArtista = function(idx) {
                 const item = itemsList[idx];
                 if (!item) return;
 
                 document.getElementById('nome').value = item.titulo;
                 document.getElementById('capaUrl').value = item.capaUrl || '';
-                document.getElementById('biografia').value = item.descricao || '';
-                
-                const ytId = document.getElementById('youtubeId');
-                if (ytId) ytId.value = item.youtubeId || '';
-                
-                // Preencher Preview
-                document.getElementById('previewCapa').src = item.capaUrl || '/public/img/default-cover.png';
-                document.getElementById('previewNome').innerText = item.titulo;
-                document.getElementById('previewBio').innerText = item.descricao || '';
-                
-                // Mostrar Preview e limpar busca
-                const preview = document.getElementById('artistPreview');
-                if (preview) {
-                    preview.classList.remove('d-none');
-                    preview.classList.add('d-flex');
-                    preview.classList.add('flex-column');
+                document.getElementById('youtubeId').value = item.youtubeId || '';
+                if (document.getElementById('nomeInput')) document.getElementById('nomeInput').value = item.titulo;
+
+                // Exibir Preview
+                const previewCard = document.getElementById('artistPreviewCard');
+                if (previewCard) {
+                    previewCard.classList.remove('d-none');
+                    document.getElementById('previewCapa').src = item.capaUrl || '/public/img/default-cover.png';
+                    document.getElementById('previewNome').textContent = item.titulo;
+                    document.getElementById('previewBio').textContent = item.descricao || 'Artista Oficial';
                 }
-                
-                document.getElementById('ytResults').innerHTML = '';
-                document.getElementById('ytQuery').value = item.titulo;
+
+                // Atualiza o campo de busca
+                document.getElementById('artistaQuery').value = item.titulo;
+
+                // Limpa resultados
+                document.getElementById('artistaResults').innerHTML = '';
                 activeIndex = -1;
             };
+
+
+
+            // Inicialização de estrelas interativas
+            const starContainers = document.querySelectorAll('.interactive-stars');
+            starContainers.forEach(container => {
+                const inputId = container.getAttribute('data-input');
+                const input = document.getElementById(inputId);
+                const initial = parseFloat(container.getAttribute('data-initial')) || 0;
+                const stars = container.querySelectorAll('.star-btn');
+
+                function renderStars(val) {
+                    stars.forEach((star, i) => {
+                        if (i + 1 <= val) {
+                            star.classList.remove('bi-star');
+                            star.classList.add('bi-star-fill');
+                        } else {
+                            star.classList.remove('bi-star-fill');
+                            star.classList.add('bi-star');
+                        }
+                    });
+                }
+
+                renderStars(initial);
+                stars.forEach(star => {
+                    star.addEventListener('mouseenter', function() { renderStars(parseInt(this.getAttribute('data-index'))); });
+                    star.addEventListener('click', function() {
+                        const val = parseInt(this.getAttribute('data-index'));
+                        input.value = val;
+                        container.setAttribute('data-initial', val);
+                        renderStars(val);
+                    });
+                });
+                container.addEventListener('mouseleave', function() {
+                    renderStars(parseFloat(container.getAttribute('data-initial')) || 0);
+                });
+            });
         })();
     </script>
 
 </div>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

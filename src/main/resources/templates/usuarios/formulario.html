@@ -97,7 +97,7 @@
                         <div class="card-body p-4">
                             <div class="alert alert-danger" th:if="${erro}" th:text="${erro}"></div>
 
-                            <form method="post" th:action="${acao}" hx-boost="false">
+                            <form method="post" th:action="${acao}">
                                 <div class="mb-3">
                                     <label class="form-label" for="nome_admin">Nome</label>
                                     <input class="form-control"
@@ -163,5 +163,34 @@
     </div>
 
     <div th:insert="~{fragments/player :: bottom-player}"></div>
+
+    <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                const selector = 'input:not([type="hidden"]):not([disabled]), button:not([disabled]), a:not([disabled])';
+                const focusables = Array.from(document.querySelectorAll(selector));
+                const index = focusables.indexOf(document.activeElement);
+                if (index !== -1) {
+                    e.preventDefault();
+                    const nextIndex = (index + (e.shiftKey ? -1 : 1) + focusables.length) % focusables.length;
+                    focusables[nextIndex].focus();
+                }
+            } else if (e.key === 'Enter') {
+                // If it's a textarea, let it handle Enter normally for linebreaks
+                if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') {
+                    return;
+                }
+                if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+                    const form = document.activeElement.closest('form');
+                    if (form) {
+                        e.preventDefault();
+                        if (form.reportValidity()) {
+                            form.submit();
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

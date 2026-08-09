@@ -182,7 +182,7 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-1">
-                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" hx-boost="false" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Post?', 'Tem certeza que deseja excluir esta publicação?');">
+                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Post?', 'Tem certeza que deseja excluir esta publicação?');">
                                     <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Excluir">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -194,7 +194,7 @@
 
                         <!-- Interações (Estrelar) -->
                         <div class="d-flex align-items-center gap-3 pt-3 border-top border-secondary border-opacity-10">
-                            <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" hx-boost="false" class="m-0">
+                            <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" class="m-0">
                                 <button type="submit" class="btn btn-sm rounded-pill px-3 d-flex align-items-center gap-1 btn-outline-purple" th:classappend="${post.estreladoPorMim} ? 'bg-purple text-white fw-bold' : ''">
                                     <i class="bi" th:classappend="${post.estreladoPorMim} ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
                                     <span th:text="${post.qtdEstrelas}"></span>
@@ -210,7 +210,7 @@
                 <div class="music-card-cyber p-4 p-md-5">
                     <h4 class="text-white fw-bold mb-4">Atualizar Dados do Perfil</h4>
 
-                    <form method="post" action="/usuarios/me" hx-boost="false">
+                    <form method="post" action="/usuarios/me">
                         <!-- URL da Foto -->
                         <div class="mb-4">
                             <label class="form-label text-purple font-monospace small uppercase fw-bold" for="fotoUrl">URL da Foto de Perfil</label>

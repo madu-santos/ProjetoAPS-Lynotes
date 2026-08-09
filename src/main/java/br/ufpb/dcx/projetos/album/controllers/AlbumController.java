@@ -17,11 +17,11 @@ import java.util.Objects;
 
 public final class AlbumController {
 
-    public static final String ROTA_LISTAGEM = "/albums";
-    public static final String ROTA_NOVO = "/albums/novo";
-    public static final String ROTA_EDICAO = "/albums/{id}/editar";
-    public static final String ROTA_ATUALIZACAO = "/albums/{id}";
-    public static final String ROTA_EXCLUSAO = "/albums/{id}/excluir";
+    public static final String ROTA_LISTAGEM = "/albuns";
+    public static final String ROTA_NOVO = "/albuns/novo";
+    public static final String ROTA_EDICAO = "/albuns/{id}/editar";
+    public static final String ROTA_ATUALIZACAO = "/albuns/{id}";
+    public static final String ROTA_EXCLUSAO = "/albuns/{id}/excluir";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AlbumController.class);
 
@@ -114,7 +114,7 @@ public final class AlbumController {
             
             String compartilhar = ctx.formParam("compartilharNaComunidade");
             if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
-                String opiniao = ctx.formParam("opiniaoComunidade");
+                String opiniao = dto.resenha();
                 if (opiniao == null) {
                     opiniao = "";
                 }
@@ -177,7 +177,7 @@ public final class AlbumController {
             
             String compartilhar = ctx.formParam("compartilharNaComunidade");
             if (comunidadeService != null && ("on".equals(compartilhar) || "true".equals(compartilhar))) {
-                String opiniao = ctx.formParam("opiniaoComunidade");
+                String opiniao = dto.resenha();
                 if (opiniao == null) {
                     opiniao = "";
                 }
@@ -210,7 +210,7 @@ public final class AlbumController {
         if (musicaService != null) {
             musicaService.alternarOculta(faixaId, usuarioId);
         }
-        ctx.redirect("/albums/" + albumId, HttpStatus.SEE_OTHER);
+        ctx.redirect("/albuns/" + albumId, HttpStatus.SEE_OTHER);
     }
 
     private AlbumDTO extrairFormulario(Context ctx) {
@@ -238,6 +238,22 @@ public final class AlbumController {
     }
 
     private void redirecionarParaListagem(Context ctx) {
+        String targetUrl = ctx.header("HX-Current-URL");
+        if (targetUrl == null || targetUrl.isBlank()) {
+            targetUrl = ctx.header("Referer");
+        }
+        if (targetUrl != null && !targetUrl.isBlank()) {
+            try {
+                java.net.URI uri = java.net.URI.create(targetUrl);
+                String path = uri.getPath();
+                if (path != null && (path.equals(ROTA_LISTAGEM) || path.equals("/"))) {
+                    String query = uri.getQuery();
+                    String finalTarget = path + (query != null && !query.isBlank() ? "?" + query : "");
+                    ctx.redirect(finalTarget, HttpStatus.SEE_OTHER);
+                    return;
+                }
+            } catch (Exception ignored) {}
+        }
         ctx.redirect(ROTA_LISTAGEM, HttpStatus.SEE_OTHER);
     }
 }

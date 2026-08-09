@@ -77,9 +77,9 @@
                     <!-- Botões de Ação de Edição / Exclusão -->
                     <div class="pt-3 border-top border-secondary border-opacity-10 mt-3 d-flex justify-content-center gap-2">
                         <a class="btn btn-outline-purple btn-sm px-3 rounded-pill" th:href="${'/artistas/' + artista.id + '/editar'}">
-                            <i class="bi bi-star-fill me-1"></i> Avaliar
+                            <i class="bi bi-pencil-square me-1"></i> Editar
                         </a>
-                        <form method="post" th:action="${'/artistas/' + artista.id + '/excluir'}" th:data-nome="${artista.nome}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Artista?', 'Tem certeza que deseja excluir o artista &quot;' + this.getAttribute('data-nome') + '&quot;?', false, event);" hx-boost="false" class="m-0">
+                        <form method="post" th:action="${'/artistas/' + artista.id + '/excluir'}" th:data-nome="${artista.nome}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Artista?', 'Tem certeza que deseja excluir o artista &quot;' + this.getAttribute('data-nome') + '&quot;?', false, event);" class="m-0">
                             <button class="btn btn-outline-danger btn-sm px-3 rounded-pill" type="submit">
                                 <i class="bi bi-trash-fill me-1"></i> Excluir
                             </button>

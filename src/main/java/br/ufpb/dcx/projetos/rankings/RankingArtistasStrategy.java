@@ -8,7 +8,6 @@ import br.ufpb.dcx.projetos.musica.models.Musica;
 import br.ufpb.dcx.projetos.musica.services.MusicaService;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RankingArtistasStrategy implements RankingStrategy {
 
@@ -32,45 +31,55 @@ public class RankingArtistasStrategy implements RankingStrategy {
         List<Musica> musicas = musicaService != null ? musicaService.findAll() : Collections.emptyList();
         List<Album> albuns = albumService != null ? albumService.findAllGlobal() : Collections.emptyList();
 
+        // Filtra apenas perfis de artistas válidos (eliminando tópicos do YouTube e canais não musicais)
+        List<Artista> perfisArtistasValidos = artistas.stream()
+                .filter(a -> a.getNome() != null && !a.getNome().isBlank())
+                .filter(a -> isNomeArtistaValido(a.getNome()))
+                .toList();
+
+        if (perfisArtistasValidos.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Mapeia artistas por chave normalizada (ex: "lady gaga" -> Artista)
+        Map<String, Artista> artistaPorNome = new HashMap<>();
         Map<String, Set<String>> ouvintesPorArtista = new HashMap<>();
 
-        for (Artista a : artistas) {
-            if (a.getNome() != null && !a.getNome().isBlank() && a.getUsuarioId() != null) {
-                String key = a.getNome().trim().toLowerCase();
-                if (isNomeArtistaValido(key)) {
-                    ouvintesPorArtista.computeIfAbsent(key, k -> new HashSet<>()).add(a.getUsuarioId());
-                }
+        for (Artista a : perfisArtistasValidos) {
+            String cleanName = limparNomeArtista(a.getNome());
+            if (!isNomeArtistaValido(cleanName)) {
+                continue;
+            }
+            String key = cleanName.toLowerCase();
+            artistaPorNome.putIfAbsent(key, a);
+            ouvintesPorArtista.computeIfAbsent(key, k -> new HashSet<>());
+            if (a.getUsuarioId() != null) {
+                ouvintesPorArtista.get(key).add(a.getUsuarioId());
             }
         }
 
+        // Contabiliza ouvintes das músicas cadastradas associadas aos perfis de artistas válidos
         for (Musica m : musicas) {
             if (m.getArtista() != null && !m.getArtista().isBlank() && m.getUsuarioId() != null) {
-                String key = m.getArtista().trim().toLowerCase();
-                if (isNomeArtistaValido(key)) {
-                    ouvintesPorArtista.computeIfAbsent(key, k -> new HashSet<>()).add(m.getUsuarioId());
+                String cleanMusicArtist = limparNomeArtista(m.getArtista()).toLowerCase();
+                if (ouvintesPorArtista.containsKey(cleanMusicArtist)) {
+                    ouvintesPorArtista.get(cleanMusicArtist).add(m.getUsuarioId());
                 }
             }
         }
 
+        // Contabiliza ouvintes dos álbuns cadastrados associados aos perfis de artistas válidos
         for (Album alb : albuns) {
             if (alb.getArtista() != null && !alb.getArtista().isBlank() && alb.getUsuarioId() != null) {
-                String key = alb.getArtista().trim().toLowerCase();
-                if (isNomeArtistaValido(key)) {
-                    ouvintesPorArtista.computeIfAbsent(key, k -> new HashSet<>()).add(alb.getUsuarioId());
+                String cleanAlbumArtist = limparNomeArtista(alb.getArtista()).toLowerCase();
+                if (ouvintesPorArtista.containsKey(cleanAlbumArtist)) {
+                    ouvintesPorArtista.get(cleanAlbumArtist).add(alb.getUsuarioId());
                 }
             }
         }
 
-        Map<String, Artista> artistaPorNome = artistas.stream()
-                .filter(a -> a.getNome() != null && !a.getNome().isBlank())
-                .collect(Collectors.toMap(
-                        a -> a.getNome().trim().toLowerCase(),
-                        a -> a,
-                        (a1, a2) -> a1
-                ));
-
+        // Ordena por quantidade de ouvintes decrescente
         List<Map.Entry<String, Set<String>>> ordenados = ouvintesPorArtista.entrySet().stream()
-                .filter(e -> isNomeArtistaValido(e.getKey()))
                 .sorted((e1, e2) -> Integer.compare(e2.getValue().size(), e1.getValue().size()))
                 .toList();
 
@@ -78,16 +87,18 @@ public class RankingArtistasStrategy implements RankingStrategy {
         int rank = 1;
         for (Map.Entry<String, Set<String>> entry : ordenados) {
             String nomeMinusculo = entry.getKey();
-            int totalOuvintes = entry.getValue().size();
-
             Artista art = artistaPorNome.get(nomeMinusculo);
-            String nomeExibicao = art != null ? art.getNome() : formatarNome(nomeMinusculo);
-            String capaUrl = art != null ? art.getCapaUrl() : null;
-            String id = art != null ? art.getId() : UUID.randomUUID().toString();
+            if (art == null) {
+                continue;
+            }
+
+            int totalOuvintes = entry.getValue().size();
+            String nomeExibicao = art.getNome();
+            String capaUrl = art.getCapaUrl();
 
             if (capaUrl == null || capaUrl.isBlank()) {
                 capaUrl = musicas.stream()
-                        .filter(m -> m.getArtista() != null && m.getArtista().trim().toLowerCase().equals(nomeMinusculo))
+                        .filter(m -> m.getArtista() != null && limparNomeArtista(m.getArtista()).equalsIgnoreCase(nomeMinusculo))
                         .map(Musica::getCapaUrl)
                         .filter(url -> url != null && !url.isBlank())
                         .findFirst()
@@ -103,7 +114,7 @@ public class RankingArtistasStrategy implements RankingStrategy {
             String subtitulo = totalOuvintes + (totalOuvintes == 1 ? " ouvinte" : " ouvintes");
 
             ranking.add(new RankingItemDTO(
-                    id,
+                    art.getId(),
                     nomeExibicao,
                     subtitulo,
                     (double) totalOuvintes,
@@ -118,10 +129,21 @@ public class RankingArtistasStrategy implements RankingStrategy {
         return ranking;
     }
 
+    public static String limparNomeArtista(String nome) {
+        if (nome == null || nome.isBlank()) return "";
+        String limpo = nome.trim();
+        limpo = limpo.replaceAll("(?i)\\s*-\\s*(topic|tópico|tema)\\b", "");
+        limpo = limpo.replaceAll("(?i)\\s+(topic|tópico|tema)$", "");
+        limpo = limpo.replaceAll("(?i)\\s*-\\s*vevo\\b", "");
+        limpo = limpo.replaceAll("(?i)\\s+vevo$", "");
+        return limpo.trim();
+    }
+
     private boolean isNomeArtistaValido(String name) {
         if (name == null || name.isBlank()) return false;
         String lower = name.trim().toLowerCase();
-        if (lower.contains("- topic") || lower.contains("topic -") || lower.endsWith(" topic") || lower.startsWith("topic ") ||
+        if (lower.equals("topic") || lower.equals("tópico") || lower.equals("tema") || lower.equals("vevo") ||
+            lower.contains("- topic") || lower.contains("topic -") || lower.endsWith(" topic") || lower.startsWith("topic ") ||
             lower.contains("- tema") || lower.contains("tema -") || lower.endsWith(" tema") || lower.startsWith("tema ") ||
             lower.contains("tópico") || lower.contains("vevo") || lower.contains("full album") ||
             lower.contains("- single") || lower.endsWith(" single") || lower.contains("http") ||
@@ -134,12 +156,4 @@ public class RankingArtistasStrategy implements RankingStrategy {
         }
         return true;
     }
-
-    private String formatarNome(String nome) {
-        if (nome == null || nome.isEmpty()) return "";
-        return Arrays.stream(nome.split("\\s+"))
-                .map(w -> !w.isEmpty() ? Character.toUpperCase(w.charAt(0)) + w.substring(1) : "")
-                .collect(Collectors.joining(" "));
-    }
 }
-

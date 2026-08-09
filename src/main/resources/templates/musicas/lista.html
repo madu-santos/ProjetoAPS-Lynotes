@@ -28,7 +28,7 @@
                 <h1 class="glowing-title-library mb-1">Suas Músicas</h1>
                 <p class="text-secondary mb-0">Explore e reproduza suas músicas e playlists salvas.</p>
             </div>
-            <a class="btn-add-music-glow" href="/musicas/new" hx-boost="false">
+            <a class="btn-add-music-glow" href="/musicas/new">
                 <i class="bi bi-plus-circle-fill fs-5"></i> Adicionar Nova
             </a>
         </div>
@@ -124,7 +124,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <form th:action="${'/musicas/' + musica.id + '/excluir'}" method="post" th:data-titulo="${musica.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Música?', 'Tem certeza que deseja excluir a música &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);" hx-boost="false">
+                                            <form th:action="${'/musicas/' + musica.id + '/excluir'}" method="post" th:data-titulo="${musica.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Música?', 'Tem certeza que deseja excluir a música &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);">
                                                 <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
                                             </form>
                                         </li>
@@ -187,7 +187,7 @@
                 <div class="col" th:each="playlist : ${playlists}">
                     <div class="music-card-cyber p-3 h-100 d-flex flex-column justify-content-between position-relative"
                          th:data-href="${'/playlists/' + playlist.id}"
-                         onclick="if(!event.target.closest('button, a, input, select, form, ul, li')) window.location.href=this.getAttribute('data-href');"
+                         onclick="if(!event.target.closest('button, a, input, select, form, ul, li')) { if(window.htmx) htmx.ajax('GET', this.getAttribute('data-href'), {target: '#app-content', select: '#app-content', pushUrl: true}); else window.location.href=this.getAttribute('data-href'); }"
                          style="cursor: pointer;">
                         <div>
                             <!-- Capa da Playlist (Grid 2x2 ou Nota Musical se vazia) -->
@@ -217,7 +217,7 @@
                             </div>
                             
                             <h6 class="fw-bold text-white mb-1 text-truncate" th:text="${playlist.nome}"></h6>
-                            <span class="badge bg-purple rounded-pill px-2 py-0.5 mb-2" style="font-size: 0.65rem;" th:if="${playlist.oculta}">Oculta</span>
+                            <span class="badge bg-purple rounded-pill px-2 py-0.5 mb-2" style="font-size: 0.65rem;" th:if="${playlist.oculta and playlist.nome != 'Músicas Catalogadas' and playlist.nome != 'Músicas do seu catálogo'}">Oculta</span>
                         </div>
 
                         <div class="pt-2 border-top border-secondary border-opacity-10 mt-2">
@@ -258,7 +258,6 @@
                                                   th:action="${'/playlists/' + playlist.id + '/excluir'}" 
                                                   th:data-nome="${playlist.nome}"
                                                   onsubmit="return confirmarExclusaoCustom(this, 'Excluir Playlist?', 'Tem certeza que deseja excluir a playlist &quot;' + this.getAttribute('data-nome') + '&quot;?', false, event);"
-                                                  hx-boost="false" 
                                                   class="m-0">
                                                 <button type="submit" class="dropdown-item text-danger">
                                                     <i class="bi bi-trash me-2"></i>Excluir
@@ -391,7 +390,7 @@ function abrirModalNovaPlaylist(btnOrUrl) {
                 document.body.appendChild(form);
                 form.submit();
             } else {
-                window.location.reload();
+                if (window.htmx) htmx.ajax('GET', window.location.pathname + window.location.search, {target: '#app-content', select: '#app-content'}); else window.location.reload();
             }
         } else {
             btnSubmit.disabled = false;

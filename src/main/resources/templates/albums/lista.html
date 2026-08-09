@@ -19,7 +19,7 @@
 <body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
 
-    <div th:insert="~{fragments/navbar :: navbar('albums')}"></div>
+    <div th:insert="~{fragments/navbar :: navbar('albuns')}"></div>
 
     <main class="spotify-main container py-5">
         <!-- Header Top Bar -->
@@ -28,13 +28,13 @@
                 <h1 class="glowing-title-library mb-1">Álbuns</h1>
                 <p class="text-secondary mb-0">Cadastre e explore os álbuns do acervo musical.</p>
             </div>
-            <a class="btn-add-music-glow" href="/albums/novo">
+            <a class="btn-add-music-glow" href="/albuns/novo">
                 <i class="bi bi-plus-circle-fill fs-5"></i> Novo Álbum
             </a>
         </div>
 
         <!-- Glassmorphism Search Bar -->
-        <form class="glass-search-box p-2 mb-5 d-flex align-items-center gap-2" method="get" action="/albums">
+        <form class="glass-search-box p-2 mb-5 d-flex align-items-center gap-2" method="get" action="/albuns">
             <i class="bi bi-search text-purple fs-5 ms-3"></i>
             <input class="form-control glass-search-input pe-3"
                    name="busca"
@@ -44,7 +44,7 @@
                    autocorrect="off"
                    autocapitalize="off"
                    spellcheck="false">
-            <a th:if="${buscaAtiva}" class="text-secondary small me-2 text-decoration-none" href="/albums">Limpar</a>
+            <a th:if="${buscaAtiva}" class="text-secondary small me-2 text-decoration-none" href="/albuns">Limpar</a>
             <button class="glass-search-btn" type="submit">Buscar</button>
         </form>
 
@@ -64,7 +64,7 @@
                 <div class="music-card-cyber p-3 h-100 d-flex flex-column justify-content-between">
                     <div>
                         <!-- Capa clicável -->
-                        <a th:href="${'/albums/' + album.id}" class="text-decoration-none d-block">
+                        <a th:href="${'/albuns/' + album.id}" class="text-decoration-none d-block">
                             <div class="music-card-cover-container mb-3 position-relative">
                                 <img th:if="${album.capaUrl != null and !album.capaUrl.isBlank()}" th:src="${album.capaUrl}" class="music-card-cover" alt="Capa do Álbum">
                                 <div th:unless="${album.capaUrl != null and !album.capaUrl.isBlank()}" class="w-100 h-100 d-flex align-items-center justify-content-center bg-dark text-secondary">
@@ -102,12 +102,12 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end bg-darker border-secondary shadow">
                                         <li>
-                                            <a class="dropdown-item text-purple fw-bold" th:href="${'/albums/' + album.id + '/editar'}">
+                                             <a class="dropdown-item text-purple fw-bold" th:href="${'/albuns/' + album.id + '/editar'}">
                                                 <i class="bi bi-star-fill me-2"></i>Avaliar
                                             </a>
                                         </li>
                                         <li>
-                                            <form th:action="${'/albums/' + album.id + '/excluir'}" method="post" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);" hx-boost="false">
+                                            <form th:action="${'/albuns/' + album.id + '/excluir'}" method="post" th:data-titulo="${album.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Álbum?', 'Tem certeza que deseja excluir o álbum &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);">
                                                 <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
                                             </form>
                                         </li>

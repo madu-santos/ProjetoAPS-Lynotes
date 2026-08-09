@@ -429,12 +429,22 @@ public final class UsuarioController {
     }
 
     private void exibirRecuperacao(Context ctx) {
+        try {
+            if (ctx.req().getSession(false) != null) {
+                ctx.req().getSession().invalidate();
+            }
+        } catch (Exception ignored) {}
         Map<String, Object> modelo = new HashMap<>();
         modelo.put("step", 1);
         ctx.render("recuperacao", modelo);
     }
 
     private void solicitarRecuperacao(Context ctx) {
+        try {
+            if (ctx.req().getSession(false) != null) {
+                ctx.req().getSession().invalidate();
+            }
+        } catch (Exception ignored) {}
         String email = ctx.formParam("email");
         Map<String, Object> modelo = new HashMap<>();
         try {

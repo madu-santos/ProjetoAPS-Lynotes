@@ -36,6 +36,9 @@ public final class PlaylistController {
 
     public void listar(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
+        if (musicaService != null) {
+            service.sincronizarMusicasCatalogadas(usuarioId, musicaService.findByUsuarioId(usuarioId));
+        }
         String busca = ctx.queryParam("busca");
         java.util.List<Playlist> playlists = service.search(busca, usuarioId);
         
@@ -193,6 +196,9 @@ public final class PlaylistController {
     public void exibirPlaylist(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
+        if (musicaService != null) {
+            service.sincronizarMusicasCatalogadas(usuarioId, musicaService.findByUsuarioId(usuarioId));
+        }
         PlaylistWithItems playlist = service.findPlaylistWithItems(playlistId, usuarioId);
 
         Map<String, Object> modelo = new HashMap<>();
@@ -239,10 +245,17 @@ public final class PlaylistController {
                 } catch (Exception ignored) {}
             }
 
-            if (musicaService != null && youtubeId != null && !youtubeId.isBlank()) {
+            if (musicaService != null) {
                 final String finalYtId = youtubeId;
+                final String finalTitulo = titulo;
+                final String finalArtista = artista;
+
                 var musicaExistente = musicaService.findByUsuarioId(usuarioId).stream()
-                        .filter(m -> finalYtId.equals(m.getYoutubeId()))
+                        .filter(m -> (finalYtId != null && finalYtId.equals(m.getYoutubeId())) ||
+                                (finalTitulo != null && finalArtista != null &&
+                                 m.getTitulo() != null && m.getArtista() != null &&
+                                 m.getTitulo().trim().equalsIgnoreCase(finalTitulo.trim()) &&
+                                 m.getArtista().trim().equalsIgnoreCase(finalArtista.trim())))
                         .findFirst();
 
                 if (musicaExistente.isPresent()) {
@@ -389,10 +402,13 @@ public final class PlaylistController {
     public void obterPlaylistJson(Context ctx) {
         String usuarioId = ctx.sessionAttribute("usuarioLogadoId");
         String playlistId = ctx.pathParam("id");
+        if (musicaService != null) {
+            service.sincronizarMusicasCatalogadas(usuarioId, musicaService.findByUsuarioId(usuarioId));
+        }
         PlaylistWithItems playlist = service.findPlaylistWithItems(playlistId, usuarioId);
         Map<String, Object> payload = new HashMap<>();
         payload.put("playlist", playlist.getPlaylist());
-        payload.put("items", playlist.getItems());
+        payload.put("items", mapToViews(playlist.getItems(), usuarioId));
         ctx.json(payload);
     }
 

@@ -64,10 +64,10 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
-                                <form th:action="@{'/comunidade/pedidos/' + ${pedido.id} + '/aceitar'}" method="post" hx-boost="false" class="m-0">
+                                <form th:action="@{'/comunidade/pedidos/' + ${pedido.id} + '/aceitar'}" method="post" class="m-0">
                                     <button type="submit" class="btn btn-purple btn-sm rounded-pill px-3 py-1" style="font-size: 0.72rem;">Seguir de Volta</button>
                                 </form>
-                                <form th:action="@{'/comunidade/pedidos/' + ${pedido.id} + '/recusar'}" method="post" hx-boost="false" class="m-0">
+                                <form th:action="@{'/comunidade/pedidos/' + ${pedido.id} + '/recusar'}" method="post" class="m-0">
                                     <button type="submit" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1" style="font-size: 0.72rem;">Dispensar</button>
                                 </form>
                             </div>
@@ -217,12 +217,12 @@
                                         </button>
                                     </div>
                                     <div th:unless="${usuarioLogadoId == post.usuarioId}">
-                                        <form th:if="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/deseguir/' + ${post.usuarioId}}" method="post" hx-boost="false" class="m-0">
+                                        <form th:if="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/deseguir/' + ${post.usuarioId}}" method="post" class="m-0">
                                             <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1" style="font-size: 0.8rem;" type="submit">
                                                 <i class="bi bi-person-x-fill me-1"></i> Deseguir
                                             </button>
                                         </form>
-                                        <form th:unless="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/seguir/' + ${post.usuarioId}}" method="post" hx-boost="false" class="m-0">
+                                        <form th:unless="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/seguir/' + ${post.usuarioId}}" method="post" class="m-0">
                                             <button class="btn btn-sm btn-outline-purple rounded-pill px-3 py-1" style="font-size: 0.8rem;" type="submit">
                                                 <i class="bi bi-person-plus-fill me-1"></i> Seguir
                                             </button>
@@ -301,10 +301,10 @@
                                         </div>
                                     </div>
                                     <div class="flex-shrink-0">
-                                        <form th:if="${seguindoIds != null and seguindoIds.contains(user.id)}" th:action="@{'/comunidade/deseguir/' + ${user.id}}" method="post" hx-boost="false" class="m-0">
+                                        <form th:if="${seguindoIds != null and seguindoIds.contains(user.id)}" th:action="@{'/comunidade/deseguir/' + ${user.id}}" method="post" class="m-0">
                                             <button class="btn btn-outline-danger btn-sm rounded-pill px-2 py-0.5" style="font-size: 0.72rem;" type="submit">Deseguir</button>
                                         </form>
-                                        <form th:unless="${seguindoIds != null and seguindoIds.contains(user.id)}" th:action="@{'/comunidade/seguir/' + ${user.id}}" method="post" hx-boost="false" class="m-0">
+                                        <form th:unless="${seguindoIds != null and seguindoIds.contains(user.id)}" th:action="@{'/comunidade/seguir/' + ${user.id}}" method="post" class="m-0">
                                             <button class="btn btn-outline-purple btn-sm rounded-pill px-3 py-0.5" style="font-size: 0.72rem;" type="submit">Seguir</button>
                                         </form>
                                     </div>

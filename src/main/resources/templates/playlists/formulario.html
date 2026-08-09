@@ -32,7 +32,7 @@
 
                     <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
 
-                    <form method="post" th:action="${acao}" hx-boost="false">
+                    <form method="post" th:action="${acao}">
                         <!-- Nome da Playlist -->
                         <div class="mb-4">
                             <label class="form-label text-purple font-monospace small uppercase fw-bold" for="nome">Nome da Playlist</label>
@@ -124,7 +124,7 @@
 
                     if (res.ok) {
                         const playlist = await res.json();
-                        window.location.href = '/playlists/' + playlist.id;
+                        if (window.htmx) htmx.ajax('GET', '/playlists/' + playlist.id, {target: '#app-content', select: '#app-content', pushUrl: true}); else window.location.href = '/playlists/' + playlist.id;
                     } else {
                         btnSubmit.disabled = false;
                         btnSubmit.innerHTML = originalText;

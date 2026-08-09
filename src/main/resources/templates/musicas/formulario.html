@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${form.edicao ? 'Editar Música - Lynotes' : 'Catalogar Música - Lynotes'}">Música - Lynotes</title>
+    <title th:text="${form.edicao ? 'Editar Música - Lynotes' : 'Novo Música - Lynotes'}">Música - Lynotes</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
     <!-- Fonte Plus Jakarta Sans -->
@@ -18,6 +18,16 @@
 </head>
 <body hx-boost="true" hx-select="#app-content" hx-target="#app-content" class="library-bg text-white">
 <div id="app-content">
+    <style>
+        .yt-result-item {
+            transition: all 0.2s ease;
+        }
+        .yt-result-item:hover, .active-item {
+            background-color: rgba(181, 124, 255, 0.15) !important;
+            border-color: #B57CFF !important;
+            transform: translateX(4px);
+        }
+    </style>
 
     <div th:insert="~{fragments/navbar :: navbar('musicas')}"></div>
 
@@ -28,63 +38,77 @@
                 <!-- Card Cyberpunk do Formulário -->
                 <div class="music-card-cyber p-4 p-md-5">
                     <div class="mb-4">
-                        <h2 class="glowing-title-library mb-1" th:text="${form.edicao ? 'Editar Música' : 'Catalogar Música'}">Catalogar Música</h2>
-                        <p class="text-secondary mb-0">Pesquise no YouTube ou preencha as informações para adicionar ao seu acervo.</p>
+                        <h2 class="glowing-title-library mb-1" th:text="${form.edicao ? 'Editar Música' : 'Novo Música'}">Novo Música</h2>
+                        <p class="text-secondary mb-0">Cadastre ou edite as informações de uma música no seu acervo.</p>
+                    </div>
+
+                    <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
+
+                    <!-- BUSCA DINÂMICA DE MÚSICAS E ARTISTAS (Apenas no cadastro) -->
+                    <div th:unless="${form.edicao}" class="mb-5 p-4 rounded-4 bg-darker border border-secondary border-opacity-30 position-relative shadow-sm">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-music-note-beamed text-purple fs-4"></i>
+                            <h4 class="fw-bold text-white mb-0">Buscar Música</h4>
+                        </div>
+                        <p class="text-secondary small mb-3">Pesquise pelo <strong>nome da música</strong> ou pelo <strong>nome do artista</strong> (ex: Bohemian Rhapsody, Queen) para carregar os dados da música.</p>
+                        
+                        <div class="position-relative">
+                            <input type="text"
+                                   id="ytQuery"
+                                   class="form-control glass-search-input bg-dark text-white border-secondary p-3 pe-5"
+                                   placeholder="Digite o nome da música ou artista..."
+                                   autocomplete="off"
+                                   autocorrect="off"
+                                   autocapitalize="off"
+                                   spellcheck="false"
+                                   oninput="window.debounceSearchYT('MUSICA')"
+                                   onkeydown="window.handleKeyNav(event, 'MUSICA')">
+                            <div id="ytSpinner" class="spinner-border spinner-border-sm text-purple position-absolute end-0 top-50 translate-middle-y me-3 d-none"></div>
+                        </div>
+
+                        <!-- Lista de Resultados -->
+                        <div id="ytResults" class="d-flex flex-column gap-2 mt-3 overflow-auto" style="max-height: 280px;"></div>
+
+                        <!-- Card de Pré-visualização da Música Selecionada -->
+                        <div id="mediaPreview" class="d-none mt-4 p-3 rounded-4 bg-dark border border-purple border-opacity-40 shadow">
+                            <div class="d-flex align-items-center gap-3">
+                                <img id="previewCapa" src="/public/img/default-cover.png" class="rounded-3 shadow" style="width: 80px; height: 80px; min-width: 80px; object-fit: cover;">
+                                <div class="overflow-hidden">
+                                    <div class="badge bg-purple rounded-pill px-2.5 py-1 mb-1 small fw-bold">Música Selecionada</div>
+                                    <h5 id="previewTitulo" class="fw-bold text-white mb-0 text-truncate">Título</h5>
+                                    <p id="previewArtista" class="text-secondary small mb-0 text-truncate">Artista</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <form method="post" th:action="${form.acao}" id="formMusica" onsubmit="return handleFormMusicaSubmit(event, this);">
-
-                        <!-- Pesquisa no YouTube (Criar) -->
-                        <div th:if="${!form.edicao}" class="mb-4 p-4 rounded-4 border border-purple bg-darker shadow">
-                            <label class="form-label text-purple font-monospace small uppercase fw-bold mb-2" for="ytQuery">
-                                <i class="bi bi-youtube text-danger me-1"></i> Pesquisar Música no YouTube
-                            </label>
-                            <div class="position-relative">
-                                <input type="text" id="ytQuery" class="form-control glass-search-input bg-dark text-white border-secondary pe-5" placeholder="Digite o nome da música ou cole a URL do YouTube..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="window.debounceSearchYT('MUSICA')" onkeydown="window.handleKeyNav(event, 'MUSICA')">
-                                <button type="button" class="btn text-purple position-absolute top-50 end-0 translate-middle-y me-2 p-1 border-0" onclick="window.buscarYT('MUSICA')" title="Buscar no YouTube">
-                                    <i class="bi bi-search fs-5 text-purple"></i>
-                                </button>
-                            </div>
-
-                            <!-- Spinner -->
-                            <div id="ytSpinner" class="text-center py-3 d-none">
-                                <div class="spinner-border spinner-border-sm text-purple" role="status"></div>
-                                <span class="text-secondary small ms-2">Buscando no YouTube...</span>
-                            </div>
-
-                            <!-- Resultados -->
-                            <div id="ytResults" class="d-flex flex-column gap-2 mt-3 overflow-auto" style="max-height: 250px;"></div>
-                        </div>
-
-                        <!-- Card Preview da Mídia Selecionada -->
-                        <div id="mediaPreview" class="d-none mb-4 p-3 rounded-4 bg-darker border border-purple align-items-center gap-3 shadow">
-                            <img id="previewCapa" src="" class="rounded-3 shadow" style="width: 72px; height: 72px; object-fit: cover;">
-                            <div>
-                                <h6 id="previewTitulo" class="fw-bold text-white mb-1"></h6>
-                                <p id="previewArtista" class="text-secondary small mb-0"></p>
+                        
+                        <!-- Card de Pré-visualização da Música (Apenas na Edição) -->
+                        <div th:if="${form.edicao}" class="mb-4 p-3 rounded-4 bg-darker border border-purple border-opacity-40 shadow d-flex align-items-center gap-3">
+                            <img th:src="${form.capaUrl != null and !form.capaUrl.isBlank() ? form.capaUrl : '/public/img/default-cover.png'}" class="rounded-3 shadow" style="width: 80px; height: 80px; min-width: 80px; object-fit: cover;">
+                            <div class="overflow-hidden">
+                                <div class="badge bg-purple rounded-pill px-2.5 py-1 mb-1 small fw-bold">Música</div>
+                                <h5 class="fw-bold text-white mb-0 text-truncate" th:text="${form.titulo}">Título</h5>
+                                <p class="text-secondary small mb-0 text-truncate" th:text="${form.artista}">Artista</p>
                             </div>
                         </div>
 
                         <!-- CAMPOS OCULTOS -->
                         <input type="hidden" id="titulo" name="titulo" th:value="${form.titulo}">
                         <input type="hidden" id="artista" name="artista" th:value="${form.artista}">
+                        <input type="hidden" id="capaUrl" name="capaUrl" th:value="${form.capaUrl}">
                         <input type="hidden" id="duracaoSegundos" name="duracaoSegundos" th:value="${form.duracaoSegundos}">
                         <input type="hidden" id="youtubeUrl" name="youtubeUrl" th:value="${form.youtubeUrl}">
                         <input type="hidden" id="youtubeId" name="youtubeId" th:value="${form.youtubeId}">
-                        <input type="hidden" id="capaUrl" name="capaUrl" th:value="${form.capaUrl}">
                         <input type="hidden" id="novaPlaylistNome" name="novaPlaylistNome" th:value="${form.novaPlaylistNome}">
-
-                        <!-- EDIÇÃO: MOSTRAR NOME E ARTISTA -->
-                        <div th:if="${form.edicao}" class="mb-4">
-                            <label class="form-label text-purple font-monospace small uppercase fw-bold">Música / Artista</label>
-                            <input class="form-control glass-search-input bg-dark text-white border-secondary p-3" th:value="${form.titulo + ' - ' + form.artista}" readonly>
-                        </div>
 
                         <!-- OPINIÃO E RESENHA -->
                         <div class="mb-4 p-4 rounded-4 bg-darker border border-secondary border-opacity-20">
-                            <h5 class="fw-bold text-purple mb-3"><i class="bi bi-chat-left-quote me-2"></i> Sua Opinião & Avaliação</h5>
+                            <h5 class="fw-bold text-purple mb-3"><i class="bi bi-chat-left-quote me-2"></i> Sua Opinião &amp; Avaliação</h5>
                             
-                            <div class="mb-3">
+                            <!-- 1. NOTA (Estrelas) -->
+                            <div class="mb-4">
                                 <label class="form-label d-block text-white fw-bold">Sua nota (1 a 5 estrelas)</label>
                                 <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
                                     <i class="bi bi-star star-btn text-warning" data-index="1"></i>
@@ -96,8 +120,19 @@
                                 <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
                             </div>
 
-                            <!-- Compartilhar com a Comunidade (Toggle Switch) -->
-                            <div class="mb-4 p-4 rounded-4 bg-darker border border-secondary border-opacity-20">
+                            <!-- 2. RESENHA / ANOTAÇÕES -->
+                            <div class="mb-4">
+                                <label class="form-label text-purple font-monospace small uppercase fw-bold" for="resenha">Comentário / Resenha</label>
+                                <textarea class="form-control glass-search-input bg-dark text-white border-secondary p-3"
+                                          id="resenha"
+                                          name="resenha"
+                                          rows="3"
+                                          th:text="${form.resenha}"
+                                          placeholder="O que você achou desta música? Deixe sua análise detalhada..."></textarea>
+                            </div>
+
+                            <!-- 3. COMPARTILHAR COM A COMUNIDADE (Abaixo da resenha) -->
+                            <div class="p-3 rounded-4 bg-dark border border-secondary border-opacity-20">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <label class="form-check-label fw-bold text-white mb-0" for="compartilharNaComunidade" style="cursor: pointer;">
                                         Compartilhar com a Comunidade
@@ -106,26 +141,6 @@
                                         <input class="custom-toggle-switch" type="checkbox" id="compartilharNaComunidade" name="compartilharNaComunidade">
                                     </div>
                                 </div>
-                                
-                                <div id="opiniaoComunidadeContainer" class="mt-3" style="display: none; opacity: 0; transition: opacity 0.3s ease, max-height 0.3s ease; max-height: 0; overflow: hidden;">
-                                    <label class="form-label text-secondary small fw-bold" for="opiniaoComunidade">Sua Opinião para a Comunidade</label>
-                                    <textarea class="form-control glass-search-input bg-dark text-white border-secondary p-3"
-                                              id="opiniaoComunidade"
-                                              name="opiniaoComunidade"
-                                              rows="3"
-                                              maxlength="500"
-                                              placeholder="O que você achou dessa música? Deixe sua resenha para seus seguidores..."></textarea>
-                                </div>
-                            </div>
-
-                            <div class="mb-2">
-                                <label class="form-label text-secondary small fw-bold" for="resenha">Sua Resenha / Anotações</label>
-                                <textarea class="form-control glass-search-input bg-dark text-white border-secondary p-3"
-                                          id="resenha"
-                                          name="resenha"
-                                          rows="4"
-                                          th:text="${form.resenha}"
-                                          placeholder="O que você achou desta música? Deixe sua análise detalhada..."></textarea>
                             </div>
                         </div>
 
@@ -138,16 +153,11 @@
                             </select>
                         </div>
 
-
-                        <div class="alert alert-danger rounded-4 mb-4" th:if="${erro}" th:text="${erro}"></div>
-                        
-                        <!-- O checkbox antigo de postagem automática foi removido daqui e substituído pela nova seção no topo -->
-
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">
                             <a class="btn btn-outline-secondary rounded-pill px-4" href="/musicas">Cancelar</a>
                             <button class="btn-add-music-glow px-4" type="submit">
                                 <i class="bi bi-check-circle-fill me-1"></i>
-                                <span th:text="${form.edicao ? 'Salvar Alterações' : 'Finalizar e Salvar Música'}">Salvar</span>
+                                <span th:text="${form.edicao ? 'Salvar Alterações' : 'Cadastrar Música'}">Cadastrar</span>
                             </button>
                         </div>
                     </form>
@@ -180,11 +190,11 @@
                     if (e.key === 'ArrowDown') {
                         e.preventDefault();
                         activeIndex = (activeIndex + 1) % itemsList.length;
-                        updateHighlight();
+                        window.updateHighlightMusica();
                     } else if (e.key === 'ArrowUp') {
                         e.preventDefault();
                         activeIndex = (activeIndex - 1 + itemsList.length) % itemsList.length;
-                        updateHighlight();
+                        window.updateHighlightMusica();
                     } else if (e.key === 'Enter') {
                         e.preventDefault();
                         if (activeIndex >= 0 && activeIndex < itemsList.length) {
@@ -195,7 +205,7 @@
                     }
                 };
 
-                function updateHighlight() {
+                window.updateHighlightMusica = function() {
                     const resultsDiv = document.getElementById('ytResults');
                     if (!resultsDiv) return;
                     const children = resultsDiv.querySelectorAll('.yt-result-item');
@@ -207,7 +217,12 @@
                             child.classList.remove('active-item');
                         }
                     });
-                }
+                };
+
+                window.setHighlightMusica = function(idx) {
+                    activeIndex = idx;
+                    window.updateHighlightMusica();
+                };
 
                 window.buscarYT = function(tipo) {
                     const queryInput = document.getElementById('ytQuery');
@@ -234,25 +249,25 @@
                             activeIndex = -1;
                             if (!resultsDiv) return;
                             if (itemsList.length === 0) {
-                                resultsDiv.innerHTML = '<div class="text-secondary small p-2">Nenhum resultado encontrado.</div>';
+                                resultsDiv.innerHTML = '<div class="text-secondary small p-3 bg-dark rounded border border-secondary border-opacity-20 text-center">Nenhum resultado encontrado.</div>';
                                 return;
                             }
                             resultsDiv.innerHTML = itemsList.map((item, idx) => `
-                                <div class="d-flex align-items-center justify-content-between p-2 rounded bg-dark border border-secondary cursor-pointer yt-result-item" data-index="${idx}" onclick="window.selecionarItem(${idx})">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="${item.capaUrl || '/public/img/default-cover.png'}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
-                                        <div>
-                                            <div class="fw-bold text-white small">${escapeHtml(item.titulo)}</div>
-                                            <div class="text-secondary extra-small">${escapeHtml(item.artistaOuCanal)}</div>
+                                <div class="d-flex align-items-center justify-content-between p-2.5 rounded bg-dark border border-secondary border-opacity-25 cursor-pointer yt-result-item" data-index="${idx}" onclick="window.selecionarItem(${idx})" onmouseenter="window.setHighlightMusica(${idx})">
+                                    <div class="d-flex align-items-center gap-3 overflow-hidden">
+                                        <img src="${item.capaUrl || '/public/img/default-cover.png'}" class="rounded-3 shadow-sm" style="width: 50px; height: 50px; min-width: 50px; object-fit: cover;">
+                                        <div class="overflow-hidden">
+                                            <div class="fw-bold text-white small text-truncate">${escapeHtml(item.titulo)}</div>
+                                            <div class="text-secondary extra-small text-truncate">${escapeHtml(item.artistaOuCanal)}</div>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-outline-purple">Selecionar</button>
+                                    <button type="button" class="btn btn-sm btn-outline-purple rounded-pill px-3 ms-2">Selecionar</button>
                                 </div>
                             `).join('');
                         })
                         .catch(() => {
                             if (spinner) spinner.classList.add('d-none');
-                            if (resultsDiv) resultsDiv.innerHTML = '<div class="text-danger small p-2">Erro ao realizar a busca.</div>';
+                            if (resultsDiv) resultsDiv.innerHTML = '<div class="text-danger small p-3 text-center">Erro ao realizar a busca.</div>';
                         });
                 };
 
@@ -271,17 +286,20 @@
                     if (document.getElementById('youtubeId')) document.getElementById('youtubeId').value = item.youtubeId || '';
                     if (document.getElementById('capaUrl')) document.getElementById('capaUrl').value = item.capaUrl || '';
 
-                    if (document.getElementById('previewCapa')) document.getElementById('previewCapa').src = item.capaUrl || '/public/img/default-cover.png';
-                    if (document.getElementById('previewTitulo')) document.getElementById('previewTitulo').innerText = item.titulo;
-                    if (document.getElementById('previewArtista')) document.getElementById('previewArtista').innerText = item.artistaOuCanal;
-
-                    const preview = document.getElementById('mediaPreview');
-                    if (preview) {
-                        preview.classList.remove('d-none');
-                        preview.classList.add('d-flex');
+                    // Exibir Preview
+                    const previewCard = document.getElementById('mediaPreview');
+                    if (previewCard) {
+                        previewCard.classList.remove('d-none');
+                        document.getElementById('previewCapa').src = item.capaUrl || '/public/img/default-cover.png';
+                        document.getElementById('previewTitulo').textContent = item.titulo;
+                        document.getElementById('previewArtista').textContent = item.artistaOuCanal;
                     }
-                    document.getElementById('ytResults').innerHTML = '';
+
+                    // Atualiza o campo de busca
                     document.getElementById('ytQuery').value = item.titulo + " - " + item.artistaOuCanal;
+
+                    // Limpa resultados
+                    document.getElementById('ytResults').innerHTML = '';
                     activeIndex = -1;
                 };
 
@@ -298,36 +316,45 @@
                     return true;
                 };
 
-                function initCommunityToggle() {
-                    const toggle = document.getElementById("compartilharNaComunidade");
-                    const container = document.getElementById("opiniaoComunidadeContainer");
-                    if (toggle && container) {
-                        const toggleContainer = (show) => {
-                            if (show) {
-                                container.style.display = "block";
-                                container.offsetHeight; // force reflow
-                                container.style.maxHeight = "200px";
-                                container.style.opacity = "1";
+
+
+                // Inicialização de estrelas interativas
+                const starContainers = document.querySelectorAll('.interactive-stars');
+                starContainers.forEach(container => {
+                    const inputId = container.getAttribute('data-input');
+                    const input = document.getElementById(inputId);
+                    const initial = parseFloat(container.getAttribute('data-initial')) || 0;
+                    const stars = container.querySelectorAll('.star-btn');
+
+                    function renderStars(val) {
+                        stars.forEach((star, i) => {
+                            if (i + 1 <= val) {
+                                star.classList.remove('bi-star');
+                                star.classList.add('bi-star-fill');
                             } else {
-                                container.style.opacity = "0";
-                                container.style.maxHeight = "0";
-                                setTimeout(() => {
-                                    if (!toggle.checked) {
-                                        container.style.display = "none";
-                                    }
-                                }, 300);
+                                star.classList.remove('bi-star-fill');
+                                star.classList.add('bi-star');
                             }
-                        };
-                        
-                        toggle.onchange = function() {
-                            toggleContainer(this.checked);
-                        };
-                        
-                        toggleContainer(toggle.checked);
+                        });
                     }
-                }
-                initCommunityToggle();
-                document.body.addEventListener('htmx:afterSwap', initCommunityToggle);
+
+                    renderStars(initial);
+                    stars.forEach(star => {
+                        star.addEventListener('mouseenter', function() {
+                            const val = parseInt(this.getAttribute('data-index'));
+                            renderStars(val);
+                        });
+                        star.addEventListener('click', function() {
+                            const val = parseInt(this.getAttribute('data-index'));
+                            input.value = val;
+                            container.setAttribute('data-initial', val);
+                            renderStars(val);
+                        });
+                    });
+                    container.addEventListener('mouseleave', function() {
+                        renderStars(parseFloat(container.getAttribute('data-initial')) || 0);
+                    });
+                });
             })();
         </script>
     </main>

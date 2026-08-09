@@ -27,4 +27,14 @@ public final class YouTubeController {
         List<YouTubeItemDTO> resultados = youtubeService.buscar(query.trim(), tipo, realVideo);
         ctx.json(resultados);
     }
+
+    public void buscarFaixasPreview(Context ctx) {
+        String collectionId = ctx.queryParam("collectionId");
+        if (collectionId == null || collectionId.isBlank()) {
+            ctx.json(List.of());
+            return;
+        }
+        var faixas = youtubeService.buscarFaixasAlbumLookup(collectionId);
+        ctx.json(faixas);
+    }
 }

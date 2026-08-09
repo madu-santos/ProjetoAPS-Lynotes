@@ -92,6 +92,8 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId, keepL
         playerState.playlistItems = [{
             id: 'single_' + videoId,
             titulo: displayTitle,
+            artista: artista || '',
+            capa: capaUrl || '',
             videoId: videoId,
             playlistId: null
         }];
@@ -116,7 +118,7 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId, keepL
     
     // Se não extraiu da URL, montar a partir do título e artista
     if (!searchTerm) {
-        searchTerm = (artista && titulo) ? `${titulo} ${artista}` : (titulo || 'Música');
+        searchTerm = (artista && titulo) ? `${artista} ${titulo}` : (titulo || 'Música');
     }
 
     const { currentTitle } = playerElements();
@@ -131,6 +133,8 @@ window.playerTocar = function(url, titulo, artista, capaUrl, explicitYtId, keepL
                 playerState.playlistItems = [{
                     id: 'single_' + resolvedId,
                     titulo: displayTitle,
+                    artista: artista || '',
+                    capa: capaUrl || '',
                     videoId: resolvedId,
                     playlistId: null
                 }];
@@ -152,7 +156,7 @@ window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa, startT
         playerTogglePanel();
     }
     
-    const { currentTitle } = playerElements();
+    const { currentTitle, playlistSelect } = playerElements();
     if (currentTitle) currentTitle.textContent = `Carregando álbum: ${albumTitulo}...`;
 
     try {
@@ -171,13 +175,18 @@ window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa, startT
             return;
         }
 
-        // Converte apenas as faixas ativas no formato do player
-        let items = faixasAtivas.map((f) => ({
-            id: f.id,
-            titulo: `${f.artista} - ${f.titulo}`,
-            videoId: f.youtubeId || `yt_search_${f.artista}_${f.titulo}`,
-            playlistId: albumId
-        }));
+        // Converte apenas as faixas ativas no formato do player com título completo e capa
+        let items = faixasAtivas.map((f) => {
+            const displayTitle = (f.artista && f.titulo && !f.titulo.includes(f.artista)) ? `${f.artista} - ${f.titulo}` : (f.titulo || 'Faixa');
+            return {
+                id: f.id,
+                titulo: displayTitle,
+                artista: f.artista,
+                videoId: f.youtubeId || `yt_search_${f.artista}_${f.titulo}`,
+                capa: f.capaUrl || albumCapa || '',
+                playlistId: 'album_' + albumId
+            };
+        });
 
         if (shuffle) {
             for (let i = items.length - 1; i > 0; i--) {
@@ -187,7 +196,19 @@ window.playerTocarAlbum = async function(albumId, albumTitulo, albumCapa, startT
         }
 
         playerState.playlistItems = items;
-        playerState.currentPlaylistId = albumId;
+        playerState.currentPlaylistId = 'album_' + albumId;
+
+        // Atualizar o select de playlist no mini-player com o nome do álbum
+        if (playlistSelect) {
+            let opt = playlistSelect.querySelector(`option[value="album_${albumId}"]`);
+            if (!opt) {
+                opt = document.createElement('option');
+                opt.value = 'album_' + albumId;
+                playlistSelect.appendChild(opt);
+            }
+            opt.textContent = `Álbum: ${albumTitulo}`;
+            opt.selected = true;
+        }
 
         let startIdx = 0;
         if (startTrackId) {
@@ -230,6 +251,11 @@ window.playerTocarAlbumApartirDe = function(albumId, albumTitulo, startTrackId, 
 function playerTogglePanel() {
     const { container } = playerElements();
     if (!container) return;
+
+    if (container.classList.contains('player-floating')) {
+        window.playerResetPosition();
+    }
+
     playerState.collapsed = !playerState.collapsed;
     container.classList.toggle('collapsed', playerState.collapsed);
 
@@ -430,6 +456,7 @@ function onPlayerReady() {
         if (currentTitle) currentTitle.textContent = playerCleanTitle(playerState.currentTitle, playerState.currentVideoId);
 
         playerRenderTracks();
+        playerUpdateVinylCover();
 
         if (playerState.playing) {
             ytPlayer.loadVideoById({ videoId: playerState.currentVideoId, startSeconds: playerState.currentTime });
@@ -455,6 +482,7 @@ function onPlayerStateChange(event) {
         if (vinyl) vinyl.classList.add('spinning');
         if (playBtn) playBtn.innerHTML = SVG_PAUSE;
         playerRenderTracks();
+        playerUpdateVinylCover();
 
     } else if (event.data === YT.PlayerState.PAUSED) {
         playerState.playing = false;
@@ -536,9 +564,24 @@ function playerToggleLoop() {
     playerSaveState();
 }
 
-window.checarESubmeterPlaylist = async function(formElement, playlistId, videoId, url) {
+  window.checarESubmeterPlaylist = async function(formElement, playlistId, videoId, url) {
+    const doSubmit = function() {
+        if (window.htmx) {
+            htmx.ajax('POST', formElement.action, {
+                values: new FormData(formElement),
+                target: '#app-content',
+                select: '#app-content',
+                pushUrl: true
+            });
+        } else if (typeof formElement.requestSubmit === 'function') {
+            formElement.requestSubmit();
+        } else {
+            formElement.submit();
+        }
+    };
+
     if (!playlistId || playlistId === '' || playlistId === 'NEW_TEMP') {
-        formElement.submit();
+        doSubmit();
         return;
     }
 
@@ -550,20 +593,23 @@ window.checarESubmeterPlaylist = async function(formElement, playlistId, videoId
             if (data.duplicada) {
                 const modalEl = document.getElementById('modalConfirmarDuplicado');
                 if (modalEl) {
-                    const bsModal = new bootstrap.Modal(modalEl);
+                    if (modalEl.parentNode !== document.body) {
+                        document.body.appendChild(modalEl);
+                    }
+                    const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
                     const btnSim = document.getElementById('btnConfirmarDuplicado');
 
                     const handleSim = function() {
                         btnSim.removeEventListener('click', handleSim);
                         bsModal.hide();
-                        formElement.submit();
+                        doSubmit();
                     };
 
                     btnSim.addEventListener('click', handleSim);
                     bsModal.show();
                     return false;
                 } else if (confirm("Essa música já existe na playlist, deseja continuar?")) {
-                    formElement.submit();
+                    doSubmit();
                     return true;
                 } else {
                     return false;
@@ -573,10 +619,21 @@ window.checarESubmeterPlaylist = async function(formElement, playlistId, videoId
     } catch (e) {
         console.error('Erro ao checar duplicata:', e);
     }
-    formElement.submit();
+    doSubmit();
 };
 
-// --- Controles ---
+function playerUpdateVinylCover() {
+    const vinylLabel = document.querySelector('.player-vinyl-label');
+    if (!vinylLabel) return;
+    const currentItem = (playerState.playlistItems && playerState.playlistItems[playerState.currentIndex]);
+    if (currentItem && currentItem.capa) {
+        vinylLabel.style.backgroundImage = `url('${currentItem.capa}')`;
+        vinylLabel.style.backgroundSize = 'cover';
+        vinylLabel.style.backgroundPosition = 'center';
+    } else {
+        vinylLabel.style.backgroundImage = '';
+    }
+}
 
 function playerCleanTitle(title, videoId) {
     if (!title || title.startsWith('http') || title.startsWith('www')) {
@@ -596,6 +653,8 @@ function playerLoad(videoId, title, playlistId, startSeconds) {
 
     const { currentTitle } = playerElements();
     if (currentTitle) currentTitle.textContent = playerState.currentTitle;
+
+    playerUpdateVinylCover();
 
     // Se o ID for uma playlist do YouTube (como um álbum), carrega a playlist inteira
     if (videoId.length > 11 && (videoId.startsWith('PL') || videoId.startsWith('OL') || videoId.startsWith('RD'))) {
@@ -688,7 +747,7 @@ function playerLoadTrack(item) {
 
     if (!vId || vId.length !== 11 || vId.startsWith('itunes_') || vId.startsWith('yt_') || vId.startsWith('track_')) {
         const { currentTitle } = playerElements();
-        let queryTitle = item.titulo || '';
+        let queryTitle = (item.artista && item.titulo) ? `${item.artista} ${item.titulo}` : (item.titulo || '');
         if (queryTitle.startsWith('YouTube - ')) {
             queryTitle = queryTitle.replace('YouTube - ', '');
         }
@@ -701,7 +760,8 @@ function playerLoadTrack(item) {
                 if (data && data.length > 0 && data[0].youtubeId && data[0].youtubeId.length === 11 && !data[0].youtubeId.startsWith('yt_')) {
                     const resolvedId = data[0].youtubeId;
                     item.videoId = resolvedId;
-                    playerLoad(resolvedId, item.titulo, item.playlistId, 0);
+                    const trackDisplayTitle = (item.artista && item.titulo && !item.titulo.includes(item.artista)) ? `${item.artista} - ${item.titulo}` : item.titulo;
+                    playerLoad(resolvedId, trackDisplayTitle, item.playlistId, 0);
                     
                     if (item.id) {
                         fetch(`/api/musicas/${item.id}/youtube-id`, {
@@ -720,7 +780,8 @@ function playerLoadTrack(item) {
                 setTimeout(playerNext, 3000);
             });
     } else {
-        playerLoad(vId, item.titulo, item.playlistId, 0);
+        const trackDisplayTitle = (item.artista && item.titulo && !item.titulo.includes(item.artista)) ? `${item.artista} - ${item.titulo}` : item.titulo;
+        playerLoad(vId, trackDisplayTitle, item.playlistId, 0);
     }
 }
 
@@ -819,9 +880,11 @@ async function playerFetchPlaylist(playlistId, autoplay, keepLoop = false) {
         }
         return {
             id: item.id,
-            videoId: vId || item.videoId || `yt_search_${item.titulo}`,
+            videoId: vId || item.videoId || `yt_search_${item.artista ? item.artista + '_' : ''}${item.titulo}`,
             url: item.url || '',
             titulo: item.titulo,
+            artista: item.artista,
+            capa: item.capaUrl || '',
             playlistId: playlistId
         };
     });
@@ -868,6 +931,8 @@ async function playerFetchAlbum(albumId, autoplay) {
         videoId: f.youtubeId || `yt_search_${f.artista}_${f.titulo}`,
         url: f.youtubeUrl || '',
         titulo: f.titulo,
+        artista: f.artista,
+        capa: f.capaUrl || '',
         playlistId: 'album_' + albumId
     }));
     playerState.currentIndex      = 0;
@@ -979,6 +1044,7 @@ async function initPlayerModule() {
                 if (currentTitle) currentTitle.textContent = saved.currentTitle;
             }
             playerRenderTracks();
+            playerUpdateVinylCover();
         }
     } else {
         await playerLoadPlaylists().catch(() =>

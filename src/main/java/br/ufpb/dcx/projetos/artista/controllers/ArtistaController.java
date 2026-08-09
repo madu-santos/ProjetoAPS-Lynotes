@@ -194,6 +194,22 @@ public final class ArtistaController {
     }
 
     private void redirecionarParaListagem(Context ctx) {
+        String targetUrl = ctx.header("HX-Current-URL");
+        if (targetUrl == null || targetUrl.isBlank()) {
+            targetUrl = ctx.header("Referer");
+        }
+        if (targetUrl != null && !targetUrl.isBlank()) {
+            try {
+                java.net.URI uri = java.net.URI.create(targetUrl);
+                String path = uri.getPath();
+                if (path != null && (path.equals(ROTA_LISTAGEM) || path.equals("/"))) {
+                    String query = uri.getQuery();
+                    String finalTarget = path + (query != null && !query.isBlank() ? "?" + query : "");
+                    ctx.redirect(finalTarget, HttpStatus.SEE_OTHER);
+                    return;
+                }
+            } catch (Exception ignored) {}
+        }
         ctx.redirect(ROTA_LISTAGEM, HttpStatus.SEE_OTHER);
     }
 

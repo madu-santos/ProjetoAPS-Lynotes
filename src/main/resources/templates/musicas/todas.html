@@ -31,7 +31,7 @@
                 <h1 class="glowing-title-library mb-1">Todas as Suas Músicas</h1>
                 <p class="text-secondary mb-0">Todas as faixas catalogadas e salvas na sua biblioteca (<span th:text="${totalMusicas}">0</span> músicas).</p>
             </div>
-            <a class="btn-add-music-glow" href="/musicas/new" hx-boost="false">
+            <a class="btn-add-music-glow" href="/musicas/new">
                 <i class="bi bi-plus-circle-fill fs-5"></i> Adicionar Nova
             </a>
         </div>
@@ -112,7 +112,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <form th:action="${'/musicas/' + musica.id + '/excluir'}" method="post" th:data-titulo="${musica.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Música?', 'Tem certeza que deseja excluir a música &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);" hx-boost="false">
+                                        <form th:action="${'/musicas/' + musica.id + '/excluir'}" method="post" th:data-titulo="${musica.titulo}" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Música?', 'Tem certeza que deseja excluir a música &quot;' + this.getAttribute('data-titulo') + '&quot;?', false, event);">
                                             <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash me-2"></i>Excluir</button>
                                         </form>
                                     </li>
@@ -278,7 +278,7 @@
                     document.body.appendChild(form);
                     form.submit();
                 } else {
-                    window.location.reload();
+                    if (window.htmx) htmx.ajax('GET', window.location.pathname + window.location.search, {target: '#app-content', select: '#app-content'}); else window.location.reload();
                 }
             } else {
                 btnSubmit.disabled = false;

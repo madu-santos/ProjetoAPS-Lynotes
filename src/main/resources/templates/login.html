@@ -63,5 +63,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                const selector = 'input:not([type="hidden"]):not([disabled]), button:not([disabled]), a:not([disabled])';
+                const focusables = Array.from(document.querySelectorAll(selector));
+                const index = focusables.indexOf(document.activeElement);
+                if (index !== -1) {
+                    e.preventDefault();
+                    const nextIndex = (index + (e.shiftKey ? -1 : 1) + focusables.length) % focusables.length;
+                    focusables[nextIndex].focus();
+                }
+            } else if (e.key === 'Enter') {
+                if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+                    const form = document.activeElement.closest('form');
+                    if (form) {
+                        e.preventDefault();
+                        if (form.reportValidity()) {
+                            form.submit();
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

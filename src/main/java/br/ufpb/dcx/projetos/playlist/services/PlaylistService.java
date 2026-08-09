@@ -97,6 +97,47 @@ public class PlaylistService {
                 });
     }
 
+    public void sincronizarMusicasCatalogadas(String usuarioId, List<br.ufpb.dcx.projetos.musica.models.Musica> musicas) {
+        if (usuarioId == null || musicas == null || musicas.isEmpty()) return;
+        Playlist hidden = findOrCreateHiddenPlaylist(usuarioId);
+        List<PlaylistItem> existingItems = playlistRepository.findItemsByPlaylistId(hidden.getId());
+        java.util.Set<String> existingVideoIds = new java.util.HashSet<>();
+        java.util.Set<String> existingTitles = new java.util.HashSet<>();
+        if (existingItems != null) {
+            for (PlaylistItem it : existingItems) {
+                if (it.getVideoId() != null) existingVideoIds.add(it.getVideoId().toLowerCase());
+                if (it.getTitulo() != null) existingTitles.add(it.getTitulo().trim().toLowerCase());
+            }
+        }
+
+        for (br.ufpb.dcx.projetos.musica.models.Musica m : musicas) {
+            if (m.isOcultaDaBiblioteca()) continue;
+            String vId = m.getYoutubeId();
+            if (vId == null || vId.isBlank()) {
+                vId = extractVideoId(m.getYoutubeUrl());
+            }
+            String url = m.getYoutubeUrl();
+            if (url == null || url.isBlank()) {
+                url = (vId != null && !vId.startsWith("yt_")) ? "https://www.youtube.com/watch?v=" + vId : "https://www.youtube.com";
+            }
+            String title = (m.getTitulo() != null && !m.getTitulo().isBlank()) ? m.getTitulo() : "Faixa Sem Título";
+            
+            boolean jaExiste = (vId != null && !vId.startsWith("yt_") && existingVideoIds.contains(vId.toLowerCase())) ||
+                               existingTitles.contains(title.trim().toLowerCase());
+            if (!jaExiste) {
+                try {
+                    int ordem = playlistRepository.countItemsByPlaylistId(hidden.getId()) + 1;
+                    PlaylistItem item = new PlaylistItem(
+                            java.util.UUID.randomUUID().toString(),
+                            hidden.getId(), url, vId, title, ordem, java.time.Instant.now());
+                    playlistRepository.createItem(item);
+                    if (vId != null) existingVideoIds.add(vId.toLowerCase());
+                    existingTitles.add(title.trim().toLowerCase());
+                } catch (Exception ignored) {}
+            }
+        }
+    }
+
     public String extractVideoId(String url) {
         if (url == null || url.isBlank()) {
             return "yt_default";
@@ -230,12 +271,18 @@ public class PlaylistService {
             throw new ResourceNotFoundException("Falha ao remover item da playlist.");
         }
 
-        if (deleteFromCatalog && musicaService != null && item.getVideoId() != null) {
-            musicaService.findByYouTubeId(item.getVideoId()).ifPresent(m -> {
-                if (m.getUsuarioId().equals(usuarioId)) {
-                    musicaService.deleteById(m.getId());
+        if (deleteFromCatalog && musicaService != null) {
+            List<br.ufpb.dcx.projetos.musica.models.Musica> userMusicas = musicaService.findByUsuarioId(usuarioId);
+            for (br.ufpb.dcx.projetos.musica.models.Musica m : userMusicas) {
+                boolean matchVideoId = item.getVideoId() != null && !item.getVideoId().isBlank() && item.getVideoId().equals(m.getYoutubeId());
+                boolean matchUrl = item.getUrl() != null && !item.getUrl().isBlank() && item.getUrl().equals(m.getYoutubeUrl());
+                boolean matchTitulo = item.getTitulo() != null && !item.getTitulo().isBlank() && item.getTitulo().equalsIgnoreCase(m.getTitulo());
+                if (matchVideoId || matchUrl || matchTitulo) {
+                    try {
+                        musicaService.deleteById(m.getId());
+                    } catch (Exception ignored) {}
                 }
-            });
+            }
         }
     }
 

@@ -160,20 +160,20 @@ public final class MusicaDbRepository implements MusicaRepository {
 
     @Override
     public List<Musica> listarTodas() {
-        String sql = "SELECT " + COLUNAS + " FROM musica ORDER BY titulo, id";
+        String sql = "SELECT " + COLUNAS + " FROM musica ORDER BY criado_em DESC, id DESC";
 
         try (Connection connection = connectionFactory.abrir();
              Statement statement = connection.createStatement();
              ResultSet result = statement.executeQuery(sql)) {
             return mapearLista(result);
         } catch (SQLException e) {
-            throw erroPersistencia("listar mÃºsicas", e);
+            throw erroPersistencia("listar músicas", e);
         }
     }
 
     @Override
     public List<Musica> buscarPorAlbumId(String albumId) {
-        String sql = "SELECT " + COLUNAS + " FROM musica WHERE album_id = ? ORDER BY titulo, id";
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE album_id = ? ORDER BY criado_em ASC, id ASC";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -182,13 +182,13 @@ public final class MusicaDbRepository implements MusicaRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar mÃºsicas por ID do Ã¡lbum", e);
+            throw erroPersistencia("buscar músicas por ID do álbum", e);
         }
     }
 
     @Override
     public List<Musica> buscarPorUsuarioId(String usuarioId) {
-        String sql = "SELECT " + COLUNAS + " FROM musica WHERE usuario_id = ? AND (album_id IS NULL OR album_id = '') AND oculta_da_biblioteca = FALSE ORDER BY titulo, id";
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE usuario_id = ? AND (album_id IS NULL OR album_id = '') AND oculta_da_biblioteca = FALSE ORDER BY criado_em DESC, id DESC";
 
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -206,7 +206,7 @@ public final class MusicaDbRepository implements MusicaRepository {
         if (termo == null || termo.trim().isEmpty()) {
             return buscarPorUsuarioId(usuarioId);
         }
-        String sql = "SELECT " + COLUNAS + " FROM musica WHERE (LOWER(titulo) LIKE ? OR LOWER(artista) LIKE ? OR LOWER(genero) LIKE ? OR LOWER(resenha) LIKE ?) AND usuario_id = ? AND (album_id IS NULL OR album_id = '') AND oculta_da_biblioteca = FALSE;";
+        String sql = "SELECT " + COLUNAS + " FROM musica WHERE (LOWER(titulo) LIKE ? OR LOWER(artista) LIKE ? OR LOWER(genero) LIKE ? OR LOWER(resenha) LIKE ?) AND usuario_id = ? AND (album_id IS NULL OR album_id = '') AND oculta_da_biblioteca = FALSE ORDER BY criado_em DESC, id DESC;";
         try (Connection connection = connectionFactory.abrir();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             String wildcard = "%" + termo.trim().toLowerCase() + "%";
@@ -219,7 +219,7 @@ public final class MusicaDbRepository implements MusicaRepository {
                 return mapearLista(result);
             }
         } catch (SQLException e) {
-            throw erroPersistencia("buscar mÃºsicas com filtro", e);
+            throw erroPersistencia("buscar músicas com filtro", e);
         }
     }
 

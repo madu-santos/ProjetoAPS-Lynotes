@@ -15,7 +15,11 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class YouTubeService {
 
@@ -43,15 +47,7 @@ public class YouTubeService {
     public YouTubeService(HttpClient httpClient, ObjectMapper objectMapper) {
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
-        this.apiKey = getApiKeyFromEnv();
-    }
-
-    private String getApiKeyFromEnv() {
-        String key = System.getenv("YOUTUBE_API_KEY");
-        if (key == null || key.isBlank()) {
-            key = System.getProperty("YOUTUBE_API_KEY");
-        }
-        return (key != null && !key.isBlank()) ? key.trim() : null;
+        this.apiKey = System.getenv("YOUTUBE_API_KEY");
     }
 
     public List<YouTubeItemDTO> buscar(String query, String tipo) {
@@ -63,11 +59,12 @@ public class YouTubeService {
             return List.of();
         }
 
-        String cacheKey = (query.trim() + "::" + (tipo != null ? tipo.trim() : "") + "::" + realVideoOnly).toLowerCase();
-        List<YouTubeItemDTO> cached = searchCache.get(cacheKey);
-        if (cached != null) {
-            LOGGER.debug("Buscando YouTube do cache para query={}", query);
-            return cached;
+        String cacheKey = (query.trim().toLowerCase()) + "||" + (tipo != null ? tipo.trim().toUpperCase() : "MUSICA") + "||" + realVideoOnly;
+        synchronized (searchCache) {
+            List<YouTubeItemDTO> cached = searchCache.get(cacheKey);
+            if (cached != null) {
+                return cached;
+            }
         }
 
         List<YouTubeItemDTO> resultados = executarBuscaSemCache(query, tipo, realVideoOnly);
@@ -95,13 +92,11 @@ public class YouTubeService {
 
         // Se for busca de artista, queremos APENAS canais de artistas oficiais do YouTube
         if ("ARTISTA".equals(tipoUpper) || "ARTISTAS".equals(tipoUpper) || "CANAL".equals(tipoUpper)) {
-            resultados = buscarCanaisScraper(queryParaBusca);
+            resultados = buscarArtistasOficiais(rawQuery);
+        } else if (isAlbum) {
+            resultados = buscarAlbumsItunes(rawQuery);
         } else {
-            String searchType = switch (tipoUpper) {
-                case "ALBUM", "ALBUMS", "ALBUNS", "PLAYLIST" -> "playlist";
-                case "ARTISTA", "ARTISTAS", "CANAL" -> "channel";
-                default -> "video";
-            };
+            String searchType = "video";
 
             List<YouTubeItemDTO> tempResults = null;
 
@@ -116,8 +111,6 @@ public class YouTubeService {
 
             if (tempResults != null && !tempResults.isEmpty()) {
                 resultados = tempResults;
-            } else if (isAlbum) {
-                resultados = buscarPlaylistsScraper(queryParaBusca);
             } else if (rawQuery.contains("youtube.com") || rawQuery.contains("youtu.be")) {
                 resultados = extrairItemDeUrlDireta(rawQuery, searchType);
             } else if (realVideoOnly && "MUSICA".equals(tipoUpper)) {
@@ -310,11 +303,103 @@ public class YouTubeService {
         return buscarMusicaItunes(query);
     }
 
+    public List<YouTubeItemDTO> buscarArtistasOficiais(String query) {
+        if (query == null || query.isBlank()) return List.of();
+        List<YouTubeItemDTO> lista = new ArrayList<>();
+        Set<String> nomesVistos = new HashSet<>();
+        try {
+            String encodedQuery = URLEncoder.encode(query.trim(), StandardCharsets.UTF_8);
+            
+            // 1. Deezer Official Music Artist API (Catálogo 100% Musical)
+            String url = "https://api.deezer.com/search/artist?q=" + encodedQuery + "&limit=25";
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(5))
+                    .header("User-Agent", "LynotesMusicApp/1.0 (compatible; DeezerAPI/1.0)")
+                    .GET()
+                    .build();
+
+            HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+            if (res.statusCode() == 200) {
+                JsonNode root = objectMapper.readTree(res.body());
+                JsonNode data = root.path("data");
+                if (data.isArray()) {
+                    for (JsonNode item : data) {
+                        if (lista.size() >= 25) break;
+                        String nome = item.path("name").asText("");
+                        if (nome.isBlank()) continue;
+
+                        String norm = nome.trim().toLowerCase();
+                        if (nomesVistos.contains(norm)) continue;
+                        nomesVistos.add(norm);
+
+                        String pic = item.path("picture_xl").asText("");
+                        if (pic.isBlank()) pic = item.path("picture_big").asText("");
+                        if (pic.isBlank()) pic = item.path("picture_medium").asText("");
+                        if (pic.isBlank()) pic = "/public/img/default-cover.png";
+
+                        int fans = item.path("nb_fan").asInt(0);
+                        int albuns = item.path("nb_album").asInt(0);
+                        String id = item.path("id").asText("");
+
+                        StringBuilder desc = new StringBuilder("Artista Oficial");
+                        if (albuns > 0) {
+                            desc.append(" • ").append(albuns).append(albuns == 1 ? " álbum" : " álbuns");
+                        }
+                        if (fans > 0) {
+                            desc.append(" • ").append(formatarFans(fans)).append(" ouvintes");
+                        }
+
+                        String link = item.path("link").asText("https://www.deezer.com/artist/" + id);
+
+                        lista.add(new YouTubeItemDTO(
+                                "artist_" + id,
+                                "ARTISTA",
+                                nome,
+                                nome,
+                                null,
+                                null,
+                                pic,
+                                link,
+                                desc.toString()
+                        ));
+                    }
+                }
+            }
+
+            // 2. Complementa / fallback com iTunes Artist API (se tiver poucos resultados)
+            if (lista.size() < 5) {
+                List<YouTubeItemDTO> itunes = buscarArtistasItunes(query);
+                for (YouTubeItemDTO it : itunes) {
+                    if (lista.size() >= 25) break;
+                    String norm = it.titulo().trim().toLowerCase();
+                    if (!nomesVistos.contains(norm)) {
+                        nomesVistos.add(norm);
+                        lista.add(it);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Erro ao buscar artistas oficiais na API do Deezer: {}", e.getMessage());
+            return buscarArtistasItunes(query);
+        }
+        return lista;
+    }
+
+    private String formatarFans(int fans) {
+        if (fans >= 1_000_000) {
+            return String.format(java.util.Locale.US, "%.1fM", fans / 1_000_000.0);
+        } else if (fans >= 1_000) {
+            return String.format(java.util.Locale.US, "%.1fk", fans / 1_000.0);
+        }
+        return String.valueOf(fans);
+    }
+
     private List<YouTubeItemDTO> buscarArtistasItunes(String query) {
         List<YouTubeItemDTO> lista = new ArrayList<>();
         try {
             String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-            String url = "https://itunes.apple.com/search?term=" + encodedQuery + "&media=music&entity=musicArtist&attribute=artistTerm&limit=6&country=BR";
+            String url = "https://itunes.apple.com/search?term=" + encodedQuery + "&media=music&entity=musicArtist&attribute=artistTerm&limit=10&country=BR";
 
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -328,7 +413,7 @@ public class YouTubeService {
                 JsonNode results = root.path("results");
 
                 for (JsonNode item : results) {
-                    if (lista.size() >= 6) break;
+                    if (lista.size() >= 10) break;
 
                     String wrapperType = item.path("wrapperType").asText("");
                     if (!"artist".equalsIgnoreCase(wrapperType)) {
@@ -354,10 +439,9 @@ public class YouTubeService {
                     if (!artistName.isBlank()) {
                         String ytSearchUrl = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(artistName, StandardCharsets.UTF_8);
                         
-                        // Busca a foto real do perfil do canal do YouTube do artista
                         String avatarUrl = obterFotoCanalYouTube(artistName);
                         if (avatarUrl == null || avatarUrl.isBlank()) {
-                            avatarUrl = "/img/default-artist.svg";
+                            avatarUrl = "/public/img/default-cover.png";
                         }
 
                         lista.add(new YouTubeItemDTO(
@@ -474,64 +558,143 @@ public class YouTubeService {
         return lista;
     }
 
-    private List<YouTubeItemDTO> buscarAlbumsItunes(String query) {
+    public List<YouTubeItemDTO> buscarAlbumsItunes(String query) {
+        if (query == null || query.isBlank()) return List.of();
         List<YouTubeItemDTO> lista = new ArrayList<>();
         try {
-            String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
-            String url = "https://itunes.apple.com/search?term=" + encodedQuery + "&media=music&entity=album&limit=6&country=BR";
+            String encodedQuery = URLEncoder.encode(query.trim(), StandardCharsets.UTF_8);
+            String url = "https://itunes.apple.com/search?term=" + encodedQuery + "&media=music&entity=album&limit=40&country=BR";
 
             HttpRequest req = HttpRequest.newBuilder()
                     .uri(URI.create(url))
-                    .timeout(Duration.ofSeconds(4))
+                    .timeout(Duration.ofSeconds(5))
                     .GET()
                     .build();
 
             HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+            JsonNode results = null;
             if (res.statusCode() == 200) {
                 JsonNode root = objectMapper.readTree(res.body());
-                JsonNode results = root.path("results");
+                results = root.path("results");
+            }
 
+            if (results == null || results.isEmpty() || results.size() == 0) {
+                String urlUs = "https://itunes.apple.com/search?term=" + encodedQuery + "&media=music&entity=album&limit=40&country=US";
+                HttpRequest reqUs = HttpRequest.newBuilder()
+                        .uri(URI.create(urlUs))
+                        .timeout(Duration.ofSeconds(5))
+                        .GET()
+                        .build();
+                HttpResponse<String> resUs = httpClient.send(reqUs, HttpResponse.BodyHandlers.ofString());
+                if (resUs.statusCode() == 200) {
+                    JsonNode rootUs = objectMapper.readTree(resUs.body());
+                    results = rootUs.path("results");
+                }
+            }
+
+            if (results != null) {
+                java.util.Set<String> processedIds = new java.util.HashSet<>();
                 for (JsonNode item : results) {
-                    if (lista.size() >= 6) break;
+                    if (lista.size() >= 25) break;
 
                     String wrapperType = item.path("wrapperType").asText("");
-                    String collectionType = item.path("collectionType").asText("");
-                    if (!"collection".equalsIgnoreCase(wrapperType) || !"Album".equalsIgnoreCase(collectionType)) {
+                    if (!"collection".equalsIgnoreCase(wrapperType)) {
                         continue;
                     }
                     
                     String albumName = item.path("collectionName").asText("");
-                    if (albumName.toLowerCase().contains("single")) {
+                    if (albumName.isBlank()) {
                         continue;
                     }
+
+                    String collectionType = item.path("collectionType").asText("");
+                    int trackCount = item.path("trackCount").asInt(0);
+                    String albumLower = albumName.toLowerCase().trim();
+
+                    // Filtro rigoroso de Singles: descarta itens com collectionType Single, faixas <= 2 ou menção a Single no título
+                    boolean isSingle = "single".equalsIgnoreCase(collectionType)
+                            || trackCount <= 2
+                            || albumLower.endsWith(" - single")
+                            || albumLower.contains(" - single")
+                            || albumLower.contains("(single)")
+                            || albumLower.contains("[single]")
+                            || albumLower.contains(" - single edit");
+
+                    if (isSingle) {
+                        continue;
+                    }
+
+                    String collectionId = item.path("collectionId").asText("");
+                    if (collectionId.isBlank() || processedIds.contains(collectionId)) {
+                        continue;
+                    }
+                    processedIds.add(collectionId);
+
                     String artistName = item.path("artistName").asText("");
                     String rawCover = item.path("artworkUrl100").asText("");
                     String hdCover = rawCover.replace("100x100bb", "600x600bb");
                     String releaseDate = item.path("releaseDate").asText("");
                     Integer ano = parseAno(releaseDate);
-                    String collectionId = item.path("collectionId").asText("album_" + Math.abs(albumName.hashCode()));
-                    int trackCount = item.path("trackCount").asInt(0);
 
-                    if (!albumName.isBlank()) {
-                        String ytSearchUrl = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(artistName + " " + albumName + " album", StandardCharsets.UTF_8);
-                        lista.add(new YouTubeItemDTO(
-                                "itunes_album_" + collectionId,
-                                "ALBUM",
-                                albumName,
-                                artistName,
-                                null,
-                                ano,
-                                hdCover.isEmpty() ? "/public/img/default-cover.png" : hdCover,
-                                ytSearchUrl,
-                                "Álbum Oficial • " + trackCount + " faixas"
-                        ));
+                    String ytSearchUrl = "https://www.youtube.com/results?search_query=" + URLEncoder.encode(artistName + " " + albumName + " album", StandardCharsets.UTF_8);
+                    lista.add(new YouTubeItemDTO(
+                            "itunes_album_" + collectionId,
+                            "ALBUM",
+                            albumName,
+                            artistName,
+                            null,
+                            ano,
+                            hdCover.isEmpty() ? "/public/img/default-cover.png" : hdCover,
+                            ytSearchUrl,
+                            (ano != null ? ano + " • " : "") + (trackCount > 0 ? trackCount + " faixas" : "Álbum Oficial")
+                    ));
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Erro na busca pública de Álbuns: {}", e.getMessage());
+        }
+        return lista;
+    }
+
+    public List<Map<String, Object>> buscarFaixasAlbumLookup(String collectionId) {
+        List<Map<String, Object>> faixas = new ArrayList<>();
+        if (collectionId == null || collectionId.isBlank()) return faixas;
+        try {
+            String cleanId = collectionId.replace("itunes_album_", "");
+            String url = "https://itunes.apple.com/lookup?id=" + cleanId + "&entity=song";
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(5))
+                    .GET()
+                    .build();
+            HttpResponse<String> res = httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+            if (res.statusCode() == 200) {
+                JsonNode root = objectMapper.readTree(res.body());
+                JsonNode results = root.path("results");
+                for (JsonNode item : results) {
+                    if ("track".equals(item.path("wrapperType").asText(""))) {
+                        int trackNumber = item.path("trackNumber").asInt(faixas.size() + 1);
+                        String trackName = item.path("trackName").asText("");
+                        String artistName = item.path("artistName").asText("");
+                        int trackTimeMillis = item.path("trackTimeMillis").asInt(0);
+                        int duracao = trackTimeMillis / 1000;
+                        int min = duracao / 60;
+                        int sec = duracao % 60;
+                        String duracaoFormatada = String.format("%d:%02d", min, sec);
+                        
+                        Map<String, Object> f = new HashMap<>();
+                        f.put("numero", trackNumber);
+                        f.put("titulo", trackName);
+                        f.put("artista", artistName);
+                        f.put("duracao", duracaoFormatada);
+                        faixas.add(f);
                     }
                 }
             }
         } catch (Exception e) {
-            LOGGER.warn("Erro na busca pública do iTunes API para Álbuns: {}", e.getMessage());
+            LOGGER.warn("Erro ao buscar faixas do álbum: {}", e.getMessage());
         }
-        return lista;
+        return faixas;
     }
 
     private List<YouTubeItemDTO> buscarVideosScraper(String query) {
