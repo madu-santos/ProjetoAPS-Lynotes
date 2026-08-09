@@ -8,6 +8,7 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ComunidadeController {
@@ -48,6 +49,8 @@ public class ComunidadeController {
         app.post("/comunidade/post/{id}/excluir", this::excluirPost, Role.USER);
         app.post("/comunidade/comentario/{id}/excluir", this::excluirComentario, Role.USER);
         app.get("/comunidade/post/{id}", this::detalhePost, Role.USER);
+        app.get("/api/notificacoes", this::getNotificacoes, Role.USER);
+        app.post("/api/notificacoes/ler-todas", this::lerTodasNotificacoes, Role.USER);
     }
 
     private void feed(Context ctx) {
@@ -270,5 +273,24 @@ public class ComunidadeController {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
         redirecionarParaRefererOu(ctx);
+    }
+
+    private void getNotificacoes(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        if (usuarioLogadoId == null) {
+            ctx.status(401).json(List.of());
+            return;
+        }
+        ctx.json(service.listarNotificacoes(usuarioLogadoId));
+    }
+
+    private void lerTodasNotificacoes(Context ctx) {
+        String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
+        if (usuarioLogadoId == null) {
+            ctx.status(401);
+            return;
+        }
+        service.marcarNotificacoesComoLidas(usuarioLogadoId);
+        ctx.status(200);
     }
 }
