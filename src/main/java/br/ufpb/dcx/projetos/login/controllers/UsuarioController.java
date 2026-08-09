@@ -107,7 +107,10 @@ public final class UsuarioController {
             if (ctx.sessionAttribute("usuarioLogado") != null) {
                 ctx.redirect("/usuarios");
             } else {
-                ctx.redirect("/login");
+                ctx.sessionAttribute("usuarioLogado", usuario.getNome());
+                ctx.sessionAttribute("usuarioLogadoId", usuario.getId());
+                ctx.sessionAttribute("usuarioLogadoTipo", usuario.getTipo());
+                ctx.redirect("/");
             }
         } catch (IllegalArgumentException e) {
             Map<String, Object> modelo = new HashMap<>();

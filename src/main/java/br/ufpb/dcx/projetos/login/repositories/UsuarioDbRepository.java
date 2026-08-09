@@ -118,7 +118,7 @@ public class UsuarioDbRepository implements UsuarioRepository {
 
     @Override
     public Optional<Usuario> buscarPorEmail(String email) {
-        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE email = ?;";
+        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE LOWER(email) = LOWER(?);";
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, email);
@@ -145,7 +145,7 @@ public class UsuarioDbRepository implements UsuarioRepository {
 
     @Override
     public Optional<Usuario> buscarPorUsername(String username) {
-        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE username = ?;";
+        String sql = "SELECT id, nome, username, email, senha, tipo, bio, foto_url FROM usuario WHERE LOWER(username) = LOWER(?);";
         try (Connection conn = obterConexao();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, username);
