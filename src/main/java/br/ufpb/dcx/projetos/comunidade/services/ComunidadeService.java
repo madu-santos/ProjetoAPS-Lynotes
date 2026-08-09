@@ -5,6 +5,7 @@ import br.ufpb.dcx.projetos.comunidade.models.Post;
 import br.ufpb.dcx.projetos.comunidade.repositories.ComunidadeDbRepository;
 import br.ufpb.dcx.projetos.comunidade.views.ComentarioViewDTO;
 import br.ufpb.dcx.projetos.comunidade.views.PostViewDTO;
+import br.ufpb.dcx.projetos.comunidade.views.NotificacaoViewDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -106,6 +107,10 @@ public class ComunidadeService {
         Comentario comentario = new Comentario(postId, usuarioId, conteudo.trim());
         repository.salvarComentario(comentario);
         notificarComentarioCriado(comentario);
+
+        if (!post.get().getUsuarioId().equals(usuarioId)) {
+            repository.criarNotificacao(post.get().getUsuarioId(), usuarioId, "COMENTARIO", postId, "comentou na sua publicação.");
+        }
     }
 
     public void alternarEstrela(String postId, String usuarioId) {
@@ -116,7 +121,10 @@ public class ComunidadeService {
         if (post.isEmpty()) {
             throw new IllegalArgumentException("Post não encontrado.");
         }
-        repository.darEstrela(postId, usuarioId);
+        boolean estrelado = repository.darEstrela(postId, usuarioId);
+        if (estrelado && !post.get().getUsuarioId().equals(usuarioId)) {
+            repository.criarNotificacao(post.get().getUsuarioId(), usuarioId, "CURTIDA", postId, "curtiu sua publicação.");
+        }
     }
 
     public List<PostViewDTO> listarFeed(String usuarioLogadoId, String filtroUsuarioId) {
@@ -214,6 +222,7 @@ public class ComunidadeService {
         repository.seguir(deId, paraId);
         // Cria uma notificação (pedido de seguir) para B saber que A o está seguindo
         repository.criarPedidoSeguir(deId, paraId);
+        repository.criarNotificacao(paraId, deId, "SEGUIR", null, "começou a seguir você.");
     }
 
     public void aceitarSolicitacao(String deId, String paraId) {
@@ -268,5 +277,15 @@ public class ComunidadeService {
     public List<br.ufpb.dcx.projetos.login.models.Usuario> listarSeguindo(String usuarioId) {
         if (usuarioId == null) return java.util.Collections.emptyList();
         return repository.listarSeguindo(usuarioId);
+    }
+
+    public List<NotificacaoViewDTO> listarNotificacoes(String usuarioId) {
+        if (usuarioId == null) return List.of();
+        return repository.listarNotificacoes(usuarioId);
+    }
+
+    public void marcarNotificacoesComoLidas(String usuarioId) {
+        if (usuarioId == null) return;
+        repository.marcarNotificacoesComoLidas(usuarioId);
     }
 }
