@@ -241,4 +241,50 @@ public class UsuarioDbRepository implements UsuarioRepository {
             throw new RuntimeException("Erro ao remover usuário: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public void salvarCodigoRecuperacao(String email, String codigo, java.time.LocalDateTime expiracao) {
+        String sql = "INSERT INTO recuperacao_senha (email, codigo, expiracao) VALUES (?, ?, ?) " +
+                     "ON CONFLICT (email) DO UPDATE SET codigo = EXCLUDED.codigo, expiracao = EXCLUDED.expiracao;";
+        try (Connection conn = obterConexao();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, codigo);
+            ps.setTimestamp(3, Timestamp.valueOf(expiracao));
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao salvar código de recuperação: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public java.util.Optional<String> obterCodigoRecuperacaoValido(String email, String codigo) {
+        String sql = "SELECT codigo FROM recuperacao_senha WHERE email = ? AND codigo = ? AND expiracao > ?;";
+        try (Connection conn = obterConexao();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, codigo);
+            ps.setTimestamp(3, Timestamp.valueOf(java.time.LocalDateTime.now()));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return java.util.Optional.of(rs.getString("codigo"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar código de recuperação: " + e.getMessage(), e);
+        }
+        return java.util.Optional.empty();
+    }
+
+    @Override
+    public void limparCodigoRecuperacao(String email) {
+        String sql = "DELETE FROM recuperacao_senha WHERE email = ?;";
+        try (Connection conn = obterConexao();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao limpar código de recuperação: " + e.getMessage(), e);
+        }
+    }
 }

@@ -1042,6 +1042,7 @@ window.playerResetPosition = function() {
 };
 
 // --- UX Improvements (Drag and Drop & Resize) ---
+// --- UX Improvements (Drag and Drop & Resize) ---
 function initPlayerUX() {
     const player = document.getElementById('mini-player');
     const panel = document.querySelector('.player-panel');
@@ -1053,6 +1054,22 @@ function initPlayerUX() {
     let dragStartY = 0;
     let initialLeft = 0;
     let initialTop = 0;
+
+    const onMouseMove = (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+        player.style.left = (initialLeft + dx) + 'px';
+        player.style.top = (initialTop + dy) + 'px';
+    };
+
+    const onMouseUp = () => {
+        if (isDragging) {
+            isDragging = false;
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        }
+    };
 
     dragHandle.addEventListener('mousedown', (e) => {
         isDragging = true;
@@ -1077,20 +1094,10 @@ function initPlayerUX() {
         initialLeft = player.getBoundingClientRect().left;
         initialTop = player.getBoundingClientRect().top;
         
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+        
         e.preventDefault();
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
-            const dx = e.clientX - dragStartX;
-            const dy = e.clientY - dragStartY;
-            player.style.left = (initialLeft + dx) + 'px';
-            player.style.top = (initialTop + dy) + 'px';
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        if (isDragging) isDragging = false;
     });
 
     // Resize Logic (Edge Handles)
@@ -1101,6 +1108,29 @@ function initPlayerUX() {
     let centerX = 0;
     let centerY = 0;
     let originalHeight = 0;
+
+    const onResizeMouseMove = (e) => {
+        if (!isResizing) return;
+        const newDistance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+        let newScale = initialScale * (newDistance / initialDistance);
+        newScale = Math.max(0.4, Math.min(newScale, 1.0));
+        
+        panel.style.setProperty('--player-scale', newScale);
+        
+        // Adjust position to keep center fixed for a smooth resizing experience from any edge
+        const newWidth = 280 * newScale;
+        const currentScaledHeight = originalHeight * newScale;
+        player.style.left = (centerX - (newWidth / 2)) + 'px';
+        player.style.top = (centerY - (currentScaledHeight / 2)) + 'px';
+    };
+
+    const onResizeMouseUp = () => {
+        if (isResizing) {
+            isResizing = false;
+            document.removeEventListener('mousemove', onResizeMouseMove);
+            document.removeEventListener('mouseup', onResizeMouseUp);
+        }
+    };
 
     resizeEdges.forEach(edge => {
         edge.addEventListener('mousedown', (e) => {
@@ -1115,29 +1145,12 @@ function initPlayerUX() {
             
             initialDistance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
             
+            document.addEventListener('mousemove', onResizeMouseMove);
+            document.addEventListener('mouseup', onResizeMouseUp);
+            
             e.preventDefault();
             e.stopPropagation();
         });
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isResizing) {
-            const newDistance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
-            let newScale = initialScale * (newDistance / initialDistance);
-            newScale = Math.max(0.4, Math.min(newScale, 1.0));
-            
-            panel.style.setProperty('--player-scale', newScale);
-            
-            // Adjust position to keep center fixed for a smooth resizing experience from any edge
-            const newWidth = 280 * newScale;
-            const currentScaledHeight = originalHeight * newScale;
-            player.style.left = (centerX - (newWidth / 2)) + 'px';
-            player.style.top = (centerY - (currentScaledHeight / 2)) + 'px';
-        }
-    });
-
-    document.addEventListener('mouseup', () => {
-        if (isResizing) isResizing = false;
     });
     
     // Mostra o botão reset se o player estiver flutuando ao recarregar a página

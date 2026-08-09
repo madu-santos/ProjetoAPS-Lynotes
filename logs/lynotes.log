@@ -4726,3 +4726,1135 @@ Caused by: java.lang.IllegalStateException: banco indisponível
 2026-08-06 16:51:20.730 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
 2026-08-06 16:51:20.730 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
 2026-08-06 16:51:20.769 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 14:26:23.361 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 14:26:24.979 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 14:26:25.286 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 12 migrations (execution time 00:00.161s)
+2026-08-08 14:26:25.389 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 12
+2026-08-08 14:26:25.403 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 14:26:25.787 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 14:26:26.757 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 14:26:26.765 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 14:26:26.795 [main] ERROR io.javalin.Javalin - Failed to start Javalin
+2026-08-08 14:26:26.795 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@720653c2{STOPPING}[11.0.20,sto=0]
+2026-08-08 14:30:06.280 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 14:30:07.258 [main] WARN  br.ufpb.dcx.projetos.App - Erro ao executar Flyway Migrations (provavelmente banco offline): Unable to obtain connection from database (jdbc:postgresql://localhost:5433/spotify_db) for user 'postgres': Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL State  : 08001
+Error Code : 0
+Message    : Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+
+2026-08-08 14:30:07.321 [main] WARN  br.ufpb.dcx.projetos.App - Aviso ao inicializar esquema do álbum: Falha ao inicializar o esquema de álbum e música.
+2026-08-08 14:30:08.504 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 14:30:08.511 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 14:30:08.627 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 14:30:08.661 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@4604b900{/,null,AVAILABLE}
+2026-08-08 14:30:08.699 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@47d93e0d{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 14:30:08.721 [main] INFO  org.eclipse.jetty.server.Server - Started Server@53bc1328{STARTING}[11.0.20,sto=0] @11394ms
+2026-08-08 14:30:08.722 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 14:30:08.722 [main] INFO  io.javalin.Javalin - Javalin started in 463ms \o/
+2026-08-08 14:30:09.458 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 14:30:09.469 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 14:30:09.491 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 888 days old. Consider checking for a newer version.).
+2026-08-08 14:30:09.491 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 14:30:15.750 [JettyServerThreadPool-58] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 14:30:16.503 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=200
+2026-08-08 14:30:16.550 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/landing.js status=304
+2026-08-08 14:30:17.156 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=200
+2026-08-08 14:30:17.181 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.svg status=200
+2026-08-08 14:30:19.989 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 14:30:20.022 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 14:30:20.224 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 14:30:22.076 [JettyServerThreadPool-50] ERROR b.u.d.p.e.GlobalHttpExceptionHandler - Erro não tratado: Erro ao buscar usuário por email: Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+java.lang.RuntimeException: Erro ao buscar usuário por email: Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository.buscarPorEmail(UsuarioDbRepository.java:141)
+	at br.ufpb.dcx.projetos.login.repositories.LoggingUsuarioRepositoryDecorator.buscarPorEmail(LoggingUsuarioRepositoryDecorator.java:40)
+	at br.ufpb.dcx.projetos.login.services.UsuarioService.verificarCredenciais(UsuarioService.java:94)
+	at br.ufpb.dcx.projetos.login.controllers.LoginController.autenticar(LoginController.java:43)
+	at io.javalin.router.Endpoint.handle(Endpoint.kt:52)
+	at io.javalin.router.ParsedEndpoint.handle(ParsedEndpoint.kt:15)
+	at io.javalin.http.servlet.DefaultTasks.HTTP$lambda$9$lambda$7$lambda$6(DefaultTasks.kt:52)
+	at io.javalin.http.servlet.JavalinServlet.handleTask(JavalinServlet.kt:99)
+	at io.javalin.http.servlet.JavalinServlet.handleSync(JavalinServlet.kt:64)
+	at io.javalin.http.servlet.JavalinServlet.handle(JavalinServlet.kt:50)
+	at io.javalin.http.servlet.JavalinServlet.service(JavalinServlet.kt:30)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at io.javalin.jetty.JavalinJettyServlet.service(JavalinJettyServlet.kt:52)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:764)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:529)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1580)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1381)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:176)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:484)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1553)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:174)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1303)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:129)
+	at org.eclipse.jetty.server.handler.StatisticsHandler.handle(StatisticsHandler.java:173)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:122)
+	at org.eclipse.jetty.server.Server.handle(Server.java:563)
+	at org.eclipse.jetty.server.HttpChannel$RequestDispatchable.dispatch(HttpChannel.java:1598)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:753)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:501)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:287)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:314)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:100)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:53)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.runTask(AdaptiveExecutionStrategy.java:421)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.consumeTask(AdaptiveExecutionStrategy.java:390)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.tryProduce(AdaptiveExecutionStrategy.java:277)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.run(AdaptiveExecutionStrategy.java:199)
+	at org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:411)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:969)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
+	at java.base/java.lang.Thread.run(Thread.java:1516)
+Caused by: org.postgresql.util.PSQLException: Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:346)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:54)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:273)
+	at org.postgresql.Driver.makeConnection(Driver.java:446)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:613)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:199)
+	at br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository.obterConexao(UsuarioDbRepository.java:31)
+	at br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository.buscarPorEmail(UsuarioDbRepository.java:122)
+	... 44 common frames omitted
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:642)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:548)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:599)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:284)
+	at java.base/java.net.Socket.connect(Socket.java:668)
+	at org.postgresql.core.PGStream.createSocket(PGStream.java:243)
+	at org.postgresql.core.PGStream.<init>(PGStream.java:98)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:136)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:262)
+	... 52 common frames omitted
+2026-08-08 14:30:22.099 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=500
+2026-08-08 14:30:22.152 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 14:30:22.253 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 14:30:24.853 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 14:30:24.884 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/landing.js status=304
+2026-08-08 14:30:24.884 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 14:30:24.967 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 14:30:26.776 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 14:30:26.805 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 14:30:26.854 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 14:30:29.012 [JettyServerThreadPool-60] ERROR b.u.d.p.e.GlobalHttpExceptionHandler - Erro não tratado: Erro ao buscar usuário por email: Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+java.lang.RuntimeException: Erro ao buscar usuário por email: Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository.buscarPorEmail(UsuarioDbRepository.java:141)
+	at br.ufpb.dcx.projetos.login.repositories.LoggingUsuarioRepositoryDecorator.buscarPorEmail(LoggingUsuarioRepositoryDecorator.java:40)
+	at br.ufpb.dcx.projetos.login.services.UsuarioService.verificarCredenciais(UsuarioService.java:94)
+	at br.ufpb.dcx.projetos.login.controllers.LoginController.autenticar(LoginController.java:43)
+	at io.javalin.router.Endpoint.handle(Endpoint.kt:52)
+	at io.javalin.router.ParsedEndpoint.handle(ParsedEndpoint.kt:15)
+	at io.javalin.http.servlet.DefaultTasks.HTTP$lambda$9$lambda$7$lambda$6(DefaultTasks.kt:52)
+	at io.javalin.http.servlet.JavalinServlet.handleTask(JavalinServlet.kt:99)
+	at io.javalin.http.servlet.JavalinServlet.handleSync(JavalinServlet.kt:64)
+	at io.javalin.http.servlet.JavalinServlet.handle(JavalinServlet.kt:50)
+	at io.javalin.http.servlet.JavalinServlet.service(JavalinServlet.kt:30)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at io.javalin.jetty.JavalinJettyServlet.service(JavalinJettyServlet.kt:52)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:764)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:529)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1580)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1381)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:176)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:484)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1553)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:174)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1303)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:129)
+	at org.eclipse.jetty.server.handler.StatisticsHandler.handle(StatisticsHandler.java:173)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:122)
+	at org.eclipse.jetty.server.Server.handle(Server.java:563)
+	at org.eclipse.jetty.server.HttpChannel$RequestDispatchable.dispatch(HttpChannel.java:1598)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:753)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:501)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:287)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:314)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:100)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:53)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.runTask(AdaptiveExecutionStrategy.java:421)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.consumeTask(AdaptiveExecutionStrategy.java:390)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.tryProduce(AdaptiveExecutionStrategy.java:277)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.run(AdaptiveExecutionStrategy.java:199)
+	at org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:411)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:969)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
+	at java.base/java.lang.Thread.run(Thread.java:1516)
+Caused by: org.postgresql.util.PSQLException: Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:346)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:54)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:273)
+	at org.postgresql.Driver.makeConnection(Driver.java:446)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:613)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:199)
+	at br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository.obterConexao(UsuarioDbRepository.java:31)
+	at br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository.buscarPorEmail(UsuarioDbRepository.java:122)
+	... 44 common frames omitted
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:642)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:548)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:599)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:284)
+	at java.base/java.net.Socket.connect(Socket.java:668)
+	at org.postgresql.core.PGStream.createSocket(PGStream.java:243)
+	at org.postgresql.core.PGStream.<init>(PGStream.java:98)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:136)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:262)
+	... 52 common frames omitted
+2026-08-08 14:30:29.015 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=500
+2026-08-08 14:30:29.045 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 14:30:29.080 [JettyServerThreadPool-60] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 14:44:19.057 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 14:44:19.148 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/landing.js status=304
+2026-08-08 14:44:19.148 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 14:44:19.440 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 14:44:21.312 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 14:44:21.367 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 14:44:21.447 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 14:44:23.406 [JettyServerThreadPool-63] ERROR b.u.d.p.e.GlobalHttpExceptionHandler - Erro não tratado: Erro ao buscar usuário por email: Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+java.lang.RuntimeException: Erro ao buscar usuário por email: Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository.buscarPorEmail(UsuarioDbRepository.java:141)
+	at br.ufpb.dcx.projetos.login.repositories.LoggingUsuarioRepositoryDecorator.buscarPorEmail(LoggingUsuarioRepositoryDecorator.java:40)
+	at br.ufpb.dcx.projetos.login.services.UsuarioService.verificarCredenciais(UsuarioService.java:94)
+	at br.ufpb.dcx.projetos.login.controllers.LoginController.autenticar(LoginController.java:43)
+	at io.javalin.router.Endpoint.handle(Endpoint.kt:52)
+	at io.javalin.router.ParsedEndpoint.handle(ParsedEndpoint.kt:15)
+	at io.javalin.http.servlet.DefaultTasks.HTTP$lambda$9$lambda$7$lambda$6(DefaultTasks.kt:52)
+	at io.javalin.http.servlet.JavalinServlet.handleTask(JavalinServlet.kt:99)
+	at io.javalin.http.servlet.JavalinServlet.handleSync(JavalinServlet.kt:64)
+	at io.javalin.http.servlet.JavalinServlet.handle(JavalinServlet.kt:50)
+	at io.javalin.http.servlet.JavalinServlet.service(JavalinServlet.kt:30)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at io.javalin.jetty.JavalinJettyServlet.service(JavalinJettyServlet.kt:52)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:587)
+	at org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:764)
+	at org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:529)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1580)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:221)
+	at org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1381)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:176)
+	at org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:484)
+	at org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1553)
+	at org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:174)
+	at org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1303)
+	at org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:129)
+	at org.eclipse.jetty.server.handler.StatisticsHandler.handle(StatisticsHandler.java:173)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:122)
+	at org.eclipse.jetty.server.Server.handle(Server.java:563)
+	at org.eclipse.jetty.server.HttpChannel$RequestDispatchable.dispatch(HttpChannel.java:1598)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:753)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:501)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:287)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:314)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:100)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:53)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.runTask(AdaptiveExecutionStrategy.java:421)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.consumeTask(AdaptiveExecutionStrategy.java:390)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.tryProduce(AdaptiveExecutionStrategy.java:277)
+	at org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy.run(AdaptiveExecutionStrategy.java:199)
+	at org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:411)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:969)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
+	at java.base/java.lang.Thread.run(Thread.java:1516)
+Caused by: org.postgresql.util.PSQLException: Connection to localhost:5433 refused. Check that the hostname and port are correct and that the postmaster is accepting TCP/IP connections.
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:346)
+	at org.postgresql.core.ConnectionFactory.openConnection(ConnectionFactory.java:54)
+	at org.postgresql.jdbc.PgConnection.<init>(PgConnection.java:273)
+	at org.postgresql.Driver.makeConnection(Driver.java:446)
+	at org.postgresql.Driver.connect(Driver.java:298)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:613)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:199)
+	at br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository.obterConexao(UsuarioDbRepository.java:31)
+	at br.ufpb.dcx.projetos.login.repositories.UsuarioDbRepository.buscarPorEmail(UsuarioDbRepository.java:122)
+	... 44 common frames omitted
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:642)
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:548)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:599)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:284)
+	at java.base/java.net.Socket.connect(Socket.java:668)
+	at org.postgresql.core.PGStream.createSocket(PGStream.java:243)
+	at org.postgresql.core.PGStream.<init>(PGStream.java:98)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.tryConnect(ConnectionFactoryImpl.java:136)
+	at org.postgresql.core.v3.ConnectionFactoryImpl.openConnectionImpl(ConnectionFactoryImpl.java:262)
+	... 52 common frames omitted
+2026-08-08 14:44:23.442 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=500
+2026-08-08 14:44:23.475 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 14:44:23.521 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:03:36.249 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 15:03:38.882 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 15:03:39.665 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 12 migrations (execution time 00:00.498s)
+2026-08-08 15:03:39.962 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 12
+2026-08-08 15:03:40.000 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 15:03:40.314 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 15:03:41.251 [Thread-0] INFO  io.javalin.Javalin - It looks like you created a Javalin instance, but you never started it.
+2026-08-08 15:03:41.255 [Thread-0] INFO  io.javalin.Javalin - Try: Javalin app = Javalin.create().start();
+2026-08-08 15:03:41.256 [Thread-0] INFO  io.javalin.Javalin - For more help, visit https://javalin.io/documentation#server-setup
+2026-08-08 15:03:45.887 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 15:03:45.896 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 15:03:45.956 [main] ERROR io.javalin.Javalin - Failed to start Javalin
+2026-08-08 15:03:45.957 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@6f012914{STOPPING}[11.0.20,sto=0]
+2026-08-08 15:04:06.543 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 15:04:08.259 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 15:04:08.506 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 12 migrations (execution time 00:00.151s)
+2026-08-08 15:04:08.706 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 12
+2026-08-08 15:04:08.723 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 15:04:08.882 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 15:04:10.076 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 15:04:10.084 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 15:04:10.216 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 15:04:10.247 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@67001148{/,null,AVAILABLE}
+2026-08-08 15:04:10.290 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6bff19ff{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 15:04:10.305 [main] INFO  org.eclipse.jetty.server.Server - Started Server@60baef24{STARTING}[11.0.20,sto=0] @7072ms
+2026-08-08 15:04:10.305 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 15:04:10.306 [main] INFO  io.javalin.Javalin - Javalin started in 503ms \o/
+2026-08-08 15:04:11.244 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 15:04:11.258 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 15:04:11.289 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 15:04:11.289 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 15:04:17.277 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 15:04:17.395 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:17.395 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/landing.js status=304
+2026-08-08 15:04:17.784 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:04:20.171 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 15:04:20.221 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:20.341 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:04:23.347 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=302
+2026-08-08 15:04:24.297 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 15:04:24.350 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:24.366 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=200
+2026-08-08 15:04:24.395 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=200
+2026-08-08 15:04:24.783 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:04:24.786 [JettyServerThreadPool-59] INFO  b.u.d.p.p.r.LoggingPlaylistRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): findByUsuarioId playlist executado em 59ms
+2026-08-08 15:04:25.308 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/playlists status=200
+2026-08-08 15:04:33.918 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 15:04:33.947 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:04:33.953 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:04:33.954 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:36.046 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:04:38.620 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albuns status=200
+2026-08-08 15:04:38.658 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:04:38.658 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:38.666 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:04:39.525 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:04:41.362 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 15:04:41.415 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:41.415 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:04:41.419 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:04:42.758 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:04:43.501 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 15:04:43.548 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:04:43.548 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:43.554 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:04:44.545 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:04:50.252 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 15:04:50.292 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:50.294 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:04:50.294 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:04:51.113 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:04:51.936 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albuns status=200
+2026-08-08 15:04:51.968 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:04:51.968 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:51.972 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:04:52.807 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:04:55.230 [JettyServerThreadPool-48] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 45ms
+2026-08-08 15:04:55.387 [JettyServerThreadPool-48] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 40ms
+2026-08-08 15:04:55.578 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:04:55.615 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:04:55.618 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:04:55.621 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:04:56.506 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:05:19.012 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 15:05:19.051 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:05:19.056 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:05:19.057 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:05:20.030 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:05:25.130 [JettyServerThreadPool-48] INFO  b.u.d.p.p.r.LoggingPlaylistRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): findByUsuarioId playlist executado em 91ms
+2026-08-08 15:05:25.448 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/perfil status=200
+2026-08-08 15:05:25.485 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:05:25.485 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:05:25.492 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:05:26.381 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:37:39.638 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 15:37:39.879 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:37:39.897 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=200
+2026-08-08 15:37:39.975 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:37:43.437 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:37:46.799 [JettyServerThreadPool-52] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 54ms
+2026-08-08 15:37:46.994 [JettyServerThreadPool-52] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 70ms
+2026-08-08 15:37:47.216 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:37:47.320 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:37:47.324 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:37:47.338 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:37:48.520 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:38:01.183 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 15:38:01.231 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:38:01.235 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:38:01.243 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:38:02.184 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:38:02.707 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 15:38:02.764 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:38:02.771 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:38:02.773 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:38:03.782 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:38:07.461 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas/new status=200
+2026-08-08 15:38:07.513 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:38:07.520 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:38:07.525 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:38:08.471 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:38:16.441 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 15:38:16.441 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 15:39:07.473 [JettyServerThreadPool-48] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): criar musica executado em 158ms. id=3c3a25bd-7fff-462e-b1a7-75b4213f894a titulo=Knee Socks
+2026-08-08 15:39:07.715 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/musicas status=303
+2026-08-08 15:39:07.941 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 15:39:08.123 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:39:16.720 [JettyServerThreadPool-68] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 39ms
+2026-08-08 15:39:16.846 [JettyServerThreadPool-68] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 53ms
+2026-08-08 15:39:16.905 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:39:16.956 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:39:16.960 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:39:16.965 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:39:18.116 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:41:11.831 [JettyServerThreadPool-48] INFO  b.u.d.p.p.r.LoggingPlaylistRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): findByUsuarioId playlist executado em 44ms
+2026-08-08 15:41:12.313 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/perfil status=200
+2026-08-08 15:41:12.424 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:41:12.426 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:41:12.430 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:41:13.559 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:43:01.032 [JettyServerThreadPool-66] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 44ms
+2026-08-08 15:43:01.196 [JettyServerThreadPool-66] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 49ms
+2026-08-08 15:43:01.344 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:43:01.403 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:43:01.404 [JettyServerThreadPool-75] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:43:01.404 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:43:02.564 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albuns status=200
+2026-08-08 15:43:02.615 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:43:02.838 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:43:03.202 [JettyServerThreadPool-76] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:43:04.592 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:43:05.222 [JettyServerThreadPool-76] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:43:05.257 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:43:05.261 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:43:05.263 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:43:06.113 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:43:18.821 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albuns status=200
+2026-08-08 15:43:18.860 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:43:18.869 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:43:18.874 [JettyServerThreadPool-76] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:43:19.772 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:43:20.285 [JettyServerThreadPool-76] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 15:43:20.330 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:43:20.339 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:43:20.341 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:43:21.199 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:43:21.802 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 15:43:21.849 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:43:21.850 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:43:21.851 [JettyServerThreadPool-76] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:43:22.706 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:43:30.941 [JettyServerThreadPool-76] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 41ms
+2026-08-08 15:43:31.105 [JettyServerThreadPool-76] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 71ms
+2026-08-08 15:43:31.181 [JettyServerThreadPool-76] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:43:31.213 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:43:31.216 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:43:31.218 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:43:32.022 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:44:45.020 [JettyServerThreadPool-52] INFO  b.u.d.p.p.r.LoggingPlaylistRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): findByUsuarioId playlist executado em 47ms
+2026-08-08 15:44:45.482 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/perfil status=200
+2026-08-08 15:44:45.609 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:44:45.611 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:44:45.620 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:44:47.203 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:45:25.560 [JettyServerThreadPool-76] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 46ms
+2026-08-08 15:45:25.696 [JettyServerThreadPool-76] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 40ms
+2026-08-08 15:45:25.809 [JettyServerThreadPool-76] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:45:25.863 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:45:25.870 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:45:25.873 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:45:27.845 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:48:32.322 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 15:48:34.181 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 15:48:34.469 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 12 migrations (execution time 00:00.165s)
+2026-08-08 15:48:34.567 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 12
+2026-08-08 15:48:34.578 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 15:48:34.812 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 15:48:35.851 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 15:48:35.858 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 15:48:35.998 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 15:48:36.036 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@989da1{/,null,AVAILABLE}
+2026-08-08 15:48:36.081 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@41e1455d{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 15:48:36.092 [main] INFO  org.eclipse.jetty.server.Server - Started Server@61533ae{STARTING}[11.0.20,sto=0] @7025ms
+2026-08-08 15:48:36.093 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 15:48:36.094 [main] INFO  io.javalin.Javalin - Javalin started in 526ms \o/
+2026-08-08 15:48:36.928 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 15:48:36.939 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 15:48:36.968 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 15:48:36.969 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 15:48:49.095 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 15:48:49.281 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:48:49.312 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/landing.js status=304
+2026-08-08 15:48:49.889 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:48:54.880 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 15:48:54.925 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:48:55.126 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:48:57.673 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=302
+2026-08-08 15:48:58.654 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 15:48:58.724 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:48:58.726 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:48:58.750 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:49:00.872 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:49:05.523 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 15:49:05.593 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:49:05.595 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:49:05.612 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:49:06.584 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:49:07.018 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albuns status=200
+2026-08-08 15:49:07.059 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:49:07.061 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:49:07.074 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:49:08.011 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:49:12.000 [JettyServerThreadPool-47] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 40ms
+2026-08-08 15:49:12.156 [JettyServerThreadPool-47] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 39ms
+2026-08-08 15:49:12.423 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:49:12.471 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:49:12.472 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:49:12.473 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:49:13.596 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:49:46.078 [JettyServerThreadPool-49] INFO  b.u.d.p.p.r.LoggingPlaylistRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): findByUsuarioId playlist executado em 44ms
+2026-08-08 15:49:46.462 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/perfil status=200
+2026-08-08 15:49:46.504 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:49:46.504 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:49:46.507 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:49:47.524 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:49:53.370 [JettyServerThreadPool-50] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 36ms
+2026-08-08 15:49:53.475 [JettyServerThreadPool-50] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 35ms
+2026-08-08 15:49:53.556 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:49:53.598 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:49:53.601 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:49:53.604 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:49:54.521 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:49:56.701 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/perfil/49ccb589-3755-4885-a2f6-12f7af3f8a2f status=302
+2026-08-08 15:49:57.057 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 15:49:57.266 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:50:02.317 [JettyServerThreadPool-65] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 41ms
+2026-08-08 15:50:02.436 [JettyServerThreadPool-65] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 39ms
+2026-08-08 15:50:02.524 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:50:02.589 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 15:50:02.592 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 15:50:02.594 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 15:50:03.587 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 15:54:32.449 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/comunidade/post/4fd88415-18a9-4727-aa51-61dde1620770/estrela status=302
+2026-08-08 15:54:32.901 [JettyServerThreadPool-61] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 44ms
+2026-08-08 15:54:33.029 [JettyServerThreadPool-61] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 37ms
+2026-08-08 15:54:33.330 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 15:54:38.070 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/comunidade/post/4fd88415-18a9-4727-aa51-61dde1620770/estrela status=302
+2026-08-08 15:54:38.450 [JettyServerThreadPool-61] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 44ms
+2026-08-08 15:54:38.583 [JettyServerThreadPool-61] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 43ms
+2026-08-08 15:54:38.738 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 16:01:41.038 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 16:01:43.633 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 16:01:43.934 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 12 migrations (execution time 00:00.162s)
+2026-08-08 16:01:44.032 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 12
+2026-08-08 16:01:44.046 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 16:01:44.361 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 16:01:45.816 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 16:01:45.823 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 16:01:45.959 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 16:01:45.995 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@989da1{/,null,AVAILABLE}
+2026-08-08 16:01:46.036 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@41e1455d{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 16:01:46.046 [main] INFO  org.eclipse.jetty.server.Server - Started Server@61533ae{STARTING}[11.0.20,sto=0] @8313ms
+2026-08-08 16:01:46.047 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 16:01:46.047 [main] INFO  io.javalin.Javalin - Javalin started in 658ms \o/
+2026-08-08 16:01:47.119 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 16:01:47.130 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 16:01:47.155 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 16:01:47.156 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 16:03:00.352 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=302
+2026-08-08 16:03:01.064 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 16:03:01.379 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:03:01.676 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:03:01.715 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.svg status=304
+2026-08-08 16:03:04.431 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=302
+2026-08-08 16:03:05.403 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 16:03:05.461 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:03:05.465 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:03:05.492 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:03:07.178 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:03:12.661 [JettyServerThreadPool-50] INFO  b.u.d.p.p.r.LoggingPlaylistRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): findByUsuarioId playlist executado em 44ms
+2026-08-08 16:03:13.163 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/perfil status=200
+2026-08-08 16:03:13.210 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:03:13.212 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:03:13.227 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:03:14.220 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:03:16.170 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albuns status=200
+2026-08-08 16:03:16.220 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:03:16.220 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:03:16.232 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:03:17.054 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:03:18.136 [JettyServerThreadPool-50] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 45ms
+2026-08-08 16:03:18.299 [JettyServerThreadPool-50] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 38ms
+2026-08-08 16:03:18.507 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 16:03:18.557 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:03:18.561 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:03:18.562 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:03:19.540 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:07:10.714 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 16:07:12.445 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 16:07:12.759 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 12 migrations (execution time 00:00.175s)
+2026-08-08 16:07:12.873 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 12
+2026-08-08 16:07:12.887 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 16:07:13.152 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 16:07:14.334 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 16:07:14.342 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 16:07:14.485 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 16:07:14.521 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@989da1{/,null,AVAILABLE}
+2026-08-08 16:07:14.568 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@41e1455d{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 16:07:14.578 [main] INFO  org.eclipse.jetty.server.Server - Started Server@61533ae{STARTING}[11.0.20,sto=0] @5825ms
+2026-08-08 16:07:14.579 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 16:07:14.579 [main] INFO  io.javalin.Javalin - Javalin started in 556ms \o/
+2026-08-08 16:07:15.534 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 16:07:15.546 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 16:07:15.576 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 16:07:15.577 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 16:07:21.710 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 16:07:21.999 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/landing.js status=304
+2026-08-08 16:07:21.999 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:07:22.547 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:07:29.077 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 16:07:29.115 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:07:29.271 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:07:31.957 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=302
+2026-08-08 16:07:33.100 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 16:07:33.191 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:07:33.194 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:07:33.233 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:07:34.874 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:07:40.297 [JettyServerThreadPool-51] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 45ms
+2026-08-08 16:07:40.445 [JettyServerThreadPool-51] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 40ms
+2026-08-08 16:07:40.732 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 16:07:40.809 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:07:40.811 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:07:40.812 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:07:42.264 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:07:58.768 [JettyServerThreadPool-59] INFO  b.u.d.p.p.r.LoggingPlaylistRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): findByUsuarioId playlist executado em 37ms
+2026-08-08 16:07:59.180 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/perfil status=200
+2026-08-08 16:07:59.257 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:07:59.256 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:07:59.260 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:08:00.176 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:08:06.870 [JettyServerThreadPool-61] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 55ms
+2026-08-08 16:08:06.978 [JettyServerThreadPool-61] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 35ms
+2026-08-08 16:08:07.068 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 16:08:07.116 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:08:07.117 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:08:07.121 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:08:07.954 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:08:08.277 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albuns status=200
+2026-08-08 16:08:08.308 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:08:08.311 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:08:08.312 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:08:09.200 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 16:08:10.403 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 16:08:10.465 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 16:08:10.468 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 16:08:10.468 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 16:08:11.411 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 18:02:58.213 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 18:02:59.925 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 18:03:00.355 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 13 migrations (execution time 00:00.193s)
+2026-08-08 18:03:00.476 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 12
+2026-08-08 18:03:00.516 [main] INFO  o.f.core.internal.command.DbMigrate - Migrating schema "public" to version "13 - Criar tabela recuperacao"
+2026-08-08 18:03:00.874 [main] INFO  o.f.core.internal.command.DbMigrate - Successfully applied 1 migration to schema "public", now at version v13 (execution time 00:00.240s)
+2026-08-08 18:03:01.084 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 18:03:02.138 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 18:03:02.146 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 18:03:02.297 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 18:03:02.329 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@2c16fadb{/,null,AVAILABLE}
+2026-08-08 18:03:02.384 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@61533ae{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 18:03:02.399 [main] INFO  org.eclipse.jetty.server.Server - Started Server@6d91790b{STARTING}[11.0.20,sto=0] @5885ms
+2026-08-08 18:03:02.399 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 18:03:02.400 [main] INFO  io.javalin.Javalin - Javalin started in 516ms \o/
+2026-08-08 18:03:03.287 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 18:03:03.297 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 18:03:03.321 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 18:03:03.321 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 18:03:46.497 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 18:03:47.651 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=302
+2026-08-08 18:03:48.209 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 18:03:48.270 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 18:03:48.343 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 18:03:48.390 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.svg status=304
+2026-08-08 18:03:54.634 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=302
+2026-08-08 18:03:55.562 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 18:03:55.614 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 18:03:55.614 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 18:03:55.640 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 18:03:56.740 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 18:05:04.355 [JettyServerThreadPool-49] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 39ms
+2026-08-08 18:05:04.525 [JettyServerThreadPool-49] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 39ms
+2026-08-08 18:05:04.856 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 18:05:04.906 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 18:05:04.907 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 18:05:04.918 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 18:05:05.996 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 18:05:10.639 [JettyServerThreadPool-59] INFO  AuditoriaComunidade - AUDITORIA: Novo Comentário adicionado! id=ea94b496-c7bf-4176-81f1-595cfac9a362 no post=abb0dfe1-7e00-4524-afa7-f21b3848d39d
+2026-08-08 18:05:10.640 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/comunidade/post/abb0dfe1-7e00-4524-afa7-f21b3848d39d/comentar status=302
+2026-08-08 18:05:11.004 [JettyServerThreadPool-63] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 48ms
+2026-08-08 18:05:11.151 [JettyServerThreadPool-63] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 50ms
+2026-08-08 18:05:11.321 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 18:11:27.520 [JettyServerThreadPool-67] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 18:11:27.696 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 18:11:27.696 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 18:11:27.696 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 18:11:29.737 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 18:11:40.754 [JettyServerThreadPool-53] INFO  b.u.d.p.p.r.LoggingPlaylistRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): findItemsByPlaylistId playlist executado em 48ms
+2026-08-08 18:11:40.956 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/playlists/cbf3c0c3-e97d-42bf-9bbb-c3a81b89377d status=200
+2026-08-08 18:11:41.024 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 18:11:41.024 [JettyServerThreadPool-67] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 18:11:41.024 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 18:11:41.981 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 18:11:48.073 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 18:12:17.375 [JettyServerThreadPool-62] INFO  b.u.d.p.p.r.LoggingPlaylistRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): findItemsByPlaylistId playlist executado em 41ms
+2026-08-08 18:12:17.428 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/playlists/cbf3c0c3-e97d-42bf-9bbb-c3a81b89377d status=200
+2026-08-08 18:12:17.492 [JettyServerThreadPool-69] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 18:12:17.492 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 18:12:17.498 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 18:12:18.619 [JettyServerThreadPool-67] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:37:01.188 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 21:37:02.672 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 21:37:02.914 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 13 migrations (execution time 00:00.123s)
+2026-08-08 21:37:03.003 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 13
+2026-08-08 21:37:03.014 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 21:37:03.251 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 21:37:05.126 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 21:37:05.132 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 21:37:05.248 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 21:37:05.275 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@2032e725{/,null,AVAILABLE}
+2026-08-08 21:37:05.308 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6ef7623{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 21:37:05.315 [main] INFO  org.eclipse.jetty.server.Server - Started Server@6ad5923a{STARTING}[11.0.20,sto=0] @5927ms
+2026-08-08 21:37:05.316 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 21:37:05.316 [main] INFO  io.javalin.Javalin - Javalin started in 419ms \o/
+2026-08-08 21:37:05.970 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 21:37:05.979 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 21:37:06.004 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 21:37:06.004 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 21:37:25.596 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:37:27.804 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/playlists/cbf3c0c3-e97d-42bf-9bbb-c3a81b89377d status=302
+2026-08-08 21:37:28.263 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 21:37:28.303 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 21:37:28.377 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:37:28.410 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.svg status=304
+2026-08-08 21:37:31.513 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/recuperar status=200
+2026-08-08 21:37:31.536 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 21:37:31.580 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:37:36.073 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:37:38.938 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=302
+2026-08-08 21:37:39.663 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 21:37:39.706 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 21:37:39.708 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 21:37:39.718 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 21:37:41.042 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:38:10.935 [JettyServerThreadPool-50] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 43ms
+2026-08-08 21:38:11.075 [JettyServerThreadPool-50] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 32ms
+2026-08-08 21:38:11.339 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 21:38:11.372 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 21:38:11.378 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 21:38:11.378 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 21:38:12.297 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:38:46.869 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/perfil/49ccb589-3755-4885-a2f6-12f7af3f8a2f status=302
+2026-08-08 21:38:47.116 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 21:38:47.278 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:40:07.441 [JettyServerThreadPool-66] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 30ms
+2026-08-08 21:40:07.537 [JettyServerThreadPool-66] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 32ms
+2026-08-08 21:40:07.645 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 21:40:07.696 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 21:40:07.699 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 21:40:07.701 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 21:40:08.591 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:40:19.527 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/comunidade/post/abb0dfe1-7e00-4524-afa7-f21b3848d39d/excluir status=302
+2026-08-08 21:40:19.892 [JettyServerThreadPool-64] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 31ms
+2026-08-08 21:40:19.981 [JettyServerThreadPool-64] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 30ms
+2026-08-08 21:40:20.054 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 21:40:36.597 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 21:40:36.637 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 21:40:36.643 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 21:40:36.643 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 21:40:37.505 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:40:40.250 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 21:40:40.291 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 21:40:40.296 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 21:40:40.297 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 21:40:41.324 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:40:42.583 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas/new status=200
+2026-08-08 21:40:42.628 [JettyServerThreadPool-68] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 21:40:42.631 [JettyServerThreadPool-64] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 21:40:42.635 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 21:40:43.824 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 21:43:37.413 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 21:43:39.550 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 21:43:39.931 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 13 migrations (execution time 00:00.210s)
+2026-08-08 21:43:40.061 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 13
+2026-08-08 21:43:40.078 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 21:43:40.304 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 21:43:42.312 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 21:43:42.322 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 21:43:42.475 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 21:43:42.509 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@2032e725{/,null,AVAILABLE}
+2026-08-08 21:43:42.555 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6ef7623{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 21:43:42.567 [main] INFO  org.eclipse.jetty.server.Server - Started Server@6ad5923a{STARTING}[11.0.20,sto=0] @8269ms
+2026-08-08 21:43:42.567 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 21:43:42.568 [main] INFO  io.javalin.Javalin - Javalin started in 1372ms \o/
+2026-08-08 21:43:43.339 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 21:43:43.350 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 21:43:43.376 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 21:43:43.376 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 22:10:12.140 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 22:10:14.688 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 22:10:15.131 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 13 migrations (execution time 00:00.195s)
+2026-08-08 22:10:15.269 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 13
+2026-08-08 22:10:15.280 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 22:10:15.549 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 22:10:16.706 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 22:10:16.714 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 22:10:16.850 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 22:10:16.884 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@2032e725{/,null,AVAILABLE}
+2026-08-08 22:10:16.926 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6ef7623{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 22:10:16.938 [main] INFO  org.eclipse.jetty.server.Server - Started Server@6ad5923a{STARTING}[11.0.20,sto=0] @8081ms
+2026-08-08 22:10:16.938 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 22:10:16.939 [main] INFO  io.javalin.Javalin - Javalin started in 514ms \o/
+2026-08-08 22:10:17.796 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 22:10:17.803 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 22:10:17.826 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 22:10:17.827 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 22:10:33.504 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:10:38.805 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=302
+2026-08-08 22:10:39.298 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 22:10:39.342 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:10:39.436 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:10:42.305 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 22:10:42.340 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:10:42.415 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:10:42.433 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.svg status=304
+2026-08-08 22:10:44.857 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=302
+2026-08-08 22:10:45.609 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 22:10:45.647 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:10:45.650 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:10:45.682 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=200
+2026-08-08 22:10:46.585 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:10:51.625 [JettyServerThreadPool-50] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 38ms
+2026-08-08 22:10:51.759 [JettyServerThreadPool-50] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 31ms
+2026-08-08 22:10:52.007 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 22:10:52.036 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:10:52.038 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:10:52.038 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:10:52.867 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:13:32.329 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 22:13:32.405 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:13:32.412 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:13:32.412 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:13:33.850 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:13:34.818 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas/new status=200
+2026-08-08 22:13:34.901 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:13:34.903 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:13:34.906 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:13:35.702 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:13:46.350 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:13:53.667 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albuns status=200
+2026-08-08 22:13:53.699 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:13:53.699 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:13:53.699 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:13:54.451 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:13:56.535 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albums/novo status=200
+2026-08-08 22:13:56.632 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/public/img/default-cover.png status=404
+2026-08-08 22:13:56.685 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:14:01.792 [JettyServerThreadPool-65] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:14:01.867 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:14:15.011 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:17.956 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 22:15:17.987 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:15:17.991 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:15:17.994 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:15:18.987 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:15:19.999 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas/novo status=200
+2026-08-08 22:15:20.047 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/public/img/default-cover.png status=404
+2026-08-08 22:15:20.122 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:15:25.424 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:25.634 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:26.141 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:26.973 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:35.915 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:42.722 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:45.544 [JettyServerThreadPool-48] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:45.741 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:46.212 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:47.484 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:15:51.043 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:16:54.656 [JettyServerThreadPool-62] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=02cd0583-3dc3-4f5f-8da7-5bf84a750b4d nome=Official Arctic Monkeys usuarioId=49ccb589-3755-4885-a2f6-12f7af3f8a2f
+2026-08-08 22:16:54.660 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/artistas status=303
+2026-08-08 22:16:54.825 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 22:16:55.034 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:16:58.751 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas/02cd0583-3dc3-4f5f-8da7-5bf84a750b4d/editar status=200
+2026-08-08 22:16:58.873 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:17:01.386 [JettyServerThreadPool-50] INFO  b.u.d.p.a.services.ArtistaService - Artista atualizado. id=02cd0583-3dc3-4f5f-8da7-5bf84a750b4d nome=Official Arctic Monkeys
+2026-08-08 22:17:01.386 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/artistas/02cd0583-3dc3-4f5f-8da7-5bf84a750b4d status=303
+2026-08-08 22:17:01.490 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 22:17:01.602 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:35:44.686 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 22:35:46.214 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 22:35:46.518 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 13 migrations (execution time 00:00.189s)
+2026-08-08 22:35:46.642 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 13
+2026-08-08 22:35:46.656 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 22:35:46.888 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 22:35:47.821 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 22:35:47.827 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 22:35:47.943 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 22:35:47.972 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@2032e725{/,null,AVAILABLE}
+2026-08-08 22:35:48.006 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6ef7623{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 22:35:48.014 [main] INFO  org.eclipse.jetty.server.Server - Started Server@6ad5923a{STARTING}[11.0.20,sto=0] @5808ms
+2026-08-08 22:35:48.015 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 22:35:48.015 [main] INFO  io.javalin.Javalin - Javalin started in 452ms \o/
+2026-08-08 22:35:48.749 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 22:35:48.757 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 22:35:48.780 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 22:35:48.781 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 22:35:58.814 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=302
+2026-08-08 22:35:59.325 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 22:35:59.540 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:36:00.074 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:36:00.123 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.svg status=304
+2026-08-08 22:36:27.558 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=302
+2026-08-08 22:36:28.419 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 22:36:28.473 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:36:28.473 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:36:28.511 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:36:30.121 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:36:40.003 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albuns status=200
+2026-08-08 22:36:40.039 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:36:40.042 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:36:40.049 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:36:40.968 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:36:51.486 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/albums/novo status=200
+2026-08-08 22:36:51.703 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/public/img/default-cover.png status=404
+2026-08-08 22:36:51.761 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:36:59.541 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:36:59.541 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:37:04.861 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:37:08.094 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:47:26.186 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 22:47:26.187 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 22:47:28.984 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 22:47:28.987 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 22:47:30.344 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 13 migrations (execution time 00:00.711s)
+2026-08-08 22:47:30.346 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 13 migrations (execution time 00:00.718s)
+2026-08-08 22:47:30.596 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 13
+2026-08-08 22:47:30.627 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 22:47:31.150 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 22:47:31.180 [Thread-0] INFO  io.javalin.Javalin - It looks like you created a Javalin instance, but you never started it.
+2026-08-08 22:47:31.182 [Thread-0] INFO  io.javalin.Javalin - Try: Javalin app = Javalin.create().start();
+2026-08-08 22:47:31.182 [Thread-0] INFO  io.javalin.Javalin - For more help, visit https://javalin.io/documentation#server-setup
+2026-08-08 22:47:31.182 [Thread-0] INFO  io.javalin.Javalin - It looks like you created a Javalin instance, but you never started it.
+2026-08-08 22:47:31.183 [Thread-0] INFO  io.javalin.Javalin - Try: Javalin app = Javalin.create().start();
+2026-08-08 22:47:31.183 [Thread-0] INFO  io.javalin.Javalin - For more help, visit https://javalin.io/documentation#server-setup
+2026-08-08 22:47:31.588 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 13
+2026-08-08 22:47:31.612 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 22:47:31.843 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 22:47:33.805 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 22:47:33.812 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 22:47:33.820 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 22:47:33.835 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 22:47:33.930 [main] ERROR io.javalin.Javalin - Failed to start Javalin
+2026-08-08 22:47:33.932 [main] INFO  org.eclipse.jetty.server.Server - Stopped Server@732bb66d{STOPPING}[11.0.20,sto=0]
+2026-08-08 22:47:34.191 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 22:47:34.279 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@31cb96e1{/,null,AVAILABLE}
+2026-08-08 22:47:34.376 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6ef7623{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 22:47:34.411 [main] INFO  org.eclipse.jetty.server.Server - Started Server@732bb66d{STARTING}[11.0.20,sto=0] @17565ms
+2026-08-08 22:47:34.412 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 22:47:34.414 [main] INFO  io.javalin.Javalin - Javalin started in 1051ms \o/
+2026-08-08 22:47:36.595 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 22:47:36.619 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 22:47:36.661 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 22:47:36.661 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 22:50:53.260 [main] INFO  br.ufpb.dcx.projetos.App - Iniciando migrations com Flyway...
+2026-08-08 22:50:55.089 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5433/spotify_db (PostgreSQL 16.14)
+2026-08-08 22:50:55.434 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 13 migrations (execution time 00:00.165s)
+2026-08-08 22:50:55.532 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 13
+2026-08-08 22:50:55.544 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2026-08-08 22:50:55.720 [main] INFO  b.u.d.p.a.r.AlbumSchemaInitializer - Esquemas de álbum e música inicializados com sucesso.
+2026-08-08 22:50:56.742 [main] INFO  io.javalin.Javalin - Starting Javalin ...
+2026-08-08 22:50:56.748 [main] INFO  org.eclipse.jetty.server.Server - jetty-11.0.20; built: 2024-01-29T21:04:22.394Z; git: 922f8dc188f7011e60d0361de585fd4ac4d63064; jvm 26.0.1+8-34
+2026-08-08 22:50:56.884 [main] INFO  o.e.j.s.s.DefaultSessionIdManager - Session workerName=node0
+2026-08-08 22:50:56.915 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@441cc260{/,null,AVAILABLE}
+2026-08-08 22:50:56.951 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@6999cd39{HTTP/1.1, (http/1.1)}{0.0.0.0:8080}
+2026-08-08 22:50:56.960 [main] INFO  org.eclipse.jetty.server.Server - Started Server@5395ea39{STARTING}[11.0.20,sto=0] @11179ms
+2026-08-08 22:50:56.961 [main] INFO  io.javalin.Javalin - 
+       __                  ___           _____
+      / /___ __   ______ _/ (_)___      / ___/
+ __  / / __ `/ | / / __ `/ / / __ \    / __ \
+/ /_/ / /_/ /| |/ / /_/ / / / / / /   / /_/ /
+\____/\__,_/ |___/\__,_/_/_/_/ /_/    \____/
+
+       https://javalin.io/documentation
+
+2026-08-08 22:50:56.961 [main] INFO  io.javalin.Javalin - Javalin started in 473ms \o/
+2026-08-08 22:50:57.930 [main] INFO  io.javalin.Javalin - Static file handler added: StaticFileConfig(hostedPath=/, directory=/public, location=CLASSPATH, precompress=false, aliasCheck=null, headers={Cache-Control=max-age=0}, mimeTypes={}). File system location: 'file:///C:/Users/madus/.gemini/antigravity/scratch/spotify-backoffice/target/classes/public/'
+2026-08-08 22:50:57.942 [main] INFO  io.javalin.Javalin - Listening on http://localhost:8080/
+2026-08-08 22:50:57.969 [main] INFO  io.javalin.Javalin - You are running Javalin 6.1.3 (released March 2, 2024. Your Javalin version is 889 days old. Consider checking for a newer version.).
+2026-08-08 22:50:57.969 [main] INFO  br.ufpb.dcx.projetos.App - Servidor iniciado. porta=8080
+2026-08-08 22:51:03.875 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 22:51:04.099 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:51:04.149 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/landing.js status=304
+2026-08-08 22:51:04.787 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:51:07.191 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/login status=200
+2026-08-08 22:51:07.230 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:51:07.419 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:51:10.824 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/login status=302
+2026-08-08 22:51:12.462 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 22:51:12.544 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:51:12.547 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:51:12.585 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:51:15.370 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:51:20.768 [JettyServerThreadPool-59] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 42ms
+2026-08-08 22:51:20.928 [JettyServerThreadPool-59] INFO  b.u.d.p.m.r.LoggingMusicaRepositoryDecorator - AUDITORIA/PERFORMANCE (Decorator): listarTodas musica executado em 45ms
+2026-08-08 22:51:21.243 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/comunidade status=200
+2026-08-08 22:51:21.286 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:51:21.288 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:51:21.291 [JettyServerThreadPool-51] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:51:22.258 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:51:45.718 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 22:51:45.751 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:51:45.753 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:51:45.753 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:51:46.886 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 22:51:46.916 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:51:46.919 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:51:46.925 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:51:47.723 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:51:49.561 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 22:51:49.592 [JettyServerThreadPool-52] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:51:49.595 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:51:49.597 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:51:50.376 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:51:51.279 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas/novo status=200
+2026-08-08 22:51:51.369 [JettyServerThreadPool-59] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/public/img/default-cover.png status=404
+2026-08-08 22:51:51.419 [JettyServerThreadPool-47] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:52:53.227 [JettyServerThreadPool-53] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:52:53.227 [JettyServerThreadPool-50] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:52:56.347 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:52:57.113 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/api/youtube/search status=200
+2026-08-08 22:53:09.788 [JettyServerThreadPool-49] INFO  b.u.d.p.a.services.ArtistaService - Artista cadastrado. id=f2ab4826-61b6-498f-8dc4-8d0add8493f1 nome=Sabrina Carpenter usuarioId=49ccb589-3755-4885-a2f6-12f7af3f8a2f
+2026-08-08 22:53:09.789 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=POST path=/artistas status=303
+2026-08-08 22:53:09.907 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/artistas status=200
+2026-08-08 22:53:10.049 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304
+2026-08-08 22:53:16.112 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/musicas status=200
+2026-08-08 22:53:16.160 [JettyServerThreadPool-49] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:53:16.161 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:53:16.180 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:53:17.163 [JettyServerThreadPool-61] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/ status=200
+2026-08-08 22:53:17.198 [JettyServerThreadPool-62] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/player.css status=304
+2026-08-08 22:53:17.198 [JettyServerThreadPool-66] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/css/index.css status=304
+2026-08-08 22:53:17.206 [JettyServerThreadPool-46] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/js/player.js status=304
+2026-08-08 22:53:17.968 [JettyServerThreadPool-63] INFO  br.ufpb.dcx.projetos.App - Requisição HTTP concluída. metodo=GET path=/favicon.ico status=304

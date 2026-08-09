@@ -26,6 +26,8 @@ public interface PlaylistRepository {
 
     List<PlaylistItem> findItemsByPlaylistId(String playlistId);
 
+    List<PlaylistItem> findItemsByPlaylistIds(List<String> playlistIds);
+
     Optional<PlaylistItem> findItemById(String itemId);
 
     boolean deleteItem(String itemId);

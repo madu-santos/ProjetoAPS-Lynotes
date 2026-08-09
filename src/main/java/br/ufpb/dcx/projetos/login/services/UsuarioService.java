@@ -154,4 +154,55 @@ public class UsuarioService {
         usuario.setBio(bio != null ? bio.trim() : "");
         repository.salvar(usuario);
     }
+
+    public void solicitarRecuperacao(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("E-mail é obrigatório.");
+        }
+        Optional<Usuario> usuarioOpt = repository.buscarPorEmail(email.trim());
+        if (usuarioOpt.isEmpty()) {
+            throw new IllegalArgumentException("Nenhum usuário cadastrado com este e-mail.");
+        }
+        
+        String codigo = String.format("%06d", new java.util.Random().nextInt(1000000));
+        repository.salvarCodigoRecuperacao(email.trim(), codigo, java.time.LocalDateTime.now().plusMinutes(15));
+        
+        System.out.println("=================================================");
+        System.out.println("SIMULACAO DE ENVIO DE E-MAIL (RECUPERACAO DE SENHA)");
+        System.out.println("Para: " + email.trim());
+        System.out.println("Seu codigo de verificacao eh: " + codigo);
+        System.out.println("Este codigo expira em 15 minutos.");
+        System.out.println("=================================================");
+    }
+
+    public void confirmarRecuperacao(String email, String codigo, String novaSenha) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("E-mail é obrigatório.");
+        }
+        if (codigo == null || codigo.trim().isEmpty()) {
+            throw new IllegalArgumentException("Código de verificação é obrigatório.");
+        }
+        if (novaSenha == null || novaSenha.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nova senha é obrigatória.");
+        }
+        if (novaSenha.length() < 6) {
+            throw new IllegalArgumentException("A nova senha deve conter no mínimo 6 caracteres.");
+        }
+
+        Optional<String> codigoValido = repository.obterCodigoRecuperacaoValido(email.trim(), codigo.trim());
+        if (codigoValido.isEmpty()) {
+            throw new IllegalArgumentException("Código de recuperação inválido ou expirado.");
+        }
+
+        Optional<Usuario> usuarioOpt = repository.buscarPorEmail(email.trim());
+        if (usuarioOpt.isEmpty()) {
+            throw new IllegalArgumentException("Usuário não encontrado.");
+        }
+
+        Usuario usuario = usuarioOpt.get();
+        usuario.setSenha(hashingStrategy.hash(novaSenha));
+        repository.salvar(usuario);
+        
+        repository.limparCodigoRecuperacao(email.trim());
+    }
 }

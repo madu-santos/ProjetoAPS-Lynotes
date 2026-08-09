@@ -19,6 +19,7 @@
             </div>
 
             <div class="alert alert-danger rounded-3 p-2 small mb-3" th:if="${erro}" th:text="${erro}"></div>
+            <div class="alert alert-success rounded-3 p-2 small mb-3" th:if="${param.recuperado}" th:text="'Senha redefinida com sucesso!'"></div>
 
             <form method="post" action="/login">
                 <!-- Input Usuário / Email com Ícone -->
@@ -36,7 +37,10 @@
 
                 <!-- Input Senha com Ícone -->
                 <div class="mb-3">
-                    <label class="form-label text-white fw-bold small mb-1" for="senha">Senha</label>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label text-white fw-bold small mb-0" for="senha">Senha</label>
+                        <a href="/recuperar" class="text-purple extra-small text-decoration-none hover-purple" style="font-size: 0.78rem;">Esqueceu a senha?</a>
+                    </div>
                     <div class="auth-input-group">
                         <span class="auth-icon">
                             <i class="bi bi-lock"></i>

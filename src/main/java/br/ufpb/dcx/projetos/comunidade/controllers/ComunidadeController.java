@@ -148,7 +148,7 @@ public class ComunidadeController {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
         
-        ctx.redirect("/comunidade/post/" + postId);
+        redirecionarParaRefererOu(ctx);
     }
 
     private void excluirPost(Context ctx) {
@@ -181,7 +181,6 @@ public class ComunidadeController {
     private void excluirComentario(Context ctx) {
         String usuarioLogadoId = ctx.sessionAttribute("usuarioLogadoId");
         String comentarioId = ctx.pathParam("id");
-        String postId = ctx.formParam("postId"); // Precisamos do postId para redirecionar de volta
         
         try {
             service.deletarComentario(comentarioId, usuarioLogadoId);
@@ -189,11 +188,7 @@ public class ComunidadeController {
             ctx.sessionAttribute("erroComunidade", e.getMessage());
         }
         
-        if (postId != null && !postId.trim().isEmpty()) {
-            ctx.redirect("/comunidade/post/" + postId);
-        } else {
-            ctx.redirect("/comunidade");
-        }
+        redirecionarParaRefererOu(ctx);
     }
 
     private void estrela(Context ctx) {

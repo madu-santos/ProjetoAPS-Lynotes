@@ -182,6 +182,39 @@ public final class PlaylistDbRepository implements PlaylistRepository {
     }
 
     @Override
+    public List<PlaylistItem> findItemsByPlaylistIds(List<String> playlistIds) {
+        if (playlistIds == null || playlistIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        StringBuilder sql = new StringBuilder(
+            "SELECT id, playlist_id, url, video_id, titulo, ordem, oculta, criado_em FROM playlist_item WHERE playlist_id IN ("
+        );
+        for (int i = 0; i < playlistIds.size(); i++) {
+            sql.append("?");
+            if (i < playlistIds.size() - 1) {
+                sql.append(",");
+            }
+        }
+        sql.append(") ORDER BY playlist_id, ordem, criado_em");
+
+        try (Connection connection = connectionFactory.abrir();
+             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < playlistIds.size(); i++) {
+                statement.setString(i + 1, playlistIds.get(i));
+            }
+            try (ResultSet result = statement.executeQuery()) {
+                List<PlaylistItem> items = new ArrayList<>();
+                while (result.next()) {
+                    items.add(mapItem(result));
+                }
+                return items;
+            }
+        } catch (SQLException e) {
+            throw erroPersistencia("buscar itens de playlists em lote", e);
+        }
+    }
+
+    @Override
     public Optional<PlaylistItem> findItemById(String itemId) {
         String sql = "SELECT id, playlist_id, url, video_id, titulo, ordem, oculta, criado_em FROM playlist_item WHERE id = ?";
 

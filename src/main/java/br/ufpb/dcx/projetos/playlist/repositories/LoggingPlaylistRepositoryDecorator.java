@@ -96,6 +96,15 @@ public class LoggingPlaylistRepositoryDecorator implements PlaylistRepository {
     }
 
     @Override
+    public List<PlaylistItem> findItemsByPlaylistIds(List<String> playlistIds) {
+        long inicio = System.currentTimeMillis();
+        List<PlaylistItem> resultado = decorado.findItemsByPlaylistIds(playlistIds);
+        long fim = System.currentTimeMillis();
+        LOGGER.info("AUDITORIA/PERFORMANCE (Decorator): findItemsByPlaylistIds playlist executado em {}ms", (fim - inicio));
+        return resultado;
+    }
+
+    @Override
     public Optional<PlaylistItem> findItemById(String itemId) {
         long inicio = System.currentTimeMillis();
         Optional<PlaylistItem> resultado = decorado.findItemById(itemId);

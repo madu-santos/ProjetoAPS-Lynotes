@@ -71,12 +71,17 @@
                         <input type="hidden" id="biografia" name="biografia" th:value="${form.biografia}">
                         <input type="hidden" id="youtubeId" name="youtubeId" th:value="${form.youtubeId}">
 
-                        <!-- Compartilhar na Comunidade Checkbox -->
-                        <div class="form-check form-switch mb-4" th:if="${!form.edicao}">
-                            <input class="form-check-input bg-dark border-secondary" type="checkbox" id="compartilharNaComunidade" name="compartilharNaComunidade" checked>
-                            <label class="form-check-label text-secondary small" for="compartilharNaComunidade">
-                                Compartilhar na comunidade (criar postagem automática)
-                            </label>
+                        <!-- Avaliação por estrelas (1 a 5) -->
+                        <div class="mb-4 p-4 rounded-4 bg-darker border border-secondary border-opacity-20">
+                            <label class="form-label d-block text-white fw-bold"><i class="bi bi-star-fill text-warning me-2"></i>Sua Nota (1 a 5 estrelas)</label>
+                            <div class="interactive-stars fs-2" data-input="nota-input" th:attr="data-initial=${form.nota}" style="cursor: pointer;">
+                                <i class="bi bi-star star-btn text-warning" data-index="1"></i>
+                                <i class="bi bi-star star-btn text-warning" data-index="2"></i>
+                                <i class="bi bi-star star-btn text-warning" data-index="3"></i>
+                                <i class="bi bi-star star-btn text-warning" data-index="4"></i>
+                                <i class="bi bi-star star-btn text-warning" data-index="5"></i>
+                            </div>
+                            <input type="hidden" name="nota" id="nota-input" th:value="${form.nota}">
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-10">

@@ -1770,3 +1770,115 @@ thead th {
     z-index: 99999 !important;
 }
 
+/* Custom premium toggle switch */
+.custom-toggle-switch {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 50px;
+    height: 26px;
+    background-color: #333333;
+    border-radius: 13px;
+    position: relative;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #444444;
+}
+
+.custom-toggle-switch::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    background-color: #888888;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.custom-toggle-switch:checked {
+    background-color: #BB86FC;
+    border-color: #9965db;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.4);
+}
+
+.custom-toggle-switch:checked::before {
+    transform: translateX(24px);
+    background-color: #ffffff;
+}
+
+/* Tweet Cards - Community Feed */
+.tweet-card {
+    background-color: #121212;
+    border: 1px solid rgba(187, 134, 252, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.tweet-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(187, 134, 252, 0.08);
+    border-color: rgba(187, 134, 252, 0.3) !important;
+}
+
+.tweet-avatar {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border: 1.5px solid #BB86FC;
+}
+
+.tweet-avatar-fallback {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    border: 1.5px solid #BB86FC;
+}
+
+.tweet-profile-link {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff !important;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.tweet-profile-link:hover {
+    color: #BB86FC !important;
+    text-decoration: none;
+}
+
+.tweet-subheader {
+    font-size: 0.85rem;
+    color: #b3b3b3;
+}
+
+.tweet-cover {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tweet-cover-fallback {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tweet-content {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #e1e1e1 !important;
+    margin: 0;
+}
+
+.tweet-rating i {
+    font-size: 0.85rem;
+}
+
+

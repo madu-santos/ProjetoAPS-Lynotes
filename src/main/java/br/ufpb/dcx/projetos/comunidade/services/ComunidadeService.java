@@ -179,7 +179,6 @@ public class ComunidadeService {
         Post post = switch (tipo) {
             case "SHARE_MUSIC", "ACTIVITY_MUSIC" -> PostFactory.criarPostMusica(usuarioId, itemId, cont, tipo);
             case "SHARE_ALBUM", "ACTIVITY_ALBUM" -> PostFactory.criarPostAlbum(usuarioId, itemId, cont, tipo);
-            case "SHARE_ARTIST", "ACTIVITY_ARTIST" -> PostFactory.criarPostArtista(usuarioId, itemId, cont, tipo);
             default -> throw new IllegalArgumentException("Tipo de compartilhamento inválido.");
         };
         repository.salvarPost(post);

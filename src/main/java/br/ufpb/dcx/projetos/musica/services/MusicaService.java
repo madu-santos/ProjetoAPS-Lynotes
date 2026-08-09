@@ -126,6 +126,34 @@ public class MusicaService {
         });
     }
 
+    public void importarFaixasAlbumYouTube(String playlistId, String albumId, String usuarioId, String capaUrl) {
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                br.ufpb.dcx.projetos.infra.youtube.YouTubeService ytService = new br.ufpb.dcx.projetos.infra.youtube.YouTubeService();
+                List<br.ufpb.dcx.projetos.infra.youtube.dto.YouTubeItemDTO> itens = ytService.obterItensPlaylist(playlistId);
+                for (var item : itens) {
+                    Musica faixa = Musica.novo(
+                        item.titulo(),
+                        item.artistaOuCanal(),
+                        "Pop",
+                        item.duracaoSegundos(),
+                        "",
+                        null,
+                        null,
+                        null,
+                        albumId,
+                        usuarioId,
+                        item.youtubeId(),
+                        capaUrl
+                    );
+                    save(faixa);
+                }
+            } catch (Exception e) {
+                // Ignore erros de importação
+            }
+        });
+    }
+
     public Optional<Musica> findById(String id) {
         return musicaRepository.buscarPorId(id);
     }

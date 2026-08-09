@@ -96,34 +96,189 @@
                             <p>Ao salvar uma música e marcar a opção de compartilhar, sua resenha aparecerá nesta aba!</p>
                         </div>
                         
-                        <div class="music-card-cyber p-4 mb-3" th:each="post : ${posts}">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                        <!-- Novo Formato Tweet -->
+                        <div class="tweet-card mb-4" th:each="post : ${posts}">
+                            <!-- Header: Foto e Nome + Link -->
+                            <div class="tweet-header d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center">
-                                    <div class="rounded-circle bg-purple text-white fw-bold d-flex align-items-center justify-content-center me-3 shadow" style="width: 44px; height: 44px;" th:text="${#strings.substring(post.usuarioNome, 0, 1).toUpperCase()}">U</div>
+                                    <!-- Foto de Perfil (Avatar) -->
+                                    <img th:if="${post.usuarioFotoUrl != null and !post.usuarioFotoUrl.isEmpty()}" 
+                                         th:src="${post.usuarioFotoUrl}" 
+                                         class="tweet-avatar rounded-circle me-3" 
+                                         loading="lazy"
+                                         alt="Avatar">
+                                    <div th:unless="${post.usuarioFotoUrl != null and !post.usuarioFotoUrl.isEmpty()}" 
+                                         class="tweet-avatar-fallback rounded-circle bg-purple text-dark fw-bold d-flex align-items-center justify-content-center me-3"
+                                         th:text="${#strings.substring(post.usuarioNome, 0, 1).toUpperCase()}">U</div>
+                                    
                                     <div>
-                                        <a th:href="@{'/usuarios/' + ${post.usuarioId}}" class="text-decoration-none fw-bold text-white fs-5 hover-purple" th:text="${post.usuarioNome}"></a>
-                                        <div class="text-secondary small" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></div>
+                                        <!-- Nome do perfil em negrito e link clicável -->
+                                        <a th:href="@{'/perfil/' + ${post.usuarioId}}" class="tweet-profile-link fw-bold text-white fs-6 hover-purple" th:text="${post.usuarioNome}">Nome do Usuário</a>
+                                        <!-- Timestamp -->
+                                        <span class="text-secondary small ms-2 font-monospace" style="font-size: 0.75rem;" th:text="${#temporals.format(post.dataCriacao, 'dd/MM/yyyy HH:mm')}"></span>
                                     </div>
                                 </div>
+                                
+                                <!-- Ações do post (como deletar) -->
                                 <div class="d-flex gap-1" th:if="${usuarioLogadoId == post.usuarioId}">
                                     <form th:action="@{'/comunidade/post/' + ${post.id} + '/excluir'}" method="post" onsubmit="return confirmarExclusaoCustom(this, 'Excluir Post?', 'Tem certeza que deseja excluir esta publicação?');">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm border-0" title="Excluir">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm border-0 p-1" title="Excluir">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
                                 </div>
                             </div>
-
-                            <p class="card-text text-break mb-3 text-light" style="white-space: pre-wrap; font-size: 1.05rem;" th:text="${post.conteudo}"></p>
-
-                            <!-- Interações (Estrelar) -->
-                            <div class="d-flex align-items-center gap-3 pt-3 border-top border-secondary border-opacity-10">
-                                <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" class="m-0">
-                                    <button type="submit" class="btn btn-sm rounded-pill px-3 d-flex align-items-center gap-1 btn-outline-purple" th:classappend="${post.estreladoPorMim} ? 'bg-purple text-white fw-bold' : ''">
-                                        <i class="bi" th:classappend="${post.estreladoPorMim} ? 'bi-star-fill' : 'bi-star'"></i>
-                                        <span th:text="${post.qtdEstrelas}"></span>
+                            
+                            <!-- Sub-Header: Ação realizada -->
+                            <div class="tweet-subheader mt-2 ps-5 ms-2">
+                                <span th:if="${post.tipo == 'SHARE_MUSIC'}" class="text-secondary small font-monospace">
+                                    MÚSICA: <strong class="text-white" th:text="${post.musicaTitulo}">Título</strong>
+                                </span>
+                                <span th:if="${post.tipo == 'SHARE_ALBUM'}" class="text-secondary small font-monospace">
+                                    ÁLBUM: <strong class="text-white" th:text="${post.albumTitulo}">Título</strong>
+                                </span>
+                                <span th:if="${post.tipo == 'TEXTO'}" class="text-secondary small font-monospace">
+                                    POSTOU NA COMUNIDADE
+                                </span>
+                            </div>
+                            
+                            <!-- Body: Duas colunas -->
+                            <div class="tweet-body d-flex mt-3 ps-5 ms-2 gap-4">
+                                <!-- Coluna Esquerda: Cover e estrelas -->
+                                <div class="tweet-left-col d-flex flex-column align-items-center flex-shrink-0" style="width: 100px;">
+                                    <!-- Cover Art -->
+                                    <img th:if="${post.tipo == 'SHARE_MUSIC' and post.musicaCapaUrl != null and !post.musicaCapaUrl.isEmpty()}"
+                                         th:src="${post.musicaCapaUrl}"
+                                         class="tweet-cover rounded-3 shadow" 
+                                         loading="lazy"
+                                         alt="Capa Música">
+                                    <img th:if="${post.tipo == 'SHARE_ALBUM' and post.albumCapaUrl != null and !post.albumCapaUrl.isEmpty()}"
+                                         th:src="${post.albumCapaUrl}"
+                                         class="tweet-cover rounded-3 shadow" 
+                                         loading="lazy"
+                                         alt="Capa Álbum">
+                                    <!-- Fallbacks se não houver imagem -->
+                                    <div th:if="${post.tipo == 'SHARE_MUSIC' and (post.musicaCapaUrl == null or post.musicaCapaUrl.isEmpty())}"
+                                         class="tweet-cover-fallback rounded-3 bg-dark d-flex align-items-center justify-content-center border border-secondary border-opacity-25">
+                                         <i class="bi bi-music-note fs-2 text-secondary"></i>
+                                    </div>
+                                    <div th:if="${post.tipo == 'SHARE_ALBUM' and (post.albumCapaUrl == null or post.albumCapaUrl.isEmpty())}"
+                                         class="tweet-cover-fallback rounded-3 bg-dark d-flex align-items-center justify-content-center border border-secondary border-opacity-25">
+                                         <i class="bi bi-disc fs-2 text-secondary"></i>
+                                    </div>
+                                    
+                                    <!-- Estrelinhas de avaliação -->
+                                    <div class="tweet-rating mt-2 d-flex gap-1 justify-content-center">
+                                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                            <!-- Music Stars -->
+                                            <i th:if="${post.tipo == 'SHARE_MUSIC' and post.musicaNota != null}"
+                                               class="bi" 
+                                               th:classappend="${i <= post.musicaNota} ? 'bi-star-fill text-warning' : 'bi-star text-secondary opacity-50'"></i>
+                                            <!-- Album Stars -->
+                                            <i th:if="${post.tipo == 'SHARE_ALBUM' and post.albumNota != null}"
+                                               class="bi" 
+                                               th:classappend="${i <= post.albumNota} ? 'bi-star-fill text-warning' : 'bi-star text-secondary opacity-50'"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Coluna Direita: Opinião do usuário -->
+                                <div class="tweet-right-col flex-grow-1">
+                                    <p class="tweet-content text-break text-light" style="white-space: pre-wrap; font-family: 'Inter', 'Roboto', sans-serif;" th:text="${post.conteudo}">Opinião...</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer/Interações: Curtir e Seguir -->
+                            <div class="tweet-footer mt-3 ps-5 ms-2 pt-2 border-top border-secondary border-opacity-10 d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                    <form th:action="@{'/comunidade/post/' + ${post.id} + '/estrela'}" method="post" class="m-0">
+                                        <button type="submit" class="btn btn-sm rounded-pill px-3 d-flex align-items-center gap-1 btn-outline-purple" th:classappend="${post.estreladoPorMim} ? 'bg-purple text-white fw-bold' : ''">
+                                            <i class="bi" th:classappend="${post.estreladoPorMim} ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'"></i>
+                                            <span th:text="${post.qtdEstrelas}"></span>
+                                        </button>
+                                    </form>
+                                    
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 d-flex align-items-center gap-1" 
+                                            type="button" 
+                                            data-bs-toggle="collapse" 
+                                            th:data-bs-target="${'#comments-collapse-' + post.id}" 
+                                            aria-expanded="false"
+                                            title="Comentários">
+                                        <i class="bi bi-chat-text"></i>
+                                        <span th:text="${post.qtdComentarios}">0</span>
                                     </button>
-                                </form>
+                                </div>
+                                
+                                <!-- Botão de Seguir/Deseguir no Canto Inferior Direito do post -->
+                                <div>
+                                    <div th:if="${usuarioLogadoId == post.usuarioId}">
+                                        <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1" style="font-size: 0.8rem;" disabled>
+                                            <i class="bi bi-person-fill me-1"></i> Você
+                                        </button>
+                                    </div>
+                                    <div th:unless="${usuarioLogadoId == post.usuarioId}">
+                                        <form th:if="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/deseguir/' + ${post.usuarioId}}" method="post" hx-boost="false" class="m-0">
+                                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1" style="font-size: 0.8rem;" type="submit">
+                                                <i class="bi bi-person-x-fill me-1"></i> Deseguir
+                                            </button>
+                                        </form>
+                                        <form th:unless="${seguindoIds != null and seguindoIds.contains(post.usuarioId)}" th:action="@{'/comunidade/seguir/' + ${post.usuarioId}}" method="post" hx-boost="false" class="m-0">
+                                            <button class="btn btn-sm btn-outline-purple rounded-pill px-3 py-1" style="font-size: 0.8rem;" type="submit">
+                                                <i class="bi bi-person-plus-fill me-1"></i> Seguir
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção Retrátil de Comentários -->
+                            <div class="collapse mt-3 ps-5 ms-2" th:id="${'comments-collapse-' + post.id}">
+                                <div class="border-top border-secondary border-opacity-10 pt-3">
+                                    
+                                    <!-- Lista de Comentários Existentes -->
+                                    <div class="d-flex flex-column gap-2 mb-3">
+                                        <div th:each="comentario : ${comentarios.get(post.id)}" class="p-2 rounded-3 border border-secondary border-opacity-10" style="background-color: #121212 !important;">
+                                            <div class="d-flex align-items-center justify-content-between mb-1 px-2 pt-2">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <div class="rounded-circle bg-darker text-purple border border-purple d-flex align-items-center justify-content-center font-monospace small" style="width: 24px; height: 24px; font-size: 0.7rem;" th:text="${#strings.substring(comentario.usuarioNome, 0, 1).toUpperCase()}">U</div>
+                                                    <div>
+                                                        <span class="fw-bold text-white small" th:text="${comentario.usuarioNome}">Autor</span>
+                                                        <span class="text-secondary font-monospace ms-2" style="font-size: 0.65rem;" th:text="${#temporals.format(comentario.dataCriacao, 'dd/MM/yyyy HH:mm')}"></span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Botão de excluir comentário (se for do usuário logado) -->
+                                                <div th:if="${usuarioLogadoId == comentario.usuarioId}">
+                                                    <form th:action="@{'/comunidade/comentario/' + ${comentario.id} + '/excluir'}" method="post" class="m-0">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-0" title="Excluir comentário" style="font-size: 0.75rem;">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                            <p class="text-light small mb-0 text-break px-2 pb-2" th:text="${comentario.conteudo}">Conteúdo do comentário...</p>
+                                        </div>
+                                        
+                                        <div th:if="${comentarios.get(post.id) == null or comentarios.get(post.id).isEmpty()}" class="text-secondary small py-2">
+                                            Ninguém comentou ainda. Seja o primeiro!
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Formulário para Comentar -->
+                                    <form th:action="@{'/comunidade/post/' + ${post.id} + '/comentar'}" method="post" class="m-0">
+                                        <div class="input-group">
+                                            <input type="text" 
+                                                   name="conteudo" 
+                                                   class="form-control form-control-sm glass-search-input bg-dark text-white border-secondary" 
+                                                   placeholder="Escreva um comentário..." 
+                                                   maxlength="500" 
+                                                   required>
+                                            <button class="btn btn-sm btn-purple px-3" type="submit">
+                                                <i class="bi bi-send-fill"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -135,19 +290,6 @@
                             <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
                                 <i class="bi bi-people text-purple"></i> Membros da Comunidade
                             </h5>
-                            
-                            <!-- Estatísticas sociais integradas e discretas -->
-                            <div class="d-flex align-items-center gap-2 mb-3 pb-3 border-bottom border-secondary border-opacity-10" style="font-size: 0.85rem;">
-                                <button type="button" class="btn btn-link text-secondary p-0 text-decoration-none d-flex align-items-center gap-1.5 shadow-none social-hover-purple" data-bs-toggle="modal" data-bs-target="#seguidoresModal">
-                                    <strong class="text-white transition-all" th:text="${seguidores != null ? seguidores.size() : 0}">0</strong>
-                                    <span class="transition-all">seguidores</span>
-                                </button>
-                                <span class="text-secondary opacity-30">•</span>
-                                <button type="button" class="btn btn-link text-secondary p-0 text-decoration-none d-flex align-items-center gap-1.5 shadow-none social-hover-purple" data-bs-toggle="modal" data-bs-target="#seguindoModal">
-                                    <strong class="text-white transition-all" th:text="${seguindo != null ? seguindo.size() : 0}">0</strong>
-                                    <span class="transition-all">seguindo</span>
-                                </button>
-                            </div>
 
                             <div class="d-flex flex-column gap-3">
                                 <div class="d-flex align-items-center justify-content-between" th:each="user : ${usuarios}" th:if="${user.id != usuarioLogadoId}">

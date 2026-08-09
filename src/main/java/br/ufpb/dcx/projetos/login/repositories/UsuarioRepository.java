@@ -32,4 +32,12 @@ public interface UsuarioRepository {
 
     // Remove um usuário pelo ID
     void remover(String id);
+
+    default void salvarCodigoRecuperacao(String email, String codigo, java.time.LocalDateTime expiracao) {}
+
+    default java.util.Optional<String> obterCodigoRecuperacaoValido(String email, String codigo) {
+        return java.util.Optional.empty();
+    }
+
+    default void limparCodigoRecuperacao(String email) {}
 }
