@@ -370,6 +370,34 @@
         </div>
     </div>
 
+    <script>
+        (function() {
+            function restoreProfileTab() {
+                const activeTabId = sessionStorage.getItem('activeProfileTab');
+                if (activeTabId) {
+                    const tabEl = document.getElementById(activeTabId);
+                    if (tabEl) {
+                        tabEl.click();
+                    }
+                }
+
+                const tabButtons = document.querySelectorAll('#perfilTabs button[data-bs-toggle="tab"]');
+                tabButtons.forEach(btn => {
+                    btn.addEventListener('shown.bs.tab', function(e) {
+                        sessionStorage.setItem('activeProfileTab', e.target.id);
+                    });
+                });
+            }
+
+            restoreProfileTab();
+
+            document.body.addEventListener('htmx:afterSwap', function(event) {
+                if (document.getElementById('perfilTabs')) {
+                    restoreProfileTab();
+                }
+            });
+        })();
+    </script>
 </div>
 
 <div th:insert="~{fragments/player :: bottom-player}"></div>

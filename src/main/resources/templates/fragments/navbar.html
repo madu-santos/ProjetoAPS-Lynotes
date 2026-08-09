@@ -114,6 +114,138 @@
                         }
                     });
                 }
+
+                if (typeof window.carregarNotificacoes !== 'function') {
+                    window.carregarNotificacoes = function() {
+                        fetch('/api/notificacoes')
+                            .then(r => r.json())
+                            .then(notificacoes => {
+                                const unread = notificacoes.filter(n => !n.lida).length;
+                                
+                                // Atualiza badges
+                                const badges = ['notification-unread-count', 'tab-notification-unread-count'];
+                                badges.forEach(id => {
+                                    const badgeEl = document.getElementById(id);
+                                    if (badgeEl) {
+                                        if (unread > 0) {
+                                            badgeEl.textContent = unread;
+                                            badgeEl.style.display = 'inline-block';
+                                        } else {
+                                            badgeEl.style.display = 'none';
+                                        }
+                                    }
+                                });
+
+                                // Pulsação do sininho
+                                const bellIcon = document.getElementById('notification-bell-icon');
+                                if (bellIcon) {
+                                    if (unread > 0) {
+                                        bellIcon.classList.add('animate-pulse');
+                                    } else {
+                                        bellIcon.classList.remove('animate-pulse');
+                                    }
+                                }
+
+                                // Atualiza a lista na aba da Comunidade
+                                const tabListEl = document.getElementById('tab-notifications-list');
+                                if (tabListEl) {
+                                    if (notificacoes.length === 0) {
+                                        tabListEl.innerHTML = `
+                                            <div class="text-secondary text-center py-5">
+                                                <i class="bi bi-bell-slash fs-1 d-block mb-3 text-secondary opacity-50"></i>
+                                                Nenhuma notificação por enquanto.
+                                            </div>
+                                        `;
+                                        return;
+                                    }
+                                    
+                                    tabListEl.innerHTML = notificacoes.map(n => {
+                                        let actionHtml = '';
+                                        if (n.tipo === 'SEGUIR' && !n.seguindoDeVolta) {
+                                            actionHtml = `
+                                                <button class="btn btn-purple btn-sm rounded-pill px-3 py-1" style="font-size: 0.75rem;" onclick="window.seguirDeVoltaNotif(event, '${n.autorId}', this)">Seguir de volta</button>
+                                            `;
+                                        }
+                                        
+                                        let iconClass = 'bi-bell-fill text-purple';
+                                        if (n.tipo === 'SEGUIR') iconClass = 'bi-person-plus-fill text-info';
+                                        else if (n.tipo === 'CURTIDA') iconClass = 'bi-heart-fill text-danger';
+                                        else if (n.tipo === 'COMENTARIO') iconClass = 'bi-chat-left-text-fill text-success';
+                                        
+                                        return `
+                                            <div class="p-3 rounded-4 bg-dark bg-opacity-40 border border-secondary border-opacity-15 position-relative ${n.lida ? '' : 'border-start-purple'} mb-2 d-flex align-items-center justify-content-between">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="rounded-circle bg-darker d-flex align-items-center justify-content-center border border-secondary border-opacity-30 shadow" style="width: 40px; height: 40px; min-width: 40px;">
+                                                        <i class="bi ${iconClass}" style="font-size: 1.1rem;"></i>
+                                                    </div>
+                                                    <div class="overflow-hidden">
+                                                        <div class="text-white" style="font-size: 0.95rem;">
+                                                            <strong class="text-purple">${escapeHtml(n.autorNome)}</strong> ${escapeHtml(n.conteudo)}
+                                                        </div>
+                                                        <div class="text-secondary small mt-0.5">${n.tempoAtras}</div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    ${actionHtml}
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('');
+                                }
+                            })
+                            .catch(e => console.error('Erro ao buscar notificações:', e));
+                    };
+
+                    window.marcarNotificacoesComoLidas = function(e) {
+                        if (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                        fetch('/api/notificacoes/ler-todas', { method: 'POST' })
+                            .then(() => window.carregarNotificacoes())
+                            .catch(e => console.error(e));
+                    };
+
+                    window.seguirDeVoltaNotif = function(e, autorId, btn) {
+                        if (e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+                        fetch('/comunidade/seguir/' + autorId, { method: 'POST' })
+                            .then(() => {
+                                btn.className = 'btn btn-outline-secondary btn-sm rounded-pill px-3 py-1 disabled';
+                                btn.textContent = 'Seguindo';
+                                window.carregarNotificacoes();
+                            })
+                            .catch(() => {
+                                btn.disabled = false;
+                                btn.textContent = 'Seguir de volta';
+                            });
+                    };
+
+                    window.handleNavbarNotifClick = function(e) {
+                        const tab = document.getElementById('notificacoes-tab');
+                        if (tab) {
+                            if (e) e.preventDefault();
+                            tab.click();
+                        }
+                    };
+
+                    function escapeHtml(text) {
+                        return (text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+                    }
+
+                    // Carrega inicialmente e a cada 15 segundos
+                    document.addEventListener('DOMContentLoaded', () => {
+                        window.carregarNotificacoes();
+                        setInterval(window.carregarNotificacoes, 15000);
+                    });
+                    document.body.addEventListener('htmx:afterSwap', () => {
+                        window.carregarNotificacoes();
+                    });
+                }
             </script>
             
             <div class="flex-grow-1">
@@ -143,6 +275,8 @@
                     <span class="sidebar-text">Comunidade</span>
                 </a>
                 
+
+
                 <a class="spotify-sidebar-link" th:classappend="${paginaAtiva == 'perfil'} ? 'active' : ''" th:if="${usuarioLogado != null}" href="/perfil">
                     <i class="bi bi-person-circle fs-5"></i>
                     <span class="sidebar-text text-truncate">Meu Perfil</span>
