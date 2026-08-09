@@ -53,13 +53,14 @@ public class RankingMusicasStrategy implements RankingStrategy {
                     .count();
 
             int totalAvaliacoes = notas.size();
-            double media = totalAvaliacoes > 0 ? (notas.stream().mapToDouble(Double::doubleValue).sum() / totalAvaliacoes) : 0.0;
-            String mediaStr = totalAvaliacoes > 0 ? String.format(Locale.US, "%.1f", media) : null;
+            if (totalAvaliacoes <= 0) {
+                continue;
+            }
+            double media = notas.stream().mapToDouble(Double::doubleValue).sum() / totalAvaliacoes;
+            String mediaStr = String.format(Locale.US, "%.1f", media);
 
             // Pontuação ponderada: prioriza mais avaliações com boas notas
-            double rankingScore = totalAvaliacoes > 0
-                    ? (media * (1.0 - (1.0 / (totalAvaliacoes + 1.0))) + (totalSalvos * 0.01))
-                    : (totalSalvos * 0.01);
+            double rankingScore = (media * (1.0 - (1.0 / (totalAvaliacoes + 1.0))) + (totalSalvos * 0.01));
 
             String subtitulo = rep.getArtista();
             String id = rep.getYoutubeId() != null && !rep.getYoutubeId().isBlank() ? rep.getYoutubeId() : rep.getId();
@@ -76,9 +77,17 @@ public class RankingMusicasStrategy implements RankingStrategy {
             ));
         }
 
-        ranking.sort(Comparator.comparing(RankingItemDTO::notaMedia).reversed()
-                .thenComparing(RankingItemDTO::totalAvaliacoes).reversed()
-                .thenComparing(RankingItemDTO::titulo));
+        ranking.sort((a, b) -> {
+            double valA = a.notaFormatada() != null ? Double.parseDouble(a.notaFormatada()) : 0.0;
+            double valB = b.notaFormatada() != null ? Double.parseDouble(b.notaFormatada()) : 0.0;
+            int cmp = Double.compare(valB, valA); // Descendente
+            if (cmp != 0) return cmp;
+            
+            int cmpCount = Integer.compare(b.totalAvaliacoes(), a.totalAvaliacoes()); // Descendente
+            if (cmpCount != 0) return cmpCount;
+            
+            return a.titulo().compareToIgnoreCase(b.titulo()); // Ascendente
+        });
 
         return ranking;
     }

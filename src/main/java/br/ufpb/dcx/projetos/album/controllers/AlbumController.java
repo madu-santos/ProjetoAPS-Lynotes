@@ -93,6 +93,23 @@ public final class AlbumController {
             if (dto.youtubeId() != null && dto.youtubeId().startsWith("itunes_album_")) {
                 String collectionId = dto.youtubeId().replace("itunes_album_", "");
                 musicaService.importarFaixasAlbumItunes(collectionId, album.getId(), usuarioId, album.getCapaUrl());
+            } else {
+                String ytId = dto.youtubeId();
+                if (ytId != null && !ytId.isBlank()) {
+                    String playlistId = null;
+                    if (ytId.startsWith("yt_playlist_")) {
+                        playlistId = ytId.replace("yt_playlist_", "");
+                    } else if (ytId.startsWith("PL") || ytId.startsWith("OL") || ytId.startsWith("RD")) {
+                        playlistId = ytId;
+                    } else if (ytId.contains("list=")) {
+                        int idx = ytId.indexOf("list=");
+                        int end = ytId.indexOf('&', idx);
+                        playlistId = (end > 0) ? ytId.substring(idx + 5, end) : ytId.substring(idx + 5);
+                    }
+                    if (playlistId != null && !playlistId.isBlank()) {
+                        musicaService.importarFaixasAlbumYouTube(playlistId, album.getId(), usuarioId, album.getCapaUrl());
+                    }
+                }
             }
             
             String compartilhar = ctx.formParam("compartilharNaComunidade");

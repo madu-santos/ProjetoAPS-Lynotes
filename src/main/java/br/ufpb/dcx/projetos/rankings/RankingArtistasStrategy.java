@@ -121,12 +121,15 @@ public class RankingArtistasStrategy implements RankingStrategy {
     private boolean isNomeArtistaValido(String name) {
         if (name == null || name.isBlank()) return false;
         String lower = name.trim().toLowerCase();
-        if (lower.contains(" - ") || lower.contains(" - topic") || lower.endsWith(" topic") ||
+        if (lower.contains("- topic") || lower.contains("topic -") || lower.endsWith(" topic") || lower.startsWith("topic ") ||
+            lower.contains("- tema") || lower.contains("tema -") || lower.endsWith(" tema") || lower.startsWith("tema ") ||
             lower.contains("tópico") || lower.contains("vevo") || lower.contains("full album") ||
-            lower.contains(" - single") || lower.endsWith(" single") || lower.contains("http") ||
+            lower.contains("- single") || lower.endsWith(" single") || lower.contains("http") ||
             lower.contains("www.") || lower.contains("results?") || lower.contains("official video") ||
             lower.contains("clipe oficial") || lower.contains("lyric video") || lower.contains("audiotrack") ||
-            lower.contains("track_") || lower.contains("itunes_")) {
+            lower.contains("track_") || lower.contains("itunes_") || lower.contains("official audio") ||
+            lower.contains("clipe") || lower.contains("áudio oficial") || lower.contains("audio oficial") ||
+            lower.contains("tema de ") || lower.endsWith("tema")) {
             return false;
         }
         return true;
