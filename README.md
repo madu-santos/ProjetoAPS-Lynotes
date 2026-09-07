@@ -30,3 +30,26 @@ Assista à nossa demonstração prática e tour pela arquitetura no YouTube:
 - **💬 Comunidade & Feed:** Compartilhamento de resenhas públicas, sistema de seguidores e curtidas (estrelas) estilo rede social.
 - **🏆 Rankings da Comunidade:** Classificação oficial das músicas, álbuns e artistas mais bem avaliados e ouvidos da plataforma.
 
+---
+
+## 🚀 Como Executar o Projeto Localmente
+
+**Pré-requisitos:** Ter o **Docker** instalado na sua máquina.
+
+**1.** Abra o terminal na raiz do projeto e suba os contêineres:
+```bash
+docker compose up -d --build
+```
+
+**2.** Acesse o sistema pelo navegador:
+```text
+http://localhost:8080
+```
+*(A documentação da API estará disponível em `/swagger`)*
+
+**3.** Credenciais de Acesso Inicial (Administrador):
+```text
+E-mail: admin@email.com
+Senha: admin123
+```
+
